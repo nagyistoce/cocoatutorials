@@ -18,6 +18,7 @@
 //  Written by Robin Mills, San Jose, CA, USA. 2010 http://clanmills.com
 //
 //  Published on Google Code 2010-09-29
+//  Modification demo for Ali
 //
 
 #import "QuartzClockView.h"
