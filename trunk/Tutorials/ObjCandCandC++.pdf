@@ -1,0 +1,271 @@
+%PDF-1.3
+%‚„œ”
+2 0 obj
+<<
+/Length 3486
+>>
+stream
+BT
+/TT2 1 Tf
+10 0 0 10 43 756.3333 Tm
+0 g
+/GS1 gs
+0 Tc
+0 Tw
+[(ReadMe.txt)-4500(Mon Sep 27 22:28:31 2010)-4500(1)]TJ
+/TT4 1 Tf
+0 -1.6333 TD
+(ObjCandCandC++ ReadMe.txt)Tj
+0 -1.1 TD
+(-------------------------)Tj
+0 -2.2 TD
+(This tutorial is about calling C++ \(and C\) from Obj/C \(very easy\))Tj
+0 -1.1 TD
+(And about calling Obj/C from C++ \(not difficult\))Tj
+0 -2.2 TD
+(There really isnít anything very interesting to say about this matter.)Tj
+0 -1.1 TD
+(However if you want to do this, I think youíll find this rather helpful.)Tj
+0 -2.2 TD
+(Calling C++ and C is very simple.  Nothing special is required.)Tj
+0 -1.1 TD
+(--------------------------------------------------------------)Tj
+T*
+(When you compile and .m file, it knows about C and Obj/C)Tj
+T*
+(                     .mm file, it knows about C, Obj/C and C++)Tj
+T*
+(                     .c file, it knows about C)Tj
+T*
+(                     .cpp file, C++)Tj
+0 -2.2 TD
+(You can really mix them altogether.)Tj
+T*
+(You can of course tell the compiler to treat .m \(or .c or anything really\) as an Obj/C,)Tj
+0 -1.1 TD
+( C++ file and youíll be fine.)Tj
+0 -2.2 TD
+(Calling Obj/C from C and C++)Tj
+0 -1.1 TD
+(----------------------------)Tj
+0 -2.2 TD
+(#include <objc/message.h>)Tj
+T*
+(SEL sel = NSSelectorFromString\(@"myMethod:"\))Tj
+0 -1.1 TD
+(objc_msgSend\(object,sel,arg, ...\) ;)Tj
+0 -2.2 TD
+(If your method has muliple inputs, no problem:)Tj
+T*
+(SEL sel2 = NSSelectorFromString\(@"myMethod:withArgument:andSomethingElse:\);)Tj
+0 -1.1 TD
+(objc_msgSend\(object,sel2,argument1,argument2,argument3\);)Tj
+0 -2.2 TD
+(Thereís a lot more information at this address:)Tj
+0 -1.1 TD
+(http://developer.apple.com/library/ios/#documentation/Cocoa/Reference/ObjCRuntimeRef/Re)Tj
+T*
+(ference/reference.html)Tj
+0 -2.2 TD
+(How does it work?)Tj
+0 -1.1 TD
+(-----------------)Tj
+0 -2.2 TD
+(The Obj/C compiler converts messages into objc_msgSend calls.  I think it has an inside)Tj
+0 -1.1 TD
+( track on getting the selector without having to call NSSelectorFromString, maybe not. )Tj
+T*
+( It doesnít matter.)Tj
+0 -2.2 TD
+(This is all very like the IDispatch method in COM.  At run time, you have to know the o)Tj
+0 -1.1 TD
+(bject you want to call and itís selector \(un unsigned integer\) and obcj_sendMessage wil)Tj
+T*
+(l do the business.  Presumably he maintains a sparse array of the addresses of the meth)Tj
+T*
+(ods and jumps through there to call the objectís method.)Tj
+0 -2.2 TD
+(For sure you can extend the dispatch table of every member of a class using the Categor)Tj
+0 -1.1 TD
+(y feature of Obj/C.  Iím not so sure that you can add a method to an object at run-time)Tj
+T*
+(.  So I suspect that all members of a class have the same methods.  COM \(and JavaScript)Tj
+T*
+(\) are more flexible because they can add methods to objects individually \(as well as ís)Tj
+T*
+(taticí class-wide methods\).)Tj
+0 -2.2 TD
+(In reality, I donít know if adding methods to objects individually is incredibly useful)Tj
+0 -1.1 TD
+( - however I have encountered a use case.  When I worked on the E4X implementation in E)Tj
+T*
+(xtendScript, the XML object is required to expose properties based on the content of th)Tj
+T*
+(e XML.  So although there are class-wide member function, individual objects expose the)Tj
+T*
+( properites of the XML hidden inside.  Very nice.  Very elegant.)Tj
+0 -2.2 TD
+(If you know how to achieve this with Obj/C, Iíll be delighted to learn how.  Iíll even )Tj
+0 -1.1 TD
+(update this tutorial and acknowledge your contribution.)Tj
+ET
+endstream
+endobj
+3 0 obj
+<<
+/ProcSet [/PDF /Text ]
+/Font <<
+/TT2 4 0 R
+/TT4 5 0 R
+>>
+/ExtGState <<
+/GS1 6 0 R
+>>
+>>
+endobj
+6 0 obj
+<<
+/Type /ExtGState
+/SA false
+/SM 0.02
+/OP false
+/op false
+/OPM 1
+/BG2 /Default
+/UCR2 /Default
+/HT /Default
+/TR2 /Default
+>>
+endobj
+8 0 obj
+<<
+/Type /FontDescriptor
+/Ascent 753
+/CapHeight 562
+/Descent -246
+/Flags 262179
+/FontBBox [-113 -250 749 801]
+/FontName /Courier-Bold
+/ItalicAngle 0
+/StemV 133
+/XHeight 439
+/StemH 84
+>>
+endobj
+9 0 obj
+<<
+/Type /FontDescriptor
+/Ascent 753
+/CapHeight 562
+/Descent -246
+/Flags 35
+/FontBBox [-28 -250 628 805]
+/FontName /Courier
+/ItalicAngle 0
+/StemV 51
+/XHeight 426
+/StemH 51
+>>
+endobj
+4 0 obj
+<<
+/Type /Font
+/Subtype /TrueType
+/FirstChar 32
+/LastChar 120
+/Widths [600 0 0 0 0 0 0 0 0 0 0 0 0 0 600 0 
+600 600 600 600 0 0 0 600 600 0 600 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 600 0 0 
+0 0 600 600 0 0 0 0 0 0 0 0 0 0 0 0 
+0 600 0 0 600 600 0 0 0 0 0 0 0 0 600 600 
+600 0 0 0 600 0 0 0 600 ]
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier-Bold
+/FontDescriptor 8 0 R
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/Subtype /TrueType
+/FirstChar 32
+/LastChar 146
+/Widths [600 0 600 600 0 0 0 0 600 600 0 600 600 600 600 600 
+0 600 600 600 600 0 0 0 0 0 600 600 600 600 600 600 
+600 600 0 600 600 600 600 0 600 600 600 0 600 600 600 600 
+600 0 600 600 600 0 600 600 600 600 0 0 0 0 0 600 
+0 600 600 600 600 600 600 600 600 600 600 600 600 600 600 600 
+600 600 600 600 600 600 600 600 600 600 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 600 ]
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier
+/FontDescriptor 9 0 R
+>>
+endobj
+1 0 obj
+<<
+/Type /Page
+/Parent 7 0 R
+/Resources 3 0 R
+/Contents 2 0 R
+>>
+endobj
+10 0 obj
+<<
+/S /D
+>>
+endobj
+11 0 obj
+<<
+/Nums [0 10 0 R ]
+>>
+endobj
+7 0 obj
+<<
+/Type /Pages
+/Kids [1 0 R]
+/Count 1
+/MediaBox [0 0 612 792]
+>>
+endobj
+12 0 obj
+<<
+/CreationDate (D:20100927222834-07'00')
+/ModDate (D:20100927222834-07'00')
+/Producer (Apple pstopdf)
+>>
+endobj
+13 0 obj
+<<
+/Type /Catalog
+/Pages 7 0 R
+/PageLabels 11 0 R
+>>
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000005110 00000 n 
+0000000016 00000 n 
+0000003554 00000 n 
+0000004191 00000 n 
+0000004578 00000 n 
+0000003660 00000 n 
+0000005258 00000 n 
+0000003800 00000 n 
+0000004001 00000 n 
+0000005190 00000 n 
+0000005218 00000 n 
+0000005339 00000 n 
+0000005462 00000 n 
+trailer
+<<
+/Size 14
+/Root 13 0 R
+/Info 12 0 R
+/ID [<f1ab93f2e7dd203aadbe077eb97ab03e><f1ab93f2e7dd203aadbe077eb97ab03e>]
+>>
+startxref
+5531
+%%EOF
