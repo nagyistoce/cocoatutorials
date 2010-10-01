@@ -1,0 +1,391 @@
+%PDF-1.3
+%‚„œ”
+2 0 obj
+<<
+/Length 3162
+>>
+stream
+BT
+/TT2 1 Tf
+10 0 0 10 43 756.3333 Tm
+0 g
+/GS1 gs
+0 Tc
+0 Tw
+[(ReadMe.txt)-4500(Sun Sep 19 17:49:33 2010)-4500(1)]TJ
+/TT4 1 Tf
+0 -1.6333 TD
+(ReadMe.txt for Tutorial/console)Tj
+0 -1.1 TD
+(-------------------------------)Tj
+0 -2.2 TD
+(+ -------------------------------+)Tj
+0 -1.1 TD
+(| This is work in Progress       |)Tj
+T*
+(+ -------------------------------+)Tj
+0 -2.2 TD
+(I havenít had time yet to write a tutorial about this matter.  However I know that Andr)Tj
+0 -1.1 TD
+(e is working on a Framework and I think heíll find the information in this tutorial use)Tj
+T*
+(ful.)Tj
+0 -2.2 TD
+(TODO:)Tj
+0 -1.1 TD
+(More and better documentation!)Tj
+0 -2.2 TD
+(Tutorial)Tj
+0 -1.1 TD
+(--------)Tj
+0 -2.2 TD
+(There are many ways in MacOSX to link applications and library code together.)Tj
+T*
+(In this application \(console\), I use the following methods:)Tj
+T*
+(1\) direct compilation and linking)Tj
+0 -1.1 TD
+(2\) linking to a static library)Tj
+T*
+(3\) linking to a dynamlic library)Tj
+T*
+(4\) linking to a framework)Tj
+0 -2.2 TD
+(Linking types 1 and 2 exist on every system.)Tj
+T*
+(Linking type 1 is almost trivial.  You compile all the code \(both for the application a)Tj
+0 -1.1 TD
+(nd the library code, and link it\).  So in this case, you compile console.cpp and mylib.)Tj
+T*
+(cpp and they are linked to form console \(an executable\).)Tj
+0 -2.2 TD
+(----)Tj
+T*
+(Linking type 2 is very link type 1.  However you build a library \(by compiling mylib.cp)Tj
+0 -1.1 TD
+(p\).  All the compiled members of the library are collected into an ar file \(an ancestor)Tj
+T*
+( of todays tar\) and called libmylib.lib.  When you compile the main program \(console.cp)Tj
+T*
+(p\), you link mylib.lib \(with the linker command -lmylib\).  The linker searches the ar/l)Tj
+T*
+(ib \(libmylib.lib\) to complete the linking.)Tj
+0 -2.2 TD
+(The file created when the library is created \(libmylib.lib\) is called a static library.)Tj
+0 -1.1 TD
+(  When a static library is linked the main program, it is fixed in the executable.  Thi)Tj
+T*
+(s has two consequences:)Tj
+0 -2.2 TD
+(a\) You canít change the library without relinking the whole program.)Tj
+0 -1.1 TD
+(b\) You donít have to be concerned about how the program finds the library at run-time \()Tj
+T*
+(no DLL hell\).)Tj
+0 -2.2 TD
+(Reasons for building a static library are:)Tj
+0 -1.1 TD
+(  i\) Code reuse across projects )Tj
+T*
+(     \(one compilation of a library can be used by many other applications\).)Tj
+T*
+( ii\) You donít need to distribute source code for the library)Tj
+T*
+(     \(although you will have to distribute the library .h file\))Tj
+T*
+(iii\) Library users require the library .h file to compile.)Tj
+0 -2.2 TD
+(----)Tj
+T*
+(Linking type 3 is available on most operating systems.  Windows calls the dynamic libra)Tj
+0 -1.1 TD
+(ry a DLL, Linus calls it a Shared Object \(.so\) and MacOS-X calls it a dylib.  Conceptua)Tj
+T*
+(lly they are identical.)Tj
+0 -2.2 TD
+(This is very different from linking type 2.  In this form of linking, a stub is linked )Tj
+0 -1.1 TD
+(with your main program.  At run-time, the system searches for the dynamic library and u)Tj
+T*
+(pdates the stub to call into the dynamic library.)Tj
+ET
+endstream
+endobj
+3 0 obj
+<<
+/ProcSet [/PDF /Text ]
+/Font <<
+/TT2 4 0 R
+/TT4 5 0 R
+>>
+/ExtGState <<
+/GS1 6 0 R
+>>
+>>
+endobj
+9 0 obj
+<<
+/Length 2826
+>>
+stream
+BT
+/TT2 1 Tf
+10 0 0 10 43 756.3333 Tm
+0 g
+/GS1 gs
+0 Tc
+0 Tw
+[(ReadMe.txt)-4500(Sun Sep 19 17:49:33 2010)-4500(2)]TJ
+/TT4 1 Tf
+0 -1.6333 TD
+(This reverses a\) and b\) above as follows:)Tj
+0 -2.2 TD
+(a\) You CAN the library without relinking the whole program.)Tj
+0 -1.1 TD
+(b\) You have to be concerned about how the program finds the library at run-time \(DLL he)Tj
+T*
+(ll\).)Tj
+0 -2.2 TD
+(Linking type 4 is MacOS-X centric.  A Framework is a Bundle that contains a dynamic lib)Tj
+0 -1.1 TD
+(rary.  The Framework is a bundle which can hold other resources include graphics, prope)Tj
+T*
+(rty lists, other executables - almost anything really.  A Framework is a directory in t)Tj
+T*
+(he File System.)Tj
+0 -2.2 TD
+(I donít know that there anything very special about Framework linking.  It amounts to t)Tj
+0 -1.1 TD
+(he same thing as linking type 3.  However it is both MacOS-X Centric and convenient.  T)Tj
+T*
+(he Framework is a container for resources you wish to guarantee to be part of the Frame)Tj
+T*
+(work \(for example the library header file\).)Tj
+0 -2.2 TD
+(-------------------------------------------------------)Tj
+T*
+(Essential Commands to understand when working with libraries and build engineering task)Tj
+0 -1.1 TD
+(s:)Tj
+0 -2.2 TD
+(nm -g executable           dump the symbols of the executable)Tj
+0 -1.1 TD
+(otool -L executable        dump the link table of an executable)Tj
+T*
+(install_name_tool          manage the install name table of an executable)Tj
+T*
+(lipo                       manage the architectures of an executable)Tj
+T*
+(xcodebuild                 process .xcodeproj files from the command line)Tj
+0 -2.2 TD
+(The dynamic loader \(man dyld\) responds to various environment strings which will help y)Tj
+0 -1.1 TD
+(ou debug problems with dynamic linking.)Tj
+0 -2.2 TD
+(Once more, I donít have time at the moment to explain why you have to learn about this )Tj
+0 -1.1 TD
+(stuff.  Iíll try to find time tomorrow to document my knowledge about these commands.)Tj
+0 -2.2 TD
+(Scripts)Tj
+0 -1.1 TD
+(-------)Tj
+0 -2.2 TD
+(Iíve included 3 scripts which I hope youíll find useful and interesting.)Tj
+T*
+(buildAll.sh Rebuilds the whole project)Tj
+0 -1.1 TD
+(            It also lists the properties of the libraries \(using ls, lipo and otool\))Tj
+T*
+(            It also run every variant of the console command-line tool.)Tj
+0 -2.2 TD
+(Other scripts \(for use by Robin\).)Tj
+0 -1.1 TD
+(manual.sh   Generates the documentation \(console.pdf\) for this project \(from ReadMe.txt)Tj
+T*
+(\))Tj
+T*
+(            This depends on a2ps \(I donít know if thatís available on all Macís\))Tj
+T*
+(publish.sh  Publishes this project on clanmills.com \(useful only on my machine of cours)Tj
+T*
+(e\))Tj
+0 -3.3 TD
+(Robin Mills)Tj
+0 -1.1 TD
+(robin@clamills.com)Tj
+T*
+(http://clanmills.com)Tj
+T*
+(2010-09-19 17:42:01PDT)Tj
+ET
+endstream
+endobj
+10 0 obj
+<<
+/ProcSet [/PDF /Text ]
+/Font <<
+/TT2 4 0 R
+/TT4 5 0 R
+>>
+/ExtGState <<
+/GS1 6 0 R
+>>
+>>
+endobj
+6 0 obj
+<<
+/Type /ExtGState
+/SA false
+/SM 0.02
+/OP false
+/op false
+/OPM 1
+/BG2 /Default
+/UCR2 /Default
+/HT /Default
+/TR2 /Default
+>>
+endobj
+11 0 obj
+<<
+/Type /FontDescriptor
+/Ascent 753
+/CapHeight 562
+/Descent -246
+/Flags 262179
+/FontBBox [-113 -250 749 801]
+/FontName /Courier-Bold
+/ItalicAngle 0
+/StemV 133
+/XHeight 439
+/StemH 84
+>>
+endobj
+12 0 obj
+<<
+/Type /FontDescriptor
+/Ascent 753
+/CapHeight 562
+/Descent -246
+/Flags 35
+/FontBBox [-28 -250 628 805]
+/FontName /Courier
+/ItalicAngle 0
+/StemV 51
+/XHeight 426
+/StemH 51
+>>
+endobj
+4 0 obj
+<<
+/Type /Font
+/Subtype /TrueType
+/FirstChar 32
+/LastChar 120
+/Widths [600 0 0 0 0 0 0 0 0 0 0 0 0 0 600 0 
+600 600 600 600 600 0 0 600 0 600 600 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 600 0 0 
+0 0 600 600 0 0 0 0 0 0 0 0 0 0 0 0 
+0 600 0 0 600 600 0 0 0 0 0 0 0 0 600 0 
+600 0 0 0 600 600 0 0 600 ]
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier-Bold
+/FontDescriptor 11 0 R
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/Subtype /TrueType
+/FirstChar 32
+/LastChar 146
+/Widths [600 600 0 0 0 0 0 0 600 600 0 600 600 600 600 600 
+600 600 600 600 600 0 0 600 0 600 600 0 0 0 0 0 
+600 600 600 600 600 600 600 600 600 600 0 0 600 600 600 600 
+600 0 600 600 600 0 0 600 600 600 0 0 0 0 0 600 
+0 600 600 600 600 600 600 600 600 600 600 600 600 600 600 600 
+600 600 600 600 600 600 600 600 600 600 0 0 600 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 600 ]
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier
+/FontDescriptor 12 0 R
+>>
+endobj
+1 0 obj
+<<
+/Type /Page
+/Parent 7 0 R
+/Resources 3 0 R
+/Contents 2 0 R
+>>
+endobj
+8 0 obj
+<<
+/Type /Page
+/Parent 7 0 R
+/Resources 10 0 R
+/Contents 9 0 R
+>>
+endobj
+13 0 obj
+<<
+/S /D
+>>
+endobj
+14 0 obj
+<<
+/Nums [0 13 0 R ]
+>>
+endobj
+7 0 obj
+<<
+/Type /Pages
+/Kids [1 0 R 8 0 R]
+/Count 2
+/MediaBox [0 0 612 792]
+>>
+endobj
+15 0 obj
+<<
+/CreationDate (D:20100927222732-07'00')
+/ModDate (D:20100927222732-07'00')
+/Producer (Apple pstopdf)
+>>
+endobj
+16 0 obj
+<<
+/Type /Catalog
+/Pages 7 0 R
+/PageLabels 14 0 R
+>>
+endobj
+xref
+0 17
+0000000000 65535 f 
+0000007773 00000 n 
+0000000016 00000 n 
+0000003230 00000 n 
+0000006854 00000 n 
+0000007244 00000 n 
+0000006321 00000 n 
+0000008002 00000 n 
+0000007853 00000 n 
+0000003336 00000 n 
+0000006214 00000 n 
+0000006461 00000 n 
+0000006663 00000 n 
+0000007934 00000 n 
+0000007962 00000 n 
+0000008089 00000 n 
+0000008212 00000 n 
+trailer
+<<
+/Size 17
+/Root 16 0 R
+/Info 15 0 R
+/ID [<7914fb587dd009448662743abe98347d><7914fb587dd009448662743abe98347d>]
+>>
+startxref
+8281
+%%EOF
