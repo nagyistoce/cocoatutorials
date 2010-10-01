@@ -1,0 +1,263 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		A1EA6CD911990C1300EA19B6 /* All */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A1EA6CDC11990C3100EA19B6 /* Build configuration list for PBXAggregateTarget "All" */;
+			buildPhases = (
+				A14972EB119B970400B24D2F /* ShellScript */,
+			);
+			dependencies = (
+				A1EA6D1311990D6E00EA19B6 /* PBXTargetDependency */,
+				A1EA6D2D11990DEF00EA19B6 /* PBXTargetDependency */,
+				A1EA6D1511990D7500EA19B6 /* PBXTargetDependency */,
+			);
+			name = All;
+			productName = Untitled;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		A1EA6D0111990D1E00EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6CF711990D1E00EA19B6 /* LoginItemsAETest.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E4FBB75008E03B2C00B1AAFA;
+			remoteInfo = LoginItemsAETest;
+		};
+		A1EA6D1011990D4400EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6D0511990D4400EA19B6 /* WhatIsMyIPprefs.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D202CF80486D31800D8A456;
+			remoteInfo = WhatIsMyIPprefs;
+		};
+		A1EA6D1211990D6E00EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6D0511990D4400EA19B6 /* WhatIsMyIPprefs.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D202CE80486D31800D8A456;
+			remoteInfo = WhatIsMyIPprefs;
+		};
+		A1EA6D1411990D7500EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6CF711990D1E00EA19B6 /* LoginItemsAETest.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D0C4E890486CD37000505A6;
+			remoteInfo = LoginItemsAETest;
+		};
+		A1EA6D2A11990DCC00EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6D2011990DCC00EA19B6 /* WhatIsMyIP.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = WhatIsMyIP;
+		};
+		A1EA6D2C11990DEF00EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6D2011990DCC00EA19B6 /* WhatIsMyIP.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = WhatIsMyIP;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A1EA6CF711990D1E00EA19B6 /* LoginItemsAETest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LoginItemsAETest.xcodeproj; path = ../LoginItemsAE/LoginItemsAETest/LoginItemsAETest.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A1EA6D0511990D4400EA19B6 /* WhatIsMyIPprefs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhatIsMyIPprefs.xcodeproj; path = ../WhatIsMyIPprefs/WhatIsMyIPprefs.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A1EA6D2011990DCC00EA19B6 /* WhatIsMyIP.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhatIsMyIP.xcodeproj; path = ../WhatIsMyIP/WhatIsMyIP.xcodeproj; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A144CDE3118DFB5C003AECF7 = {
+			isa = PBXGroup;
+			children = (
+				A1EA6D2011990DCC00EA19B6 /* WhatIsMyIP.xcodeproj */,
+				A1EA6D0511990D4400EA19B6 /* WhatIsMyIPprefs.xcodeproj */,
+				A1EA6CF711990D1E00EA19B6 /* LoginItemsAETest.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+		A1EA6CF811990D1E00EA19B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA6D0211990D1E00EA19B6 /* LoginItemsAETest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1EA6D0611990D4400EA19B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA6D1111990D4400EA19B6 /* WhatIsMyIPprefs.prefPane */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1EA6D2111990DCC00EA19B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA6D2B11990DCC00EA19B6 /* WhatIsMyIP.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		A144CDE5118DFB5C003AECF7 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A144CDE8118DFB5C003AECF7 /* Build configuration list for PBXProject "MenuBar" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 0;
+			mainGroup = A144CDE3118DFB5C003AECF7;
+			productRefGroup = A144CDE3118DFB5C003AECF7;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A1EA6CF811990D1E00EA19B6 /* Products */;
+					ProjectRef = A1EA6CF711990D1E00EA19B6 /* LoginItemsAETest.xcodeproj */;
+				},
+				{
+					ProductGroup = A1EA6D2111990DCC00EA19B6 /* Products */;
+					ProjectRef = A1EA6D2011990DCC00EA19B6 /* WhatIsMyIP.xcodeproj */;
+				},
+				{
+					ProductGroup = A1EA6D0611990D4400EA19B6 /* Products */;
+					ProjectRef = A1EA6D0511990D4400EA19B6 /* WhatIsMyIPprefs.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				A1EA6CD911990C1300EA19B6 /* All */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A1EA6D0211990D1E00EA19B6 /* LoginItemsAETest.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LoginItemsAETest.app;
+			remoteRef = A1EA6D0111990D1E00EA19B6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1EA6D1111990D4400EA19B6 /* WhatIsMyIPprefs.prefPane */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = WhatIsMyIPprefs.prefPane;
+			remoteRef = A1EA6D1011990D4400EA19B6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1EA6D2B11990DCC00EA19B6 /* WhatIsMyIP.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = WhatIsMyIP.app;
+			remoteRef = A1EA6D2A11990DCC00EA19B6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A14972EB119B970400B24D2F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "#!/bin/bash\n\nconfiguration=Development\nif [ $BUILD_STYLE == 'Release' ]; then\n\tconfiguration=Deployment\nfi\npushd \"${BUILD_DIR}/../../LoginItemsAE/LoginItemsAETest\"\n\txcodebuild -project LoginItemsAETest.xcodeproj -configuration $configuration\npopd\n\n# copy the target\nT=WhatIsMyIP.app\nTS=\"${BUILD_DIR}/../../WhatIsMyIP/build/${BUILD_STYLE}/${T}\"\nTD=\"${BUILD_DIR}/../../${T}\" \nif [ -e \"$TD\" ]; then\n\trm -rf \"${TD}\"\nfi\nditto \"${TS}\" \"${TD}\"\n\n \n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A1EA6D1311990D6E00EA19B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = WhatIsMyIPprefs;
+			targetProxy = A1EA6D1211990D6E00EA19B6 /* PBXContainerItemProxy */;
+		};
+		A1EA6D1511990D7500EA19B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LoginItemsAETest;
+			targetProxy = A1EA6D1411990D7500EA19B6 /* PBXContainerItemProxy */;
+		};
+		A1EA6D2D11990DEF00EA19B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = WhatIsMyIP;
+			targetProxy = A1EA6D2C11990DEF00EA19B6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A144CDE6118DFB5C003AECF7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				SDKROOT = macosx10.5;
+			};
+			name = Debug;
+		};
+		A144CDE7118DFB5C003AECF7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				SDKROOT = macosx10.5;
+			};
+			name = Release;
+		};
+		A1EA6CDA11990C1300EA19B6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Untitled;
+			};
+			name = Debug;
+		};
+		A1EA6CDB11990C1300EA19B6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Untitled;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A144CDE8118DFB5C003AECF7 /* Build configuration list for PBXProject "MenuBar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A144CDE6118DFB5C003AECF7 /* Debug */,
+				A144CDE7118DFB5C003AECF7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1EA6CDC11990C3100EA19B6 /* Build configuration list for PBXAggregateTarget "All" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1EA6CDA11990C1300EA19B6 /* Debug */,
+				A1EA6CDB11990C1300EA19B6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A144CDE5118DFB5C003AECF7 /* Project object */;
+}

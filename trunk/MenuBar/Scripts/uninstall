@@ -1,0 +1,15 @@
+#!/bin/bash
+
+killall "System Preferences"
+killall "WhatIsMyIP"
+
+a=~/Applications/WhatIsMyIP.app
+p=~/Library/PreferencePanes/WhatIsMyIPprefs.prefPane
+w=`ls ~/Library/Preferences/What*.*`
+
+for f in $a $p $w; do
+	if [ -e $f ]; then 
+		echo rm -rf $f
+		rm -rf $f
+	fi
+done

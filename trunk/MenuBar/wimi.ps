@@ -1,0 +1,34 @@
+%!PS
+
+% (*)  {==} 100 string /Font resourceforall
+
+
+<< /PageSize [ 250 200] >> setpagedevice
+
+ gsave
+   1.0 0.0 0.0 setrgbcolor
+   0 0 10000 10000 rectfill
+ grestore
+
+/CooperBlackStd 200 selectfont
+
+12 setlinewidth
+1 setlinecap
+20 20 moveto 
+
+
+%% fill it
+gsave
+  1.00 1.00 1.0 setrgbcolor
+  (W) true charpath fill
+grestore
+
+%% stroke it
+gsave
+  0.0 0.0 1.0 setrgbcolor
+  (W) false charpath stroke
+grestore
+
+showpage
+
+%% eof

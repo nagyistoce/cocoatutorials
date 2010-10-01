@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+##
+# where to look
+app=WhatIsMyIP
+home=~/Applications/$app.app
+near=../$app.app
+
+
+##
+# are we running?
+running=`ps ax | grep $app | egrep -v -e grep | wc | cut -c1-8`
+echo $running
+if [ $running == 0 ]; then
+	if [ -e $home ]; then
+		open $home 
+	else 
+		open $near
+	fi
+else
+	echo $app is already running
+fi
+
+# That's all Folks!
+##

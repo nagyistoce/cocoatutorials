@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Diary' target in the 'Diary' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
