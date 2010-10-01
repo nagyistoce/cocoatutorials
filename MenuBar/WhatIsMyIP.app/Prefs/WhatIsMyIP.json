@@ -1,0 +1,52 @@
+{
+	"RunInDock"		: 0,
+	"RunAtLogin"	: 1,
+	"Name"			: "WhatIsMyIP" ,
+	"Quit"			: "Quit",
+	"About"			: "About...",
+	"Menu" :
+	[	
+		{	"Title"		: "Local IP"
+		,	"Cmd"		: "for i in 0 1 2 3 4 ;do ifconfig en$i ; done | grep \"inet \" | cut -f2 -d\" \""
+		,	"Readonly"	: 1
+		}
+	,	
+		{	"Title"		: "Remote IP"
+		,	"Cmd"		: "curl --silent http://whatismyip.com/automation/n09230945.asp"
+		,	"Readonly"	: 1
+		}
+	,	{	"Separator" : 1 }
+	,	
+		{	"Title"		: "Website ..."
+		,	"Cmd"		: "open http://whatismyip.com/"
+		,	"Show"		: 0
+		,	"Readonly"	: 1
+		}
+	,	
+		{	"Title"		: "Forum ..."
+		,	"Cmd"		: "open http://forum.whatismyip.com/"
+		,	"Show"		: 0
+		,	"Readonly"	: 1
+		}
+	,	
+		{	"Title"		: "clanmills.com ..."
+		,	"Cmd"		: "open http://clanmills.com"
+		,	"Show"		: 0
+		,	"Readonly"	: 1
+		}
+	,	{	"Separator" : 1 }
+	,	
+		{	"Title"		: "WhatIsMyIP Prefs ..."
+		,	"Cmd"		: "open \"${HOME}/Library/PreferencePanes/WhatIsMyIPprefs.prefPane/\""
+		,	"Show"		: 0
+		,	"Readonly"	: 1
+		}
+	,	
+		{	"Title"		: "Restore Factory Defaults"
+		,	"Cmd"		: "cp \"${HOME}/Library/Preferences/WhatIsMyIP.defaults\" \"${HOME}/Library/Preferences/WhatIsMyIP.json\"" 
+		,	"Show"		: 0
+		,	"Readonly"	: 1
+		}
+	]
+}
+

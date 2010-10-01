@@ -1,0 +1,528 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		A1EA6CE911990C8900EA19B6 /* Untitled */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A1EA6CF211990C9900EA19B6 /* Build configuration list for PBXAggregateTarget "Untitled" */;
+			buildPhases = (
+			);
+			dependencies = (
+			);
+			name = Untitled;
+			productName = Untitled;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		8D202CEA0486D31800D8A456 /* WhatIsMyIPprefs_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCFA20370C41700C91783 /* WhatIsMyIPprefs_Prefix.pch */; };
+		8D202CEB0486D31800D8A456 /* WhatIsMyIPprefsPref.h in Headers */ = {isa = PBXBuildFile; fileRef = F506C03C013D9D7901CA16C8 /* WhatIsMyIPprefsPref.h */; };
+		8D202CED0486D31800D8A456 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		8D202CEF0486D31800D8A456 /* What Is My IP Prefs.xib in Resources */ = {isa = PBXBuildFile; fileRef = F506C042013D9D8C01CA16C8 /* What Is My IP Prefs.xib */; };
+		8D202CF10486D31800D8A456 /* WhatIsMyIPprefsPref.mm in Sources */ = {isa = PBXBuildFile; fileRef = F506C03D013D9D7901CA16C8 /* WhatIsMyIPprefsPref.mm */; };
+		8D202CF30486D31800D8A456 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
+		8D202CF40486D31800D8A456 /* PreferencePanes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F506C035013D953901CA16C8 /* PreferencePanes.framework */; };
+		A11CFCF2119255CD00E23701 /* PrefDocController.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFCF0119255CD00E23701 /* PrefDocController.h */; };
+		A11CFCF3119255CD00E23701 /* PrefDocController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A11CFCF1119255CD00E23701 /* PrefDocController.mm */; };
+		A11CFD1C1192585700E23701 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD0F1192585700E23701 /* JSON.h */; };
+		A11CFD1D1192585700E23701 /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD101192585700E23701 /* NSObject+SBJSON.h */; };
+		A11CFD1E1192585700E23701 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CFD111192585700E23701 /* NSObject+SBJSON.m */; };
+		A11CFD1F1192585700E23701 /* NSString+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD121192585700E23701 /* NSString+SBJSON.h */; };
+		A11CFD201192585700E23701 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CFD131192585700E23701 /* NSString+SBJSON.m */; };
+		A11CFD211192585700E23701 /* SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD141192585700E23701 /* SBJSON.h */; };
+		A11CFD221192585700E23701 /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CFD151192585700E23701 /* SBJSON.m */; };
+		A11CFD231192585700E23701 /* SBJsonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD161192585700E23701 /* SBJsonBase.h */; };
+		A11CFD241192585700E23701 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CFD171192585700E23701 /* SBJsonBase.m */; };
+		A11CFD251192585700E23701 /* SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD181192585700E23701 /* SBJsonParser.h */; };
+		A11CFD261192585700E23701 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CFD191192585700E23701 /* SBJsonParser.m */; };
+		A11CFD271192585700E23701 /* SBJsonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A11CFD1A1192585700E23701 /* SBJsonWriter.h */; };
+		A11CFD281192585700E23701 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CFD1B1192585700E23701 /* SBJsonWriter.m */; };
+		A1638F8411970A3600578CC3 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = A1638F8311970A3600578CC3 /* common.h */; };
+		A18148BD1190DC0E008E206D /* MenuItem.h in Headers */ = {isa = PBXBuildFile; fileRef = A18148BB1190DC0E008E206D /* MenuItem.h */; };
+		A18148BE1190DC0E008E206D /* MenuItem.mm in Sources */ = {isa = PBXBuildFile; fileRef = A18148BC1190DC0E008E206D /* MenuItem.mm */; };
+		A184C459119477C70042049A /* alerts.h in Headers */ = {isa = PBXBuildFile; fileRef = A184C457119477C70042049A /* alerts.h */; };
+		A184C45A119477C70042049A /* alerts.mm in Sources */ = {isa = PBXBuildFile; fileRef = A184C458119477C70042049A /* alerts.mm */; };
+		A1AE7D25118C9DA800E11460 /* wimi.icns in Resources */ = {isa = PBXBuildFile; fileRef = A1AE7D24118C9DA800E11460 /* wimi.icns */; };
+		A1AE7D2A118C9EA600E11460 /* wimipref.gif in Resources */ = {isa = PBXBuildFile; fileRef = A1AE7D29118C9EA600E11460 /* wimipref.gif */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A1EA6E4011991B0D00EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6E3C11991B0D00EA19B6 /* WhatIsMyIP.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = WhatIsMyIP;
+		};
+		A1EA6E4611991B1800EA19B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1EA6E4211991B1800EA19B6 /* LoginItemsAETest.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E4FBB75008E03B2C00B1AAFA;
+			remoteInfo = LoginItemsAETest;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		32DBCFA20370C41700C91783 /* WhatIsMyIPprefs_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WhatIsMyIPprefs_Prefix.pch; sourceTree = "<group>"; };
+		8D202CF70486D31800D8A456 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D202CF80486D31800D8A456 /* WhatIsMyIPprefs.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WhatIsMyIPprefs.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11CFCF0119255CD00E23701 /* PrefDocController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefDocController.h; sourceTree = "<group>"; };
+		A11CFCF1119255CD00E23701 /* PrefDocController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PrefDocController.mm; sourceTree = "<group>"; };
+		A11CFD0F1192585700E23701 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = ../WhatIsMyIP/JSON/JSON.h; sourceTree = SOURCE_ROOT; };
+		A11CFD101192585700E23701 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+SBJSON.h"; path = "../WhatIsMyIP/JSON/NSObject+SBJSON.h"; sourceTree = SOURCE_ROOT; };
+		A11CFD111192585700E23701 /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+SBJSON.m"; path = "../WhatIsMyIP/JSON/NSObject+SBJSON.m"; sourceTree = SOURCE_ROOT; };
+		A11CFD121192585700E23701 /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+SBJSON.h"; path = "../WhatIsMyIP/JSON/NSString+SBJSON.h"; sourceTree = SOURCE_ROOT; };
+		A11CFD131192585700E23701 /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+SBJSON.m"; path = "../WhatIsMyIP/JSON/NSString+SBJSON.m"; sourceTree = SOURCE_ROOT; };
+		A11CFD141192585700E23701 /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJSON.h; path = ../WhatIsMyIP/JSON/SBJSON.h; sourceTree = SOURCE_ROOT; };
+		A11CFD151192585700E23701 /* SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJSON.m; path = ../WhatIsMyIP/JSON/SBJSON.m; sourceTree = SOURCE_ROOT; };
+		A11CFD161192585700E23701 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonBase.h; path = ../WhatIsMyIP/JSON/SBJsonBase.h; sourceTree = SOURCE_ROOT; };
+		A11CFD171192585700E23701 /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonBase.m; path = ../WhatIsMyIP/JSON/SBJsonBase.m; sourceTree = SOURCE_ROOT; };
+		A11CFD181192585700E23701 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonParser.h; path = ../WhatIsMyIP/JSON/SBJsonParser.h; sourceTree = SOURCE_ROOT; };
+		A11CFD191192585700E23701 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonParser.m; path = ../WhatIsMyIP/JSON/SBJsonParser.m; sourceTree = SOURCE_ROOT; };
+		A11CFD1A1192585700E23701 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonWriter.h; path = ../WhatIsMyIP/JSON/SBJsonWriter.h; sourceTree = SOURCE_ROOT; };
+		A11CFD1B1192585700E23701 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonWriter.m; path = ../WhatIsMyIP/JSON/SBJsonWriter.m; sourceTree = SOURCE_ROOT; };
+		A1638F8311970A3600578CC3 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../SharedCode/common.h; sourceTree = SOURCE_ROOT; };
+		A18148BB1190DC0E008E206D /* MenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuItem.h; sourceTree = "<group>"; };
+		A18148BC1190DC0E008E206D /* MenuItem.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MenuItem.mm; sourceTree = "<group>"; };
+		A184C457119477C70042049A /* alerts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alerts.h; path = ../SharedCode/alerts.h; sourceTree = SOURCE_ROOT; };
+		A184C458119477C70042049A /* alerts.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = alerts.mm; path = ../SharedCode/alerts.mm; sourceTree = SOURCE_ROOT; };
+		A1AE7D24118C9DA800E11460 /* wimi.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = wimi.icns; sourceTree = "<group>"; };
+		A1AE7D29118C9EA600E11460 /* wimipref.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = wimipref.gif; sourceTree = "<group>"; };
+		A1EA6E3C11991B0D00EA19B6 /* WhatIsMyIP.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WhatIsMyIP.xcodeproj; path = ../WhatIsMyIP/WhatIsMyIP.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A1EA6E4211991B1800EA19B6 /* LoginItemsAETest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LoginItemsAETest.xcodeproj; path = ../LoginItemsAE/LoginItemsAETest/LoginItemsAETest.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A1EA6E4811991B2100EA19B6 /* MenuBar.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MenuBar.xcodeproj; path = ../MenuBar/MenuBar.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F506C035013D953901CA16C8 /* PreferencePanes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PreferencePanes.framework; path = /System/Library/Frameworks/PreferencePanes.framework; sourceTree = "<absolute>"; };
+		F506C03C013D9D7901CA16C8 /* WhatIsMyIPprefsPref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WhatIsMyIPprefsPref.h; sourceTree = "<group>"; };
+		F506C03D013D9D7901CA16C8 /* WhatIsMyIPprefsPref.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WhatIsMyIPprefsPref.mm; sourceTree = "<group>"; };
+		F506C043013D9D8C01CA16C8 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = "English.lproj/What Is My IP Prefs.xib"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D202CF20486D31800D8A456 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D202CF30486D31800D8A456 /* Cocoa.framework in Frameworks */,
+				8D202CF40486D31800D8A456 /* PreferencePanes.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* WhatIsMyIPprefs */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA6E4811991B2100EA19B6 /* MenuBar.xcodeproj */,
+				A1EA6E4211991B1800EA19B6 /* LoginItemsAETest.xcodeproj */,
+				A1EA6E3C11991B0D00EA19B6 /* WhatIsMyIP.xcodeproj */,
+				A11CFD09119257F500E23701 /* JSON */,
+				08FB77AFFE84173DC02AAC07 /* Classes */,
+				32DBCFA10370C40200C91783 /* Other Sources */,
+				089C167CFE841241C02AAC07 /* Resources */,
+				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
+				19C28FB8FE9D52D311CA2CBB /* Products */,
+			);
+			name = WhatIsMyIPprefs;
+			sourceTree = "<group>";
+		};
+		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
+				1058C7AEFEA557BF11CA2CBB /* Other Frameworks */,
+			);
+			name = "Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C167CFE841241C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A1AE7D29118C9EA600E11460 /* wimipref.gif */,
+				A1AE7D24118C9DA800E11460 /* wimi.icns */,
+				8D202CF70486D31800D8A456 /* Info.plist */,
+				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+				F506C042013D9D8C01CA16C8 /* What Is My IP Prefs.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		08FB77AFFE84173DC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				A184C457119477C70042049A /* alerts.h */,
+				A184C458119477C70042049A /* alerts.mm */,
+				A1638F8311970A3600578CC3 /* common.h */,
+				A11CFCF0119255CD00E23701 /* PrefDocController.h */,
+				A11CFCF1119255CD00E23701 /* PrefDocController.mm */,
+				A18148BB1190DC0E008E206D /* MenuItem.h */,
+				A18148BC1190DC0E008E206D /* MenuItem.mm */,
+				F506C03C013D9D7901CA16C8 /* WhatIsMyIPprefsPref.h */,
+				F506C03D013D9D7901CA16C8 /* WhatIsMyIPprefsPref.mm */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */,
+				F506C035013D953901CA16C8 /* PreferencePanes.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7AEFEA557BF11CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				089C1672FE841209C02AAC07 /* Foundation.framework */,
+				089C167FFE841241C02AAC07 /* AppKit.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FB8FE9D52D311CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D202CF80486D31800D8A456 /* WhatIsMyIPprefs.prefPane */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		32DBCFA10370C40200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32DBCFA20370C41700C91783 /* WhatIsMyIPprefs_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		A11CFD09119257F500E23701 /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				A11CFD0F1192585700E23701 /* JSON.h */,
+				A11CFD101192585700E23701 /* NSObject+SBJSON.h */,
+				A11CFD111192585700E23701 /* NSObject+SBJSON.m */,
+				A11CFD121192585700E23701 /* NSString+SBJSON.h */,
+				A11CFD131192585700E23701 /* NSString+SBJSON.m */,
+				A11CFD141192585700E23701 /* SBJSON.h */,
+				A11CFD151192585700E23701 /* SBJSON.m */,
+				A11CFD161192585700E23701 /* SBJsonBase.h */,
+				A11CFD171192585700E23701 /* SBJsonBase.m */,
+				A11CFD181192585700E23701 /* SBJsonParser.h */,
+				A11CFD191192585700E23701 /* SBJsonParser.m */,
+				A11CFD1A1192585700E23701 /* SBJsonWriter.h */,
+				A11CFD1B1192585700E23701 /* SBJsonWriter.m */,
+			);
+			name = JSON;
+			path = ../WhatIsMyIP/JSON;
+			sourceTree = SOURCE_ROOT;
+		};
+		A1EA6E3D11991B0D00EA19B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA6E4111991B0D00EA19B6 /* WhatIsMyIP.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1EA6E4311991B1800EA19B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA6E4711991B1800EA19B6 /* LoginItemsAETest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1EA6E4911991B2100EA19B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8D202CE90486D31800D8A456 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D202CEA0486D31800D8A456 /* WhatIsMyIPprefs_Prefix.pch in Headers */,
+				8D202CEB0486D31800D8A456 /* WhatIsMyIPprefsPref.h in Headers */,
+				A18148BD1190DC0E008E206D /* MenuItem.h in Headers */,
+				A11CFCF2119255CD00E23701 /* PrefDocController.h in Headers */,
+				A11CFD1C1192585700E23701 /* JSON.h in Headers */,
+				A11CFD1D1192585700E23701 /* NSObject+SBJSON.h in Headers */,
+				A11CFD1F1192585700E23701 /* NSString+SBJSON.h in Headers */,
+				A11CFD211192585700E23701 /* SBJSON.h in Headers */,
+				A11CFD231192585700E23701 /* SBJsonBase.h in Headers */,
+				A11CFD251192585700E23701 /* SBJsonParser.h in Headers */,
+				A11CFD271192585700E23701 /* SBJsonWriter.h in Headers */,
+				A184C459119477C70042049A /* alerts.h in Headers */,
+				A1638F8411970A3600578CC3 /* common.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8D202CE80486D31800D8A456 /* WhatIsMyIPprefs */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DBD214808BA80EA00186707 /* Build configuration list for PBXNativeTarget "WhatIsMyIPprefs" */;
+			buildPhases = (
+				8D202CE90486D31800D8A456 /* Headers */,
+				8D202CEC0486D31800D8A456 /* Resources */,
+				8D202CF00486D31800D8A456 /* Sources */,
+				8D202CF20486D31800D8A456 /* Frameworks */,
+				8D202CF50486D31800D8A456 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WhatIsMyIPprefs;
+			productInstallPath = "$(HOME)/Library/PreferencePanes";
+			productName = WhatIsMyIPprefs;
+			productReference = 8D202CF80486D31800D8A456 /* WhatIsMyIPprefs.prefPane */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DBD214C08BA80EA00186707 /* Build configuration list for PBXProject "WhatIsMyIPprefs" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 089C166AFE841209C02AAC07 /* WhatIsMyIPprefs */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A1EA6E4311991B1800EA19B6 /* Products */;
+					ProjectRef = A1EA6E4211991B1800EA19B6 /* LoginItemsAETest.xcodeproj */;
+				},
+				{
+					ProductGroup = A1EA6E4911991B2100EA19B6 /* Products */;
+					ProjectRef = A1EA6E4811991B2100EA19B6 /* MenuBar.xcodeproj */;
+				},
+				{
+					ProductGroup = A1EA6E3D11991B0D00EA19B6 /* Products */;
+					ProjectRef = A1EA6E3C11991B0D00EA19B6 /* WhatIsMyIP.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				8D202CE80486D31800D8A456 /* WhatIsMyIPprefs */,
+				A1EA6CE911990C8900EA19B6 /* Untitled */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A1EA6E4111991B0D00EA19B6 /* WhatIsMyIP.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = WhatIsMyIP.app;
+			remoteRef = A1EA6E4011991B0D00EA19B6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A1EA6E4711991B1800EA19B6 /* LoginItemsAETest.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LoginItemsAETest.app;
+			remoteRef = A1EA6E4611991B1800EA19B6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D202CEC0486D31800D8A456 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D202CED0486D31800D8A456 /* InfoPlist.strings in Resources */,
+				8D202CEF0486D31800D8A456 /* What Is My IP Prefs.xib in Resources */,
+				A1AE7D25118C9DA800E11460 /* wimi.icns in Resources */,
+				A1AE7D2A118C9EA600E11460 /* wimipref.gif in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		8D202CF50486D31800D8A456 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D202CF00486D31800D8A456 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D202CF10486D31800D8A456 /* WhatIsMyIPprefsPref.mm in Sources */,
+				A18148BE1190DC0E008E206D /* MenuItem.mm in Sources */,
+				A11CFCF3119255CD00E23701 /* PrefDocController.mm in Sources */,
+				A11CFD1E1192585700E23701 /* NSObject+SBJSON.m in Sources */,
+				A11CFD201192585700E23701 /* NSString+SBJSON.m in Sources */,
+				A11CFD221192585700E23701 /* SBJSON.m in Sources */,
+				A11CFD241192585700E23701 /* SBJsonBase.m in Sources */,
+				A11CFD261192585700E23701 /* SBJsonParser.m in Sources */,
+				A11CFD281192585700E23701 /* SBJsonWriter.m in Sources */,
+				A184C45A119477C70042049A /* alerts.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C167EFE841241C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F506C042013D9D8C01CA16C8 /* What Is My IP Prefs.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F506C043013D9D8C01CA16C8 /* English */,
+			);
+			name = "What Is My IP Prefs.xib";
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1DBD214908BA80EA00186707 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = WhatIsMyIPprefs_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				PRODUCT_NAME = WhatIsMyIPprefs;
+				WRAPPER_EXTENSION = prefPane;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		1DBD214A08BA80EA00186707 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = WhatIsMyIPprefs_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				PRODUCT_NAME = WhatIsMyIPprefs;
+				WRAPPER_EXTENSION = prefPane;
+			};
+			name = Release;
+		};
+		1DBD214D08BA80EA00186707 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 ppc x86_64";
+			};
+			name = Debug;
+		};
+		1DBD214E08BA80EA00186707 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 ppc x86_64";
+			};
+			name = Release;
+		};
+		A1EA6CEA11990C8900EA19B6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Untitled;
+			};
+			name = Debug;
+		};
+		A1EA6CEB11990C8900EA19B6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Untitled;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DBD214808BA80EA00186707 /* Build configuration list for PBXNativeTarget "WhatIsMyIPprefs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DBD214908BA80EA00186707 /* Debug */,
+				1DBD214A08BA80EA00186707 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DBD214C08BA80EA00186707 /* Build configuration list for PBXProject "WhatIsMyIPprefs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DBD214D08BA80EA00186707 /* Debug */,
+				1DBD214E08BA80EA00186707 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1EA6CF211990C9900EA19B6 /* Build configuration list for PBXAggregateTarget "Untitled" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1EA6CEA11990C8900EA19B6 /* Debug */,
+				A1EA6CEB11990C8900EA19B6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}

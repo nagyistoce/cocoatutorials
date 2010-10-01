@@ -1,0 +1,7 @@
+#/bin/bash
+cd ..
+find . -name build -type d -depth -exec rm -rf {} ";"
+if [ -e WhatIsMyIP.app ]; then
+	rm -rf WhatIsMyIP.app
+fi
+

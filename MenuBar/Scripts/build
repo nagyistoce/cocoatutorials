@@ -1,0 +1,34 @@
+#!/bin/bash
+cd ..
+
+pushd LoginItemsAE > /dev/null
+for project in LoginItemsAETest ;do
+  pushd $project > /dev/null
+  for config in Deployment ;do
+    echo ----- ; echo $PWD ; echo ----- 
+    xcodebuild -project LoginItemsAETest.xcodeproj -alltargets -configuration $config -sdk macosx10.5
+  done
+  popd > /dev/null
+done
+popd > /dev/null
+
+xcodebuild -project MenuBar/MenuBar.xcodeproj -configuration Release
+
+#for project in WhatIsMyIPprefs WhatIsMyIP ;do
+#for project in MenuBar ;do
+#  pushd $project > /dev/null
+#  for config in Debug Release ;do
+#    echo ----- ; echo $PWD ; echo ----- 
+#    xcodebuild -project $project.xcodeproj -alltargets -configuration $config -sdk macosx10.5
+#  done
+#  popd > /dev/null
+#done
+
+
+app=WhatIsMyIP.app
+
+if [ -e $app ]; then
+	rm -rf $app
+fi
+ditto WhatIsMyIP/build/Release/$app $app
+

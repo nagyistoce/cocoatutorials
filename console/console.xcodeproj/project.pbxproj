@@ -1,0 +1,798 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10C864D11AB876A0028A851 /* myLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10C864811AB871F0028A851 /* myLib.cpp */; };
+		A173FB651245CCC40066B7A8 /* myLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10C864811AB871F0028A851 /* myLib.cpp */; };
+		A173FB971245CE880066B7A8 /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AB94FC1216658C00C6FE8E /* console.cpp */; };
+		A173FB981245CE9A0066B7A8 /* myframework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A173FB601245CCA90066B7A8 /* myframework.framework */; };
+		A173FC181245D53B0066B7A8 /* myframework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A173FB601245CCA90066B7A8 /* myframework.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A1AB947912165C9400C6FE8E /* myLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10C864811AB871F0028A851 /* myLib.cpp */; };
+		A1AB94BA1216608B00C6FE8E /* myDYLIB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AB947312165C3C00C6FE8E /* myDYLIB.dylib */; };
+		A1AB94F9121664F500C6FE8E /* myLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10C864811AB871F0028A851 /* myLib.cpp */; };
+		A1AB94FD1216658C00C6FE8E /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AB94FC1216658C00C6FE8E /* console.cpp */; };
+		A1AB94FE1216658C00C6FE8E /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AB94FC1216658C00C6FE8E /* console.cpp */; };
+		A1AB94FF1216658C00C6FE8E /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AB94FC1216658C00C6FE8E /* console.cpp */; };
+		A1AB95B8121667A400C6FE8E /* libmylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A10C864411AB87000028A851 /* libmylib.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10C866A11AB88240028A851 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10C864311AB87000028A851;
+			remoteInfo = mylib;
+		};
+		A173FBB21245CF200066B7A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A173FB911245CE740066B7A8;
+			remoteInfo = "console+framework";
+		};
+		A173FC1C1245D56C0066B7A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A173FB5F1245CCA90066B7A8;
+			remoteInfo = myframework;
+		};
+		A173FC271245D5A60066B7A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A173FB5F1245CCA90066B7A8;
+			remoteInfo = myframework;
+		};
+		A1AB94B81216608200C6FE8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1AB947212165C3C00C6FE8E;
+			remoteInfo = myDYLIB;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76F9E0486AA7600D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		8DD76FA10486AA7600D96B5E /* console+library */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "console+library"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10C864411AB87000028A851 /* libmylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10C864711AB871F0028A851 /* myLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myLib.h; sourceTree = "<group>"; };
+		A10C864811AB871F0028A851 /* myLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = myLib.cpp; sourceTree = "<group>"; };
+		A173FB601245CCA90066B7A8 /* myframework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = myframework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A173FB611245CCA90066B7A8 /* myframework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "myframework-Info.plist"; sourceTree = "<group>"; };
+		A173FB921245CE740066B7A8 /* console+framework */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "console+framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1AB947312165C3C00C6FE8E /* myDYLIB.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = myDYLIB.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1AB94B31216605F00C6FE8E /* console+dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "console+dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1AB94F2121664AC00C6FE8E /* console */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = console; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1AB94FC1216658C00C6FE8E /* console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = console.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76F9B0486AA7600D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AB95B8121667A400C6FE8E /* libmylib.a in Frameworks */,
+				A173FC181245D53B0066B7A8 /* myframework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10C864211AB87000028A851 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A173FB5E1245CCA90066B7A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A173FB901245CE740066B7A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A173FB981245CE9A0066B7A8 /* myframework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1AB947112165C3C00C6FE8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1AB94B11216605F00C6FE8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AB94BA1216608B00C6FE8E /* myDYLIB.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1AB94F0121664AC00C6FE8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* console+library */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				A173FB611245CCA90066B7A8 /* myframework-Info.plist */,
+			);
+			name = "console+library";
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				A10C864711AB871F0028A851 /* myLib.h */,
+				A10C864811AB871F0028A851 /* myLib.cpp */,
+				A1AB94FC1216658C00C6FE8E /* console.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FA10486AA7600D96B5E /* console+library */,
+				A10C864411AB87000028A851 /* libmylib.a */,
+				A1AB947312165C3C00C6FE8E /* myDYLIB.dylib */,
+				A1AB94B31216605F00C6FE8E /* console+dylib */,
+				A1AB94F2121664AC00C6FE8E /* console */,
+				A173FB601245CCA90066B7A8 /* myframework.framework */,
+				A173FB921245CE740066B7A8 /* console+framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A10C864011AB87000028A851 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8DD76F960486AA7600D96B5E /* console+library */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "console+library" */;
+			buildPhases = (
+				8DD76F990486AA7600D96B5E /* Sources */,
+				8DD76F9B0486AA7600D96B5E /* Frameworks */,
+				8DD76F9E0486AA7600D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A173FC1D1245D56C0066B7A8 /* PBXTargetDependency */,
+				A173FBB31245CF200066B7A8 /* PBXTargetDependency */,
+				A10C866B11AB88240028A851 /* PBXTargetDependency */,
+			);
+			name = "console+library";
+			productInstallPath = "$(HOME)/bin";
+			productName = "console+library";
+			productReference = 8DD76FA10486AA7600D96B5E /* console+library */;
+			productType = "com.apple.product-type.tool";
+		};
+		A10C864311AB87000028A851 /* mylib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10C864A11AB87200028A851 /* Build configuration list for PBXNativeTarget "mylib" */;
+			buildPhases = (
+				A10C864011AB87000028A851 /* Headers */,
+				A10C864111AB87000028A851 /* Sources */,
+				A10C864211AB87000028A851 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mylib;
+			productName = mylib;
+			productReference = A10C864411AB87000028A851 /* libmylib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		A173FB5F1245CCA90066B7A8 /* myframework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A173FB641245CCAA0066B7A8 /* Build configuration list for PBXNativeTarget "myframework" */;
+			buildPhases = (
+				A173FB5D1245CCA90066B7A8 /* Sources */,
+				A173FB5E1245CCA90066B7A8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = myframework;
+			productName = myframework;
+			productReference = A173FB601245CCA90066B7A8 /* myframework.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A173FB911245CE740066B7A8 /* console+framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A173FB9E1245CEAA0066B7A8 /* Build configuration list for PBXNativeTarget "console+framework" */;
+			buildPhases = (
+				A173FB8F1245CE740066B7A8 /* Sources */,
+				A173FB901245CE740066B7A8 /* Frameworks */,
+				A173FBDA1245D0D80066B7A8 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A173FC281245D5A60066B7A8 /* PBXTargetDependency */,
+			);
+			name = "console+framework";
+			productName = "console+framework";
+			productReference = A173FB921245CE740066B7A8 /* console+framework */;
+			productType = "com.apple.product-type.tool";
+		};
+		A1AB947212165C3C00C6FE8E /* myDYLIB */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1AB947612165C5B00C6FE8E /* Build configuration list for PBXNativeTarget "myDYLIB" */;
+			buildPhases = (
+				A1AB947012165C3C00C6FE8E /* Sources */,
+				A1AB947112165C3C00C6FE8E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = myDYLIB;
+			productName = myDYLIB;
+			productReference = A1AB947312165C3C00C6FE8E /* myDYLIB.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		A1AB94B21216605F00C6FE8E /* console+dylib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1AB94B71216607E00C6FE8E /* Build configuration list for PBXNativeTarget "console+dylib" */;
+			buildPhases = (
+				A1AB94B01216605F00C6FE8E /* Sources */,
+				A1AB94B11216605F00C6FE8E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A1AB94B91216608200C6FE8E /* PBXTargetDependency */,
+			);
+			name = "console+dylib";
+			productName = "console+dylib";
+			productReference = A1AB94B31216605F00C6FE8E /* console+dylib */;
+			productType = "com.apple.product-type.tool";
+		};
+		A1AB94F1121664AC00C6FE8E /* console */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1AB94F7121664E100C6FE8E /* Build configuration list for PBXNativeTarget "console" */;
+			buildPhases = (
+				A1AB94EF121664AC00C6FE8E /* Sources */,
+				A1AB94F0121664AC00C6FE8E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = console;
+			productName = console;
+			productReference = A1AB94F2121664AC00C6FE8E /* console */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "console" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* console+library */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1AB94F1121664AC00C6FE8E /* console */,
+				A1AB94B21216605F00C6FE8E /* console+dylib */,
+				A173FB911245CE740066B7A8 /* console+framework */,
+				8DD76F960486AA7600D96B5E /* console+library */,
+				A10C864311AB87000028A851 /* mylib */,
+				A1AB947212165C3C00C6FE8E /* myDYLIB */,
+				A173FB5F1245CCA90066B7A8 /* myframework */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A173FBDA1245D0D80066B7A8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change \"${HOME}/Library/Frameworks/myframework.framework/Versions/A/myframework\" @executable_path/myframework.framework/Versions/A/myframework \"$TARGET_BUILD_DIR/$TARGET_NAME\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76F990486AA7600D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AB94FF1216658C00C6FE8E /* console.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10C864111AB87000028A851 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10C864D11AB876A0028A851 /* myLib.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A173FB5D1245CCA90066B7A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A173FB651245CCC40066B7A8 /* myLib.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A173FB8F1245CE740066B7A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A173FB971245CE880066B7A8 /* console.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1AB947012165C3C00C6FE8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AB947912165C9400C6FE8E /* myLib.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1AB94B01216605F00C6FE8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AB94FE1216658C00C6FE8E /* console.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1AB94EF121664AC00C6FE8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AB94F9121664F500C6FE8E /* myLib.cpp in Sources */,
+				A1AB94FD1216658C00C6FE8E /* console.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A10C866B11AB88240028A851 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10C864311AB87000028A851 /* mylib */;
+			targetProxy = A10C866A11AB88240028A851 /* PBXContainerItemProxy */;
+		};
+		A173FBB31245CF200066B7A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A173FB911245CE740066B7A8 /* console+framework */;
+			targetProxy = A173FBB21245CF200066B7A8 /* PBXContainerItemProxy */;
+		};
+		A173FC1D1245D56C0066B7A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A173FB5F1245CCA90066B7A8 /* myframework */;
+			targetProxy = A173FC1C1245D56C0066B7A8 /* PBXContainerItemProxy */;
+		};
+		A173FC281245D5A60066B7A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A173FB5F1245CCA90066B7A8 /* myframework */;
+			targetProxy = A173FC271245D5A60066B7A8 /* PBXContainerItemProxy */;
+		};
+		A1AB94B91216608200C6FE8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1AB947212165C3C00C6FE8E /* myDYLIB */;
+			targetProxy = A1AB94B81216608200C6FE8E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB927508733DD40010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "console+library_Prefix.pch";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-L.",
+					"-lmylib",
+				);
+				PRODUCT_NAME = "console+library";
+			};
+			name = Debug;
+		};
+		1DEB927608733DD40010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-L.",
+					"-lmylib",
+				);
+				PRODUCT_NAME = "console+library";
+			};
+			name = Release;
+		};
+		1DEB927908733DD40010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB927A08733DD40010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		A10C864511AB87010028A851 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = mylib;
+			};
+			name = Debug;
+		};
+		A10C864611AB87010028A851 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				PREBINDING = NO;
+				PRODUCT_NAME = mylib;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A173FB621245CCAA0066B7A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "myframework-Info.plist";
+				INSTALL_PATH = .;
+				PREBINDING = NO;
+				PRODUCT_NAME = myframework;
+			};
+			name = Debug;
+		};
+		A173FB631245CCAA0066B7A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "myframework-Info.plist";
+				INSTALL_PATH = .;
+				PREBINDING = NO;
+				PRODUCT_NAME = myframework;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A173FB941245CE740066B7A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = "console+framework";
+			};
+			name = Debug;
+		};
+		A173FB951245CE740066B7A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = "console+framework";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A1AB947412165C3D00C6FE8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				LD_DYLIB_INSTALL_NAME = "@executable_path/$(EXECUTABLE_PATH)";
+				PREBINDING = NO;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = myDYLIB;
+			};
+			name = Debug;
+		};
+		A1AB947512165C3D00C6FE8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INSTALL_PATH = /usr/local/lib;
+				LD_DYLIB_INSTALL_NAME = "@executable_path/$(EXECUTABLE_PATH)";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = myDYLIB;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A1AB94B51216606000C6FE8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = "console+dylib";
+			};
+			name = Debug;
+		};
+		A1AB94B61216606000C6FE8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = "console+dylib";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A1AB94F4121664AD00C6FE8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = console;
+			};
+			name = Debug;
+		};
+		A1AB94F5121664AD00C6FE8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SYMBOL_SEPARATION = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = console;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "console+library" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB927508733DD40010E9CD /* Debug */,
+				1DEB927608733DD40010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "console" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB927908733DD40010E9CD /* Debug */,
+				1DEB927A08733DD40010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10C864A11AB87200028A851 /* Build configuration list for PBXNativeTarget "mylib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10C864511AB87010028A851 /* Debug */,
+				A10C864611AB87010028A851 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A173FB641245CCAA0066B7A8 /* Build configuration list for PBXNativeTarget "myframework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A173FB621245CCAA0066B7A8 /* Debug */,
+				A173FB631245CCAA0066B7A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A173FB9E1245CEAA0066B7A8 /* Build configuration list for PBXNativeTarget "console+framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A173FB941245CE740066B7A8 /* Debug */,
+				A173FB951245CE740066B7A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1AB947612165C5B00C6FE8E /* Build configuration list for PBXNativeTarget "myDYLIB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1AB947412165C3D00C6FE8E /* Debug */,
+				A1AB947512165C3D00C6FE8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1AB94B71216607E00C6FE8E /* Build configuration list for PBXNativeTarget "console+dylib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1AB94B51216606000C6FE8E /* Debug */,
+				A1AB94B61216606000C6FE8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1AB94F7121664E100C6FE8E /* Build configuration list for PBXNativeTarget "console" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1AB94F4121664AD00C6FE8E /* Debug */,
+				A1AB94F5121664AD00C6FE8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

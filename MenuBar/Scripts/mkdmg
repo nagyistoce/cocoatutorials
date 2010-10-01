@@ -1,0 +1,53 @@
+#!/bin/bash
+
+cd ..
+##
+# define some local variables
+tmp=~/temp/WhatIsMyIP
+wap=WhatIsMyIP.app
+dbl="Double Click to Install.app"
+src=$tmp/src
+dmg=~/clanmills/files/WhatIsMyIP
+pdf=~/clanmills/files/MenuBar.pdf
+
+##
+# cleanup from last time
+if [ -e $tmp ]; then
+	rm -rf $tmp
+fi
+mkdir $tmp
+
+##
+# remove dead build stuff
+find . -name build -depth -type d -exec rm -rf {} ";"
+
+##
+# populate the top level directory
+ditto $wap               "$tmp/$dbl"
+cp    Scripts/ReadMe.txt  $tmp
+cp    $pdf                $tmp
+
+
+##
+# cp the src
+mkdir $src
+for dir in MenuBar WhatIsMyIP WhatIsMyIPprefs SharedCode LoginItemsAE Scripts; do
+	ditto $dir $src/$dir
+done
+
+##
+# make a dmg of this stuff
+if [ -e $dmg.dmg ]; then
+	rm -rf $dmg.dmg
+fi
+
+#hdiutil create -megabytes 30 -fs HFS+J -volname WIMI $p1
+#cp Scripts/VolumeIcon.icns $tmp/.VolumeIcon.icns
+#SetFile -a C $tmp
+hdiutil create -srcfolder $tmp -fs HFS+ -volname WhatIsMyIP $dmg
+
+ls -alt $dmg.dmg
+open $dmg.dmg
+
+# that's all folks
+##
