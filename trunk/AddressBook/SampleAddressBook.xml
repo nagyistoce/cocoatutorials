@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "file:///System/Library/DTDs/CoreData.dtd">
+
+<database>
+    <databaseInfo>
+        <version>134481920</version>
+        <UUID>A25057FC-FF34-47D0-9E93-09B75A70F2D3</UUID>
+        <nextObjectID>103</nextObjectID>
+        <metadata>
+            <plist version="1.0">
+                <dict>
+                    <key>NSPersistenceFrameworkVersion</key>
+                    <integer>251</integer>
+                    <key>NSStoreModelVersionHashes</key>
+                    <dict>
+                        <key>Person</key>
+                        <data>
+		SS3lUWj18CO1dXucGRnRFkKcLSS/Vu0nMKzXzjmW7Yo=
+		</data>
+                    </dict>
+                    <key>NSStoreModelVersionHashesVersion</key>
+                    <integer>3</integer>
+                    <key>NSStoreModelVersionIdentifiers</key>
+                    <array></array>
+                </dict>
+            </plist>
+        </metadata>
+    </databaseInfo>
+    <object type="PERSON" id="z102">
+        <attribute name="phonenumber" type="string">555-555-1234</attribute>
+        <attribute name="notes" type="string">Aspiring Cocoa developer.</attribute>
+        <attribute name="name" type="string">André Renault</attribute>
+        <attribute name="birthday" type="date">284054400.00000000000000000000</attribute>
+        <attribute name="address" type="string">555 Anystreet, Anytown, AN</attribute>
+    </object>
+    <object type="PERSON" id="z103">
+        <attribute name="phonenumber" type="string">888-888-4321</attribute>
+        <attribute name="notes" type="string">A mentor of myself.</attribute>
+        <attribute name="name" type="string">Robin Mills</attribute>
+        <attribute name="birthday" type="date">-322736400.00000000000000000000</attribute>
+        <attribute name="address" type="string">765 Anystreet, Anytown, AN</attribute>
+    </object>
+</database>
