@@ -52,6 +52,7 @@
 
 // rmills: modified from hellogl
 // rmills: modifying the code in Qt Creator on Windows
+// rmills: modifying the code in Qt Creator on Linux
 
 //! [0]
 GLWidget::GLWidget(QWidget *parent)
