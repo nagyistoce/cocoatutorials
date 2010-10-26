@@ -50,7 +50,8 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-// rmills: modified from hellogl 
+// rmills: modified from hellogl
+// rmills: modifying the code in Qt Creator on Windows
 
 //! [0]
 GLWidget::GLWidget(QWidget *parent)
