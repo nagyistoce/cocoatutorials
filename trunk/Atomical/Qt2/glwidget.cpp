@@ -50,6 +50,8 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
+// rmills: modified from hellogl 
+
 //! [0]
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
