@@ -79,7 +79,7 @@ Window::Window()
     ySlider->setValue(345 * 16);
     zSlider->setValue(0 * 16);
     zoomSlider->setValue(1000);
-    setWindowTitle(tr("Hello GL"));
+    setWindowTitle(tr("Qt2 - by Fabio and Robin"));
 }
 //! [1]
 
