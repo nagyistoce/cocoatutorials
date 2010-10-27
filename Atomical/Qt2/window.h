@@ -67,6 +67,7 @@ private:
     QSlider*    ySlider;
     QSlider*    zSlider;
     QSlider*    zoomSlider;
+
 };
 //! [0]
 
