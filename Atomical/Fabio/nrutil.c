@@ -1,13 +1,11 @@
-#if defined(__STDC__) || defined(ANSI) || defined(NRANSI) /* ANSI */
 
+#if defined(__STDC__) || defined(ANSI) || defined(NRANSI) /* ANSI */
+#include "../Qt2/Qt2.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #define NR_END 1
 #define FREE_ARG char*
-
-#define UNUSED(c)c=c
-#pragma unused(c)
 
 void nrerror(char error_text[])
 /* Numerical Recipes standard error handler */
