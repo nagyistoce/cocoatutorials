@@ -11,8 +11,7 @@
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#include "../Qt2/Qt2.h"
 
 #ifndef TRUE
 #define TRUE 1
