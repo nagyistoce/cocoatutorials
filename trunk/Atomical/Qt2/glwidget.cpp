@@ -45,19 +45,18 @@
 
 #include "glwidget.h"
 #include "qtlogo.h"
+#include "../Fabio/OGLView.h"
 
 #ifndef GL_MULTISAMPLE
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-// rmills: modified from hellogl
-// rmills: modifying the code in Qt Creator on Windows
-// rmills: modifying the code in Qt Creator on Linux.  And submitting from Qt Creator.
-
-//! [0]
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
+#if VIEW
+    view = 0;
+#endif
     logo = 0;
     xRot = 0;
     yRot = 0;
@@ -67,28 +66,20 @@ GLWidget::GLWidget(QWidget *parent)
     qtGreen = QColor::fromCmykF(0.40, 0.0, 1.0, 0.0);
     qtPurple = QColor::fromCmykF(0.39, 0.39, 0.0, 0.0);
 }
-//! [0]
 
-//! [1]
 GLWidget::~GLWidget()
 {
 }
-//! [1]
 
-//! [2]
 QSize GLWidget::minimumSizeHint() const
 {
     return QSize(50, 50);
 }
-//! [2]
 
-//! [3]
 QSize GLWidget::sizeHint() const
-//! [3] //! [4]
 {
     return QSize(400, 400);
 }
-//! [4]
 
 static void qNormalizeAngle(int &angle)
 {
@@ -98,7 +89,6 @@ static void qNormalizeAngle(int &angle)
         angle -= 360 * 16;
 }
 
-//! [5]zoomChanged
 void GLWidget::setXRotation(int angle)
 {
     qNormalizeAngle(angle);
@@ -108,7 +98,6 @@ void GLWidget::setXRotation(int angle)
         updateGL();
     }
 }
-//! [5]
 
 void GLWidget::setYRotation(int angle)
 {
@@ -132,7 +121,7 @@ void GLWidget::setZRotation(int angle)
 
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-    if ( event->modifiers() & Qt::ControlModifier )
+    if ( event->modifiers() & Qt::ShiftModifier )
         zRot-=event->delta();
     else
         zoom-=event->delta();
@@ -149,11 +138,13 @@ void GLWidget::setZoom(int z)
     }
 }
 
-//! [6]
 void GLWidget::initializeGL()
 {
     qglClearColor(qtPurple.dark());
-
+#if VIEW
+    view = new OGLView(this,64) ;
+    view->setColor(qtGreen.dark());
+#endif
     logo = new QtLogo(this, 64);
     logo->setColor(qtGreen.dark());
 
@@ -166,10 +157,7 @@ void GLWidget::initializeGL()
     static GLfloat lightPosition[4] = { 0.5, 5.0, 7.0, 1.0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 }
-//! [6]
 
-
-//! [7]
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -178,19 +166,18 @@ void GLWidget::paintGL()
     glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
     glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
     glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
-    float f = zoom;
-          f/= 1000.0;
-    if  ( f < 0.01  ) f = 0.01;
-    if  ( f > 100.0) f = 100.0;
-    glScalef(f,f,f);
+    double d = zoom ;
+    d = qMin(qMax(0.01,d/1000.0),100.0);
+    glScaled(d,d,d);
+#if VIEW
+    view->draw();
+#endif
     logo->draw();
 }
-//! [7]
 
-//! [8]
 void GLWidget::resizeGL(int width, int height)
 {
-    int side = qMin(width, height);
+    int side = qMax(width, height);
     glViewport((width - side) / 2, (height - side) / 2, side, side);
 
     glMatrixMode(GL_PROJECTION);
@@ -202,16 +189,12 @@ void GLWidget::resizeGL(int width, int height)
 #endif
     glMatrixMode(GL_MODELVIEW);
 }
-//! [8]
 
-//! [9]
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
 }
-//! [9]
 
-//! [10]
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->x() - lastPos.x();
@@ -226,4 +209,3 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     }
     lastPos = event->pos();
 }
-//! [10]

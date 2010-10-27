@@ -43,7 +43,11 @@
 
 #include <QGLWidget>
 
+// forward declarations
+class OGLView;
 class QtLogo;
+
+#define VIEW 0
 
 //! [0]
 class GLWidget : public QGLWidget
@@ -84,7 +88,10 @@ protected:
 
 //! [3]
 private:
-    QtLogo *logo;
+#if VIEW
+    OGLView*    view ;
+#endif
+    QtLogo*     logo;
     int xRot;
     int yRot;
     int zRot;

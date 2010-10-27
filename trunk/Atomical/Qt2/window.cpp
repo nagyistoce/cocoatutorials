@@ -66,10 +66,13 @@ Window::Window()
 //! [1]
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->addWidget(glWidget);
-    mainLayout->addWidget(xSlider);
-    mainLayout->addWidget(ySlider);
-    mainLayout->addWidget(zSlider);
-    mainLayout->addWidget(zoomSlider);
+    QVBoxLayout* sliders = new QVBoxLayout;
+
+    sliders->addWidget(xSlider);
+    sliders->addWidget(ySlider);
+    sliders->addWidget(zSlider);
+    sliders->addWidget(zoomSlider);
+    mainLayout->addLayout(sliders);
     setLayout(mainLayout);
 
     xSlider->setValue(15 * 16);
