@@ -10,8 +10,9 @@
 #include "globals.h"
 #include "ranmar.h"
 #include "jacobi.h"
-#include  <math.h>
-#include  <stdlib.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 /**************** Physics *******************/
 
