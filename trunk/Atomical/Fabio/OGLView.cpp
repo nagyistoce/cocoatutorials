@@ -11,6 +11,7 @@
 #include "ranmar.h"
 #include "jacobi.h"
 #include  <math.h>
+#include  <stdlib.h>
 
 /**************** Physics *******************/
 

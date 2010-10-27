@@ -9,8 +9,8 @@
 #ifndef OGLView_H
 #define OGLView_H
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#include "../Qt2/Qt2.h"
+
 #include <QObject>
 #include <QColor>
 
