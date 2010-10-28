@@ -458,7 +458,9 @@ void Initialize(void){
         if(mode==3) resc=pow((double)Np,1./3.);
 
         for(i=0;i<Np;i++){
+            int I = i ; // store i - ranmar is clobbering him on Windows!
                 ranmar(tmp, 4);
+            i = I;
                 rr=tmp[1]*resc;
                 th=tmp[2]*2*M_PI;
                 ph=tmp[3]*M_PI;
