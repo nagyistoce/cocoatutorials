@@ -13,23 +13,27 @@
 
 #include <QObject>
 #include <QColor>
-
-//class Patch;
-//struct Geometry;
+#include <QApplication>
+#include <Qtimer>
+#include <QtOpenGL>
 
 class OGLView : public QObject
 {
+    Q_OBJECT
 public:
-    OGLView(QObject *parent, int d = 64, qreal s = 1.0);
+    OGLView(QObject *parent);
     ~OGLView();
     void setColor(QColor c);
     void draw() const;
     void drawRect() const;
-private:
-    void buildGeometry(int d, qreal s);
+public slots:
+    void oneShot();
+    void oneShot2();
 
-//    QList<Patch *> parts;
-//    Geometry *geom;
+private:
+    QTimer *timer;
+    QTimer *timer2;
+
 };
 
 #endif // OGLView_H

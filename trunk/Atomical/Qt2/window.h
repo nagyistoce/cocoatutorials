@@ -60,7 +60,7 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    QSlider*    createSlider();
+    QSlider*    createSlider(int min=0,int max=360*16);
 
     GLWidget*   glWidget;
     QSlider*    xSlider;
