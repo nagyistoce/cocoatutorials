@@ -14,7 +14,7 @@
 #include <QObject>
 #include <QColor>
 #include <QApplication>
-#include <Qtimer>
+#include <Qt/qtimer.h>
 #include <QtOpenGL>
 
 class OGLView : public QObject
