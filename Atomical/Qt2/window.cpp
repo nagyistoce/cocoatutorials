@@ -38,12 +38,32 @@
 **
 ****************************************************************************/
 
+//
+//  window.cpp
+//  This file is part of Atomical
+//
+//  Atomical is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  Atomical is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Atomical.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Written by Fabio Cavaliere, Genova, Italy
+//  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
+//
+
 #include <QtGui>
 
 #include "glwidget.h"
 #include "window.h"
 
-//! [0]
 Window::Window()
 {
     glWidget = new GLWidget;
@@ -61,9 +81,7 @@ Window::Window()
     connect(glWidget    , SIGNAL(zRotationChanged(int)),  zSlider, SLOT(setValue(int)));
     connect(zoomSlider  , SIGNAL(valueChanged(int))    , glWidget, SLOT(setZoom(int)));
     connect(glWidget    , SIGNAL(zoomChanged(int))     , zoomSlider, SLOT(setValue(int)));
-//! [0]
 
-//! [1]
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->addWidget(glWidget);
     QVBoxLayout* sliders = new QVBoxLayout;
@@ -81,9 +99,7 @@ Window::Window()
     zoomSlider->setValue(500);
     setWindowTitle(tr("Qt2 - by Fabio and Robin"));
 }
-//! [1]
 
-//! [2]
 QSlider *Window::createSlider(int min/* =0*/,int max/* =360*16*/)
 {
     QSlider *slider = new QSlider(Qt::Vertical);
@@ -94,7 +110,6 @@ QSlider *Window::createSlider(int min/* =0*/,int max/* =360*16*/)
     slider->setTickPosition(QSlider::TicksRight);
     return slider;
 }
-//! [2]
 
 void Window::keyPressEvent(QKeyEvent *e)
 {
@@ -104,3 +119,6 @@ void Window::keyPressEvent(QKeyEvent *e)
     else
         QWidget::keyPressEvent(e);
 }
+
+// That's all Folks!
+////
