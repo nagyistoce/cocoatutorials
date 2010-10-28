@@ -161,6 +161,9 @@ void GLWidget::setZoom(int z)
 
 void GLWidget::updateThis()
 {
+#ifdef __CYGWIN__
+    Sleep(20);
+#endif
     updateGL();
 }
 

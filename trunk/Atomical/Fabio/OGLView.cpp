@@ -31,7 +31,7 @@
 #define random rand
 #define srandom srand
 
-#include "window.h"
+#include "../Qt2/window.h"
 
 /**************** Physics *******************/
 
