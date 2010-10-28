@@ -13,6 +13,11 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#define random rand
+#define srandom srand
+
+#include "window.h"
 
 /**************** Physics *******************/
 
@@ -473,6 +478,7 @@ void Initialize(void){
         verlet=0;
         converged=0;
         is_frozen=0;
+
 #if 0
         if(mode==2) {
                 fog_off();
@@ -482,8 +488,7 @@ void Initialize(void){
 #endif
 }
 
-
-
+/*
 void motion(int x, int y)
 {
 	camYaw += 0.02*(GLfloat)(mx-x);
@@ -503,39 +508,21 @@ void motion(int x, int y)
 	mx = x;
 	my = y;
 }
-
-#if 0
-- (id)initWithFrame:(NSRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-		// Ideally, all run-at-once OpenGL init code could be here I guess
-    }
-    return self;
-}
-#endif
+*/
 
 void OGLView::drawRect(/*NSRect* dirtyRect*/) const
 {
 	int i;
-	float alpha,x0,y0,z0,x1,y1,z1,nrm;
-	GLfloat e,camX,camY,camZ,camRadius=5.0;
-	
+        float alpha;
+//      float x0,y0,z0,x1,y1,z1,nrm;
+//	GLfloat e,camX,camY,camZ,camRadius=5.0;
 //	[[self openGLContext] makeCurrentContext];
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	
-	camRadius=distance;
-	
-	camX = cos(camYaw) * cos(camPitch) * camRadius;
-	camY = sin(camYaw) * cos(camPitch) * camRadius;
-	camZ = sin(camPitch) * camRadius;
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 
+        CPU_rad(xx, yy, zz, Np);
 	GLUquadric *glq;
 	alpha=ALPHAVAL;
 	glq=gluNewQuadric();
-	
+/*
 	if(verlet && !allocated_evals && POV) {
 		nrm=sqrt(vxt[Np-1]*vxt[Np-1]+vyt[Np-1]*vyt[Np-1]+vzt[Np-1]*vzt[Np-1]);
 		if(mode==2) x0=xx_old[Np-1]+1; else x0=xx_old[Np-1]-1.5*vyt[Np-1]/nrm;
@@ -548,12 +535,12 @@ void OGLView::drawRect(/*NSRect* dirtyRect*/) const
 	} else {
 		gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);		
 	}
-
+*/
 	Npin=0;
 		
-	for(i=0;i<Np;i++){
+        for(i=0;i<Np;i++){
 			glPushMatrix();
-			e=(GLfloat)(rad[i]/radius);
+                        GLfloat e=(GLfloat)(rad[i]/radius);
 			if(mode==2 && Np2>0 && separation>0){
 				if(xx_old[i]>0.0){
 					glColor4f(.5+.5*e,0,0,alpha);
@@ -569,7 +556,7 @@ void OGLView::drawRect(/*NSRect* dirtyRect*/) const
 			if(!allocated_evals && verlet && i==Np-1) glColor4f(0,1,0,alpha);
 			
 			glTranslatef(xx_old[i], yy_old[i], zz_old[i]);
-			if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 20, 20); else gluSphere(glq, 0.2, 20, 20);
+                        if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
 			if(rad[i]<=radsp){
 				Npin++;
 			}		
@@ -601,141 +588,68 @@ void OGLView::drawRect(/*NSRect* dirtyRect*/) const
 	*/
 	gluDeleteQuadric(glq);
 	
-//	if(dbuf) {
-//		[[self openGLContext] flushBuffer]; // Double buffering...
-//	} else {
-		glFlush();	// Single buffering...	
-//	}
+        glFlush();	// Single buffering...
 }
 
-#if 0
-- (void) OGLView::mouseDown(NSEvent* theEvent) // trackball
+void OGLView::oneShot()
 {
-	NSPoint location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    if ([theEvent modifierFlags] & NSControlKeyMask) {
-	zmx=(int)location.x;
-	zmy=(int)location.y;
-} else {
-		mx=(int)location.x;
-		my=(int)location.y;
-	}
+    CPU_update(xx_old, yy_old,zz_old, xx, yy, zz, Np);
+    CPU_poscpy(xx_old, yy_old,zz_old, xx, yy, zz, Np);
+    CPU_energy(xx, yy, zz, E, Np);
+    drawRect();
 }
 
-- (void)rightMouseDown:(NSEvent *)theEvent{
-	camYaw=0.0;
-	camPitch=0.0;
+void OGLView::oneShot2(){
+//    CPU_update(xx_old, yy_old,zz_old, xx, yy, zz, Np);
+//    CPU_poscpy(xx_old, yy_old,zz_old, xx, yy, zz, Np);
+//    CPU_energy(xx, yy, zz, E, Np);
+    drawRect();
 }
 
-- (void)mouseDragged:(NSEvent *)theEvent{
-	NSPoint location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-	if ([theEvent modifierFlags] & NSControlKeyMask){
-		if ([theEvent modifierFlags] & NSShiftKeyMask){
-			POV=1;
-		} else {
-			if((int)location.y<zmy){
-				distance+=0.25;
-			} else if((int)location.y>zmy){
-				distance-=0.25;
-				if(distance==0.1) distance=0.1;
-			}
-			zmx=(int)location.x;
-			zmy=(int)location.y;
-		}
-	} else {
-		motion((int)location.x,(int)location.y);		
-	}
-		
-	
-}
-
-- (void)scrollWheel:(NSEvent *)theEvent{
-	float wheelDelta = [theEvent deltaY];
-	if (wheelDelta){
-		if(wheelDelta<0){
-			distance+=0.25;
-		} else {
-			distance-=0.25;
-			if(distance<=0.1) distance=0.1;
-		}
-		
-	}
-}
-#endif
-
-OGLView::OGLView(QObject *parent, int divisions, qreal scale)
+OGLView::OGLView(QObject *parent)
     : QObject(parent)
-    //, geom(NULL) // new Geometry())
 {
+    MaxNp=5001;
     mem_alloc();
+
+    delta2=0.0;
+//    angle=60.0;
+    mode=3;
+    Np=96;
+
+    Np2=0;
+    separation=0.0;
+    PREC=1e-11;
+    //distance=15;
+
+    radsp=0.0;
+    imbalance=1.0;
+
+    srand(time(NULL));
+    rmarin(rand()%31329,rand()%30081);
+
     Initialize();
     // buildGeometry(divisions, scale);
 
-    UNUSED(divisions);
-    UNUSED(scale);
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(oneShot()));
+    timer->start(16);
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(oneShot2()));
+    timer->start(0);
 }
 
 OGLView::~OGLView()
 {
-    // qDeleteAll(parts);
-    // delete geom;
 }
 
 void OGLView::setColor(QColor c)
 {
-#if 0
-    for (int i = 0; i < parts.count(); ++i)
-        qSetColor(parts[i]->faceColor, c);
-#endif
     UNUSED(c);
 }
 
-//! [3]
-void OGLView::buildGeometry(int divisions, qreal scale)
-{
-#if 0
-    qreal cw = cross_width * scale;
-    qreal bt = bar_thickness * scale;
-    qreal ld = logo_depth * scale;
-    qreal th = tee_height *scale;
-
-    RectPrism cross(geom, cw, bt, ld);
-    RectPrism stem(geom, bt, th, ld);
-
-    QVector3D z(0.0, 0.0, 1.0);
-    cross.rotate(45.0, z);
-    stem.rotate(45.0, z);
-
-    qreal stem_downshift = (th + bt) / 2.0;
-    stem.translate(QVector3D(0.0, -stem_downshift, 0.0));
-
-    RectTorus body(geom, 0.20, 0.30, 0.1, divisions);
-
-    parts << stem.parts << cross.parts << body.parts;
-
-    geom->finalize();
-#endif
-    UNUSED(divisions);
-    UNUSED(scale);
-}
-
-
 void OGLView::draw() const
 {
-#if 0
-    geom->loadArrays();
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-
-    for (int i = 0; i < parts.count(); ++i)
-        parts[i]->draw();
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    drawRect();
-#endif
     drawRect();
 }
-
-
-// @end

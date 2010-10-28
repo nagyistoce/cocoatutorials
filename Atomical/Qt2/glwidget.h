@@ -42,12 +42,12 @@
 #define GLWIDGET_H
 
 #include <QGLWidget>
+#include <QTimer>
+#include "window.h"
 
 // forward declarations
 class OGLView;
 class QtLogo;
-
-#define VIEW 0
 
 //! [0]
 class GLWidget : public QGLWidget
@@ -68,6 +68,7 @@ public slots:
     void setYRotation(int angle);
     void setZRotation(int angle);
     void setZoom(int z);
+    void updateThis();
 
 signals:
     void xRotationChanged(int angle);
@@ -78,6 +79,7 @@ signals:
 
 //! [2]
 protected:
+    void fog_on(GLfloat density);
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
@@ -88,10 +90,7 @@ protected:
 
 //! [3]
 private:
-#if VIEW
     OGLView*    view ;
-#endif
-    QtLogo*     logo;
     int xRot;
     int yRot;
     int zRot;
@@ -99,6 +98,8 @@ private:
     QPoint lastPos;
     QColor qtGreen;
     QColor qtPurple;
+    QTimer* timer;
+
 };
 //! [3]
 

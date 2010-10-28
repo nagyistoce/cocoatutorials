@@ -38,11 +38,31 @@
 **
 ****************************************************************************/
 
+
+//
+//  glwidget.cpp
+//  This file is part of Atomical
+//
+//  Atomical is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  Atomical is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Atomical.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Written by Fabio Cavaliere, Genova, Italy
+//  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
+//
+
 #include <QtGui>
 #include <QtOpenGL>
-
 #include <math.h>
-
 #include "glwidget.h"
 #include "qtlogo.h"
 #include "../Fabio/OGLView.h"
@@ -54,10 +74,7 @@
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-#if VIEW
     view = 0;
-#endif
-    logo = 0;
     xRot = 0;
     yRot = 0;
     zRot = 0;
@@ -69,6 +86,7 @@ GLWidget::GLWidget(QWidget *parent)
 
 GLWidget::~GLWidget()
 {
+//    printf("Goodnight GLWidget\n");
 }
 
 QSize GLWidget::minimumSizeHint() const
@@ -78,7 +96,7 @@ QSize GLWidget::minimumSizeHint() const
 
 QSize GLWidget::sizeHint() const
 {
-    return QSize(400, 400);
+    return QSize(750, 750);
 }
 
 static void qNormalizeAngle(int &angle)
@@ -121,16 +139,20 @@ void GLWidget::setZRotation(int angle)
 
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-    if ( event->modifiers() & Qt::ShiftModifier )
-        zRot-=event->delta();
-    else
-        zoom-=event->delta();
+    if ( event->modifiers() & Qt::ShiftModifier ) {
+        float z = zRot - event->delta();
+        setZRotation(z);
+    } else {
+        int z = zoom + (event->delta() < 0 ? 100 : -100) ;
+        setZoom(z);
+    }
+
     updateGL();
 }
 
-
 void GLWidget::setZoom(int z)
 {
+    if ( z < 5 ) z = 5 ;
     if (z != zoom) {
         emit zoomChanged(z);
         zoom=z;
@@ -138,41 +160,110 @@ void GLWidget::setZoom(int z)
     }
 }
 
+void GLWidget::updateThis()
+{
+    updateGL();
+}
+
+void GLWidget::fog_on(GLfloat density)
+{
+        GLfloat fogColor[] = {0.0, 0.0, 0.0, 1.0};
+
+        glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
+
+        glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
+        glFogf (GL_FOG_DENSITY, density); //set the density to thevalue above
+        glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
+        glFogf(GL_FOG_START, 1.0f);
+//	glFogf(GL_FOG_END, 5.0f);
+        glEnable (GL_FOG); //enable the fog
+}
+
 void GLWidget::initializeGL()
 {
-    qglClearColor(qtPurple.dark());
-#if VIEW
-    view = new OGLView(this,64) ;
-    view->setColor(qtGreen.dark());
-#endif
-    logo = new QtLogo(this, 64);
-    logo->setColor(qtGreen.dark());
+//    qglClearColor(qtBlack());
+//  static GLfloat clearcolor[4] = { 0., 0., 0., 1. };
 
-    glEnable(GL_DEPTH_TEST);
+    view = new OGLView(this) ;
+
+//  GLfloat redDiffuseMaterial[] = {1.0, 0.0, 0.0}; //set the material to red
+    GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0}; //set the material to white
+//  GLfloat greenEmissiveMaterial[] = {0.0, 1.0, 0.0}; //set the material to green
+    GLfloat mShininess[] = {16}; //set the shininess of the material
+
+    GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0}; //set the light specular to white
+    GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0}; //set the light ambient to black
+    GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0}; //set the diffuse light to white
+
     glEnable(GL_CULL_FACE);
     glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    glEnable(GL_POLYGON_SMOOTH);
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LEQUAL);
+    glClearDepth(1.0f);
+
     glEnable(GL_MULTISAMPLE);
-    static GLfloat lightPosition[4] = { 0.5, 5.0, 7.0, 1.0 };
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHT0);
+
+    glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, blackAmbientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuseLight);
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
+
+    static GLfloat lightPosition[4] = {-5, 0, 0, 1.0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+    glEnable(GL_MULTISAMPLE);
+
+     glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+
+     glEnable (GL_BLEND);
+     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+     glMatrixMode(GL_PROJECTION);
+     glLoadIdentity();
+     gluPerspective( 60, 1.0, 1.0, 1000.0);
+
+     fog_on(0.1);
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateThis()));
+    timer->start(16);
 }
 
 void GLWidget::paintGL()
 {
+    GLfloat camYaw,camPitch,camRadius;
+    GLfloat camX,camY,camZ;
+
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glTranslatef(0.0, 0.0, -10.0);
-    glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
-    glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-    glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
-    double d = zoom ;
-    d = qMin(qMax(0.01,d/1000.0),100.0);
-    glScaled(d,d,d);
-#if VIEW
+
+    camRadius=zoom;
+    camRadius/=100.0;
+    camYaw=-6.28*yRot/(360*16);
+    camPitch=6.28*xRot/(360*16);
+
+    camX = cos(camYaw) * cos(camPitch) * camRadius;
+    camY = sin(camYaw) * cos(camPitch) * camRadius;
+    camZ = sin(camPitch) * camRadius;
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);
+
     view->draw();
-#endif
-    logo->draw();
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -182,11 +273,7 @@ void GLWidget::resizeGL(int width, int height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-#ifdef QT_OPENGL_ES_1
-    glOrthof(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
-#else
-    glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
-#endif
+    gluPerspective( 60, 1.0, 1.0, 1000.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -204,8 +291,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         setXRotation(xRot + 8 * dy);
         setYRotation(yRot + 8 * dx);
     } else if (event->buttons() & Qt::RightButton) {
-        setXRotation(xRot + 8 * dy);
-        setZRotation(zRot + 8 * dx);
+        setXRotation(xRot - 8 * dy);
+        setZRotation(zRot - 8 * dx);
     }
     lastPos = event->pos();
 }

@@ -51,7 +51,7 @@ Window::Window()
     xSlider = createSlider();
     ySlider = createSlider();
     zSlider = createSlider();
-    zoomSlider = createSlider();
+    zoomSlider = createSlider(10,240*5+10);
 
     connect(xSlider     , SIGNAL(valueChanged(int))    , glWidget, SLOT(setXRotation(int)));
     connect(glWidget    , SIGNAL(xRotationChanged(int)),  xSlider, SLOT(setValue(int)));
@@ -78,19 +78,19 @@ Window::Window()
     xSlider->setValue(15 * 16);
     ySlider->setValue(345 * 16);
     zSlider->setValue(0 * 16);
-    zoomSlider->setValue(1000);
+    zoomSlider->setValue(500);
     setWindowTitle(tr("Qt2 - by Fabio and Robin"));
 }
 //! [1]
 
 //! [2]
-QSlider *Window::createSlider()
+QSlider *Window::createSlider(int min/* =0*/,int max/* =360*16*/)
 {
     QSlider *slider = new QSlider(Qt::Vertical);
-    slider->setRange(0, 360 * 16);
-    slider->setSingleStep(16);
-    slider->setPageStep(15 * 16);
-    slider->setTickInterval(15 * 16);
+    slider->setRange(min,max);
+    slider->setSingleStep((max-min)/360);
+    slider->setPageStep((max-min)/12);
+    slider->setTickInterval((max-min)/12);
     slider->setTickPosition(QSlider::TicksRight);
     return slider;
 }
