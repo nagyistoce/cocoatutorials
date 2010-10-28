@@ -295,3 +295,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     }
     lastPos = event->pos();
 }
+
+// That's all Folks!
+////
