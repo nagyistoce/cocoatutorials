@@ -43,13 +43,10 @@
 
 #include <QGLWidget>
 #include <QTimer>
+
 #include "window.h"
+#include "../Fabio/OGLView.h"
 
-// forward declarations
-class OGLView;
-class QtLogo;
-
-//! [0]
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
@@ -60,9 +57,7 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-//! [0]
 
-//! [1]
 public slots:
     void setXRotation(int angle);
     void setYRotation(int angle);
@@ -75,9 +70,7 @@ signals:
     void yRotationChanged(int angle);
     void zRotationChanged(int angle);
     void zoomChanged(int z);
-//! [1]
 
-//! [2]
 protected:
     void fog_on(GLfloat density);
     void initializeGL();
@@ -86,9 +79,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent* event);
-//! [2]
 
-//! [3]
 private:
     OGLView*    view ;
     int xRot;
@@ -101,6 +92,5 @@ private:
     QTimer* timer;
 
 };
-//! [3]
 
 #endif

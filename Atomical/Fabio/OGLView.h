@@ -22,8 +22,8 @@ class OGLView : public QObject
     Q_OBJECT
 public:
     OGLView(QObject *parent);
-    ~OGLView();
-    void setColor(QColor c);
+    virtual ~OGLView();
+    virtual void setColor(QColor c);
     void draw() const;
     void drawRect() const;
 public slots:

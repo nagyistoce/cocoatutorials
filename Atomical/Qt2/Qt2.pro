@@ -15,17 +15,16 @@ INCLUDEPATH += ../shared
 
 HEADERS       = glwidget.h \
                 window.h \
-                qtlogo.h \
     ../Fabio/ranmar.h \
     ../Fabio/nrutil.h \
     ../Fabio/jacobi.h \
     ../Fabio/globals.h \
     ../Fabio/OGLView.h \
     Qt2.h
+
 SOURCES       = glwidget.cpp \
                 main.cpp \
                 window.cpp \
-                qtlogo.cpp \
     ../Fabio/ranmar.c \
     ../Fabio/nrutil.c \
     ../Fabio/jacobi.c \

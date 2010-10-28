@@ -64,7 +64,6 @@
 #include <QtOpenGL>
 #include <math.h>
 #include "glwidget.h"
-#include "qtlogo.h"
 #include "../Fabio/OGLView.h"
 
 #ifndef GL_MULTISAMPLE
