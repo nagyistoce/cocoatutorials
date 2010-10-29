@@ -39,19 +39,20 @@ class OGLView : public QObject
 {
     Q_OBJECT
 public:
-    OGLView(QObject *parent);
+             OGLView(QObject *parent);
     virtual ~OGLView();
-    virtual void setColor(QColor c);
+
     void draw(double *xxx, double *yyy, double *zzz, double sep, double imb, double rrsp, int NNp, int NNp2, int mmode) const;
     void drawRect(double *xxx,double *yyy,double *zzz, double sep, double imb, double rrsp, int NNp, int NNp2, int mmode) const;
-//public slots:
+
+// public slots:
 //    void oneShot();
 //    void oneShot2();
-
 private:
     QTimer *timer;
     QTimer *timer2;
 
+    double* rrad_;
 };
 
 #endif // OGLView_H

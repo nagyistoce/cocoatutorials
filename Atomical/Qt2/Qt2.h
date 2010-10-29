@@ -23,6 +23,20 @@
 #define __QT2_H__
 
 #define UNUSED(x)x=x
+#define ASSERT(t) myAssert(t,__FILE__,__LINE__)
+
+void myAssert(int t,const char* filename,int linenumber);
+
+#ifdef DEFINE_ASSERT
+void myAssert(int t,const char* filename,int linenumber)
+{
+    if ( !t ) {
+        printf("****** ASSERT filename = %s linenumber = %d",filename,linenumber);
+        exit(1);
+    }
+}
+#endif
+
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>

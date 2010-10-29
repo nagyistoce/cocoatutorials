@@ -1,6 +1,28 @@
+//
+//  calcthread.cpp
+//  This file is part of Atomical
+//
+//  Atomical is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  Atomical is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Atomical.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Written by Fabio Cavaliere, Genova, Italy
+//  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
+//
+
 #include "calcthread.h"
 
-void __CPU_update(const double* oldx, const double* oldy,const double* oldz, double* x, double *y,double *z, double imbalance, int N, int mode){
+static void __CPU_update(const double* oldx, const double* oldy,const double* oldz, double* x, double *y,double *z, double imbalance, int N, int mode)
+{
         int i,j;
         double f_x,f_y,f_z,x0,y0,z0,x1,y1,z1,ud,ud3,pref;
         double DSTEP=0.01;
@@ -36,7 +58,8 @@ void __CPU_update(const double* oldx, const double* oldy,const double* oldz, dou
         }
 }
 
-double __CPU_energy(const double* xx, const double* yy,const double* zz, double imbalance, int N){
+static double __CPU_energy(const double* xx, const double* yy,const double* zz, double imbalance, int N)
+{
         int i,k;
         double EE,x0,y0,x1,y1,z0,z1,pref,res;
 
@@ -60,16 +83,45 @@ double __CPU_energy(const double* xx, const double* yy,const double* zz, double 
         return res;
 }
 
-void __CPU_poscpy(double* oldx, double* oldy, double *oldz,const double* newx, const double *newy,const double *newz, int N){
+static void __CPU_poscpy(double* oldx, double* oldy, double *oldz,const double* newx, const double *newy,const double *newz, int N)
+{
         memcpy(oldx,newx,N*sizeof(double));
         memcpy(oldy,newy,N*sizeof(double));
         memcpy(oldz,newz,N*sizeof(double));
 }
 
 
-// This stuff is based on the Mandelbrot example
+calcThread::calcThread() : QThread() // Constructor
+{
+    printf("IN CONSTRUCTOR\n");
+    moveToThread(this); // Do I need this?
 
-void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,int NNp,int NNp2,int mmode){
+}
+
+calcThread::~calcThread() // Destructor (...BAH!)
+{
+/*
+    mutex.lock();
+    abort=true;
+    condition.wakeOne();
+    mutex.unlock();
+*/
+    printf("IN DESTRUCTOR\n");
+//    wait();
+
+    free(xx);
+    free(yy);
+    free(zz);
+    printf("1-2-3\n");
+    free(xx_old);
+    free(yy_old);
+    free(zz_old);
+    printf("4-5-6\n");
+}
+
+// This stuff is based on the Mandelbrot example
+void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,int NNp,int NNp2,int mmode)
+{
     int i;
 
     printf("IN SETUP\n");
@@ -99,38 +151,12 @@ void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,int NNp,in
         xx_old[i]=xxx[i];
         yy_old[i]=yyy[i];
         zz_old[i]=zzz[i];
-        printf("Particle %d initialized\n",i+1);
+    //  printf("Particle %d initialized\n",i+1);
     }
 }
 
-calcThread::calcThread() : QThread(){ // Constructor
-    printf("IN CONSTRUCTOR\n");
-    moveToThread(this); // Do I need this?
-
-}
-
-calcThread::~calcThread(){ // Destructor (...BAH!)
-/*
-    mutex.lock();
-    abort=true;
-    condition.wakeOne();
-    mutex.unlock();
-*/
-    printf("IN DESTRUCTOR\n");
-//    wait();
-
-    free(xx);
-    free(yy);
-    free(zz);
-    printf("1-2-3\n");
-    free(xx_old);
-    free(yy_old);
-    free(zz_old);
-    printf("4-5-6\n");
-
-}
-
-void calcThread::run(){
+void calcThread::run()
+{
     printf("This will last...FOREVER!\n");fflush(stdout);
     forever{
         __CPU_update(xx_old, yy_old,zz_old, xx, yy, zz, imbalance, Np, mode);
@@ -143,7 +169,8 @@ void calcThread::run(){
     // run this thing
 }
 
-void calcThread::doCalc(){
+void calcThread::doCalc()
+{
     start(HighPriority);
 }
 
@@ -161,3 +188,7 @@ void calcThread::stepDone(double *xxx,double *yyy,double *zzz,double *EE){
     // YES! Then copy into xxx,yyy,zzz,E the local variables
 }
 */
+
+// That's all Folks!
+////
+

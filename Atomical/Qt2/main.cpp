@@ -62,6 +62,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
+#define DEFINE_ASSERT
+#include "Qt2.h"
 #include "window.h"
 
 int main(int argc, char *argv[])
