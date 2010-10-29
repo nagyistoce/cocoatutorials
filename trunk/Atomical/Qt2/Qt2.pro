@@ -33,4 +33,6 @@ SOURCES       = glwidget.cpp \
     calcthread.cpp
 
 OTHER_FILES += \
-    ../ReadMe.txt
+    ../ReadMe.txt \
+    ../agpl.txt
+
