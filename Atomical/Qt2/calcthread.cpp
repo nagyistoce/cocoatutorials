@@ -18,8 +18,9 @@
 //  Written by Fabio Cavaliere, Genova, Italy
 //  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
 //
-
+#include "Qt2.h"
 #include "calcthread.h"
+#include <malloc.h>
 
 static void __CPU_update(const double* oldx, const double* oldy,const double* oldz, double* x, double *y,double *z, double imbalance, int N, int mode)
 {
