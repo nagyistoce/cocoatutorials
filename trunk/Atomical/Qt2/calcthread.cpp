@@ -20,7 +20,9 @@
 //
 #include "Qt2.h"
 #include "calcthread.h"
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 
 static void __CPU_update(const double* oldx, const double* oldy,const double* oldz, double* x, double *y,double *z, double imbalance, int N, int mode)
 {
