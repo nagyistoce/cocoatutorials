@@ -341,7 +341,8 @@ void init_Eigenmode(int n)
 
 void CPU_update(const double* oldx, const double* oldy,const double* oldz, double* x, double *y,double *z, int N){
         int i,j;
-        double f_x,f_y,f_z,x0,y0,z0,x1,y1,z1,ud,ud3,pref;
+        double f_x=0;
+        double f_y,f_z,x0,y0,z0,x1,y1,z1,ud,ud3,pref;
 
         for (i=impurity;i < N;i++) {
                 x0=oldx[i];
