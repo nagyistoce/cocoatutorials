@@ -21,6 +21,7 @@
 
 #ifndef __QT2_H__
 #define __QT2_H__
+#include <stdio.h>
 
 #define UNUSED(x)x=x
 #define ASSERT(t) myAssert(t,__FILE__,__LINE__)

@@ -20,8 +20,8 @@
 //
 
 #include "../Qt2/Qt2.h"
-#include "OGLView.h"
-#include "window.h"
+#include "../Fabio/OGLView.h"
+#include "../Qt2/window.h"
 
 
 double CPU_rad(const double* xx, const double* yy,const double* zz, double *rad, int N){
