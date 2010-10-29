@@ -65,6 +65,7 @@
 #include <QGLWidget>
 #include <QTimer>
 
+#include "calcthread.h"
 #include "window.h"
 #include "../Fabio/OGLView.h"
 
@@ -85,6 +86,8 @@ public slots:
     void setZRotation(int angle);
     void setZoom(int z);
     void updateThis();
+    void oneShot();
+    void oneShot2();
 
 signals:
     void xRotationChanged(int angle);
@@ -101,7 +104,11 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent* event);
 
+private slots:
+    void updatePositions(double *xxx,double *yyy,double *zzz,double *E);
+
 private:
+    calcThread *cThread;
     OGLView*    view ;
     int xRot;
     int yRot;

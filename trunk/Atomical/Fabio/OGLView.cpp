@@ -21,6 +21,7 @@
 
 #include "../Qt2/Qt2.h"
 #include "OGLView.h"
+/*
 #include "globals.h"
 #include "ranmar.h"
 #include "jacobi.h"
@@ -30,11 +31,11 @@
 #include <time.h>
 #define random rand
 #define srandom srand
-
-#include "../Qt2/window.h"
+*/
+#include "window.h"
 
 /**************** Physics *******************/
-
+/*
 #define Delta 0.00001
 
 void CPU_energy(const double* xx, const double* yy,const double* zz, double *EE, int N){
@@ -53,7 +54,7 @@ void CPU_energy(const double* xx, const double* yy,const double* zz, double *EE,
                         pref=1.0;
                         if(i%2) pref*=imbalance;
                         if(k%2) pref*=imbalance;
-                        EE[i]+=pref/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0)+delta2);
+                        EE[i]+=pref/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0));
                 }
                 if(EE[i]>Emax) Emax=EE[i];
         }
@@ -290,21 +291,22 @@ void init_Eigenmode(int n)
                 vzt[i]=-0.5*f_z[i]*dtt;
         }
 }
-
-void CPU_rad(const double* xx, const double* yy,const double* zz, int N){
+*/
+double CPU_rad(const double* xx, const double* yy,const double* zz, double *rad, int N){
         int i;
         double x0,y0,z0;
 
-        radius=0.0;
+        double res=0.0;
 
-        //	#pragma omp strict parallel for
         for(i=0;i<N;i++){
                 x0=xx[i];y0=yy[i];z0=zz[i];
                 rad[i]=sqrt(x0*x0+y0*y0+z0*z0);
-                if(rad[i]>radius) radius=rad[i];
+                if(rad[i]>res) res=rad[i];
         }
-}
 
+        return res;
+}
+/*
 void CPU_update(const double* oldx, const double* oldy,const double* oldz, double* x, double *y,double *z, int N){
         int i,j;
         double f_x,f_y,f_z,x0,y0,z0,x1,y1,z1,ud,ud3,pref;
@@ -326,7 +328,7 @@ void CPU_update(const double* oldx, const double* oldy,const double* oldz, doubl
                                 pref=1.0;
                                 if(i%2) pref*=imbalance;
                                 if(j%2) pref*=imbalance;
-                                ud=1.0/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0)+delta2);
+                                ud=1.0/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0));
                                 ud3=pref*ud*ud*ud;
                                 if(mode==3) f_x+=(x0-x1)*ud3;
                                 f_y+=(y0-y1)*ud3;
@@ -504,148 +506,105 @@ void Initialize(void){
 #endif
 }
 
-/*
-void motion(int x, int y)
-{
-	camYaw += 0.02*(GLfloat)(mx-x);
-	
-	if(camYaw < 0.0)
-		camYaw = 6.28+camYaw;
-	else if(camYaw > 6.28)
-		camYaw = camYaw-6.28;
-	
-	camPitch += 0.02*(GLfloat)(y-my);
-	
-	if(camPitch > 1.57)
-		camPitch = 1.57;
-	else if(camPitch < -1.57)
-		camPitch = -1.57;
-	
-	mx = x;
-	my = y;
-}
 */
 
-void OGLView::drawRect(/*NSRect* dirtyRect*/) const
+// Assuming that all the calculations are done in glWidget, this method needs as arguments
+//
+// double *xxx, *yyy, *zzz, *rad <--- DONE
+// double imbalance, radsp
+// int Np, Np2, mode
+//
+
+void OGLView::drawRect(double *xxx,double *yyy,double *zzz,double sep, double imb, double rrsp, int NNp, int NNp2, int mmode) const
 {
-	int i;
+        int i,NNpin;
         float alpha;
-//      float x0,y0,z0,x1,y1,z1,nrm;
-//	GLfloat e,camX,camY,camZ,camRadius=5.0;
-//	[[self openGLContext] makeCurrentContext];
+        double rradius;
+        double *rrad;
 
-        CPU_rad(xx, yy, zz, Np);
-	GLUquadric *glq;
-	alpha=ALPHAVAL;
-	glq=gluNewQuadric();
+        rrad=(double *)malloc(NNp*sizeof(double));
+
+        rradius=CPU_rad(xxx, yyy, zzz, rrad, NNp);
 /*
-	if(verlet && !allocated_evals && POV) {
-		nrm=sqrt(vxt[Np-1]*vxt[Np-1]+vyt[Np-1]*vyt[Np-1]+vzt[Np-1]*vzt[Np-1]);
-		if(mode==2) x0=xx_old[Np-1]+1; else x0=xx_old[Np-1]-1.5*vyt[Np-1]/nrm;
-		y0=yy_old[Np-1]-1.5*vyt[Np-1]/nrm;
-		z0=zz_old[Np-1]-1.5*vzt[Np-1]/nrm;
-		x1=xx_old[Np-1]+vxt[Np-1]/nrm;		
-		y1=yy_old[Np-1]+vyt[Np-1]/nrm;
-		z1=zz_old[Np-1]+vzt[Np-1]/nrm;
-		gluLookAt( x0, y0, z0,  x1, y1, z1,  1.0, 0.0, 0.0);
-	} else {
-		gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);		
-	}
+        printf("drawRect()\n");
+        printf("Np=%d mode=%d\n",NNp,mmode);
+        printf("[***] %e %e %e\n",xxx[0],yyy[0],zzz[0]);
 */
-	Npin=0;
+	GLUquadric *glq;
+        alpha=0.9;
+	glq=gluNewQuadric();
+
+        NNpin=0;
 		
-        for(i=0;i<Np;i++){
-			glPushMatrix();
-                        GLfloat e=(GLfloat)(rad[i]/radius);
-			if(mode==2 && Np2>0 && separation>0){
-				if(xx_old[i]>0.0){
-					glColor4f(.5+.5*e,0,0,alpha);
-				} else {
-					glColor4f(0,0,.5+.5*e,alpha);
-				}
-
+        for(i=0;i<NNp;i++){
+                glPushMatrix();
+                GLfloat e=(GLfloat)(rrad[i]/rradius);
+                if(mmode==2 && NNp2>0 && sep>0){
+                        if(xxx[i]>0.0){
+                                glColor4f(.5+.5*e,0,0,alpha);
+                        } else {
+                                glColor4f(0,0,.5+.5*e,alpha);
+                        }
 				
-			} else {
-				if(i%2 && imbalance>1.0) glColor4f(e,0.2+0.8*(imbalance-1)/9,(1-e),alpha); else glColor4f(e,0,(1-e),alpha);								
-			}
+                } else {
+                        if(i%2 && imb>1.0) glColor4f(e,0.2+0.8*(imb-1)/9,(1-e),alpha); else glColor4f(e,0,(1-e),alpha);
+                }
 
-			if(!allocated_evals && verlet && i==Np-1) glColor4f(0,1,0,alpha);
-			
-			glTranslatef(xx_old[i], yy_old[i], zz_old[i]);
-                        if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
-			if(rad[i]<=radsp){
-				Npin++;
-			}		
-			glPopMatrix();
+//                if(!allocated_evals && verlet && i==NNp-1) glColor4f(0,1,0,alpha); // Bullet color
+
+                glTranslatef(xxx[i], yyy[i], zzz[i]);
+                if(i%2) gluSphere(glq, 0.2+0.2*(imb-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
+                if(rrad[i]<=rrsp) NNpin++;
+                glPopMatrix();
 	}
 
 	glPushMatrix();
 	glColor4f((GLfloat)1,(GLfloat)1,(GLfloat)0,(GLfloat)0.7);
 	glTranslatef(0, 0, 0);
-	gluSphere(glq, radsp, 40, 40);		
+        gluSphere(glq, rrsp, 40, 40);
 	glPopMatrix();
 	
-	/*
-	if(Np2>0&&separation>0){
-		glPushMatrix();
-		glColor4f(0, 0, 1, 0.4);
-		glRotatef(90, 0, 1, 0);
-		glTranslatef(0, 0, -separation);
-		gluDisk(glq,0.0,1.1*radius,40,1);
-		glPopMatrix();
-		
-		glPushMatrix();
-		glColor4f(1, 0, 0, 0.4);
-		glRotatef(90, 0, 1, 0);
-		glTranslatef(0, 0, separation);
-		gluDisk(glq,0.0,1.1*radius,40,1);
-		glPopMatrix();		
-	}
-	*/
 	gluDeleteQuadric(glq);
 	
         glFlush();	// Single buffering...
+
+        free(rrad);
 }
 
+/*
 void OGLView::oneShot()
 {
     CPU_update(xx_old, yy_old,zz_old, xx, yy, zz, Np);
     CPU_poscpy(xx_old, yy_old,zz_old, xx, yy, zz, Np);
     CPU_energy(xx, yy, zz, E, Np);
-    drawRect();
 }
 
 void OGLView::oneShot2(){
-//    CPU_update(xx_old, yy_old,zz_old, xx, yy, zz, Np);
-//    CPU_poscpy(xx_old, yy_old,zz_old, xx, yy, zz, Np);
-//    CPU_energy(xx, yy, zz, E, Np);
-    drawRect();
+    drawRect(xx, yy, zz, imbalance, radsp, Np, Np2, mode); // This call will be in glWidget
 }
+*/
 
 OGLView::OGLView(QObject *parent)
     : QObject(parent)
 {
+    /*
     MaxNp=5001;
     mem_alloc();
 
-    delta2=0.0;
-//    angle=60.0;
     mode=3;
     Np=96;
-
     Np2=0;
-    separation=0.0;
-    PREC=1e-11;
-    //distance=15;
 
-    radsp=0.0;
+    separation=0.0;
     imbalance=1.0;
+
+    PREC=1e-11;
+    radsp=0.0;
 
     srand(time(NULL));
     rmarin(rand()%31329,rand()%30081);
 
     Initialize();
-    // buildGeometry(divisions, scale);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(oneShot()));
@@ -654,6 +613,7 @@ OGLView::OGLView(QObject *parent)
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(oneShot2()));
     timer->start(0);
+    */
 }
 
 OGLView::~OGLView()
@@ -665,9 +625,10 @@ void OGLView::setColor(QColor c)
     UNUSED(c);
 }
 
-void OGLView::draw() const
+void OGLView::draw(double *xxx, double *yyy, double *zzz, double sep, double imb, double rrsp, int NNp, int NNp2, int mmode) const // (xx, yy, zz,imb, rrsp, NNp, NNp2, mmode)
 {
-    drawRect();
+//    printf("draw() %e %e %e\n",xxx[0],yyy[0],zzz[0]);
+    drawRect(xxx, yyy, zzz, sep, imb, rrsp, NNp, NNp2, mmode);
 }
 
 // That's all Folks!

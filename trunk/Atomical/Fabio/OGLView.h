@@ -42,11 +42,11 @@ public:
     OGLView(QObject *parent);
     virtual ~OGLView();
     virtual void setColor(QColor c);
-    void draw() const;
-    void drawRect() const;
-public slots:
-    void oneShot();
-    void oneShot2();
+    void draw(double *xxx, double *yyy, double *zzz, double sep, double imb, double rrsp, int NNp, int NNp2, int mmode) const;
+    void drawRect(double *xxx,double *yyy,double *zzz, double sep, double imb, double rrsp, int NNp, int NNp2, int mmode) const;
+//public slots:
+//    void oneShot();
+//    void oneShot2();
 
 private:
     QTimer *timer;

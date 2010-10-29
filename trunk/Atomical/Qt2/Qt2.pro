@@ -20,7 +20,8 @@ HEADERS       = glwidget.h \
     ../Fabio/jacobi.h \
     ../Fabio/globals.h \
     ../Fabio/OGLView.h \
-    Qt2.h
+    Qt2.h \
+    calcthread.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
@@ -28,8 +29,8 @@ SOURCES       = glwidget.cpp \
     ../Fabio/ranmar.c \
     ../Fabio/nrutil.c \
     ../Fabio/jacobi.c \
-    ../Fabio/OGLView.cpp
+    ../Fabio/OGLView.cpp \
+    calcthread.cpp
 
 OTHER_FILES += \
-    ../ReadMe.txt \
-    ../agpl.txt
+    ../ReadMe.txt

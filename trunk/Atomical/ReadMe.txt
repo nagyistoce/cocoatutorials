@@ -42,6 +42,7 @@ http://clanmills.com
 Revision History
 ----------------
 
+2010-10-38 19:00:00ITT  Multithreaded calculation, OpenGL code in glWidget. Runs (M)
 2010-10-27 22:02:39PDT  Integrated Fabio's code.  Compiles, links and works (W/M/L)
 2010-10-26 22:07:48PDT  Added Fabio's code - Compiles and links (doesn't work yet)
 2010-10-25 21:30:28PDT  First appearance - just to see how/if it works!
