@@ -96,7 +96,7 @@ Window::Window()
     xSlider->setValue(15 * 16);
     ySlider->setValue(345 * 16);
     zSlider->setValue(0 * 16);
-    zoomSlider->setValue(500);
+    zoomSlider->setValue(800);
     setWindowTitle(tr("Qt2 - by Fabio and Robin"));
 }
 
