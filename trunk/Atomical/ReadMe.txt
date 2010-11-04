@@ -6,17 +6,15 @@ Atomical is a project between Fabio, Robin and Andre.
 Qt2 Status
 ----------
 
-Working on Mac/Linux and Windows (build with Qt Creator : No DevStudio or XCode)
+1) Working on Mac and Windows
+2) Build with Qt Creator : No DevStudio or XCode
 
 Robin's next tasks:
 1) Develop the UI (similar to WmCocoa)
-2) Review all the code.
-3) Do something about the CPU load
-4) The ZRotation doesn't rotate the camera
+2) The ZRotation doesn't rotate the camera
 
 Fabio's next tasks:
-1) Make a list of tasks!
-2) Learn to submit code into SVN (I use SmartSVN on the Mac)
+1) Learn to submit code into SVN (I use SmartSVN on the Mac)
 
 UI
 --
@@ -27,12 +25,21 @@ To quit:           Q or q or Escape
 
 Known Issues
 ------------
-1) ranmar is 'clobbering' the variable i when called in Initialize() on Windows
-2) CPU load is 100%
-3) Get all those globals into OGLView
-4) Avoid all those mallocs of arrays of 5000 items
+1) Doesn't run on Linux.  To be investigated.
 
+Starting /media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2...
+1.354570e+00 1.100483e+00 20 4 2
+Window::init_double_layer() started
+IN SETUP
+In calcThread::setup(), mode=2
+In GLThread::run() - Initialization
+In GLThread::run() - Initialization done, start loop
+<unknown>: Fatal IO error 11 (Resource temporarily unavailable) on X server :0.0.
+/media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2 exited with code 1
 
+2) It's not building correctly on Windows! To be investigated.
+
+#define __CYGWIN__ 1 isn't defined from Qt Creator.  How odd!
 
 Robin Mills
 rmills@clanmills.com
@@ -41,7 +48,7 @@ http://clanmills.com
 
 Revision History
 ----------------
-
+2010-11-03 23:36:55PDT  Great Progress.  Fabio's done a great job.  Runs well.  Code looks good.
 2010-10-38 19:00:00ITT  Multithreaded calculation, OpenGL code in glWidget. Runs (M)
 2010-10-27 22:02:39PDT  Integrated Fabio's code.  Compiles, links and works (W/M/L)
 2010-10-26 22:07:48PDT  Added Fabio's code - Compiles and links (doesn't work yet)
