@@ -46,10 +46,13 @@ public:
    				) ;
    void setAutoZoom();
 
+   void fog_on(float density);
+   void fog_off(void);
+
    bool         bAutoZoom;
+   bool         bPaused;
    // allow GLWidget access to our private members
    friend class GLWidget;
-
 signals:
    void frameNeeded();
 
