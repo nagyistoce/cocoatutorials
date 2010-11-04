@@ -19,25 +19,11 @@
 //  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
 //
 
+#pragma once
 #ifndef __QT2_H__
 #define __QT2_H__
-#include <stdio.h>
 
 #define UNUSED(x)x=x
-#define ASSERT(t) myAssert(t,__FILE__,__LINE__)
-
-void myAssert(int t,const char* filename,int linenumber);
-
-#ifdef DEFINE_ASSERT
-void myAssert(int t,const char* filename,int linenumber)
-{
-    if ( !t ) {
-        printf("****** ASSERT filename = %s linenumber = %d",filename,linenumber);
-        exit(1);
-    }
-}
-#endif
-
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -46,6 +32,16 @@ void myAssert(int t,const char* filename,int linenumber)
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
+
+#include <stdio.h>
+
+#ifdef __CYGWIN__
+#define random rand
+#define srandom srand
+#endif
+
+#define mSleep(milli)  usleep(milli*1000)
+#define lengthof(x)    sizeof(x)/sizeof(x[0])
 
 #endif
 
