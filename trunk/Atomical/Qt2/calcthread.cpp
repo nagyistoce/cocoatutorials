@@ -127,12 +127,20 @@ void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,double tpr
     __CPU_poscpy();
 }
 
+void calcThread::pause(){
+    isPaused=true;
+}
+
+void calcThread::resume(){
+    isPaused=false;
+}
+
 void calcThread::run()
 {
     double oldE=1e99;
 
     forever {
-        if(do_calc){
+        if(do_calc && !isPaused){
             __CPU_update();
             E=__CPU_energy();
             __CPU_poscpy();

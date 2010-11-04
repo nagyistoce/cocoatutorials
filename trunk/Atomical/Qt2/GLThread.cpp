@@ -57,9 +57,16 @@ void GLThread::resizeViewport(const QSize &size)
 	doResize = true;
 }
 
+void GLThread::setAutoZoom(){
+    bAutoZoom=true;
+    printf("Auto-zoom is set...\n");fflush(stdout);
+}
+
 void GLThread::run()
 {
 	/********** The initialization goes here *************/
+
+    GLfloat oldCamRadius=1e6;
 
     printf("In GLThread::run() - Initialization\n");
 
@@ -131,19 +138,34 @@ void GLThread::run()
 		gluPerspective( 60, 1, 1.0, 1000.0);
 
 		rradius=CPU_rad(xx, yy, zz, Np);
-
+//printf("rradius=%e\n",rradius);fflush(stdout);
         // the camRadius is quite a small float
         // zoom is quite a large integer
         float zoomMultiplier = 100.0;
         if ( bAutoZoom ) {
             // when we set a new problem, we set bAutoZoom
             // to request the UI to display the problem space
-            camRadius=5.0* rradius;
-            if ( camRadius < 10 ) camRadius = 10;
+            //
+            // I like this idea but I'd implement it in a different way!
+
+            camRadius=2.5*rradius; // So the zoom is tighter
+
+            // When a new problem is started, the molecule radius changes wildly,
+            // we then "auto-zoom" until the radius does not change up to 1%. The small
+            // 10^-6 is added to denominator since rradius=0 when the rendering is
+            // started but the class has not started gathering data yet.
+
+            if(fabs(1-camRadius/(oldCamRadius+1e-6))>1e-2) {
+                bAutoZoom = true ;
+                oldCamRadius=camRadius;
+            } else {
+                bAutoZoom = false ; // ...otherwise let the user have control :)
+                printf("User has zoom control\n");fflush(stdout);
+                oldCamRadius=1e6;
+            }
             int z = (int) (double) (camRadius*zoomMultiplier);
             glw->setZoom(z);
             zoom = z ;
-            bAutoZoom = false ;
         } else {
             camRadius=zoom; // Original code
             camRadius/=zoomMultiplier;

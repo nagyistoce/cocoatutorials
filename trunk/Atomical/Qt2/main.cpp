@@ -24,7 +24,6 @@
 
 #include "window.h"
 #include "Qt2.h"
-#include "initX.h"
 #include <stdio.h>
 
 int main(int argc, char *argv[])
@@ -32,7 +31,6 @@ int main(int argc, char *argv[])
     //char stdBuffer[1];
     //setvbuf(stdout,stdBuffer,lengthof(stdBuffer),sizeof(stdBuffer[0]));
     setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
-    initX();
 
     QApplication app(argc, argv);
     Window window;
