@@ -4,35 +4,22 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT            += core gui opengl
 
-TARGET = Qt2
-TEMPLATE = app
-
-
-VPATH += ../shared
-INCLUDEPATH += ../shared
+TARGET        = Qt2
+TEMPLATE      = app
 
 HEADERS       = glwidget.h \
                 window.h \
-    ../Fabio/ranmar.h \
-    ../Fabio/nrutil.h \
-    ../Fabio/jacobi.h \
-    ../Fabio/globals.h \
-    ../Fabio/OGLView.h \
-    Qt2.h \
-    calcthread.h
+                Qt2.h \
+                calcthread.h \
+                GLThread.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
                 window.cpp \
-    ../Fabio/ranmar.c \
-    ../Fabio/nrutil.c \
-    ../Fabio/jacobi.c \
-    ../Fabio/OGLView.cpp \
-    calcthread.cpp
+                calcthread.cpp \
+                GLThread.cpp
 
 OTHER_FILES += \
-    ../ReadMe.txt \
-    ../agpl.txt
-
+               ../ReadMe.txt

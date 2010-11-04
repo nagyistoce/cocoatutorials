@@ -31,10 +31,10 @@ class calcThread : public QThread
     Q_OBJECT
 
 public:
-             calcThread();
-    virtual ~calcThread();
+    calcThread();
+   ~calcThread() {};
 
-    void setup(double *xxx,double *yyy,double *zzz,double imb,int NNp,int NNp2,int mmode);
+    void setup(double *xxx,double *yyy,double *zzz,double imb,double tprec,int NNp,int NNp2,int mmode);
     void doCalc();
 
 protected:
@@ -42,22 +42,20 @@ protected:
 
 signals:
     void done();
-    void stepDone(double *xxx,double *yyy,double *zzz,double *EE);
+    void stepDone(double *xxx,double *yyy,double *zzz/*,double *EE*/);
 
 private:
-//    QMutex mutex;
-//    QWaitCondition condition;
     bool restart;
     bool abort;
 
-    double *xx,*yy,*zz,*xx_old,*yy_old,*zz_old;
-    int Np,Np2,mode;
-    double imbalance,E;
+    double xx[5000],yy[5000],zz[5000];
+    double xx_old[5000],yy_old[5000],zz_old[5000];
+    int    Np,Np2,mode,do_calc;
+    double imbalance,E,targetPrecision;
 
-//private slots:
+    void   __CPU_update();
+    double __CPU_energy();
+    void   __CPU_poscpy();
 };
 
 #endif // CALCTHREAD_H
-
-// That's all Folks!
-////
