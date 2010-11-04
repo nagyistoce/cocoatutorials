@@ -35,7 +35,7 @@
 
 #include <stdio.h>
 
-#ifdef __CYGWIN__
+#ifdef __WINDOWS__
 #define random rand
 #define srandom srand
 #endif

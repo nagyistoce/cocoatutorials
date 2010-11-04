@@ -108,7 +108,7 @@ void GLThread::run()
 	glLoadIdentity();
 	gluPerspective( 60, 1.0, 1.0, 1000.0);
 
-#ifndef __CYGWIN__
+#ifndef __WINDOWS__
     glEnable(GL_MULTISAMPLE);
 #endif
 

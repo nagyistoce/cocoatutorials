@@ -25,6 +25,6 @@ OTHER_FILES += \
                ../ReadMe.txt
 
 win32 {
-    DEFINES += __CYGWIN__=1
+    DEFINES += __WINDOWS__=1
 }
 
