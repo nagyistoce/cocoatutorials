@@ -23,3 +23,8 @@ SOURCES       = glwidget.cpp \
 
 OTHER_FILES += \
                ../ReadMe.txt
+
+win32 {
+    DEFINES += __CYGWIN__=1
+}
+
