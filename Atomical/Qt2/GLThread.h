@@ -44,6 +44,7 @@ public:
    				, double rradsp,double ssep,double iimb
    				, int NNp,int NNp2,int mmode
    				) ;
+   void setAutoZoom();
 
    bool         bAutoZoom;
    // allow GLWidget access to our private members

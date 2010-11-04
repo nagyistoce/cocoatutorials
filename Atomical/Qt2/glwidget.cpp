@@ -116,7 +116,7 @@ void GLWidget::wheelEvent(QWheelEvent* event)
         float z = zRot - event->delta();
         setZRotation(z);
     } else {
-        int z = zoom + (event->delta() < 0 ? 100 : -100) ;
+        int z = zoom + (event->delta() < 0 ? 50 : -50) ; // Zoom a bit slower...
         setZoom(z);
     }
 }
@@ -302,5 +302,5 @@ void GLWidget::receiveData(double *xxx,double *yyy,double *zzz,double rradsp,dou
     memcpy(zz,zzz,Np*sizeof(double));
 }
 
-// That's al Folks!
+// That's all Folks!
 ////

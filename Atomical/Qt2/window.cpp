@@ -224,8 +224,15 @@ void Window::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int 
     wglWidget->glt->bAutoZoom = true ;
 
     printf("%e %e %d %d %d\n",imbalance,separation,Np,Np2,mode);
-    if(flag) Initialize();
+
+    if(flag) {
+        Initialize();
+        cThread->resume(); // Resume calculation if that was paused
+    }
+
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
+
+    wglWidget->glt->setAutoZoom(); // This sets the autozoom (I know, could have set the variable directly)
 }
 
 void Window::initRandomProblem()

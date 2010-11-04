@@ -36,6 +36,8 @@ public:
 
     void setup(double *xxx,double *yyy,double *zzz,double imb,double tprec,int NNp,int NNp2,int mmode);
     void doCalc();
+    void pause();
+    void resume();
 
 protected:
     void run();
@@ -47,6 +49,7 @@ signals:
 private:
     bool restart;
     bool abort;
+    bool isPaused;
 
     double xx[5000],yy[5000],zz[5000];
     double xx_old[5000],yy_old[5000],zz_old[5000];

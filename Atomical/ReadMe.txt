@@ -25,14 +25,29 @@ To quit:           Q or q or Escape
 
 Known Issue
 -----------
-1) Crashes on close down in Linux.  To be investigated.
+1) Doesn't run on Linux.  To be investigated.
 
-stopRendering()...done!X Error: BadAccess (attempt to access private resource denied) 10
-  Extension:    153 (Uknown extension)
-  Minor opcode: 26 (Unknown request)
-  Resource id:  0x5200005
-QGLContext::makeCurrent(): Failed.
-770 /home/rmills/Projects/cocoatutorials/Atomical/Qt2 $ 
+Starting /media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2...
+1.354570e+00 1.100483e+00 20 4 2
+Window::init_double_layer() started
+IN SETUP
+In calcThread::setup(), mode=2
+In GLThread::run() - Initialization
+In GLThread::run() - Initialization done, start loop
+<unknown>: Fatal IO error 11 (Resource temporarily unavailable) on X server :0.0.
+/media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2 exited with code 1
+
+Fabio's suggestion is:
+
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#endif
+
+and in the main(), as the *first* instruction:
+
+#ifdef Q_WS_X11
+XInitThreads();
+#endif
 
 
 
@@ -43,7 +58,10 @@ http://clanmills.com
 
 Revision History
 ----------------
-2010-11-04 07:57:47PDT  Fixed the Linux build.
+2010-11-04 13:59:55ITT  Implemented cThread::pause() and cThread::resume(). Implemented
+                        GLThread->setAutoZoom(). Implemented a "smart" autoZoom which keeps
+                        auto-zooming until the molecule radius is not stable within 1%, then
+                        releases control to the user. Great idea, Robin! Sometimes it fails...why?
 2010-11-03 23:36:55PDT  Great Progress.  Fabio's done a great job.  Runs well.  Code looks good.
 2010-10-38 19:00:00ITT  Multithreaded calculation, OpenGL code in glWidget. Runs (M)
 2010-10-27 22:02:39PDT  Integrated Fabio's code.  Compiles, links and works (W/M/L)
