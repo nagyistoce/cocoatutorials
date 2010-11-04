@@ -173,7 +173,8 @@ void Window::Initialize(void)
 {
 	int i;
 	float tmp[4];
-	double rr,th,ph,resc;
+    double rr,th,ph;
+    double resc=0;
 
 	if(Np>MaxNp) return;
 
