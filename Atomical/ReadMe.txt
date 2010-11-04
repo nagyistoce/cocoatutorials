@@ -23,8 +23,8 @@ MouseWheel:        zoom in/out
 MouseWheel+Shift:  Rotate the Q in the view
 To quit:           Q or q or Escape
 
-Known Issues
-------------
+Known Issue
+-----------
 1) Doesn't run on Linux.  To be investigated.
 
 Starting /media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2...
@@ -37,9 +37,6 @@ In GLThread::run() - Initialization done, start loop
 <unknown>: Fatal IO error 11 (Resource temporarily unavailable) on X server :0.0.
 /media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2 exited with code 1
 
-2) It's not building correctly on Windows! To be investigated.
-
-#define __CYGWIN__ 1 isn't defined from Qt Creator.  How odd!
 
 Robin Mills
 rmills@clanmills.com
