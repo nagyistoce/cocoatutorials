@@ -37,6 +37,19 @@ In GLThread::run() - Initialization done, start loop
 <unknown>: Fatal IO error 11 (Resource temporarily unavailable) on X server :0.0.
 /media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2 exited with code 1
 
+Fabio's suggestion is:
+
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#endif
+
+and in the main(), as the *first* instruction:
+
+#ifdef Q_WS_X11
+XInitThreads();
+#endif
+
+
 
 Robin Mills
 rmills@clanmills.com
