@@ -13,18 +13,24 @@ HEADERS       = glwidget.h \
                 window.h \
                 Qt2.h \
                 calcthread.h \
-                GLThread.h
+                GLThread.h \
+                initX.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
                 window.cpp \
                 calcthread.cpp \
-                GLThread.cpp
+                GLThread.cpp \
+                initX.cpp
 
 OTHER_FILES += \
                ../ReadMe.txt
 
 win32 {
     DEFINES += __WINDOWS__=1
+}
+
+unix {
+    DEFINES += __LINUX__=1
 }
 

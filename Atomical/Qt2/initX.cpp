@@ -1,5 +1,5 @@
 //
-//  main.cpp
+//  initX.cpp
 //  This file is part of Atomical
 //
 //  Atomical is free software: you can redistribute it and/or modify
@@ -19,33 +19,25 @@
 //  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
 //
 
-#include <QApplication>
-#include <QDesktopWidget>
-
-#include "window.h"
-#include "Qt2.h"
 #include "initX.h"
 #include <stdio.h>
 
-int main(int argc, char *argv[])
+#if __LINUX__
+#include <X11/Xlib.h>
+void initX()
 {
-    //char stdBuffer[1];
-    //setvbuf(stdout,stdBuffer,lengthof(stdBuffer),sizeof(stdBuffer[0]));
-    setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
-    initX();
-
-    QApplication app(argc, argv);
-    Window window;
-    window.resize(window.sizeHint());
-    int desktopArea = QApplication::desktop()->width() *
-                     QApplication::desktop()->height();
-    int widgetArea = window.width() * window.height();
-    if (((float)widgetArea / (float)desktopArea) < 0.75f)
-        window.show();
-    else
-        window.showMaximized();
-    return app.exec();
+    XInitThreads();
+    printf("XInitThreads() called LINUX = %d\n",__LINUX__);
 }
+#else
+void initX()
+{
+    printf("initX (vanilla) called\n");
+    return ;
+}
+
+#endif
 
 // That's all Folks!
 ////
+
