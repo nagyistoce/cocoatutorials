@@ -22,12 +22,13 @@
 #include "initX.h"
 #include <stdio.h>
 
-#if __LINUX__
-#if __APPLE__
-#define X_WINDOWS 0
-#else
+#if     __LINUX__
+#ifndef __APPLE__
 #define X_WINDOWS 1
 #endif
+#endif
+
+#ifndef X_WINDOWS
 #define X_WINDOWS 0
 #endif
 
