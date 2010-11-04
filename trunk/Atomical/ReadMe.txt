@@ -58,6 +58,15 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-12-04 00:43:00ITT  Implemented fog, methods GLThread::fog_on(float density) and 
+		        GLThread::fog_off(). Now there's a bool bPause to control the 
+                        rendering. It is rough: I set it true and wait 20 msecs to be 
+                        sure the pending rendering loop is completed. This was needed 
+                        since some concurrent calls to GL (such as fog) fail (but do 
+                        not crash) if they're performed in the middle of drawing. 
+                        Also, this seems to have corrected the problems with the 
+                        "smart" autozoom. Resize is still a mess. 
+                        Is it so on all platforms?
 2010-11-04 13:59:55ITT  Implemented cThread::pause() and cThread::resume(). Implemented
                         GLThread->setAutoZoom(). Implemented a "smart" autoZoom which keeps
                         auto-zooming until the molecule radius is not stable within 1%, then

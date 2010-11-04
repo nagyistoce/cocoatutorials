@@ -36,7 +36,7 @@
 #define RANDOM_INT(__MIN__, __MAX__) ((__MIN__) + random() % ((__MAX__+1) - (__MIN__)))
 
 #define DEMO_MODE  1
-#define DEMO_DELAY_IN_SECONDS 30
+#define DEMO_DELAY_IN_SECONDS 10
 
 static void rranmar(float tmp[],int N)
 {
@@ -221,6 +221,8 @@ void Window::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int 
     mode=mmode;
     precision=prec;
 
+    wglWidget->glt->bPaused = true;
+    mSleep(16);
     wglWidget->glt->bAutoZoom = true ;
 
     printf("%e %e %d %d %d\n",imbalance,separation,Np,Np2,mode);
@@ -228,11 +230,15 @@ void Window::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int 
     if(flag) {
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
+        if(mode==3){
+            wglWidget->glt->fog_on(0.07);
+        } else {
+            wglWidget->glt->fog_off();
+        }
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
-
-    wglWidget->glt->setAutoZoom(); // This sets the autozoom (I know, could have set the variable directly)
+    wglWidget->glt->bPaused = false;
 }
 
 void Window::initRandomProblem()
