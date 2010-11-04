@@ -302,5 +302,5 @@ void GLWidget::receiveData(double *xxx,double *yyy,double *zzz,double rradsp,dou
     memcpy(zz,zzz,Np*sizeof(double));
 }
 
-// That's all Folks!
+// That's al Folks!
 ////
