@@ -23,6 +23,15 @@
 #include <stdio.h>
 
 #if __LINUX__
+#if __APPLE__
+#define X_WINDOWS 0
+#else
+#define X_WINDOWS 1
+#endif
+#define X_WINDOWS 0
+#endif
+
+#if X_WINDOWS
 #include <X11/Xlib.h>
 void initX()
 {
@@ -35,7 +44,6 @@ void initX()
     printf("initX (vanilla) called\n");
     return ;
 }
-
 #endif
 
 // That's all Folks!
