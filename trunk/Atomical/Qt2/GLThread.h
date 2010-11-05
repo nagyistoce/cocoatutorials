@@ -44,19 +44,24 @@ public:
    				, double rradsp,double ssep,double iimb
    				, int NNp,int NNp2,int mmode
    				) ;
-   void setAutoZoom();
 
    void fog_on(float density);
    void fog_off(void);
 
-   bool         bAutoZoom;
-   bool         bPaused;
+   // getters/setters
+   bool setAutoZoom(bool aAutoZoom) { bool result = bAutoZoom ; bAutoZoom = aAutoZoom ; return result ; }
+
+   bool isPaused()                  { return bPaused ; }
+   bool setPaused(bool aPaused)     { bool result = bPaused   ; bPaused = aPaused     ; return result ; }
+
    // allow GLWidget access to our private members
    friend class GLWidget;
 signals:
    void frameNeeded();
 
 private:
+   bool         bAutoZoom;
+   bool         bPaused;
    bool 		doRendering;
    bool 		doResize;
    int  		w;

@@ -35,20 +35,20 @@
 
 #ifdef  __WINDOWS__
 #include <windows.h>
-#define random rand
+#define random   rand
 #define srandom srand
 #endif
 
 #define UNUSED(x)x=x
 #define lengthof(x)    sizeof(x)/sizeof(x[0])
 
-#ifdef __WINDOWS__
+#ifdef  __WINDOWS__
 #define mSleep(milli)  Sleep(milli)
 #else
 #define mSleep(milli)  usleep(milli*1000)
 #endif
 
-int platformInit(int argc,char** argv);
+int     platformInit(int argc,char** argv);
 
 #endif
 

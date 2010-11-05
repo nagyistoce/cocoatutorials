@@ -57,12 +57,8 @@ void GLThread::resizeViewport(const QSize &size)
 	doResize = true;
 }
 
-void GLThread::setAutoZoom(){
-    bAutoZoom=true;
-    printf("Auto-zoom is set...\n");fflush(stdout);
-}
-
-void GLThread::fog_on(float density) {
+void GLThread::fog_on(float density)
+{
     glw->makeCurrent();
 
     glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
@@ -75,7 +71,8 @@ void GLThread::fog_on(float density) {
     glEnable (GL_FOG); //enable the fog
 }
 
-void GLThread::fog_off(void){
+void GLThread::fog_off(void)
+{
     glw->makeCurrent();
 
     glDisable (GL_FOG);
@@ -148,97 +145,95 @@ void GLThread::run()
     printf("In GLThread::run() - Initialization done, start loop\n");
 
 	while (doRendering) {
-        if(!bPaused){
-                /*** This is crappy and needs to be fixed ***/
-                if (doResize) {
-                    glViewport(0, 0, w, h);
-                    doResize = false;
-                }
+		if(!bPaused){
+			/*** This is crappy and needs to be fixed ***/
+			if (doResize) {
+				glViewport(0, 0, w, h);
+				doResize = false;
+			}
 
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                glLoadIdentity();
-                gluPerspective( 60, 1, 1.0, 1000.0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glLoadIdentity();
+			gluPerspective( 60, 1, 1.0, 1000.0);
 
-                rradius=CPU_rad(xx, yy, zz, Np);
+			rradius=CPU_rad(xx, yy, zz, Np);
 
-            if ( bAutoZoom ) {
-                // when we set a new problem, we set bAutoZoom
-                // to request the UI to display the problem space
-                //
-                // I like this idea but I'd implement it in a different way!
+			if ( bAutoZoom ) {
+				// when we set a new problem, we set bAutoZoom
+				// to request the UI to display the problem space
+				//
+				// I like this idea but I'd implement it in a different way!
+	
+				camRadius=2.3*rradius; // So the zoom is tighter
+	
+				// When a new problem is started, the molecule radius changes wildly,
+				// we then "auto-zoom" until the radius does not change up to 1%. The small
+				// 10^-6 is added to denominator since rradius=0 when the rendering is
+				// started but the class has not started gathering data yet.
+	
+				if(fabs(1-camRadius/(oldCamRadius+1e-6))>1e-2) {
+					bAutoZoom = true ;
+					oldCamRadius=camRadius;
+				} else {
+					bAutoZoom = false ; // ...otherwise let the user have control :)
+                    printf("User has zoom control\n");
+					oldCamRadius=1e15;
+				}
+				int z = (int) (double) (camRadius*zoomMultiplier);
+				glw->setZoom(z);
+				zoom = z ;
+			} else {
+				camRadius=zoom; // Original code
+				camRadius/=zoomMultiplier;
+			}
+	
+			camYaw=-6.28*yRot/(360*16);
+			camPitch=6.28*xRot/(360*16);
+	
+			camX = cos(camYaw) * cos(camPitch) * camRadius;
+			camY = sin(camYaw) * cos(camPitch) * camRadius;
+			camZ = sin(camPitch) * camRadius;
+	
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+	
+			gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);
+	
+			alpha=0.9;
+			NNpin=0;
+			glq=gluNewQuadric();
+	
+			for(i=0;i<Np;i++){
+				glPushMatrix();
+				GLfloat e=(GLfloat)(rrad[i]/rradius);
+				if(mode==2 && Np2>0 && separation>0){
+					if(xx[i]>0.0){
+						glColor4f(.5+.5*e,0,0,alpha);
+					} else {
+						glColor4f(0,0,.5+.5*e,alpha);
+					}
+				} else {
+					if(i%2 && imbalance>1.0) glColor4f(e,0.2+0.8*(imbalance-1)/9,(1-e),alpha); else glColor4f(e,0,(1-e),alpha);
+				}
 
-                camRadius=2.3*rradius; // So the zoom is tighter
+				glTranslatef(xx[i], yy[i], zz[i]);
+				if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
+				if(rrad[i]<=radsp) NNpin++;
+				glPopMatrix();
+			}
+	
+			glPushMatrix();
+			glColor4f((GLfloat)1,(GLfloat)1,(GLfloat)0,(GLfloat)0.7);
+			glTranslatef(0, 0, 0);
+			glq=gluNewQuadric();
+			gluSphere(glq, radsp, 40, 40);
+			glPopMatrix();
 
-                // When a new problem is started, the molecule radius changes wildly,
-                // we then "auto-zoom" until the radius does not change up to 1%. The small
-                // 10^-6 is added to denominator since rradius=0 when the rendering is
-                // started but the class has not started gathering data yet.
-
-                if(fabs(1-camRadius/(oldCamRadius+1e-6))>1e-2) {
-                    bAutoZoom = true ;
-                    oldCamRadius=camRadius;
-                } else {
-                    bAutoZoom = false ; // ...otherwise let the user have control :)
-                    printf("User has zoom control\n");fflush(stdout);
-                    oldCamRadius=1e15;
-                }
-                int z = (int) (double) (camRadius*zoomMultiplier);
-                glw->setZoom(z);
-                zoom = z ;
-            } else {
-                camRadius=zoom; // Original code
-                camRadius/=zoomMultiplier;
-            }
-
-            camYaw=-6.28*yRot/(360*16);
-            camPitch=6.28*xRot/(360*16);
-
-            camX = cos(camYaw) * cos(camPitch) * camRadius;
-            camY = sin(camYaw) * cos(camPitch) * camRadius;
-            camZ = sin(camPitch) * camRadius;
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-
-            gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);
-
-            alpha=0.9;
-
-            NNpin=0;
-            glq=gluNewQuadric();
-
-            for(i=0;i<Np;i++){
-                    glPushMatrix();
-                    GLfloat e=(GLfloat)(rrad[i]/rradius);
-                    if(mode==2 && Np2>0 && separation>0){
-                        if(xx[i]>0.0){
-                            glColor4f(.5+.5*e,0,0,alpha);
-                        } else {
-                            glColor4f(0,0,.5+.5*e,alpha);
-                        }
-                    } else {
-                        if(i%2 && imbalance>1.0) glColor4f(e,0.2+0.8*(imbalance-1)/9,(1-e),alpha); else glColor4f(e,0,(1-e),alpha);
-                    }
-
-                    glTranslatef(xx[i], yy[i], zz[i]);
-                    if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
-                    if(rrad[i]<=radsp) NNpin++;
-                    glPopMatrix();
-                }
-
-                glPushMatrix();
-                glColor4f((GLfloat)1,(GLfloat)1,(GLfloat)0,(GLfloat)0.7);
-                glTranslatef(0, 0, 0);
-                glq=gluNewQuadric();
-                gluSphere(glq, radsp, 40, 40);
-                glPopMatrix();
-
-                glw->swapBuffers();
-                gluDeleteQuadric(glq);
-        } // if(!bPaused);
-
-        emit frameNeeded();
-
+			glw->swapBuffers();
+			gluDeleteQuadric(glq);
+		} // if(!bPaused);
+	
+		emit frameNeeded();
 		mSleep(13);
 	 }
 }
