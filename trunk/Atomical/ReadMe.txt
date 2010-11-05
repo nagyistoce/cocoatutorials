@@ -1,12 +1,10 @@
 ReadMe.txt
 ----------
 
-Atomical is a project between Fabio, Robin and Andre.
+Atomical is a project between Fabio and Robin.
 
-Qt2 Status
-----------
 
-1) Working on Mac and Windows
+1) Working on Mac, Windows and Linux
 2) Build with Qt Creator : No DevStudio or XCode
 
 Robin's next tasks:
@@ -14,7 +12,19 @@ Robin's next tasks:
 2) The ZRotation doesn't rotate the camera
 
 Fabio's next tasks:
-1) Learn to submit code into SVN (I use SmartSVN on the Mac)
+1) Have a break and do his University work
+
+Fabio:  Here's my script 'now' which will give you the time stamp
+#!/bin/bash
+python -c "import time; print time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime())"
+
+On the Mac, you might like the variant (which puts it on the clipboard)
+#!/bin/bash
+python -c "import time; print time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime())" | pbcopy
+pbpaste
+
+
+
 
 UI
 --
@@ -25,30 +35,7 @@ To quit:           Q or q or Escape
 
 Known Issue
 -----------
-1) Doesn't run on Linux.  To be investigated.
-
-Starting /media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2...
-1.354570e+00 1.100483e+00 20 4 2
-Window::init_double_layer() started
-IN SETUP
-In calcThread::setup(), mode=2
-In GLThread::run() - Initialization
-In GLThread::run() - Initialization done, start loop
-<unknown>: Fatal IO error 11 (Resource temporarily unavailable) on X server :0.0.
-/media/E0325F96325F7090/temp/Atomical_Skeleton/Qt2/Qt2 exited with code 1
-
-Fabio's suggestion is:
-
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
-#endif
-
-and in the main(), as the *first* instruction:
-
-#ifdef Q_WS_X11
-XInitThreads();
-#endif
-
+1) Graphics in Linux are not right.
 
 
 Robin Mills
@@ -58,8 +45,9 @@ http://clanmills.com
 
 Revision History
 ----------------
-2010-12-04 00:43:00ITT  Implemented fog, methods GLThread::fog_on(float density) and 
-		        GLThread::fog_off(). Now there's a bool bPause to control the 
+2010-11-04 19:16:18PDT  renamed the initX code to be platform
+2010-11-05 00:43:00ITT  Implemented fog, methods GLThread::fog_on(float density) and
+                        GLThread::fog_off(). Now there's a bool bPause to control the
                         rendering. It is rough: I set it true and wait 20 msecs to be 
                         sure the pending rendering loop is completed. This was needed 
                         since some concurrent calls to GL (such as fog) fail (but do 

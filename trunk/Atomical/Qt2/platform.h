@@ -1,5 +1,5 @@
 //
-//  initX.h
+//  platform.h
 //  This file is part of Atomical
 //
 //  Atomical is free software: you can redistribute it and/or modify
@@ -20,10 +20,27 @@
 //
 
 #pragma once
-#ifndef _INIT_X_
-#define _INIT_X_
+#ifndef _PLATFORM_H_
+#define _PLATFORM_H_
 
-void initX(void);
+#ifdef  __LINUX__
+#ifdef  __APPLE__
+#undef  __LINUX__
+#endif
+#endif
+
+#ifdef  __LINUX__
+#define __XWINDOWS__
+#endif
+#ifdef __WINDOWS__
+#define random rand
+#define srandom srand
+#endif
+#define UNUSED(x)x=x
+#define mSleep(milli)  usleep(milli*1000)
+#define lengthof(x)    sizeof(x)/sizeof(x[0])
+
+int platformInit(int argc,char** argv);
 
 #endif
 

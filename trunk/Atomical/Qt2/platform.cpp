@@ -1,5 +1,5 @@
 //
-//  initX.cpp
+//  platform.cpp
 //  This file is part of Atomical
 //
 //  Atomical is free software: you can redistribute it and/or modify
@@ -12,38 +12,32 @@
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
+//  You should have received a copy of the GNU GenerinitXal Public License
 //  along with Atomical.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Fabio Cavaliere, Genova, Italy
 //  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
 //
 
-#include "initX.h"
 #include <stdio.h>
 
-#if     __LINUX__
-#ifndef __APPLE__
-#define X_WINDOWS 1
-#endif
-#endif
+#include "Qt2.h"
+#include "platform.h"
 
-#ifndef X_WINDOWS
-#define X_WINDOWS 0
-#endif
 
-#if X_WINDOWS
+#ifdef   __XWINDOWS__
 #include <X11/Xlib.h>
-void initX()
+int platformInit(int /*argc*/,char** /*argv*/)
 {
     XInitThreads();
-    printf("XInitThreads() called LINUX = %d\n",__LINUX__);
+    printf("platformInit() XWINDOWS\n");
+    return 0;
 }
 #else
-void initX()
+int platformInit(int /*argc*/,char** /*argv*/)
 {
-    printf("initX (vanilla) called\n");
-    return ;
+    printf("platformInit (vanilla) called\n");
+    return 0 ;
 }
 #endif
 
