@@ -221,9 +221,9 @@ void Window::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int 
     mode=mmode;
     precision=prec;
 
-    wglWidget->glt->bPaused = true;
+    wglWidget->glt->setPaused(true);
     mSleep(16);
-    wglWidget->glt->bAutoZoom = true ;
+    wglWidget->glt->setAutoZoom(true) ;
 
     printf("%e %e %d %d %d\n",imbalance,separation,Np,Np2,mode);
 
@@ -238,7 +238,7 @@ void Window::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int 
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
-    wglWidget->glt->bPaused = false;
+    wglWidget->glt->setPaused(false);
 }
 
 void Window::initRandomProblem()

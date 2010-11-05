@@ -20,10 +20,7 @@
 //
 
 #include <stdio.h>
-
 #include "Qt2.h"
-#include "platform.h"
-
 
 #ifdef   __XWINDOWS__
 #include <X11/Xlib.h>

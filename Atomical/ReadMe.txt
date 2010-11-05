@@ -3,16 +3,20 @@ ReadMe.txt
 
 Atomical is a project between Fabio and Robin.
 
-
 1) Working on Mac, Windows and Linux
-2) Build with Qt Creator : No DevStudio or XCode
+2) Build with Qt Creator.  No DevStudio or XCode suport.
 
 Robin's next tasks:
-1) Develop the UI (similar to WmCocoa)
-2) The ZRotation doesn't rotate the camera
+1) Develop the UI - similar to WmCocoa.
+2) The ZRotation doesn't rotate the camera on it radial axis.
 
 Fabio's next tasks:
-1) Have a break and do his University work
+1) Have a break and do his University work.
+2) Have a nice time with his colleague from Finland.
+
+Two other matters:
+
+1) now (timestamp)
 
 Fabio:  Here's my script 'now' which will give you the time stamp
 #!/bin/bash
@@ -23,8 +27,13 @@ On the Mac, you might like the variant (which puts it on the clipboard)
 python -c "import time; print time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime())" | pbcopy
 pbpaste
 
+2) Linux and Windows
 
+There's something wrong with the OpenGL.
+a) Linux = the bitmap is all wrong.
+b) Windows = the screen is blank !
 
+This isn't urgent.  It will need attention eventually.
 
 UI
 --
@@ -35,7 +44,7 @@ To quit:           Q or q or Escape
 
 Known Issue
 -----------
-1) Graphics in Linux are not right.
+1) Graphics in Linux and Windows are not right.
 
 
 Robin Mills
