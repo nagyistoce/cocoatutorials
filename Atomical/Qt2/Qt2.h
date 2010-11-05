@@ -23,7 +23,7 @@
 #ifndef __QT2_H__
 #define __QT2_H__
 
-#define UNUSED(x)x=x
+#include "platform.h"
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -34,14 +34,6 @@
 #endif
 
 #include <stdio.h>
-
-#ifdef __WINDOWS__
-#define random rand
-#define srandom srand
-#endif
-
-#define mSleep(milli)  usleep(milli*1000)
-#define lengthof(x)    sizeof(x)/sizeof(x[0])
 
 #endif
 

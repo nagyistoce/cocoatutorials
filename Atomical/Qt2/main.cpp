@@ -21,16 +21,18 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
-
-#include "window.h"
-#include "Qt2.h"
 #include <stdio.h>
+
+#include "Qt2.h"
+#include "window.h"
+#include "platform.h"
 
 int main(int argc, char *argv[])
 {
     //char stdBuffer[1];
     //setvbuf(stdout,stdBuffer,lengthof(stdBuffer),sizeof(stdBuffer[0]));
     setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
+    platformInit(argc,argv);
 
     QApplication app(argc, argv);
     Window window;
