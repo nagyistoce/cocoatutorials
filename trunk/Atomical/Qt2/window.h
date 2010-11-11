@@ -25,11 +25,9 @@
 
 #include <QWidget>
 #include "calcthread.h"
-#include "rendthread.h"
 #include "glwidget.h"
 
 class GLWidget;
-class rendthread;
 
 QT_BEGIN_NAMESPACE
 class QSlider;

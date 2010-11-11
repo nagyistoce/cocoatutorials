@@ -230,11 +230,11 @@ void Window::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int 
     if(flag) {
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
-        if(mode==3){
-            wglWidget->glt->fog_on(0.07);
-        } else {
-            wglWidget->glt->fog_off();
-        }
+        //if(mode==3){
+        //    wglWidget->glt->fog_on(0.07);
+        //} else {
+        //    wglWidget->glt->fog_off();
+        //}
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);

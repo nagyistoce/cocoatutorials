@@ -19,10 +19,11 @@
 //  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
 //
 
+#include "Qt4.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "about.h"
-#include "Qt4.h"
+#include <time.h>
 
 #define MaxNp 5000
 
@@ -120,11 +121,11 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     if(flag) {
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
-        if(mode==3){
-            wglWidget->glt->fog_on(0.07);
-        } else {
-            wglWidget->glt->fog_off();
-        }
+        //if(mode==3){
+        //    wglWidget->glt->fog_on(0.07);
+        //} else {
+        //    wglWidget->glt->fog_off();
+        //}
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
@@ -217,14 +218,11 @@ void MainWindow::closeEvent(QCloseEvent* /*event*/)
     wglWidget->stopRendering();
 }
 
-
-
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindowClass)
+: QMainWindow(parent)
+, ui(new Ui::MainWindowClass)
 {
     ui->setupUi(this);
-
-
 
 //  Init the RNGs
     srandom(time(NULL));

@@ -10,7 +10,6 @@ SOURCES +=  main.cpp \
             glwidget.cpp \
             about.cpp \
             calcthread.cpp \
-            rendthread.cpp \
             GLThread.cpp \
             platform.cpp
 
@@ -18,7 +17,6 @@ HEADERS +=  mainwindow.h \
             glwidget.h \
             about.h \
             calcthread.h \
-            rendthread.h \
             GLThread.h \
             platform.h
 
