@@ -36,17 +36,17 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+   ~MainWindow();
 
 private:
     Ui::MainWindowClass *ui;
 
-    QAction *A_info;
+    QAction* actionAbout;
 
 private slots:
     void on_actionE_xit_triggered();
     void S_labelUpdate();
-    void S_info();
+    void slotAbout();
 
 // -------------------
 
