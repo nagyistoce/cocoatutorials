@@ -26,18 +26,18 @@
 
 #include "Qt4.h"
 #include "mainwindow.h"
+#include "about.h"
 
 int main(int argc, char *argv[])
 {
     setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
     platformInit(argc,argv);
-
     QApplication a(argc, argv);
+
     MainWindow w;
-
     w.setWindowTitle( "Atomical by Fabio and Robin" );
-
     w.show();
+
     return a.exec();
 }
 

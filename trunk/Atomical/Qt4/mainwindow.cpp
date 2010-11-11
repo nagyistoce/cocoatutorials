@@ -242,9 +242,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->verticalLayout_2->addWidget( wglWidget );
 
 
-    A_info = new QAction(tr("I&nfo"), this);
-    ui->menuBar->addAction( A_info );
-     connect( A_info , SIGNAL( triggered() ), this, SLOT( S_info() ) );
+    actionAbout = new QAction(tr("A&bout"), this);
+    ui->menuBar->addAction( actionAbout );
+    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( slotAbout() ) );
 /*
     //secound timer for labelupdate() speed same as in GLWidget ~ 60-64 fps
     QTimer *timer = new QTimer;
@@ -252,56 +252,54 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start( 50 );
 */
 
-     //  Alloc a new calculation thread
-         cThread= new calcThread();
+    //  Alloc a new calculation thread
+    cThread= new calcThread();
 
-     //  When a step is calculated, the stepDone() signal is emitted.
-     //  It is caught here by updatePositions() so that this class is aware of these positions.
-     //  Additionally, updatePositions() loads the particles positions into the glWidget
-         connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
+    //  When a step is calculated, the stepDone() signal is emitted.
+    //  It is caught here by updatePositions() so that this class is aware of these positions.
+    //  Additionally, updatePositions() loads the particles positions into the glWidget
+    connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
 
-     //  This call initializes a random problem
-         initRandomProblem();
+    //  This call initializes a random problem
+    initRandomProblem();
 
-     //  This call initializes a problem
-     //
-     //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
-     //
-     //  IMBALANCE: a double parameter, must be >= 1.0
-     //  SEPARATION: a double parameter, must be >= 0.0
-     //  TARGET_PRECISION: a double parameter in the range 1e-16 <= x <= 1
-     //  Np: an integer parameter, in the range 2 <= x <= MaxNp
-     //  Np2: an integer parameter, in the range 0 <= x <= Np
-     //  MODE: an integer parameter, with value 2 or 3
-     //  FLAG: an integer parameter, with value 0 or 1
-     //
-     //  Whenever a new molecule needs to be calculated, FLAG should be set to 1.
-     //
-     //  If IMBALANCE, SEPARATION or TARGET_PRECISION are modified, we assume the user
-     //  does not want to reshuffle the particles, so we call is with FLAG set to 0
-     //
-     //  Examples
-     //
-     //  initProblem(1.0,0.2,1e-9,256,128,2,1); // To init a new molecule calculation
-     //
-     //  initProblem(1.0,0.5,1e-9,256,128,2,0); // To update the SEPARATION parameter
+    //  This call initializes a problem
+    //
+    //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
+    //
+    //  IMBALANCE: a double parameter, must be >= 1.0
+    //  SEPARATION: a double parameter, must be >= 0.0
+    //  TARGET_PRECISION: a double parameter in the range 1e-16 <= x <= 1
+    //  Np: an integer parameter, in the range 2 <= x <= MaxNp
+    //  Np2: an integer parameter, in the range 0 <= x <= Np
+    //  MODE: an integer parameter, with value 2 or 3
+    //  FLAG: an integer parameter, with value 0 or 1
+    //
+    //  Whenever a new molecule needs to be calculated, FLAG should be set to 1.
+    //
+    //  If IMBALANCE, SEPARATION or TARGET_PRECISION are modified, we assume the user
+    //  does not want to reshuffle the particles, so we call is with FLAG set to 0
+    //
+    //  Examples
+    //
+    //  initProblem(1.0,0.2,1e-9,256,128,2,1); // To init a new molecule calculation
+    //
+    //  initProblem(1.0,0.5,1e-9,256,128,2,0); // To update the SEPARATION parameter
 
-     //  Then, we start the calculation and the rendering. They both live in their threads
-     //  and communicate via signals and slots.
-         cThread->doCalc();
-         wglWidget->startRendering();
+    //  Then, we start the calculation and the rendering. They both live in their threads
+    //  and communicate via signals and slots.
+    cThread->doCalc();
+    wglWidget->startRendering();
 
-     //  At this point, the UI should take care of interacting with the user and call
-     //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
-     //  screensaver). Note that initProblem() can be called without stopping any thread.
+    //  At this point, the UI should take care of interacting with the user and call
+    //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
+    //  screensaver). Note that initProblem() can be called without stopping any thread.
 
-     #if DEMO_MODE
-         timer = new QTimer(this);
-         connect(timer,SIGNAL(timeout()),this,SLOT(shuffle()));
-         timer->start(1000*DEMO_DELAY_IN_SECONDS); // Shuffle the parameters every so seconds
-     #endif
-
-
+#if DEMO_MODE
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(shuffle()));
+    timer->start(1000*DEMO_DELAY_IN_SECONDS); // Shuffle the parameters every so seconds
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -314,17 +312,18 @@ void MainWindow::on_actionE_xit_triggered()
     this->window()->close();
 }
 
-void MainWindow::S_info()
+void MainWindow::slotAbout()
 {
-    about *inf = new about;
-    inf->setWindowFlags(Qt::Tool);
-    inf->move(int(this->x() + 0.5 * this->width() - 0.5 * inf->width()),
-              int(this->y() + 0.5 * this->height() - 0.5 * inf->height()));
+    about*  dialog = new about;
+    dialog->setWindowFlags(Qt::Tool);
+    dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
+                , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
+                );
 
-    inf->setWindowIcon(QIcon(":/icon/ikona_32.png"));
-    inf->setWindowModality(Qt::ApplicationModal);
-    inf->show();
-    inf->activateWindow();
+    dialog->setWindowIcon(QIcon(":/icon/ikona_32.png"));
+    dialog->setWindowModality(Qt::ApplicationModal);
+    dialog->show();
+    dialog->activateWindow();
 }
 
 void MainWindow::S_labelUpdate()

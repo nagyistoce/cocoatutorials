@@ -1,36 +1,36 @@
 # -------------------------------------------------
-# Project created by QtCreator 2009-03-19T00:46:57
+# Project created by QtCreator
 # -------------------------------------------------
-QT 		+= opengl
-TARGET 	 = Qt4
-TEMPLATE = app
+QT          +=  opengl
+TARGET       =  Qt4
+TEMPLATE     =  app
 
-SOURCES +=  main.cpp \
-            mainwindow.cpp \
-            glwidget.cpp \
-            about.cpp \
-            calcthread.cpp \
-            GLThread.cpp \
-            platform.cpp
+SOURCES     +=  main.cpp \
+                mainwindow.cpp \
+                glwidget.cpp \
+                about.cpp \
+                calcthread.cpp \
+                GLThread.cpp \
+                platform.cpp
 
-HEADERS +=  mainwindow.h \
-            glwidget.h \
-            about.h \
-            calcthread.h \
-            GLThread.h \
-            platform.h
+HEADERS     +=  mainwindow.h \
+                glwidget.h \
+                about.h \
+                calcthread.h \
+                GLThread.h \
+                platform.h
 
-FORMS +=    mainwindow.ui \
-            about.ui
+FORMS       +=  mainwindow.ui \
+                about.ui
 
-RESOURCES += res.qrc
+RESOURCES   +=  res.qrc
 
 
 
 win32 {
-    DEFINES  += __WINDOWS__=1
+    DEFINES +=  __WINDOWS__=1
 }
 
 unix {
-    DEFINES  += __LINUX__=1
+    DEFINES +=  __LINUX__=1
 }
