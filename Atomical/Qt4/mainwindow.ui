@@ -44,6 +44,20 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
+       <widget class="QPushButton" name="pauseButton">
+        <property name="text">
+         <string>Pause</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="resumeButton">
+        <property name="text">
+         <string>Resume</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <spacer name="horizontalSpacer_4">
@@ -268,7 +282,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>576</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -338,5 +352,38 @@ p, li { white-space: pre-wrap; }
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+ <connection>
+  <sender>pauseButton</sender>
+  <signal>clicked()</signal>
+  <receiver>MainWindowClass</receiver>
+  <slot>pause()</slot>
+  <hints>
+   <hint type="sourcelabel">
+    <x>502</x>
+    <y>42</y>
+   </hint>
+   <hint type="destinationlabel">
+    <x>287</x>
+    <y>190</y>
+   </hint>
+  </hints>
+ </connection>
+ <connection>
+  <sender>resumeButton</sender>
+  <signal>clicked()</signal>
+  <receiver>MainWindowClass</receiver>
+  <slot>resume()</slot>
+  <hints>
+   <hint type="sourcelabel">
+    <x>502</x>
+    <y>42</y>
+   </hint>
+   <hint type="destinationlabel">
+    <x>287</x>
+    <y>190</y>
+   </hint>
+  </hints>
+ </connection>
+ </connections>
 </ui>

@@ -48,6 +48,9 @@ private slots:
     void S_labelUpdate();
     void slotAbout();
 
+    void pause();
+    void resume();
+
 // -------------------
 
 protected:

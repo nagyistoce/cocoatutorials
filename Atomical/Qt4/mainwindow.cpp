@@ -339,6 +339,16 @@ QVariant v;
 */
 }
 
+void MainWindow::pause()
+{
+    wglWidget->stopRendering();
+}
+
+void MainWindow::resume()
+{
+    wglWidget->startRendering();
+}
+
 // That's all Folks!
 ////
 
