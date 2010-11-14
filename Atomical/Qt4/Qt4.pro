@@ -12,7 +12,7 @@ SOURCES     +=  main.cpp \
                 calcthread.cpp \
                 GLThread.cpp \
                 platform.cpp \
-    Printf.cpp
+                Printf.cpp
 
 HEADERS     +=  mainwindow.h \
                 glwidget.h \
@@ -20,8 +20,8 @@ HEADERS     +=  mainwindow.h \
                 calcthread.h \
                 GLThread.h \
                 platform.h \
-    Printf.h \
-    Qt4.h
+                Printf.h \
+                Qt4.h
 
 FORMS       +=  mainwindow.ui \
                 about.ui
@@ -37,3 +37,6 @@ win32 {
 unix {
     DEFINES +=  __LINUX__=1
 }
+
+OTHER_FILES += \
+    ../ReadMe.txt

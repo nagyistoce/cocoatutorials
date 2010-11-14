@@ -27,7 +27,7 @@
        <enum>QLayout::SetNoConstraint</enum>
       </property>
       <item>
-       <spacer name="horizontalSpacer_6">
+       <spacer name="openGLSpace">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

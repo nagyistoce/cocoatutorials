@@ -66,13 +66,6 @@ private slots:
 private:
     GLWidget*   wglWidget;
 
-    QSlider*    createSlider(int min=0,int max=360*16);
-
-    QSlider*    xSlider;
-    QSlider*    ySlider;
-    QSlider*    zSlider;
-    QSlider*    zoomSlider;
-
     QTimer*     timer;
 
     calcThread* cThread;
@@ -90,7 +83,8 @@ private:
     void initProblem(double imb,double sep,double prec,int NNp,int NNp2,int mmode,int flag);
     void initRandomProblem(bool bMode = false,int aMode=3);
 
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent* event);
+    void resizeEvent(QResizeEvent* event);
 
 };
 

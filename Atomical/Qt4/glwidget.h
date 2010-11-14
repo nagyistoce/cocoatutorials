@@ -30,7 +30,6 @@
 #include "Qt4.h"
 #include "calcthread.h"
 #include "GLThread.h"
-#include "window.h"
 
 class GLThread;
 
@@ -39,7 +38,7 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent = 0);
+    GLWidget(QWidget* parent = 0);
    ~GLWidget() {};
 
     void drawGL(double *xx,double *yy,double *zz,double imb,double sep,double rrsp,int NNp,int NNp2,int mmode);
@@ -51,6 +50,7 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
+    void  resizeGL(int width, int height);
 
     GLThread* glt;
 
@@ -75,7 +75,6 @@ protected:
     void fog_on(GLfloat density);
     void initializeGL();
     void paintGL();
-    void resizeGL(int width, int height);
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
