@@ -27,13 +27,13 @@
 int platformInit(int /*argc*/,char** /*argv*/)
 {
     XInitThreads();
-    printf("platformInit() XWINDOWS\n");
+    Printf("platformInit() XWINDOWS\n");
     return 0;
 }
 #else
 int platformInit(int /*argc*/,char** /*argv*/)
 {
-    printf("platformInit (vanilla) called\n");
+    Printf("platformInit (vanilla) called\n");
     return 0 ;
 }
 #endif

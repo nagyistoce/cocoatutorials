@@ -42,9 +42,9 @@ GLWidget::GLWidget(QWidget *parent)
     zRot = 0;
     zoom = 7000;
 
-    glt = new GLThread(this);
+    glt = new GLThread(this,MaxNp);
     connect(glt, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
-    updateFrame();
+  //updateFrame();
 
     setAutoBufferSwap(false);    
 }
@@ -126,7 +126,7 @@ void GLWidget::setZoom(int z)
     if ( z < 5 ) z = 5 ;
     if (z != zoom) {
         zoom=z;
-    //  printf("zoomChanged = %d\n",zoom);
+    //  Printf("zoomChanged = %d\n",zoom);
         emit zoomChanged(z);
     }
 }
@@ -153,10 +153,10 @@ void GLWidget::startRendering()
 
 void GLWidget::stopRendering()
 {
-    printf("stopRendering()...");
+    Printf("stopRendering()...");
 	glt->stop();
 	glt->wait();
-    printf("done!");
+    Printf("done!");
 }
 
 void GLWidget::resizeEvent(QResizeEvent* /* event */)
@@ -283,7 +283,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::updateFrame()
 {
-    //printf("In updateFrame()\n");
+    //Printf("In updateFrame()\n");
     glt->loadData(xx,yy,zz,(double)zoom,xRot,yRot,radsp,separation,imbalance,Np,Np2,mode);
 }
 

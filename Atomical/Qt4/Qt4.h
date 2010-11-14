@@ -33,7 +33,9 @@
 #include <GL/glu.h>
 #endif
 
-#include <stdio.h>
+#include "Printf.h"
+#define MaxNp 5000
+typedef double *double_p;
 
 #endif
 
