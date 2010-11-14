@@ -44,12 +44,14 @@ private:
     QAction* actionAbout;
 
 private slots:
-    void on_actionE_xit_triggered();
-    void S_labelUpdate();
+    void on_actionAbout_triggered();
+    void on_actionNewProblem_triggered();
+    void on_actionExit();
     void slotAbout();
 
     void pause();
     void resume();
+    void newProblem();
 
 // -------------------
 
@@ -75,7 +77,7 @@ private:
 
     calcThread* cThread;
 
-    int Np,Np2,mode;
+    int    Np,Np2,mode;
     double separation,imbalance,radsp,precision;
 
     double xx[5000],yy[5000],zz[5000];
@@ -85,7 +87,7 @@ private:
     void init_double_layer();
     void Initialize();
     void initProblem(double imb,double sep,double prec,int NNp,int NNp2,int mmode,int flag);
-    void initRandomProblem();
+    void initRandomProblem(bool bMode = false,int aMode=3);
 
     void closeEvent(QCloseEvent *event);
 
