@@ -220,6 +220,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     int H = event->size().height();
     wglWidget->resizeGL(W,H);
     Printf("setting = %dx%d\n",W,H);
+
 }
 
 MainWindow::MainWindow(int maxNp,QWidget *parent)
