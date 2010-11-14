@@ -17,6 +17,8 @@ Known issue
 -----------
 
 Qt4/Mac/Resize window is "explosive"
+Resize crops but does not resize. 
+No crash on Resize with a MBP 13", OsX 10.6.5 with graphics update 1.0 and NVidia 9400M integrated graphics.
 
 UI
 --
@@ -33,6 +35,8 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-14 22:34.00GMT  Fixed a bug in the glThread class (no Np initialized
+                        when constructed). 
 2010-11-14 09:07:35GMT  Some UI added. MaxNp refactored for dynamic array allocation
                         Please use Printf instead of printf (helps windows debugging)
 2010-11-04 19:16:18PDT  renamed the initX code to be platform

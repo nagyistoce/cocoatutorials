@@ -27,6 +27,8 @@ double GLThread::CPU_rad(const double* xx, const double* yy,const double* zz, in
 	int i;
 	double x0,y0,z0;
 
+//    Printf("CPU_rad(): N=%d\n",N);fflush(stdout);
+
 	double res=0.0;
 
 	for(i=0;i<N;i++){
@@ -49,6 +51,9 @@ GLThread::GLThread(GLWidget *gl,int maxNp)
     yy      = new double[maxNp];
     zz      = new double[maxNp];
     rrad    = new double[maxNp];
+
+    Np=0;
+    Np2=0;
 }
 
 GLThread::~GLThread()
@@ -158,6 +163,8 @@ void GLThread::run()
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Printf("In GLThread::run() - Initialization done, start loop\n");
+
+//    Printf("Here, Np=%d\n",Np);
 
 	while (doRendering) {
 		if(!bPaused){
