@@ -132,7 +132,7 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     wglWidget->glt->setPaused(false);
 }
 
-void MainWindow::initRandomProblem()
+void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
 {
     float tmp[3];
     int toggle;
@@ -141,7 +141,7 @@ void MainWindow::initRandomProblem()
     double iimb,ssep;
 
     iimb=1.0; // Random?!?
-    mmode=2+RANDOM_INT(0,1);
+    mmode=bMode ? aMode : 2+RANDOM_INT(0,1);
 
     toggle=RANDOM_INT(0,1);
     if(toggle){
@@ -187,7 +187,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     char c = e->key();
     if (e->key() == Qt::Key_Escape || ::tolower(c) == 'q')
-        close();
+        on_actionExit();
     else
         QWidget::keyPressEvent(e);
 }
@@ -203,7 +203,7 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
 
 void MainWindow::shuffle()
 {
-    initRandomProblem();
+   newProblem();
 }
 
 void MainWindow::performShutdown()
@@ -241,16 +241,10 @@ MainWindow::MainWindow(QWidget *parent)
     wglWidget = new GLWidget;
     ui->verticalLayout_2->addWidget( wglWidget );
 
-
+    // manually add to the menu (this is sample code to be removed later)
     actionAbout = new QAction(tr("A&bout"), this);
     ui->menuBar->addAction( actionAbout );
     connect( actionAbout , SIGNAL( triggered() ), this, SLOT( slotAbout() ) );
-/*
-    //secound timer for labelupdate() speed same as in GLWidget ~ 60-64 fps
-    QTimer *timer = new QTimer;
-        connect(timer, SIGNAL(timeout()), this, SLOT(S_labelUpdate()));
-    timer->start( 50 );
-*/
 
     //  Alloc a new calculation thread
     cThread= new calcThread();
@@ -259,9 +253,7 @@ MainWindow::MainWindow(QWidget *parent)
     //  It is caught here by updatePositions() so that this class is aware of these positions.
     //  Additionally, updatePositions() loads the particles positions into the glWidget
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
-
-    //  This call initializes a random problem
-    initRandomProblem();
+    newProblem();
 
     //  This call initializes a problem
     //
@@ -272,8 +264,8 @@ MainWindow::MainWindow(QWidget *parent)
     //  TARGET_PRECISION: a double parameter in the range 1e-16 <= x <= 1
     //  Np: an integer parameter, in the range 2 <= x <= MaxNp
     //  Np2: an integer parameter, in the range 0 <= x <= Np
-    //  MODE: an integer parameter, with value 2 or 3
-    //  FLAG: an integer parameter, with value 0 or 1
+    //  MODE: an integer parameter, with value 2 or 3   -   2d or 3d of course)
+    //  FLAG: an integer parameter, with value 0 or 1   -   ?? fog on/off for 3d ??
     //
     //  Whenever a new molecule needs to be calculated, FLAG should be set to 1.
     //
@@ -295,11 +287,11 @@ MainWindow::MainWindow(QWidget *parent)
     //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
     //  screensaver). Note that initProblem() can be called without stopping any thread.
 
-#if DEMO_MODE
-    timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(shuffle()));
-    timer->start(1000*DEMO_DELAY_IN_SECONDS); // Shuffle the parameters every so seconds
-#endif
+//#if DEMO_MODE
+//    timer = new QTimer(this);
+//    connect(timer,SIGNAL(timeout()),this,SLOT(shuffle()));
+//    timer->start(1000*DEMO_DELAY_IN_SECONDS); // Shuffle the parameters every so seconds
+//#endif
 }
 
 MainWindow::~MainWindow()
@@ -307,7 +299,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionE_xit_triggered()
+void MainWindow::on_actionExit()
 {
     this->window()->close();
 }
@@ -326,6 +318,7 @@ void MainWindow::slotAbout()
     dialog->activateWindow();
 }
 
+#if 0
 void MainWindow::S_labelUpdate()
 {
 QVariant v;
@@ -338,15 +331,32 @@ QVariant v;
     ui->label_Z->setText( v.toString() );
 */
 }
+#endif
 
 void MainWindow::pause()
 {
-    wglWidget->stopRendering();
+    cThread->pause() ;
 }
 
 void MainWindow::resume()
 {
-    wglWidget->startRendering();
+    cThread->resume() ;
+}
+
+void MainWindow::newProblem()
+{
+    int amode = ui->threeD->checkState() ? 3 : 2 ;
+    initRandomProblem(true,amode);
+}
+
+void MainWindow::on_actionNewProblem_triggered()
+{
+    newProblem();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    slotAbout();
 }
 
 // That's all Folks!
