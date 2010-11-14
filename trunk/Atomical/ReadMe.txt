@@ -3,37 +3,20 @@ ReadMe.txt
 
 Atomical is a project between Fabio and Robin.
 
-1) Working on Mac, Windows and Linux
-2) Build with Qt Creator.  No DevStudio or XCode suport.
-
 Robin's next tasks:
-1) Develop the UI - similar to WmCocoa.
-2) The ZRotation doesn't rotate the camera on it radial axis.
+- Continue UI development to be similar to WmCocoa.
+- Refactor Qt4 "core" code into a DLL (so,framework)
+- Create a screensaver version for Windows/Linu 
+(Robin's in England and has no access at the moment to a Mac) 
 
 Fabio's next tasks:
-1) Have a break and do his University work.
-2) Have a nice time with his colleague from Finland.
+- Add normal modes and scatter to the core code
 
-Two other matters:
 
-1) now (timestamp)
+Known issue
+-----------
 
-Fabio:  Here's my script 'now' which will give you the time stamp
-#!/bin/bash
-python -c "import time; print time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime())"
-
-On the Mac, you might like the variant (which puts it on the clipboard)
-#!/bin/bash
-python -c "import time; print time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime())" | pbcopy
-pbpaste
-
-2) Linux and Windows
-
-There's something wrong with the OpenGL.
-a) Linux = the bitmap is all wrong.
-b) Windows = the screen is blank !
-
-This isn't urgent.  It will need attention eventually.
+Qt4/Mac/Resize window is "explosive"
 
 UI
 --
@@ -41,10 +24,6 @@ Mouse:             rotate the view
 MouseWheel:        zoom in/out
 MouseWheel+Shift:  Rotate the Q in the view
 To quit:           Q or q or Escape
-
-Known Issue
------------
-1) Graphics in Linux and Windows are not right.
 
 
 Robin Mills
@@ -54,6 +33,8 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-14 09:07:35GMT  Some UI added. MaxNp refactored for dynamic array allocation
+                        Please use Printf instead of printf (helps windows debugging)
 2010-11-04 19:16:18PDT  renamed the initX code to be platform
 2010-11-05 00:43:00ITT  Implemented fog, methods GLThread::fog_on(float density) and
                         GLThread::fog_off(). Now there's a bool bPause to control the
