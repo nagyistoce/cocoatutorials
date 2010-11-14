@@ -27,6 +27,7 @@
 #include <QWidget>
 #include <QTimer>
 
+#include "Qt4.h"
 #include "calcthread.h"
 #include "GLThread.h"
 #include "window.h"

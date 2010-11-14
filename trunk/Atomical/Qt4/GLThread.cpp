@@ -38,12 +38,27 @@ double GLThread::CPU_rad(const double* xx, const double* yy,const double* zz, in
 	return res;
 }
 
-GLThread::GLThread(GLWidget *gl)
-: QThread(), glw(gl)
+GLThread::GLThread(GLWidget *gl,int maxNp)
+: QThread()
+, glw(gl)
+, nMaxNp(maxNp)
 {
 	doRendering = true;
 	doResize = false;
+    xx      = new double[maxNp];
+    yy      = new double[maxNp];
+    zz      = new double[maxNp];
+    rrad    = new double[maxNp];
 }
+
+GLThread::~GLThread()
+{
+    delete [] xx ;
+    delete [] yy ;
+    delete [] zz ;
+    delete [] rrad ;
+}
+
 
 void GLThread::stop()
 {
@@ -84,7 +99,7 @@ void GLThread::run()
 
     GLfloat oldCamRadius=1e15;
 
-    printf("In GLThread::run() - Initialization\n");
+    Printf("In GLThread::run() - Initialization\n");
 
 	glw->makeCurrent();
 
@@ -142,7 +157,7 @@ void GLThread::run()
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    printf("In GLThread::run() - Initialization done, start loop\n");
+    Printf("In GLThread::run() - Initialization done, start loop\n");
 
 	while (doRendering) {
 		if(!bPaused){
@@ -244,7 +259,7 @@ void GLThread::loadData
 , double  ssep,double iimb
 , int NNp,int NNp2,int mmode
 ) {
-//  printf("GLThread::loadData\n");
+//  Printf("GLThread::loadData\n");
 	zoom=zzoom;
 	xRot=xxRot;
 	yRot=yyRot;

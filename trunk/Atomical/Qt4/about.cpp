@@ -27,7 +27,6 @@ about::about(QWidget *parent)
 , m_ui(new Ui::about)
 {
     m_ui->setupUi(this);
-//    m_ui->retranslateUi(this);
 }
 
 about::~about()

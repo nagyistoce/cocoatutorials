@@ -22,10 +22,28 @@
 #include "Qt4.h"
 #include "calcthread.h"
 
-calcThread::calcThread()
+calcThread::calcThread(int maxNp)
 : QThread()
+, nMaxNp(maxNp)
 {
+    xx     = new double[maxNp];
+    yy     = new double[maxNp];
+    zz     = new double[maxNp];
+    xx_old = new double[maxNp];
+    yy_old = new double[maxNp];
+    zz_old = new double[maxNp];
+
     moveToThread(this); // Do I need this?
+}
+
+calcThread::~calcThread()
+{
+    delete [] xx     ;
+    delete [] yy     ;
+    delete [] zz     ;
+    delete [] xx_old ;
+    delete [] yy_old ;
+    delete [] zz_old ;
 }
 
 void calcThread::__CPU_update()
@@ -107,7 +125,7 @@ void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,double tpr
 {
     int i;
 
-    printf("IN SETUP\n");
+    Printf("IN SETUP\n");
 
     Np=NNp;
     Np2=NNp2;
@@ -116,7 +134,7 @@ void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,double tpr
     mode=mmode;
     do_calc=1;
 
-    printf("In calcThread::setup(), mode=%d\n",mode);
+    Printf("In calcThread::setup(), mode=%d\n",mode);
 
     for(i=0;i<Np;i++){
         xx[i]=xxx[i];
@@ -148,7 +166,7 @@ void calcThread::run()
             mSleep(20);
         }
         if(fabs(E-oldE)<targetPrecision) {
-            printf("In calcThread::run(), converged!\n");
+            Printf("In calcThread::run(), converged!\n");
             do_calc=0;
             oldE=1e99;
         }

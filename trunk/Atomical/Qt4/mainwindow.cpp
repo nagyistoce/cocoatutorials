@@ -25,8 +25,6 @@
 #include "about.h"
 #include <time.h>
 
-#define MaxNp 5000
-
 #define RANDOM_SEED() srandom(time(NULL))
 #define RANDOM_INT(__MIN__, __MAX__) ((__MIN__) + random() % ((__MAX__+1) - (__MIN__)))
 
@@ -44,16 +42,16 @@ static void rranmar(float tmp[],int N)
 void MainWindow::init_double_layer()
 {
     int i;
-    printf("MainWindow::init_double_layer() started\n");
+    Printf("MainWindow::init_double_layer() started\n");
     if(Np2>0){
         if(Np2>Np) return;
         for(i=0;i<Np2;i++){
-            // printf("MainWindow::init_double_layer() %d in layer 1\n",i);
+            // Printf("MainWindow::init_double_layer() %d in layer 1\n",i);
             xx_old[i]=-separation;
             xx[i]=-separation;
         }
         for(i=Np2;i<Np;i++){
-            // printf("MainWindow::init_double_layer() %d in layer 2\n",i);
+            // Printf("MainWindow::init_double_layer() %d in layer 2\n",i);
             xx_old[i]=+separation;
             xx[i]=separation;
         }
@@ -116,7 +114,7 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     mSleep(16);
     wglWidget->glt->setAutoZoom(true) ;
 
-    printf("%e %e %d %d %d\n",imbalance,separation,Np,Np2,mode);
+    Printf("%e %e %d %d %d\n",imbalance,separation,Np,Np2,mode);
 
     if(flag) {
         Initialize();
@@ -208,21 +206,30 @@ void MainWindow::shuffle()
 
 void MainWindow::performShutdown()
 {
-    printf("About to quit!\n");
+    Printf("About to quit!\n");
     wglWidget->stopRendering();
 }
 
 void MainWindow::closeEvent(QCloseEvent* /*event*/)
 {
-    printf("About to quit!\n");
+    Printf("About to quit!\n");
     wglWidget->stopRendering();
 }
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(int maxNp,QWidget *parent)
 : QMainWindow(parent)
 , ui(new Ui::MainWindowClass)
 {
     ui->setupUi(this);
+
+    nMaxNp = maxNp;
+    xx     = new double[maxNp];
+    yy     = new double[maxNp];
+    zz     = new double[maxNp];
+    xx_old = new double[maxNp];
+    yy_old = new double[maxNp];
+    zz_old = new double[maxNp];
+    E      = new double[maxNp];
 
 //  Init the RNGs
     srandom(time(NULL));
@@ -247,7 +254,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect( actionAbout , SIGNAL( triggered() ), this, SLOT( slotAbout() ) );
 
     //  Alloc a new calculation thread
-    cThread= new calcThread();
+    cThread= new calcThread(MaxNp);
 
     //  When a step is calculated, the stepDone() signal is emitted.
     //  It is caught here by updatePositions() so that this class is aware of these positions.
@@ -297,6 +304,13 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete [] xx     ;
+    delete [] yy     ;
+    delete [] zz     ;
+    delete [] xx_old ;
+    delete [] yy_old ;
+    delete [] zz_old ;
+    delete [] E      ;
 }
 
 void MainWindow::on_actionExit()

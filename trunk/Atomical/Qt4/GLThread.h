@@ -33,8 +33,8 @@ class GLThread : public QThread
     Q_OBJECT
 
 public:
-   GLThread(GLWidget* glWidget);
-  ~GLThread() {};
+   GLThread(GLWidget* glWidget,int maxNp);
+  ~GLThread() ;
   
    void resizeViewport(const QSize &size);
    void run();
@@ -71,8 +71,10 @@ private:
 
    double CPU_rad(const double* xx, const double* yy,const double* zz, int N);
 
+   int          nMaxNp;
+   double_p 	rrad,xx,yy,zz;
+
    double 		zoom,xRot,yRot;
-   double 		rrad[5000],xx[5000],yy[5000],zz[5000];
    int    		Np,Np2;
    int			mode;
    double 		radsp, separation, imbalance;

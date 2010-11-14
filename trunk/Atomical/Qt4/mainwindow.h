@@ -35,7 +35,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(int maxNp,QWidget *parent = 0);
    ~MainWindow();
 
 private:
@@ -77,12 +77,13 @@ private:
 
     calcThread* cThread;
 
-    int    Np,Np2,mode;
-    double separation,imbalance,radsp,precision;
+    int      Np,Np2,mode;
+    double   separation,imbalance,radsp,precision;
 
-    double xx[5000],yy[5000],zz[5000];
-    double xx_old[5000],yy_old[5000],zz_old[5000];
-    double E[5000];
+    int      nMaxNp;
+    double_p xx,yy,zz;
+    double_p xx_old,yy_old,zz_old;
+    double_p E;
 
     void init_double_layer();
     void Initialize();

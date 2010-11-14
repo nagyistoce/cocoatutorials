@@ -24,6 +24,7 @@
 #define CALCTHREAD_H
 
 #include <QThread>
+#include <Qt4.h>
 #include "math.h"
 
 class calcThread : public QThread
@@ -31,8 +32,8 @@ class calcThread : public QThread
     Q_OBJECT
 
 public:
-    calcThread();
-   ~calcThread() {};
+    calcThread(int maxNp);
+   ~calcThread();
 
     void setup(double *xxx,double *yyy,double *zzz,double imb,double tprec,int NNp,int NNp2,int mmode);
     void doCalc();
@@ -51,8 +52,10 @@ private:
     bool abort;
     bool isPaused;
 
-    double xx[5000],yy[5000],zz[5000];
-    double xx_old[5000],yy_old[5000],zz_old[5000];
+    int      nMaxNp;
+    double_p xx,yy,zz;
+    double_p xx_old,yy_old,zz_old;
+
     int    Np,Np2,mode,do_calc;
     double imbalance,E,targetPrecision;
 

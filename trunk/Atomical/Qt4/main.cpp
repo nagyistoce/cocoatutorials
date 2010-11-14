@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     platformInit(argc,argv);
     QApplication a(argc, argv);
 
-    MainWindow w;
+    MainWindow w(MaxNp);
     w.setWindowTitle( "Atomical by Fabio and Robin" );
     w.show();
 
