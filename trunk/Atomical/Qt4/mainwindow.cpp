@@ -169,18 +169,6 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     initProblem(iimb,ssep,1e-9,NNp,NNp2,mmode,1);
 }
 
-
-QSlider *MainWindow::createSlider(int min/* =0*/,int max/* =360*16*/)
-{
-    QSlider *slider = new QSlider(Qt::Vertical);
-    slider->setRange(min,max);
-    slider->setSingleStep((max-min)/360);
-    slider->setPageStep((max-min)/12);
-    slider->setTickInterval((max-min)/12);
-    slider->setTickPosition(QSlider::TicksRight);
-    return slider;
-}
-
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     char c = e->key();
@@ -216,6 +204,24 @@ void MainWindow::closeEvent(QCloseEvent* /*event*/)
     wglWidget->stopRendering();
 }
 
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    int h,w ;
+    h = event->size().height();
+    w = event->size().width();
+    Printf("window = %dx%d\n",w,h);
+
+    QRect g = ui->openGLSpace->geometry();
+    w   = g.width();
+    h   = g.height();
+    Printf("spacer = %dx%d\n",w,h);
+
+    int W = g.width();
+    int H = event->size().height();
+    wglWidget->resizeGL(W,H);
+    Printf("setting = %dx%d\n",W,H);
+}
+
 MainWindow::MainWindow(int maxNp,QWidget *parent)
 : QMainWindow(parent)
 , ui(new Ui::MainWindowClass)
@@ -245,7 +251,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     pixelFormat.setDepth(TRUE);
     QGLFormat::setDefaultFormat(pixelFormat);
 
-    wglWidget = new GLWidget;
+    wglWidget = new GLWidget();
     ui->verticalLayout_2->addWidget( wglWidget );
 
     // manually add to the menu (this is sample code to be removed later)
