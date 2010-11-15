@@ -46,7 +46,7 @@ GLThread::GLThread(GLWidget *gl,int maxNp)
 , nMaxNp(maxNp)
 {
 	doRendering = true;
-	doResize = false;
+    doResize = false;
     xx      = new double[maxNp];
     yy      = new double[maxNp];
     zz      = new double[maxNp];

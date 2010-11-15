@@ -119,6 +119,7 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     if(flag) {
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
+        cThread->oldE=1e99; // Needed to ensure restart
         //if(mode==3){
         //    wglWidget->glt->fog_on(0.07);
         //} else {
@@ -138,15 +139,19 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     int mmode,NNp,NNp2;
     double iimb,ssep;
 
-    iimb=1.0; // Random?!?
+    iimb=1.0;
     mmode=bMode ? aMode : 2+RANDOM_INT(0,1);
 
+/*
     toggle=RANDOM_INT(0,1);
     if(toggle){
         NNp=RANDOM_INT(51,512);
     } else {
         NNp=RANDOM_INT(3,50);
     }
+*/
+
+    NNp=24;
 
     rranmar(tmp,2);
     if(mmode==3){
@@ -166,7 +171,7 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     toggle=RANDOM_INT(0,1);
     if(toggle) iimb=1.1+0.3*tmp[1];
 
-    initProblem(iimb,ssep,1e-9,NNp,NNp2,mmode,1);
+    initProblem(iimb,ssep,1e-6,NNp,NNp2,mmode,1);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
@@ -185,6 +190,13 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
     memcpy(zz,zzz,Np*sizeof(double));
 
     openGLWidget->receiveData(xx,yy,zz,radsp,separation,imbalance,Np,Np2,mode);
+}
+
+void MainWindow::ackIsConverged(){
+    printf("Acknowledge that calculation has converged.\n");fflush(stdout);
+    cThread->startEigenmodes(); // Once this is toggled, the problem type should not be changed
+                                // Otherwise the whole thing goes crazy :)
+                                // Problem may be changed only after this returns.
 }
 
 void MainWindow::shuffle()
@@ -248,6 +260,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     //  It is caught here by updatePositions() so that this class is aware of these positions.
     //  Additionally, updatePositions() loads the particles positions into the glWidget
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
+    connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
     newProblem();
 
     //  This call initializes a problem
@@ -347,6 +360,7 @@ void MainWindow::resume()
 
 void MainWindow::newProblem()
 {
+    cThread->stopEigenmodes();
     int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
 }

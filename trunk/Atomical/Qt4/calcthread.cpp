@@ -32,6 +32,11 @@ calcThread::calcThread(int maxNp)
     xx_old = new double[maxNp];
     yy_old = new double[maxNp];
     zz_old = new double[maxNp];
+    ax     = new double[maxNp];
+    ay     = new double[maxNp];
+    az     = new double[maxNp];
+
+    n_eigmode=-1; // When set to -1, the loop calculates relaxation.
 
     moveToThread(this); // Do I need this?
 }
@@ -44,6 +49,9 @@ calcThread::~calcThread()
     delete [] xx_old ;
     delete [] yy_old ;
     delete [] zz_old ;
+    delete [] ax     ;
+    delete [] ay     ;
+    delete [] az     ;
 }
 
 void calcThread::__CPU_update()
@@ -118,6 +126,355 @@ void calcThread::__CPU_poscpy()
 	memcpy(zz_old,zz,Np*sizeof(double));
 }
 
+// Eigenvalue problem, needed for the vibrational modes
+
+void calcThread::eigsrt(double *d, double **v, int n){
+    int k,j,i;
+    double p;
+
+    for (i=0;i<n;i++) {
+        p=d[k=i];
+        for (j=i;j<n;j++)
+            if (d[j] >= p) p=d[k=j];
+        if (k != i) {
+            d[k]=d[i];
+            d[i]=p;
+            for (j=0;j<n;j++) {
+                p=v[i][j];
+                v[i][j]=v[k][j];
+                v[k][j]=p;
+            }
+        }
+    }
+}
+
+void calcThread::twst(double **m, int i,int j,double cc,double ss,int n){
+    int k=n;
+    double t;
+
+    while(k--){
+        t = cc*m[i][k]+ss*m[j][k];
+        m[j][k] = -ss*m[i][k]+cc*m[j][k];
+        m[i][k] = t;
+    }
+}
+
+void calcThread::eigen(int n){
+//void calcThread::eigen(double **m, double *l, double **vc, double **m2, int n){
+//                              H       Evls          Eivs          m2     dim
+    double q,mod,t,th,cc,ss;
+    int i,j,k,mm;
+
+    i=n;
+    while(i--) {
+        j=n;
+        while(j--) m2[i][j] = H[i][j];
+    }
+
+    i=n;
+    while(i--) {
+        j=n;
+        while(j--) Eivs[i][j] = i==j; // Was [i][j] but think it's transposed that way
+    }
+
+    while(1){
+        mod = 0;
+        i=0,
+        j=0;
+
+        k=n;
+        while(k--){
+            mm=n;
+            while((--mm)>k){
+                q = fabs(m2[k][mm]);
+                if(q > mod) {
+                    mod=q;
+                    i=k;
+                    j=mm;
+                }
+            }
+        }
+
+        if(mod < 0.00000000001) break;
+
+        th = 0.5*atan(2*m2[i][j]/(m2[i][i] - m2[j][j]));
+
+        cc = cos(th);
+        ss = sin(th);
+
+        k=n;
+        while(k--){
+            t = cc*m2[k][i] + ss*m2[k][j];
+            m2[k][j] = -ss*m2[k][i] + cc*m2[k][j];
+            m2[k][i]=t;
+        }
+        twst(m2,i,j,cc,ss,n);
+        twst(Eivs,i,j,cc,ss,n);
+    }
+
+    j=n;
+    while(j--){
+        Evls[j] = m2[j][j];
+    };
+}
+
+void calcThread::eigen_driver(int dim){
+    int i,j;
+
+    printf("\n\n--- eigen_driver() ---\n");
+
+//    eigen(H,Eivs,Evls,m2,dim);
+    eigen(dim);
+    for(i=0;i<dim;i++) {
+        if(fabs(Evls[i])<1e-5) Evls[i]=0;
+        Evls[i]=sqrt(fabs(Evls[i]));
+    }
+    eigsrt(Evls,Eivs,dim);
+
+    double tmp;
+    for(i=0;i<dim;i++){
+        for(j=i+1;j<dim;j++){
+            tmp=Eivs[i][j];
+            Eivs[i][j]=Eivs[j][i];
+            Eivs[j][i]=tmp;
+        }
+    }
+}
+
+// Code for the vibrational modes calculation
+
+void calcThread::cshift(int ci,int i,double dd){
+    switch(ci){
+        case 0:
+            xx[i]+=dd;
+            break;
+        case 1:
+            yy[i]+=dd;
+            break;
+        case 2:
+            zz[i]+=dd;
+            break;
+        default:
+            break;
+    }
+
+}
+
+double calcThread::HH(int ci,int i,int cj,int j){
+    double Epp,Emm,Epm,Emp;
+    double Delta=0.00005;
+
+    // Ah! The good old five-points stencil :)
+
+    if(ci==cj && i==j){
+        cshift(ci,i,+Delta);
+        Epp=__CPU_energy();
+
+        cshift(ci,i,-2*Delta);
+        Emm=__CPU_energy();
+
+        cshift(ci,i,+Delta);
+        Epm=__CPU_energy();
+
+        return (Epp+Emm-2*Epm)/(Delta*Delta);
+    } else {
+        cshift(ci,i,+Delta);
+        cshift(cj,j,+Delta);
+        Epp=__CPU_energy();
+
+        cshift(ci,i,-2*Delta);
+        cshift(cj,j,-2*Delta);
+        Emm=__CPU_energy();
+
+        cshift(ci,i,+2*Delta);
+        Epm=__CPU_energy();
+
+        cshift(ci,i,-2*Delta);
+        cshift(cj,j,+2*Delta);
+        Emp=__CPU_energy();
+
+        cshift(ci,i,+Delta);
+        cshift(cj,j,-Delta);
+
+        return 0.25*(Epp+Emm-Epm-Emp)/(Delta*Delta);
+    }
+}
+
+int calcThread::encode(int ci,int i){
+    return i+(ci-1+mode-2)*Np;;
+}
+
+void calcThread::decode(int ii,int *ci,int *i){
+    ldiv_t n;
+
+    n=ldiv(ii,Np);
+
+    *ci=n.quot+3-mode;
+    *i=n.rem;
+}
+
+void calcThread::calc_Hessian(void){
+    int dim,ii,jj;
+    int ci,i,cj,j;
+    double tmp;
+
+    dim=encode(2,Np);
+
+    for(ii=0;ii<dim;ii++){
+        decode(ii,&ci,&i);
+        H[ii][ii]=HH(ci, i, ci, i);
+        for(jj=ii+1;jj<dim;jj++){
+            decode(jj,&cj,&j);
+            tmp=HH(ci, i, cj, j);
+            H[ii][jj]=tmp;
+            H[jj][ii]=tmp;
+        }
+    }
+}
+
+void calcThread::alloc_Evals(void){
+    int i,dim;
+
+    if(allocated_evals) return;
+
+    dim=encode(2,Np);
+    olddim=dim;
+
+    Evls=new double[dim];
+
+    Eivs=new double *[dim];
+    H=new double *[dim];
+    m2=new double *[dim];
+
+    if(H==NULL) printf("WOE!!!\n");
+
+    for(i=0;i<dim;i++) {
+        Eivs[i]=new double [dim];
+        H[i]=new double [dim];
+        m2[i]=new double [dim];
+
+        if(H[i]==NULL) printf("WOE!!!\n");
+    }
+/*
+    Evls=(double *)malloc(dim*sizeof(double));
+    Eivs=(double **)malloc(dim*sizeof(double *));
+    H=(double **)malloc(dim*sizeof(double *));
+    m2=(double **)malloc(dim*sizeof(double *));
+
+    for(i=0;i<dim;i++) {
+        Eivs[i]=(double *)malloc(dim*sizeof(double));
+        H[i]=(double *)malloc(dim*sizeof(double));
+        m2[i]=(double *)malloc(dim*sizeof(double));
+    }
+*/
+    allocated_evals=true;
+}
+
+void calcThread::free_Evals(void){
+    int i;
+
+    if(!allocated_evals) return;
+
+    for(i=0;i<olddim;i++) {
+        delete [] Eivs[i];
+        delete [] H[i];
+        delete [] m2[i];
+    }
+    delete [] Eivs;
+    delete [] H;
+    delete [] m2;
+
+    delete [] Evls;
+
+/*
+    dim=olddim;
+
+    free(Evls);
+    for(i=0;i<dim;i++) {
+        free(Eivs[i]);
+        free(H[i]);
+        free(m2[i]);
+    }
+    free(Eivs);
+    free(H);
+    free(m2);
+*/
+    allocated_evals=false;
+    n_eigmode=-1;
+}
+
+void calcThread::chooseEigenmode(int n){
+    int j;
+
+    if(!allocated_evals) return;
+    if(n<0 || n>encode(2,Np)-1) return; // Mode non-existent
+    n_eigmode=encode(2,Np)-1-n; // Internal sort of eigenmodes is reversed
+    faket=0.0;
+    printf("n_eigmode=%d\n",n_eigmode);
+
+    printf("//------ %d: %e ------//\n",n_eigmode,Evls[n_eigmode]);
+    for(j=0;j<encode(2,Np);j++){
+        printf("%e\n",Eivs[j][n_eigmode]);
+    }
+    printf("\n");
+}
+
+void calcThread::stopEigenmodes(void){
+    pause();
+    msleep(1);
+    free_Evals();
+    n_eigmode=-1;
+    resume(); // Resumes in relaxation mode
+}
+
+void calcThread::startEigenmodes(void){
+    int dim,i,j;
+
+    pause();
+    msleep(1);
+
+    printf("Start Eigenmodes()\n");
+    dim=encode(2,Np);
+    printf("With %d particles in %d dimensions, %d eigenmodes\n",Np,mode,dim);
+
+    alloc_Evals();
+
+    memcpy(ax,xx_old,Np*sizeof(double));
+    memcpy(ay,yy_old,Np*sizeof(double));
+    memcpy(az,zz_old,Np*sizeof(double));
+/*
+    H=(double **)malloc(dim*sizeof(double *));
+    for(i=0;i<dim;i++) H[i]=(double *)malloc(dim*sizeof(double));
+    m2=(double **)malloc(dim*sizeof(double *));
+    for(i=0;i<dim;i++) m2[i]=(double *)malloc(dim*sizeof(double));
+*/
+    if(H==NULL) Printf("Oh my gosh!\n");
+    calc_Hessian();
+
+    for(i=0;i<dim;i++){
+        for(j=0;j<dim;j++){
+            printf("%e ",H[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("Done calculating Hessian\n");
+
+    eigen_driver(dim);
+
+    printf("Done calculating Eigenvalues & Eigenvectors\n");
+/*
+    for(i=0;i<dim;i++){
+        printf("//------ %d: %e ------//\n",i,Evls[i]);
+        for(j=0;j<dim;j++){
+            printf("%e\n",Eivs[j][i]);
+        }
+        printf("\n");
+    }
+*/
+    chooseEigenmode(0);
+    resume();
+}
 
 // This stuff is based on the Mandelbrot example
 
@@ -155,22 +512,50 @@ void calcThread::resume(){
 
 void calcThread::run()
 {
-    double oldE=1e99;
+    double amp=0.3;
+    double coord;
+    int dim,j,ci,ii;
 
     forever {
-        if(do_calc && !isPaused){
-            __CPU_update();
-            E=__CPU_energy();
-            __CPU_poscpy();
+        // Here, insert logic to deal with eigenmodes...
+        if(n_eigmode==-1){
+            if(do_calc && !isPaused){
+                __CPU_update();
+                E=__CPU_energy();
+                __CPU_poscpy();
+            } else {
+                mSleep(20);
+            }
+
+            if(fabs(E-oldE)<targetPrecision) {
+                Printf("In calcThread::run(), converged!\n");
+                do_calc=0;
+                oldE=1e99;
+                emit isConverged();
+            }
+            if(do_calc) oldE=E;
         } else {
-            mSleep(20);
+            dim=encode(2, Np);
+            for(j=0;j<dim;j++){
+                coord=Eivs[j][n_eigmode];
+                decode(j, &ci, &ii);
+                switch (ci) {
+                    case 0:
+                        xx[ii]=ax[ii]+amp*coord*sin(0.01*faket);
+                        break;
+                    case 1:
+                        yy[ii]=ay[ii]+amp*coord*sin(0.01*faket);
+                        break;
+                    case 2:
+                        zz[ii]=az[ii]+amp*coord*sin(0.01*faket);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            faket+=1.0;
         }
-        if(fabs(E-oldE)<targetPrecision) {
-            Printf("In calcThread::run(), converged!\n");
-            do_calc=0;
-            oldE=1e99;
-        }
-        if(do_calc) oldE=E;
         emit stepDone(xx,yy,zz/*,&E*/);
         mSleep(2);
     }
