@@ -72,8 +72,8 @@ void GLThread::stop()
 
 void GLThread::resizeViewport(const QSize &size)
 {
-	w = size.width();
-	h = size.height();
+    width    = size.width();
+    height   = size.height();
 	doResize = true;
 }
 
@@ -168,10 +168,17 @@ void GLThread::run()
 
 	while (doRendering) {
 		if(!bPaused){
-			/*** This is crappy and needs to be fixed ***/
+            /*** The resize is done on this thread ***/
 			if (doResize) {
-				glViewport(0, 0, w, h);
+                // glViewport(0, 0, w, h); // no ! this causes the axes to be at different scales!
 				doResize = false;
+                int side = qMax(width, height);
+                glViewport((width - side) / 2, (height - side) / 2, side, side);
+
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective( 60, 1.0, 1.0, 1000.0);
+                glMatrixMode(GL_MODELVIEW);
 			}
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

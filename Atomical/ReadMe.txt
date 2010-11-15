@@ -1,10 +1,6 @@
 ReadMe.txt
 ----------
 
-Trying (unsuccessfully) to get resize to work correctly.
-I've wired GLWidget::resizeEvent(QResizeEvent* event) to GLWidget::resizeGL(int width, int height)
-Although this isn't effective, the information is here OK.  Almost working correctly.
-
 Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
@@ -14,8 +10,8 @@ Robin's next tasks:
 (Robin's in England and has no access at the moment to a Mac) 
 
 Fabio's next tasks:
-- Inspect/fix the resize code
 - Add normal modes to the core code
+- Rename calcThread as WignerModel (and variable cThread to be modelThread)
 
 
 Known issue
@@ -40,6 +36,7 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-15 13:18:07GMT  Got resize to work
 2010-11-15 03:16:10GMT  Messing (unsuccessfully) with resize
 2010-11-14 22:34.00GMT  Fixed a bug in the glThread class (no Np initialized
                         when constructed). 

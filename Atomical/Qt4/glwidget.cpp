@@ -48,8 +48,8 @@ GLWidget::GLWidget(int aMaxNp,QWidget *parent)
     yy   = new double [nMaxNp];
     zz   = new double [nMaxNp];
 
-    glt = new GLThread(this,MaxNp);
-    connect(glt, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
+    openGLThread = new GLThread(this,MaxNp);
+    connect(openGLThread, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
   //updateFrame();
 
     setAutoBufferSwap(false);    
@@ -162,22 +162,21 @@ void GLWidget::paintGL()
 
 void GLWidget::startRendering()
 {
-	 glt->start();
+     openGLThread->start();
 }
 
 void GLWidget::stopRendering()
 {
     Printf("stopRendering()...");
-	glt->stop();
-	glt->wait();
+    openGLThread->stop();
+    openGLThread->wait();
     Printf("done!");
 }
 
 void GLWidget::resizeEvent(QResizeEvent* event)
 {
-    glt->resizeViewport(event->size());
-    resizeGL(event->size().width(),event->size().height());
-    Printf("sizeEvent %dx%d\n",event->size().width(),event->size().height());
+    openGLThread->resizeViewport(event->size()); // defer to the openGL Thread
+//  Printf("sizeEvent %dx%d\n",event->size().width(),event->size().height());
 }
 
 void GLWidget::paintEvent(QPaintEvent* /* event */)
@@ -189,89 +188,6 @@ void GLWidget::closeEvent(QCloseEvent* event)
 {
 	stopRendering();
     QGLWidget::closeEvent(event);
-}
-
-void GLWidget::drawGL(double *xx,double *yy,double *zz,double imbalance,double separation,double radsp,int Np,int Np2,int mode)
-{
-    int i,NNpin;
-    float alpha;
-    double rradius;
-
-    GLfloat camYaw,camPitch,camRadius;
-    GLfloat camX,camY,camZ;
-
-    GLUquadric *glq;
-
-    if(!is_drawing) {
-        can_terminate=1;
-        return;
-    }
-
-    makeCurrent();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-
-    camRadius=zoom;
-    camRadius/=100.0;
-    camYaw=-6.28*yRot/(360*16);
-    camPitch=6.28*xRot/(360*16);
-
-    camX = cos(camYaw) * cos(camPitch) * camRadius;
-    camY = sin(camYaw) * cos(camPitch) * camRadius;
-    camZ = sin(camPitch) * camRadius;
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);
-    rradius=CPU_rad(xx, yy, zz, Np);
-    alpha=0.9;
-    NNpin=0;
-
-    for(i=0;i<Np;i++)
-    {
-		glPushMatrix();
-		GLfloat e=(GLfloat)(rrad[i]/rradius);
-		if(mode==2 && Np2>0 && separation>0)
-		{
-			if(xx[i]>0.0){
-                glColor4f(.5+.5*e,0,0,alpha);
-			} else {
-                glColor4f(0,0,.5+.5*e,alpha);
-			}
-		} else {
-			if(i%2 && imbalance>1.0) glColor4f(e,0.2+0.8*(imbalance-1)/9,(1-e),alpha); else glColor4f(e,0,(1-e),alpha);
-		}
-
-		glTranslatef(xx[i], yy[i], zz[i]);
-		glq=gluNewQuadric();
-		if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
-		if(rrad[i]<=radsp) NNpin++;
-		glPopMatrix();
-    }
-
-    glPushMatrix();
-    glColor4f((GLfloat)1,(GLfloat)1,(GLfloat)0,(GLfloat)0.7);
-    glTranslatef(0, 0, 0);
-    glq=gluNewQuadric();
-    gluSphere(glq, radsp, 40, 40);
-    glPopMatrix();
-
-    swapBuffers();  // Double buffering
-
-    gluDeleteQuadric(glq);
-}
-
-void GLWidget::resizeGL(int width, int height)
-{
-    int side = qMax(width, height);
-    glViewport((width - side) / 2, (height - side) / 2, side, side);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective( 60, 1.0, 1.0, 1000.0);
-    glMatrixMode(GL_MODELVIEW);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -298,7 +214,7 @@ void GLWidget::updateFrame()
 {
 //    Printf("In updateFrame()\n");
 //    Printf("LoadData: Np=%d\n",Np);
-    glt->loadData(xx,yy,zz,(double)zoom,xRot,yRot,radsp,separation,imbalance,Np,Np2,mode);
+    openGLThread->loadData(xx,yy,zz,(double)zoom,xRot,yRot,radsp,separation,imbalance,Np,Np2,mode);
 }
 
 void GLWidget::receiveData(double *xxx,double *yyy,double *zzz,double rradsp,double ssep,double iimb,int NNp,int NNp2,int mmode)

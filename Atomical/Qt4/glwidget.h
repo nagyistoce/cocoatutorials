@@ -41,7 +41,7 @@ public:
     GLWidget(int aMaxNp,QWidget* parent = 0);
    ~GLWidget();
 
-    void drawGL(double *xx,double *yy,double *zz,double imb,double sep,double rrsp,int NNp,int NNp2,int mmode);
+    // void drawGL(double *xx,double *yy,double *zz,double imb,double sep,double rrsp,int NNp,int NNp2,int mmode);
     void startRendering();
     void stopRendering();
 
@@ -49,9 +49,8 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-    void  resizeGL(int width, int height);
 
-    GLThread* glt;
+    GLThread* openGLThread;
 
     // allow GLThread access to our private members
     friend class GLThread;
