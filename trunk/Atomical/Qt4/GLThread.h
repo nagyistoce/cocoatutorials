@@ -64,8 +64,8 @@ private:
    bool         bPaused;
    bool 		doRendering;
    bool 		doResize;
-   int  		w;
-   int  		h;
+   int  		width;
+   int  		height;
    int  		rotAngle;
    GLWidget*	glw;
 

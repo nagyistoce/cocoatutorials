@@ -64,7 +64,7 @@ private slots:
     void performShutdown();
 
 private:
-    GLWidget*   wglWidget;
+    GLWidget*   openGLWidget;
 
     QTimer*     timer;
 
@@ -84,8 +84,6 @@ private:
     void initRandomProblem(bool bMode = false,int aMode=3);
 
     void closeEvent(QCloseEvent* event);
-    void resizeEvent(QResizeEvent* event);
-
 };
 
 #endif // MAINWINDOW_H

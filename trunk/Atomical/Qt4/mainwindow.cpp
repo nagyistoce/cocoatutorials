@@ -110,9 +110,9 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     mode=mmode;
     precision=prec;
 
-    wglWidget->glt->setPaused(true);
+    openGLWidget->openGLThread->setPaused(true);
     mSleep(16);
-    wglWidget->glt->setAutoZoom(true) ;
+    openGLWidget->openGLThread->setAutoZoom(true) ;
 
     Printf("%e %e %d %d %d\n",imbalance,separation,Np,Np2,mode);
 
@@ -127,7 +127,7 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
-    wglWidget->glt->setPaused(false);
+    openGLWidget->openGLThread->setPaused(false);
 }
 
 void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
@@ -184,7 +184,7 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
     memcpy(yy,yyy,Np*sizeof(double));
     memcpy(zz,zzz,Np*sizeof(double));
 
-    wglWidget->receiveData(xx,yy,zz,radsp,separation,imbalance,Np,Np2,mode);
+    openGLWidget->receiveData(xx,yy,zz,radsp,separation,imbalance,Np,Np2,mode);
 }
 
 void MainWindow::shuffle()
@@ -195,33 +195,13 @@ void MainWindow::shuffle()
 void MainWindow::performShutdown()
 {
     Printf("About to quit!\n");
-    wglWidget->stopRendering();
+    openGLWidget->stopRendering();
 }
 
 void MainWindow::closeEvent(QCloseEvent* /*event*/)
 {
     Printf("About to quit!\n");
-    wglWidget->stopRendering();
-}
-
-void MainWindow::resizeEvent(QResizeEvent* /*event*/)
-{
-    /*
-    int h,w ;
-    h = event->size().height();
-    w = event->size().width();
-    Printf("window = %dx%d\n",w,h);
-
-    QRect g = ui->openGLSpace->geometry();
-    w   = g.width();
-    h   = g.height();
-    Printf("spacer = %dx%d\n",w,h);
-
-    int W = g.width();
-    int H = event->size().height();
-    wglWidget->resizeGL(W,H);
-    Printf("setting = %dx%d\n",W,H);
-    */
+    openGLWidget->stopRendering();
 }
 
 MainWindow::MainWindow(int maxNp,QWidget *parent)
@@ -253,8 +233,8 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     pixelFormat.setDepth(TRUE);
     QGLFormat::setDefaultFormat(pixelFormat);
 
-    wglWidget = new GLWidget(MaxNp);
-    ui->verticalLayout_2->addWidget( wglWidget );
+    openGLWidget = new GLWidget(MaxNp);
+    ui->verticalLayout_2->addWidget( openGLWidget );
 
     // manually add to the menu (this is sample code to be removed later)
     actionAbout = new QAction(tr("A&bout"), this);
@@ -296,7 +276,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     //  Then, we start the calculation and the rendering. They both live in their threads
     //  and communicate via signals and slots.
     cThread->doCalc();
-    wglWidget->startRendering();
+    openGLWidget->startRendering();
 
     //  At this point, the UI should take care of interacting with the user and call
     //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
