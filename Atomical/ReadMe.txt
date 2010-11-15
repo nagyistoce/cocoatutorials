@@ -1,22 +1,27 @@
 ReadMe.txt
 ----------
 
+Trying (unsuccessfully) to get resize to work correctly.
+I've wired GLWidget::resizeEvent(QResizeEvent* event) to GLWidget::resizeGL(int width, int height)
+Although this isn't effective, the information is here OK.  Almost working correctly.
+
 Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
 - Continue UI development to be similar to WmCocoa.
 - Refactor Qt4 "core" code into a DLL (so,framework)
-- Create a screensaver version for Windows/Linu 
+- Create a screensaver version for Windows/Linux 
 (Robin's in England and has no access at the moment to a Mac) 
 
 Fabio's next tasks:
-- Add normal modes and scatter to the core code
+- Inspect/fix the resize code
+- Add normal modes to the core code
 
 
 Known issue
 -----------
 
-Qt4/Mac/Resize window is "explosive"
+Qt4/Mac/Resize window isn't working correctly
 Resize crops but does not resize. 
 No crash on Resize with a MBP 13", OsX 10.6.5 with graphics update 1.0 and NVidia 9400M integrated graphics.
 
@@ -35,6 +40,7 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-15 03:16:10GMT  Messing (unsuccessfully) with resize
 2010-11-14 22:34.00GMT  Fixed a bug in the glThread class (no Np initialized
                         when constructed). 
 2010-11-14 09:07:35GMT  Some UI added. MaxNp refactored for dynamic array allocation

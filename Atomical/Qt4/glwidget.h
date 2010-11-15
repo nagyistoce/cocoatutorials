@@ -38,14 +38,13 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidget(QWidget* parent = 0);
-   ~GLWidget() {};
+    GLWidget(int aMaxNp,QWidget* parent = 0);
+   ~GLWidget();
 
     void drawGL(double *xx,double *yy,double *zz,double imb,double sep,double rrsp,int NNp,int NNp2,int mmode);
     void startRendering();
     void stopRendering();
 
-//  void updateFrame();
     void receiveData(double *xxx,double *yyy,double *zzz,double rradsp,double ssep,double iimb,int NNp,int NNp2,int mmode);
 
     QSize minimumSizeHint() const;
@@ -86,19 +85,20 @@ protected:
     double CPU_rad(const double* xx, const double* yy,const double* zz, int N);
 
 private:
-    int     xRot;
-    int     yRot;
-    int     zRot;
-    int     zoom;
-    int     is_drawing;
-    int     can_terminate;
-    QPoint  lastPos;
-    QTimer* timer;
+    int       xRot;
+    int       yRot;
+    int       zRot;
+    int       zoom;
+    int       is_drawing;
+    int       can_terminate;
+    QPoint    lastPos;
+    QTimer*   timer;
 
-    double  rrad[5000],xx[5000],yy[5000],zz[5000];
-    double  radsp,separation,imbalance;
-    int     Np,Np2;
-    int     mode;
+    int       nMaxNp;
+    double_p  rrad,xx,yy,zz;
+    double    radsp,separation,imbalance;
+    int       Np,Np2;
+    int       mode;
 };
 
 #endif
