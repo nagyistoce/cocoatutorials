@@ -20,42 +20,47 @@
 //
 
 #include "Printf.h"
+#include <stdlib.h>
+#include <stdarg.h>
 
 #ifdef __WINDOWS__
-#include "stdarg.h"
 #include <windows.h>
+#endif
+
+#if __WINDOWS__
+#define vsnprintf _vsnprintf
 #endif
 
 #ifdef __WINDOWS__
 extern "C" int Printf(const char * format, ... )
 {
-    char buf[2*4096];
-    char*       p = buf;
+    char buff[2*4096];
+    char*       p = buff;
     va_list     args;
     va_start(args, format);
-    int result = _vsnprintf(p, sizeof buf - 3, format, args); // -3 for safety
+    int result = vsnprintf(p, sizeof buff - 3, format, args); // -3 for safety
     va_end(args);
     p[result]= 0;
-    OutputDebugStringA(buf);
+    OutputDebugStringA(buff);
 
     return result;
 }
 #endif
 
-extern "C" int System(const char * format, ... )
+extern "C" int System(const char* format, ... )
 {
-    char buf[2*4096];
-    char*       p = buf;
+    char buff[2*4096];
+    char*       p = buff;
     va_list     args;
     va_start(args, format);
-    int result = _vsnprintf(p, sizeof buf - 3, format, args); // -3 for safety
-    va_end(args);
+    int result = vsnprintf(buff, sizeof buff, format,args);
     p[result]= 0;
+    va_end(args);
 
 #if __WINDOWS__
     WinExec(p,SW_NORMAL);
 #else
-    result = system(buf);
+    result = system(buff);
 #endif
 
     return result;
