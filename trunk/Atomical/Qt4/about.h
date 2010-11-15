@@ -33,11 +33,15 @@ class about : public QDialog {
     Q_OBJECT
     Q_DISABLE_COPY(about)
 public:
-    explicit about(QWidget *parent = 0);
+    explicit about(QWidget* parent = 0);
     virtual ~about();
 
+public slots:
+    void linkActivated(QString data);
+
+
 private:
-    Ui::about *m_ui;
+    Ui::about* m_ui;
 };
 
 #endif // ABOUT_H
