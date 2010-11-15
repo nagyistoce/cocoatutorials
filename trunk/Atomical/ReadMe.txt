@@ -36,12 +36,14 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-15 21:01:46GMT  Added code to make the links in the about box bring up the browser
 2010-11-15 13:18:07GMT  Got resize to work
 2010-11-15 03:16:10GMT  Messing (unsuccessfully) with resize
 2010-11-14 22:34.00GMT  Fixed a bug in the glThread class (no Np initialized
                         when constructed). 
 2010-11-14 09:07:35GMT  Some UI added. MaxNp refactored for dynamic array allocation
                         Please use Printf instead of printf (helps windows debugging)
+2010-11-10 20:00:00PST  Added project Qt4 (UI is defined in Qt Designer)
 2010-11-04 19:16:18PDT  renamed the initX code to be platform
 2010-11-05 00:43:00ITT  Implemented fog, methods GLThread::fog_on(float density) and
                         GLThread::fog_off(). Now there's a bool bPause to control the
