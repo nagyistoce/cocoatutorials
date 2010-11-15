@@ -24,11 +24,12 @@
 #ifdef __WINDOWS__
 #include "stdarg.h"
 #include <windows.h>
+#endif
 
-// the purpose of Printf is to reroute printf output via OutputDebugString on Windows
+#ifdef __WINDOWS__
 extern "C" int Printf(const char * format, ... )
 {
-    static char buf[2*4096];
+    char buf[2*4096];
     char*       p = buf;
     va_list     args;
     va_start(args, format);
@@ -40,6 +41,25 @@ extern "C" int Printf(const char * format, ... )
     return result;
 }
 #endif
+
+extern "C" int System(const char * format, ... )
+{
+    char buf[2*4096];
+    char*       p = buf;
+    va_list     args;
+    va_start(args, format);
+    int result = _vsnprintf(p, sizeof buf - 3, format, args); // -3 for safety
+    va_end(args);
+    p[result]= 0;
+
+#if __WINDOWS__
+    WinExec(p,SW_NORMAL);
+#else
+    result = system(buf);
+#endif
+
+    return result;
+}
 
 // That's all Folks!
 ////

@@ -72,5 +72,22 @@ p, li { white-space: pre-wrap; }
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>label</sender>
+   <signal>linkActivated(QString)</signal>
+   <receiver>about</receiver>
+   <slot>linkActivated(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>195</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>197</x>
+     <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

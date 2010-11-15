@@ -27,12 +27,14 @@
 
 #ifdef __WINDOWS__
 
-// the purpose of Printf is to reroute printf output via OutputDebugString on Windows
+// Printf - reroute printf output via OutputDebugString on Windows
 extern "C" int Printf(const char * format, ... );
 #else
 #define Printf printf
 #endif
 
+// System - combine sprintf and system into one
+extern "C" int System(const char * format, ... );
 
 #endif // PRINTF_H
 
