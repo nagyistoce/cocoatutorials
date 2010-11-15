@@ -62,6 +62,7 @@ private slots:
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
     void shuffle();
     void performShutdown();
+    void ackIsConverged();
 
 private:
     GLWidget*   openGLWidget;
