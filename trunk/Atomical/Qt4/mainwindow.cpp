@@ -204,8 +204,9 @@ void MainWindow::closeEvent(QCloseEvent* /*event*/)
     wglWidget->stopRendering();
 }
 
-void MainWindow::resizeEvent(QResizeEvent* event)
+void MainWindow::resizeEvent(QResizeEvent* /*event*/)
 {
+    /*
     int h,w ;
     h = event->size().height();
     w = event->size().width();
@@ -220,7 +221,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     int H = event->size().height();
     wglWidget->resizeGL(W,H);
     Printf("setting = %dx%d\n",W,H);
-
+    */
 }
 
 MainWindow::MainWindow(int maxNp,QWidget *parent)
@@ -252,7 +253,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     pixelFormat.setDepth(TRUE);
     QGLFormat::setDefaultFormat(pixelFormat);
 
-    wglWidget = new GLWidget();
+    wglWidget = new GLWidget(MaxNp);
     ui->verticalLayout_2->addWidget( wglWidget );
 
     // manually add to the menu (this is sample code to be removed later)

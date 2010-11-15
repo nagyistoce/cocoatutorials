@@ -33,8 +33,9 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-GLWidget::GLWidget(QWidget *parent)
+GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+, nMaxNp(aMaxNp)
 {
 //  view = 0;
     xRot = 0;
@@ -42,11 +43,24 @@ GLWidget::GLWidget(QWidget *parent)
     zRot = 0;
     zoom = 7000;
 
+    rrad = new double [nMaxNp];
+    xx   = new double [nMaxNp];
+    yy   = new double [nMaxNp];
+    zz   = new double [nMaxNp];
+
     glt = new GLThread(this,MaxNp);
     connect(glt, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
   //updateFrame();
 
     setAutoBufferSwap(false);    
+}
+
+GLWidget::~GLWidget()
+{
+    delete [] rrad;
+    delete [] xx  ;
+    delete [] yy  ;
+    delete [] zz  ;
 }
 
 double GLWidget::CPU_rad(const double* xx, const double* yy,const double* zz, int N)
@@ -159,9 +173,11 @@ void GLWidget::stopRendering()
     Printf("done!");
 }
 
-void GLWidget::resizeEvent(QResizeEvent* /* event */)
+void GLWidget::resizeEvent(QResizeEvent* event)
 {
-//	glt->resizeViewport(evt->size());
+    glt->resizeViewport(event->size());
+    resizeGL(event->size().width(),event->size().height());
+    Printf("sizeEvent %dx%d\n",event->size().width(),event->size().height());
 }
 
 void GLWidget::paintEvent(QPaintEvent* /* event */)
@@ -209,11 +225,8 @@ void GLWidget::drawGL(double *xx,double *yy,double *zz,double imbalance,double s
     glLoadIdentity();
 
     gluLookAt( camX, camY, camZ,  0.0, 0.0, 0.0,  0.0, 0.0, 1.0);
-
     rradius=CPU_rad(xx, yy, zz, Np);
-
     alpha=0.9;
-
     NNpin=0;
 
     for(i=0;i<Np;i++)
@@ -250,8 +263,8 @@ void GLWidget::drawGL(double *xx,double *yy,double *zz,double imbalance,double s
     gluDeleteQuadric(glq);
 }
 
-void GLWidget::resizeGL(int,int) // width, int height)
-{/*
+void GLWidget::resizeGL(int width, int height)
+{
     int side = qMax(width, height);
     glViewport((width - side) / 2, (height - side) / 2, side, side);
 
@@ -259,7 +272,7 @@ void GLWidget::resizeGL(int,int) // width, int height)
     glLoadIdentity();
     gluPerspective( 60, 1.0, 1.0, 1000.0);
     glMatrixMode(GL_MODELVIEW);
-*/}
+}
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
