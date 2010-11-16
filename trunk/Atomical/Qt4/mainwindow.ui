@@ -37,6 +37,9 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Expanding</enum>
+        </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>0</width>
@@ -73,23 +76,17 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QCheckBox" name="fog">
+          <property name="text">
+           <string>Fog</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="threeD">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
@@ -434,6 +431,22 @@ p, li { white-space: pre-wrap; }
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fog</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>on_actionFog()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>713</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>

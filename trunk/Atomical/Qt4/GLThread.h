@@ -45,8 +45,7 @@ public:
    				, int NNp,int NNp2,int mmode
    				) ;
 
-   void fog_on(float density);
-   void fog_off(void);
+   void fog(float density=0.0);
 
    // getters/setters
    bool setAutoZoom(bool aAutoZoom) { bool result = bAutoZoom ; bAutoZoom = aAutoZoom ; return result ; }
@@ -64,10 +63,12 @@ private:
    bool         bPaused;
    bool 		doRendering;
    bool 		doResize;
+   bool         doFog;
+   double       fogDensity;
    int  		width;
    int  		height;
    int  		rotAngle;
-   GLWidget*	glw;
+   GLWidget*	openGLWidget;
 
    double CPU_rad(const double* xx, const double* yy,const double* zz, int N);
 

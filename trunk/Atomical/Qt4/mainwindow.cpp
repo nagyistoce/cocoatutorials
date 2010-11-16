@@ -120,11 +120,6 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
         cThread->oldE=1e99; // Needed to ensure restart
-        //if(mode==3){
-        //    wglWidget->glt->fog_on(0.07);
-        //} else {
-        //    wglWidget->glt->fog_off();
-        //}
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
@@ -361,7 +356,7 @@ void MainWindow::resume()
 void MainWindow::newProblem()
 {
     cThread->stopEigenmodes();
-    int amode = ui->threeD->checkState() ? 3 : 2 ;
+    int amode = ui->threeD->checkState() ? 3    : 2     ;
     initRandomProblem(true,amode);
 }
 
@@ -373,6 +368,13 @@ void MainWindow::on_actionNewProblem_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     slotAbout();
+}
+
+void MainWindow::on_actionFog()
+{
+    // I intend to add a "fog density" slider to the UI
+    Printf("fog %s\n",ui->fog->checkState() ? "ON" : "Off");
+    openGLWidget->openGLThread->fog(ui->fog->checkState() ? 0.09 : 0.0 );
 }
 
 // That's all Folks!

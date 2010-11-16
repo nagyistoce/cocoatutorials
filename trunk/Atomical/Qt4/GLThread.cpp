@@ -42,18 +42,19 @@ double GLThread::CPU_rad(const double* xx, const double* yy,const double* zz, in
 
 GLThread::GLThread(GLWidget *gl,int maxNp)
 : QThread()
-, glw(gl)
+, openGLWidget(gl)
 , nMaxNp(maxNp)
 {
-	doRendering = true;
-    doResize = false;
+    doRendering = true;
+    doResize    = false;
+    doFog       = false;
+    Np          = 0;
+    Np2         = 0;
+
     xx      = new double[maxNp];
     yy      = new double[maxNp];
     zz      = new double[maxNp];
     rrad    = new double[maxNp];
-
-    Np=0;
-    Np2=0;
 }
 
 GLThread::~GLThread()
@@ -77,25 +78,10 @@ void GLThread::resizeViewport(const QSize &size)
 	doResize = true;
 }
 
-void GLThread::fog_on(float density)
+void GLThread::fog(float density /* = 0.0 */)
 {
-    glw->makeCurrent();
-
-    glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
-    GLfloat fogColor[] = {0.0, 0.0, 0.0, 1.0};
-
-    glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
-    glFogf (GL_FOG_DENSITY, density); //set the density to thevalue above
-    glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
-    glFogf(GL_FOG_START, 1.5f);
-    glEnable (GL_FOG); //enable the fog
-}
-
-void GLThread::fog_off(void)
-{
-    glw->makeCurrent();
-
-    glDisable (GL_FOG);
+    doFog = true ;
+    fogDensity = density ;
 }
 
 void GLThread::run()
@@ -106,7 +92,7 @@ void GLThread::run()
 
     Printf("In GLThread::run() - Initialization\n");
 
-	glw->makeCurrent();
+    openGLWidget->makeCurrent();
 
 	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0}; //set the material to white
 
@@ -166,11 +152,11 @@ void GLThread::run()
 
 //    Printf("Here, Np=%d\n",Np);
 
-	while (doRendering) {
+    //
+    // resize and fog have to be implemented on the OpenGLThread
+    while (doRendering) {
 		if(!bPaused){
-            /*** The resize is done on this thread ***/
 			if (doResize) {
-                // glViewport(0, 0, w, h); // no ! this causes the axes to be at different scales!
 				doResize = false;
                 int side = qMax(width, height);
                 glViewport((width - side) / 2, (height - side) / 2, side, side);
@@ -180,6 +166,21 @@ void GLThread::run()
                 gluPerspective( 60, 1.0, 1.0, 1000.0);
                 glMatrixMode(GL_MODELVIEW);
 			}
+
+            if ( doFog ) {
+                glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
+                GLfloat fogColor[] = {0.0, 0.0, 0.0, 1.0};
+
+                if ( fogDensity > 0.0 ) {
+                    glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
+                    glFogf (GL_FOG_DENSITY, fogDensity); //set the density to thevalue above
+                    glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
+                    glFogf(GL_FOG_START, 1.5f);
+                    glEnable (GL_FOG); //enable the fog
+                } else {
+                    glDisable (GL_FOG);
+                }
+            }
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glLoadIdentity();
@@ -208,7 +209,7 @@ void GLThread::run()
 					oldCamRadius=1e15;
 				}
 				int z = (int) (double) (camRadius*zoomMultiplier);
-				glw->setZoom(z);
+                openGLWidget->setZoom(z);
 				zoom = z ;
 			} else {
 				camRadius=zoom; // Original code
@@ -257,7 +258,7 @@ void GLThread::run()
 			gluSphere(glq, radsp, 40, 40);
 			glPopMatrix();
 
-			glw->swapBuffers();
+            openGLWidget->swapBuffers();
 			gluDeleteQuadric(glq);
 		} // if(!bPaused);
 	
