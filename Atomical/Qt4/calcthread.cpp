@@ -21,6 +21,7 @@
 
 #include "Qt4.h"
 #include "calcthread.h"
+#include <stdlib.h>
 
 calcThread::calcThread(int maxNp)
 : QThread()
