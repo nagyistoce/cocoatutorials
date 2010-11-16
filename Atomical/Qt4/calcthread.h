@@ -40,7 +40,7 @@ public:
     void pause();
     void resume();
 
-    void startEigenmodes(void);
+    void startEigenmodes(int n);
     void chooseEigenmode(int n);
     void stopEigenmodes(void);
     double oldE;
@@ -74,7 +74,6 @@ private:
     // The eigenvalue problem
     void eigsrt(double *d, double **v, int n);
     void twst(double **m, int i,int j,double cc,double ss,int n);
-//    void eigen(double **m, double *l, double **vc, double **m2, int n);
     void eigen(int n);
     void eigen_driver(int dim);
 

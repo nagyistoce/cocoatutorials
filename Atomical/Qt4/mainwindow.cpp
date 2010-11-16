@@ -120,6 +120,11 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
         cThread->oldE=1e99; // Needed to ensure restart
+        //if(mode==3){
+        //    wglWidget->glt->fog_on(0.07);
+        //} else {
+        //    wglWidget->glt->fog_off();
+        //}
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
@@ -146,7 +151,7 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     }
 */
 
-    NNp=24;
+    NNp=6;
 
     rranmar(tmp,2);
     if(mmode==3){
@@ -166,7 +171,7 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     toggle=RANDOM_INT(0,1);
     if(toggle) iimb=1.1+0.3*tmp[1];
 
-    initProblem(iimb,ssep,1e-6,NNp,NNp2,mmode,1);
+    initProblem(iimb,ssep,1e-9,NNp,NNp2,mmode,1);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
@@ -189,9 +194,9 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
 
 void MainWindow::ackIsConverged(){
     printf("Acknowledge that calculation has converged.\n");fflush(stdout);
-    cThread->startEigenmodes(); // Once this is toggled, the problem type should not be changed
-                                // Otherwise the whole thing goes crazy :)
-                                // Problem may be changed only after this returns.
+    cThread->startEigenmodes(0); // Once this is toggled, the problem type should not be changed
+                                 // Otherwise the whole thing goes crazy :)
+                                 // Problem may be changed only after this returns.
 }
 
 void MainWindow::shuffle()
@@ -314,6 +319,11 @@ void MainWindow::on_actionExit()
     this->window()->close();
 }
 
+void MainWindow::on_actionFog()
+{
+//    this->window()->close();
+}
+
 void MainWindow::slotAbout()
 {
     about*  dialog = new about;
@@ -356,7 +366,7 @@ void MainWindow::resume()
 void MainWindow::newProblem()
 {
     cThread->stopEigenmodes();
-    int amode = ui->threeD->checkState() ? 3    : 2     ;
+    int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
 }
 
@@ -368,13 +378,6 @@ void MainWindow::on_actionNewProblem_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     slotAbout();
-}
-
-void MainWindow::on_actionFog()
-{
-    // I intend to add a "fog density" slider to the UI
-    Printf("fog %s\n",ui->fog->checkState() ? "ON" : "Off");
-    openGLWidget->openGLThread->fog(ui->fog->checkState() ? 0.09 : 0.0 );
 }
 
 // That's all Folks!

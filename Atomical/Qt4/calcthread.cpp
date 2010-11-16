@@ -27,6 +27,8 @@ calcThread::calcThread(int maxNp)
 : QThread()
 , nMaxNp(maxNp)
 {
+    int i,dim;
+
     xx     = new double[maxNp];
     yy     = new double[maxNp];
     zz     = new double[maxNp];
@@ -37,6 +39,24 @@ calcThread::calcThread(int maxNp)
     ay     = new double[maxNp];
     az     = new double[maxNp];
 
+    dim=303; // Hard wired: eigenmodes for at most 100 particles
+
+    Evls=new double[dim];
+
+    Eivs=new double *[dim];
+    H=new double *[dim];
+    m2=new double *[dim];
+
+    if(H==NULL) printf("WOE!!!\n");
+
+    for(i=0;i<dim;i++) {
+        Eivs[i]=new double [dim];
+        H[i]=new double [dim];
+        m2[i]=new double [dim];
+
+        if(H[i]==NULL) printf("WOE!!!\n");
+    }
+
     n_eigmode=-1; // When set to -1, the loop calculates relaxation.
 
     moveToThread(this); // Do I need this?
@@ -44,6 +64,8 @@ calcThread::calcThread(int maxNp)
 
 calcThread::~calcThread()
 {
+    int i,dim;
+
     delete [] xx     ;
     delete [] yy     ;
     delete [] zz     ;
@@ -53,6 +75,19 @@ calcThread::~calcThread()
     delete [] ax     ;
     delete [] ay     ;
     delete [] az     ;
+
+    dim=303;
+
+    for(i=0;i<dim;i++) {
+        delete [] Eivs[i];
+        delete [] H[i];
+        delete [] m2[i];
+    }
+    delete [] Eivs;
+    delete [] H;
+    delete [] m2;
+
+    delete [] Evls;
 }
 
 void calcThread::__CPU_update()
@@ -405,11 +440,11 @@ void calcThread::free_Evals(void){
 }
 
 void calcThread::chooseEigenmode(int n){
-    int j;
+    int j,nn;
 
-    if(!allocated_evals) return;
-    if(n<0 || n>encode(2,Np)-1) return; // Mode non-existent
-    n_eigmode=encode(2,Np)-1-n; // Internal sort of eigenmodes is reversed
+    nn=n;
+    if(n<0 || n>encode(2,Np)-1) nn=0; // Default to the ground state
+    n_eigmode=encode(2,Np)-1-nn; // Internal sort of eigenmodes is reversed
     faket=0.0;
     printf("n_eigmode=%d\n",n_eigmode);
 
@@ -423,13 +458,15 @@ void calcThread::chooseEigenmode(int n){
 void calcThread::stopEigenmodes(void){
     pause();
     msleep(1);
-    free_Evals();
+//    free_Evals();
     n_eigmode=-1;
     resume(); // Resumes in relaxation mode
 }
 
-void calcThread::startEigenmodes(void){
+void calcThread::startEigenmodes(int nn){
     int dim,i,j;
+
+    if(Np>100) return;
 
     pause();
     msleep(1);
@@ -438,7 +475,7 @@ void calcThread::startEigenmodes(void){
     dim=encode(2,Np);
     printf("With %d particles in %d dimensions, %d eigenmodes\n",Np,mode,dim);
 
-    alloc_Evals();
+//    alloc_Evals();
 
     memcpy(ax,xx_old,Np*sizeof(double));
     memcpy(ay,yy_old,Np*sizeof(double));
@@ -473,7 +510,7 @@ void calcThread::startEigenmodes(void){
         printf("\n");
     }
 */
-    chooseEigenmode(0);
+    chooseEigenmode(nn);
     resume();
 }
 
