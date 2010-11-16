@@ -4,22 +4,22 @@ ReadMe.txt
 Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
-- Continue UI development to be similar to WmCocoa.
+- Continue UI development to be similar to WmCocoa
+- Move the Printf.{cpp}h} code to platform.{cpp|h} and remove Printf.{cpp|h}
 - Refactor Qt4 "core" code into a DLL (so,framework)
 - Create a screensaver version for Windows/Linux 
 (Robin's in England and has no access at the moment to a Mac) 
 
 Fabio's next tasks:
 - Add normal modes to the core code
-- Rename calcThread as WignerModel (and variable cThread to be modelThread)
+- Rename calcThread.{cpp|h} as WignerModel.{cpp|h} (and variable cThread to be modelThread)
 
 
-Known issue
------------
+Known issues
+------------
 
-Qt4/Mac/Resize window isn't working correctly
-Resize crops but does not resize. 
 No crash on Resize with a MBP 13", OsX 10.6.5 with graphics update 1.0 and NVidia 9400M integrated graphics.
+Qt4/Mac/Resize window isn't working correctly
 
 UI
 --
@@ -36,6 +36,7 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-16 01:58:38GMT  Fog fixed (and fog check box added to UI)
 2010-11-15 21:01:46GMT  Added code to make the links in the about box bring up the browser
 2010-11-15 13:18:07GMT  Got resize to work
 2010-11-15 03:16:10GMT  Messing (unsuccessfully) with resize

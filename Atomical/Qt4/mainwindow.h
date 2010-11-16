@@ -46,6 +46,7 @@ private:
 private slots:
     void on_actionAbout_triggered();
     void on_actionNewProblem_triggered();
+    void on_actionFog();
     void on_actionExit();
     void slotAbout();
 
