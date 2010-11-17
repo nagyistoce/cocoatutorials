@@ -67,7 +67,7 @@ public slots:
 signals:
     void xRotChanged(int angle);
     void yRotChanged(int angle);
-    void zRotChanged(int angle);
+  //void zRotChanged(int angle);
     void zoomChanged(int z);
 
 protected:
