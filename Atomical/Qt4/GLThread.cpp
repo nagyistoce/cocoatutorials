@@ -88,16 +88,13 @@ void GLThread::run()
 {
 	/********** The initialization goes here *************/
 
-    GLfloat oldCamRadius=1e15;
 
     Printf("In GLThread::run() - Initialization\n");
 
     openGLWidget->makeCurrent();
-
-	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0}; //set the material to white
-
+    GLfloat oldCamRadius=1e15;
+    GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0}; //set the material to white
 	GLfloat mShininess[] = {16}; //set the shininess of the material
-
 	GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0}; //set the light specular to white
 	GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0}; //set the light ambient to black
     GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0}; //set the diffuse light to white
@@ -144,7 +141,6 @@ void GLThread::run()
 #endif
 
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -168,6 +164,7 @@ void GLThread::run()
 			}
 
             if ( doFog ) {
+                doFog = false;
                 glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
                 GLfloat fogColor[] = {0.0, 0.0, 0.0, 1.0};
 

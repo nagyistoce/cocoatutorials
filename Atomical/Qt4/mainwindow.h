@@ -23,6 +23,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QLabel>
 #include "glwidget.h"
 
 namespace Ui
@@ -39,7 +40,7 @@ public:
    ~MainWindow();
 
 private:
-    Ui::MainWindowClass *ui;
+    Ui::MainWindowClass* ui;
 
     QAction* actionAbout;
 
@@ -49,6 +50,13 @@ private slots:
     void on_actionFog();
     void on_actionExit();
     void slotAbout();
+
+    void changed(QLabel* label,int v);
+    void zoomChanged(int z);
+    void xRotChanged(int z);
+    void yRotChanged(int z);
+    void zRotChanged(int z);
+    void npSliderChd(int n);
 
     void pause();
     void resume();
