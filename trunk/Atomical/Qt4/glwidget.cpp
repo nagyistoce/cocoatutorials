@@ -97,30 +97,30 @@ static void qNormalizeAngle(int &angle)
         angle -= 360 * 16;
 }
 
-void GLWidget::setXRotation(int angle)
+void GLWidget::setXRot(int angle)
 {
     qNormalizeAngle(angle);
     if (angle != xRot) {
         xRot = angle;
-        emit xRotationChanged(angle);
+        emit xRotChanged(angle);
     }
 }
 
-void GLWidget::setYRotation(int angle)
+void GLWidget::setYRot(int angle)
 {
     qNormalizeAngle(angle);
     if (angle != yRot) {
         yRot = angle;
-        emit yRotationChanged(angle);
+        emit yRotChanged(angle);
     }
 }
 
-void GLWidget::setZRotation(int angle)
+void GLWidget::setZRot(int angle)
 {
     qNormalizeAngle(angle);
     if (angle != zRot) {
         zRot = angle;
-        emit zRotationChanged(angle);
+        emit zRotChanged(angle);
     }
 }
 
@@ -128,11 +128,25 @@ void GLWidget::wheelEvent(QWheelEvent* event)
 {
     if ( event->modifiers() & Qt::ShiftModifier ) {
         float z = zRot - event->delta();
-        setZRotation(z);
+        setZRot(z);
     } else {
         int z = zoom + (event->delta() < 0 ? 50 : -50) ; // Zoom a bit slower...
         setZoom(z);
     }
+}
+
+void GLWidget::keyPressEvent(QKeyEvent *e)
+{
+    int c = e->key();
+    if ( c == Qt::Key_Right )
+        Printf("right\n");
+    else if ( c == Qt::Key_PageUp)
+        setZoom(zoom-20);
+    else if ( c == Qt::Key_PageDown)
+        setZoom(zoom+20);
+    else
+        QWidget::keyPressEvent(e);
+    // Printf("key = %d\n",c);
 }
 
 void GLWidget::setZoom(int z)
@@ -140,7 +154,6 @@ void GLWidget::setZoom(int z)
     if ( z < 5 ) z = 5 ;
     if (z != zoom) {
         zoom=z;
-    //  Printf("zoomChanged = %d\n",zoom);
         emit zoomChanged(z);
     }
 }
@@ -201,11 +214,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     int dy = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        setXRotation(xRot + 4 * dy);
-        setYRotation(yRot + 4 * dx);
+        setXRot(xRot + 4 * dy);
+        setYRot(yRot + 4 * dx);
     } else if (event->buttons() & Qt::RightButton) {
-        setXRotation(xRot - 4 * dy);
-        setZRotation(zRot - 4 * dx);
+        setXRot(xRot - 4 * dy);
+        setZRot(zRot - 4 * dx);
     }
     lastPos = event->pos();
 }

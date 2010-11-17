@@ -54,23 +54,23 @@ public:
 
     // allow GLThread access to our private members
     friend class GLThread;
+    friend class MainWindow;
 
 public slots:
-    void setXRotation(int angle);
-    void setYRotation(int angle);
-    void setZRotation(int angle);
+    void setXRot(int angle);
+    void setYRot(int angle);
+    void setZRot(int angle);
     void setZoom(int z);
     void updateThis();
     void updateFrame();
 
 signals:
-    void xRotationChanged(int angle);
-    void yRotationChanged(int angle);
-    void zRotationChanged(int angle);
+    void xRotChanged(int angle);
+    void yRotChanged(int angle);
+    void zRotChanged(int angle);
     void zoomChanged(int z);
 
 protected:
-    void fog_on(GLfloat density);
     void initializeGL();
     void paintGL();
 
@@ -80,14 +80,15 @@ protected:
     void resizeEvent(QResizeEvent *evt);
     void paintEvent(QPaintEvent *evt);
     void closeEvent(QCloseEvent *evt);
+    void keyPressEvent(QKeyEvent* event);
 
     double CPU_rad(const double* xx, const double* yy,const double* zz, int N);
 
-private:
     int       xRot;
     int       yRot;
     int       zRot;
     int       zoom;
+private:
     int       is_drawing;
     int       can_terminate;
     QPoint    lastPos;

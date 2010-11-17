@@ -62,35 +62,35 @@ private:
     double_p xx,yy,zz;
     double_p xx_old,yy_old,zz_old;
 
-    int    Np,Np2,mode,do_calc;
-    int    n_eigmode;
-    double imbalance,E,targetPrecision;
+    int     Np,Np2,mode,do_calc;
+    int     n_eigmode;
+    double  imbalance,E,targetPrecision;
 
     // General purpose
-    void   __CPU_update();
-    double __CPU_energy();
-    void   __CPU_poscpy();
+    void    __CPU_update();
+    double  __CPU_energy();
+    void    __CPU_poscpy();
 
     // The eigenvalue problem
-    void eigsrt(double *d, double **v, int n);
-    void twst(double **m, int i,int j,double cc,double ss,int n);
-    void eigen(int n);
-    void eigen_driver(int dim);
+    void    eigsrt(double *d, double **v, int n);
+    void    twst(double **m, int i,int j,double cc,double ss,int n);
+    void    eigen(int n);
+    void    eigen_driver(int dim);
 
     // Vibrational modes
-    bool allocated_evals;
+    bool    allocated_evals;
     double *Evls, **m2, **Eivs, **H;
     double *ax, *ay, *az, faket;
-    int olddim;
+    int     olddim;
 
-    void cshift(int ci,int i,double dd);
-    double HH(int ci,int i,int cj,int j);
-    int encode(int ci,int i);
-    void decode(int ii,int *ci,int *i);
-    void calc_Hessian(void);
-    void alloc_Evals(void);
-    void free_Evals(void);
-    void Eigenmodes(void);
+    void    cshift(int ci,int i,double dd);
+    double  HH(int ci,int i,int cj,int j);
+    int     encode(int ci,int i);
+    void    decode(int ii,int *ci,int *i);
+    void    calc_Hessian(void);
+    void    alloc_Evals(void);
+    void    free_Evals(void);
+    void    Eigenmodes(void);
 };
 
 #endif // CALCTHREAD_H

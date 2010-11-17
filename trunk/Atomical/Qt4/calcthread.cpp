@@ -163,8 +163,8 @@ void calcThread::__CPU_poscpy()
 }
 
 // Eigenvalue problem, needed for the vibrational modes
-
-void calcThread::eigsrt(double *d, double **v, int n){
+void calcThread::eigsrt(double *d, double **v, int n)
+{
     int k,j,i;
     double p;
 
@@ -184,7 +184,8 @@ void calcThread::eigsrt(double *d, double **v, int n){
     }
 }
 
-void calcThread::twst(double **m, int i,int j,double cc,double ss,int n){
+void calcThread::twst(double **m, int i,int j,double cc,double ss,int n)
+{
     int k=n;
     double t;
 
@@ -195,7 +196,8 @@ void calcThread::twst(double **m, int i,int j,double cc,double ss,int n){
     }
 }
 
-void calcThread::eigen(int n){
+void calcThread::eigen(int n)
+{
 //void calcThread::eigen(double **m, double *l, double **vc, double **m2, int n){
 //                              H       Evls          Eivs          m2     dim
     double q,mod,t,th,cc,ss;
@@ -278,8 +280,8 @@ void calcThread::eigen_driver(int dim){
 }
 
 // Code for the vibrational modes calculation
-
-void calcThread::cshift(int ci,int i,double dd){
+void calcThread::cshift(int ci,int i,double dd)
+{
     switch(ci){
         case 0:
             xx[i]+=dd;
@@ -296,7 +298,8 @@ void calcThread::cshift(int ci,int i,double dd){
 
 }
 
-double calcThread::HH(int ci,int i,int cj,int j){
+double calcThread::HH(int ci,int i,int cj,int j)
+{
     double Epp,Emm,Epm,Emp;
     double Delta=0.00005;
 
@@ -336,11 +339,13 @@ double calcThread::HH(int ci,int i,int cj,int j){
     }
 }
 
-int calcThread::encode(int ci,int i){
+int calcThread::encode(int ci,int i)
+{
     return i+(ci-1+mode-2)*Np;;
 }
 
-void calcThread::decode(int ii,int *ci,int *i){
+void calcThread::decode(int ii,int *ci,int *i)
+{
     ldiv_t n;
 
     n=ldiv(ii,Np);
@@ -349,7 +354,8 @@ void calcThread::decode(int ii,int *ci,int *i){
     *i=n.rem;
 }
 
-void calcThread::calc_Hessian(void){
+void calcThread::calc_Hessian(void)
+{
     int dim,ii,jj;
     int ci,i,cj,j;
     double tmp;
@@ -368,7 +374,8 @@ void calcThread::calc_Hessian(void){
     }
 }
 
-void calcThread::alloc_Evals(void){
+void calcThread::alloc_Evals(void)
+{
     int i,dim;
 
     if(allocated_evals) return;
@@ -439,7 +446,8 @@ void calcThread::free_Evals(void){
     n_eigmode=-1;
 }
 
-void calcThread::chooseEigenmode(int n){
+void calcThread::chooseEigenmode(int n)
+{
     int j,nn;
 
     nn=n;
@@ -455,7 +463,8 @@ void calcThread::chooseEigenmode(int n){
     printf("\n");
 }
 
-void calcThread::stopEigenmodes(void){
+void calcThread::stopEigenmodes(void)
+{
     pause();
     msleep(1);
 //    free_Evals();
@@ -463,7 +472,8 @@ void calcThread::stopEigenmodes(void){
     resume(); // Resumes in relaxation mode
 }
 
-void calcThread::startEigenmodes(int nn){
+void calcThread::startEigenmodes(int nn)
+{
     int dim,i,j;
 
     if(Np>100) return;
@@ -540,11 +550,13 @@ void calcThread::setup(double *xxx,double *yyy,double *zzz,double imb,double tpr
     __CPU_poscpy();
 }
 
-void calcThread::pause(){
+void calcThread::pause()
+{
     isPaused=true;
 }
 
-void calcThread::resume(){
+void calcThread::resume()
+{
     isPaused=false;
 }
 
@@ -599,7 +611,8 @@ void calcThread::run()
     }
 }
 
-void calcThread::doCalc(){
+void calcThread::doCalc()
+{
     start(HighPriority);
 }
 

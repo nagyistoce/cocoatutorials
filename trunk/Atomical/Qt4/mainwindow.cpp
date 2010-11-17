@@ -120,11 +120,6 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
         Initialize();
         cThread->resume(); // Resume calculation if that was paused
         cThread->oldE=1e99; // Needed to ensure restart
-        //if(mode==3){
-        //    wglWidget->glt->fog_on(0.07);
-        //} else {
-        //    wglWidget->glt->fog_off();
-        //}
     }
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
@@ -151,8 +146,7 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     }
 */
 
-    NNp=6;
-
+    NNp=atoi(ui->npValue->text().toAscii());
     rranmar(tmp,2);
     if(mmode==3){
         NNp2=0;
@@ -174,15 +168,6 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     initProblem(iimb,ssep,1e-9,NNp,NNp2,mmode,1);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *e)
-{
-    char c = e->key();
-    if (e->key() == Qt::Key_Escape || ::tolower(c) == 'q')
-        on_actionExit();
-    else
-        QWidget::keyPressEvent(e);
-}
-
 void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *EE*/)
 {
     memcpy(xx,xxx,Np*sizeof(double));
@@ -192,11 +177,13 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
     openGLWidget->receiveData(xx,yy,zz,radsp,separation,imbalance,Np,Np2,mode);
 }
 
-void MainWindow::ackIsConverged(){
+void MainWindow::ackIsConverged()
+{
     printf("Acknowledge that calculation has converged.\n");fflush(stdout);
-    cThread->startEigenmodes(0); // Once this is toggled, the problem type should not be changed
-                                 // Otherwise the whole thing goes crazy :)
-                                 // Problem may be changed only after this returns.
+    if ( ui->normalModes->checkState())
+        cThread->startEigenmodes(0);    // Once this is toggled, the problem type should not be changed
+                                        // Otherwise the whole thing goes crazy :)
+                                        // Problem may be changed only after this returns.
 }
 
 void MainWindow::shuffle()
@@ -208,6 +195,15 @@ void MainWindow::performShutdown()
 {
     Printf("About to quit!\n");
     openGLWidget->stopRendering();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    int  c =  event->key();
+    if ( c == Qt::Key_Escape || ::tolower(c) == 'q')
+        on_actionExit();
+    else
+        openGLWidget->keyPressEvent(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent* /*event*/)
@@ -255,6 +251,11 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
 
     //  Alloc a new calculation thread
     cThread= new calcThread(MaxNp);
+
+    connect(openGLWidget,SIGNAL(zoomChanged(int)),this,SLOT(zoomChanged(int)));
+    connect(openGLWidget,SIGNAL(xRotChanged(int)),this,SLOT(xRotChanged(int)));
+    connect(openGLWidget,SIGNAL(yRotChanged(int)),this,SLOT(yRotChanged(int)));
+    connect(openGLWidget,SIGNAL(zRotChanged(int)),this,SLOT(zRotChanged(int)));
 
     //  When a step is calculated, the stepDone() signal is emitted.
     //  It is caught here by updatePositions() so that this class is aware of these positions.
@@ -321,7 +322,7 @@ void MainWindow::on_actionExit()
 
 void MainWindow::on_actionFog()
 {
-//    this->window()->close();
+    openGLWidget->openGLThread->fog(ui->fog->checkState() ? 0.09 : 0.0 );
 }
 
 void MainWindow::slotAbout()
@@ -339,6 +340,9 @@ void MainWindow::slotAbout()
 }
 
 #if 0
+// leave this for now.
+// I prefer the font being used here
+// I might decide to use this everywhere in the UI
 void MainWindow::S_labelUpdate()
 {
 QVariant v;
@@ -378,6 +382,38 @@ void MainWindow::on_actionNewProblem_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     slotAbout();
+}
+
+void MainWindow::changed(QLabel* label,int v)
+{
+    QString S;
+    S.setNum(v);
+    label->setText(S);
+}
+
+void MainWindow::zoomChanged(int v)
+{
+    changed(ui->zoomValue,v);
+}
+
+void MainWindow::xRotChanged(int v)
+{
+    changed(ui->xRotValue,v);
+}
+
+void MainWindow::yRotChanged(int v)
+{
+    changed(ui->yRotValue,v);
+}
+
+void MainWindow::zRotChanged(int v)
+{
+    changed(ui->zRotValue,v);
+}
+
+void MainWindow::npSliderChd(int n)
+{
+    ui->npValue->setNum(n);
 }
 
 // That's all Folks!
