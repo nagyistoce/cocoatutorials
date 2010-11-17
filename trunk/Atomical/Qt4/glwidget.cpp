@@ -120,7 +120,7 @@ void GLWidget::setZRot(int angle)
     qNormalizeAngle(angle);
     if (angle != zRot) {
         zRot = angle;
-        emit zRotChanged(angle);
+        // emit zRotChanged(angle);
     }
 }
 

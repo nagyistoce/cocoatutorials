@@ -255,7 +255,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     connect(openGLWidget,SIGNAL(zoomChanged(int)),this,SLOT(zoomChanged(int)));
     connect(openGLWidget,SIGNAL(xRotChanged(int)),this,SLOT(xRotChanged(int)));
     connect(openGLWidget,SIGNAL(yRotChanged(int)),this,SLOT(yRotChanged(int)));
-    connect(openGLWidget,SIGNAL(zRotChanged(int)),this,SLOT(zRotChanged(int)));
+  //connect(openGLWidget,SIGNAL(zRotChanged(int)),this,SLOT(zRotChanged(int)));
 
     //  When a step is calculated, the stepDone() signal is emitted.
     //  It is caught here by updatePositions() so that this class is aware of these positions.
@@ -404,11 +404,6 @@ void MainWindow::xRotChanged(int v)
 void MainWindow::yRotChanged(int v)
 {
     changed(ui->yRotValue,v);
-}
-
-void MainWindow::zRotChanged(int v)
-{
-    changed(ui->zRotValue,v);
 }
 
 void MainWindow::npSliderChd(int n)

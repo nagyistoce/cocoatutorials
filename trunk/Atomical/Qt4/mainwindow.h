@@ -55,7 +55,7 @@ private slots:
     void zoomChanged(int z);
     void xRotChanged(int z);
     void yRotChanged(int z);
-    void zRotChanged(int z);
+  //void zRotChanged(int z);
     void npSliderChd(int n);
 
     void pause();
