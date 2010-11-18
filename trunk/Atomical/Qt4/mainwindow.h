@@ -45,9 +45,8 @@ private:
     QAction* actionAbout;
 
 private slots:
-    void on_actionAbout_triggered();
-    void on_actionNewProblem_triggered();
-    void on_actionFog();
+    void on_actionAbout();
+    void on_actionNewProblem();
     void on_actionExit();
     void slotAbout();
 
@@ -56,7 +55,8 @@ private slots:
     void xRotChanged(int z);
     void yRotChanged(int z);
   //void zRotChanged(int z);
-    void npSliderChd(int n);
+    void npSliderChanged(int n);
+    void fogChanged (int n);
 
     void pause();
     void resume();
