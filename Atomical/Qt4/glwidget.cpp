@@ -198,7 +198,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->y() - lastPos.y();
     int dy = event->x() - lastPos.x();
-        dy = -dy;
 
     if (event->buttons() & Qt::LeftButton) {
         setXRot(xRot + dx);
