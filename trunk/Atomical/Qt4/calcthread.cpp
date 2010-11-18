@@ -26,6 +26,7 @@
 calcThread::calcThread(int maxNp)
 : QThread()
 , nMaxNp(maxNp)
+, Np(0)
 {
     int i,dim;
 

@@ -29,9 +29,11 @@
 
 #include "Qt4.h"
 #include "calcthread.h"
+#include "mainwindow.h"
 #include "GLThread.h"
 
 class GLThread;
+class MainWindow;
 
 class GLWidget : public QGLWidget
 {
@@ -51,6 +53,7 @@ public:
     QSize sizeHint() const;
 
     GLThread* openGLThread;
+    MainWindow* mainWindow;
 
     // allow GLThread access to our private members
     friend class GLThread;
@@ -67,7 +70,6 @@ public slots:
 signals:
     void xRotChanged(int angle);
     void yRotChanged(int angle);
-  //void zRotChanged(int angle);
     void zoomChanged(int z);
 
 protected:

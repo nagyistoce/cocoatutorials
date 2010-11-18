@@ -24,7 +24,11 @@
 
 #include <QtGui/QMainWindow>
 #include <QLabel>
-#include "glwidget.h"
+#include <QSlider>
+#include "Qt4.h"
+
+class GLWidget ;
+class calcThread;
 
 namespace Ui
 {
@@ -44,23 +48,18 @@ private:
 
     QAction* actionAbout;
 
-private slots:
+public slots:
     void on_actionAbout();
     void on_actionNewProblem();
     void on_actionExit();
-    void slotAbout();
-
-    void changed(QLabel* label,int v);
+    void pauseResume();
     void zoomChanged(int z);
     void xRotChanged(int z);
     void yRotChanged(int z);
-  //void zRotChanged(int z);
     void npSliderChanged(int n);
     void fogChanged (int n);
-
-    void pause();
-    void resume();
-    void newProblem();
+private:
+    void changed(QLabel* label,QSlider* slider,int v);
 
 // -------------------
 

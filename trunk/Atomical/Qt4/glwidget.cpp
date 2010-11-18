@@ -36,6 +36,7 @@
 GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 , nMaxNp(aMaxNp)
+, mainWindow(NULL)
 {
 //  view = 0;
     xRot = 0;

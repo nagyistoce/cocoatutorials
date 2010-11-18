@@ -22,6 +22,7 @@
 #include "Qt4.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "GLWidget.h"
 #include "about.h"
 #include <time.h>
 
@@ -188,7 +189,7 @@ void MainWindow::ackIsConverged()
 
 void MainWindow::shuffle()
 {
-   newProblem();
+    this->on_actionNewProblem();
 }
 
 void MainWindow::performShutdown()
@@ -242,12 +243,13 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     QGLFormat::setDefaultFormat(pixelFormat);
 
     openGLWidget = new GLWidget(MaxNp);
+    openGLWidget->mainWindow = this   ;
     ui->verticalLayout_2->addWidget( openGLWidget );
 
     // manually add to the menu (this is sample code to be removed later)
     actionAbout = new QAction(tr("A&bout"), this);
     ui->menuBar->addAction( actionAbout );
-    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( slotAbout() ) );
+    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( on_actionAbout() ) );
 
     //  Alloc a new calculation thread
     cThread= new calcThread(MaxNp);
@@ -255,15 +257,12 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     connect(openGLWidget,SIGNAL(zoomChanged(int)),this,SLOT(zoomChanged(int)));
     connect(openGLWidget,SIGNAL(xRotChanged(int)),this,SLOT(xRotChanged(int)));
     connect(openGLWidget,SIGNAL(yRotChanged(int)),this,SLOT(yRotChanged(int)));
-  //connect(openGLWidget,SIGNAL(zRotChanged(int)),this,SLOT(zRotChanged(int)));
 
     //  When a step is calculated, the stepDone() signal is emitted.
     //  It is caught here by updatePositions() so that this class is aware of these positions.
     //  Additionally, updatePositions() loads the particles positions into the glWidget
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
     connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
-    newProblem();
-
     //  This call initializes a problem
     //
     //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
@@ -320,20 +319,6 @@ void MainWindow::on_actionExit()
     this->window()->close();
 }
 
-void MainWindow::slotAbout()
-{
-    about*  dialog = new about;
-    dialog->setWindowFlags(Qt::Tool);
-    dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
-                , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
-                );
-
-    dialog->setWindowIcon(QIcon(":/icon/ikona_32.png"));
-    dialog->setWindowModality(Qt::ApplicationModal);
-    dialog->show();
-    dialog->activateWindow();
-}
-
 #if 0
 // leave this for now.
 // I prefer the font being used here
@@ -352,63 +337,70 @@ QVariant v;
 }
 #endif
 
-void MainWindow::pause()
+void MainWindow::pauseResume()
 {
     cThread->pause() ;
+    bool paused = openGLWidget->openGLThread->isPaused();
+    openGLWidget->openGLThread->setPaused(!paused);
+    ui->pauseResumeButton->setText(QString(paused ? "Pause" : "Resume") );
+    Printf("MainWindow::pauseResume\n");
 }
 
-void MainWindow::resume()
-{
-    cThread->resume() ;
-}
-
-void MainWindow::newProblem()
+void MainWindow::on_actionNewProblem()
 {
     cThread->stopEigenmodes();
     int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
 }
 
-void MainWindow::on_actionNewProblem()
-{
-    newProblem();
-}
-
 void MainWindow::on_actionAbout()
 {
-    slotAbout();
+    about*  dialog = new about;
+    dialog->setWindowFlags(Qt::Tool);
+    dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
+                , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
+                );
+
+    dialog->setWindowIcon(QIcon(":/icon/ikona_32.png"));
+    dialog->setWindowModality(Qt::ApplicationModal);
+    dialog->show();
+    dialog->activateWindow();
 }
 
-void MainWindow::changed(QLabel* label,int v)
+void MainWindow::changed(QLabel* label,QSlider* slider,int v)
 {
     QString S;
     S.setNum(v);
     label->setText(S);
+    slider->setValue(v);
 }
 
 void MainWindow::zoomChanged(int v)
 {
-    changed(ui->zoomValue,v);
+    changed(ui->zoomValue,ui->zoomSlider,v);
+    openGLWidget->setZoom(v) ;
 }
 
 void MainWindow::xRotChanged(int v)
 {
-    changed(ui->xRotValue,v);
+    changed(ui->xRotValue,ui->xRotSlider,v);
+    openGLWidget->setXRot(v);
 }
 
 void MainWindow::yRotChanged(int v)
 {
-    changed(ui->yRotValue,v);
+    changed(ui->yRotValue,ui->yRotSlider,v);
+    openGLWidget->setYRot(v);
 }
 
 void MainWindow::npSliderChanged(int n)
 {
     ui->npValue->setNum(n);
+    on_actionNewProblem();
 }
 
 void MainWindow::fogChanged(int n)
 {
-    Printf("fog = %d\n",n);
     ui->fogValue->setNum(n);
     double f = n ;
     openGLWidget->openGLThread->fog(f/100.0);
