@@ -55,15 +55,15 @@ public:
     GLThread* openGLThread;
     MainWindow* mainWindow;
 
-    // allow GLThread access to our private members
+    // allow GLThread and MainWindow to access our private members
     friend class GLThread;
     friend class MainWindow;
 
 public slots:
     void setXRot(int angle);
     void setYRot(int angle);
-    void setZRot(int angle);
     void setZoom(int z);
+
     void updateThis();
     void updateFrame();
 
