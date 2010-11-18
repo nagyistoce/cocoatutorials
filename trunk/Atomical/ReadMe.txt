@@ -4,16 +4,13 @@ ReadMe.txt
 Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
-- Continue UI development to be similar to WmCocoa
 - Move the Printf.{cpp}h} code to platform.{cpp|h} and remove Printf.{cpp|h}
 - Refactor Qt4 "core" code into a DLL (so,framework)
 - Create a screensaver version for Windows/Linux 
 (Robin's in England and has no access at the moment to a Mac) 
 
 Fabio's next tasks:
-- Add normal modes to the core code
 - Rename calcThread.{cpp|h} as WignerModel.{cpp|h} (and variable cThread to be modelThread)
-
 
 Known issues
 ------------
@@ -28,7 +25,6 @@ MouseWheel:        zoom in/out
 MouseWheel+Shift:  Rotate the Q in the view
 To quit:           Q or q or Escape
 
-
 Robin Mills
 rmills@clanmills.com
 http://clanmills.com
@@ -36,6 +32,7 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-18 23:15:18GMT  UI is more or less complete (I think).
 2010-11-16 01:58:38GMT  Fog fixed (and fog check box added to UI)
 2010-11-15 21:01:46GMT  Added code to make the links in the about box bring up the browser
 2010-11-15 13:18:07GMT  Got resize to work
