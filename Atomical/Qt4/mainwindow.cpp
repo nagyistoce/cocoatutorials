@@ -22,7 +22,7 @@
 #include "Qt4.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "GLWidget.h"
+#include "glwidget.h"
 #include "about.h"
 #include <time.h>
 
@@ -216,6 +216,8 @@ void MainWindow::closeEvent(QCloseEvent* /*event*/)
 MainWindow::MainWindow(int maxNp,QWidget *parent)
 : QMainWindow(parent)
 , ui(new Ui::MainWindowClass)
+, Np(0)
+, Np2(0)
 {
     ui->setupUi(this);
 
@@ -401,9 +403,10 @@ void MainWindow::npSliderChanged(int n)
 
 void MainWindow::fogChanged(int n)
 {
-    ui->fogValue->setNum(n);
     double f = n ;
-    openGLWidget->openGLThread->fog(f/100.0);
+    f /= 100.0   ;
+    ui->fogValue->setNum(f);
+    openGLWidget->openGLThread->fog(f);
 }
 
 // That's all Folks!

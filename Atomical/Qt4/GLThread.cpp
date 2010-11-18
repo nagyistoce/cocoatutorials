@@ -147,8 +147,11 @@ void GLThread::run()
     double PI2 = 8.0 * atan2(1.0,1.0);
 
     Printf("In GLThread::run() - Initialization done, start loop Np=%d\n",Np);
-
-//    Printf("Here, );
+    int count = 10 ;
+    while (count > 0 && Np == 0) {
+        mSleep(100);
+        count--;
+    }
 
     //
     // resize and fog have to be implemented on the OpenGLThread
@@ -190,16 +193,12 @@ void GLThread::run()
 			if ( bAutoZoom ) {
 				// when we set a new problem, we set bAutoZoom
 				// to request the UI to display the problem space
-				//
-				// I like this idea but I'd implement it in a different way!
-	
 				camRadius=2.3*rradius; // So the zoom is tighter
 	
 				// When a new problem is started, the molecule radius changes wildly,
 				// we then "auto-zoom" until the radius does not change up to 1%. The small
 				// 10^-6 is added to denominator since rradius=0 when the rendering is
 				// started but the class has not started gathering data yet.
-	
 				if(fabs(1-camRadius/(oldCamRadius+1e-6))>1e-2) {
 					bAutoZoom = true ;
 					oldCamRadius=camRadius;
