@@ -55,14 +55,7 @@
       <item>
        <widget class="QPushButton" name="pauseButton">
         <property name="text">
-         <string>Pause</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="resumeButton">
-        <property name="text">
-         <string>Resume</string>
+         <string>Pause/Resume</string>
         </property>
        </widget>
       </item>
@@ -75,13 +68,6 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
-        <item>
-         <widget class="QCheckBox" name="fog">
-          <property name="text">
-           <string>Fog</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QCheckBox" name="threeD">
           <property name="minimumSize">
@@ -98,10 +84,6 @@
           </property>
          </widget>
         </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
          <widget class="QCheckBox" name="normalModes">
           <property name="text">
@@ -139,6 +121,9 @@
             <property name="value">
              <number>13</number>
             </property>
+            <property name="tracking">
+             <bool>false</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -163,6 +148,55 @@
          </layout>
         </item>
         <item>
+         <layout class="QVBoxLayout" name="zRotLayout">
+          <item>
+           <widget class="QLabel" name="zoomValue">
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="zoomSlider">
+            <property name="maximum">
+             <number>1001</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>101</number>
+            </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+            <property name="tickInterval">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="zoomLabel">
+            <property name="text">
+             <string>Zoom</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QVBoxLayout" name="zoomLayout">
           <item>
            <widget class="QLabel" name="xRotValue">
@@ -175,43 +209,31 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="zoomSlider"/>
+           <widget class="QSlider" name="xRotSlider">
+            <property name="maximum">
+             <number>360</number>
+            </property>
+            <property name="singleStep">
+             <number>15</number>
+            </property>
+            <property name="pageStep">
+             <number>15</number>
+            </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+            <property name="tickInterval">
+             <number>15</number>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="xRotLabel">
             <property name="text">
-             <string>xRot:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>0.20</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSlider" name="verticalSlider_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Fog</string>
+             <string>xRot</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -233,16 +255,31 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="verticalSlider">
+           <widget class="QSlider" name="yRotSlider">
+            <property name="maximum">
+             <number>360</number>
+            </property>
+            <property name="pageStep">
+             <number>15</number>
+            </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+            <property name="tickInterval">
+             <number>15</number>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="yRotLabel">
             <property name="text">
-             <string>yRot:</string>
+             <string>yRot</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -252,11 +289,11 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="zRotLayout">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QLabel" name="zoomValue">
+           <widget class="QLabel" name="fogValue">
             <property name="text">
-             <string>0</string>
+             <string>0.20</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -264,16 +301,31 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="verticalSlider_2">
+           <widget class="QSlider" name="fogSlider">
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="pageStep">
+             <number>1</number>
+            </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+            <property name="tickInterval">
+             <number>2</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="zoomLabel">
+           <widget class="QLabel" name="label_6">
             <property name="text">
-             <string>Zoom:</string>
+             <string>Fog</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -539,22 +591,6 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>resumeButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindowClass</receiver>
-   <slot>resume()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>502</x>
-     <y>42</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>287</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>newProblem</sender>
    <signal>clicked()</signal>
    <receiver>MainWindowClass</receiver>
@@ -587,14 +623,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>fog</sender>
-   <signal>clicked()</signal>
+   <sender>npSlider</sender>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>on_actionFog()</slot>
+   <slot>npSliderChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>713</x>
-     <y>127</y>
+     <x>789</x>
+     <y>328</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>
@@ -603,14 +639,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>npSlider</sender>
+   <sender>fogSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>npSliderChd(int)</slot>
+   <slot>fogChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>789</x>
-     <y>328</y>
+     <x>787</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>

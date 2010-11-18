@@ -320,11 +320,6 @@ void MainWindow::on_actionExit()
     this->window()->close();
 }
 
-void MainWindow::on_actionFog()
-{
-    openGLWidget->openGLThread->fog(ui->fog->checkState() ? 0.09 : 0.0 );
-}
-
 void MainWindow::slotAbout()
 {
     about*  dialog = new about;
@@ -374,12 +369,12 @@ void MainWindow::newProblem()
     initRandomProblem(true,amode);
 }
 
-void MainWindow::on_actionNewProblem_triggered()
+void MainWindow::on_actionNewProblem()
 {
     newProblem();
 }
 
-void MainWindow::on_actionAbout_triggered()
+void MainWindow::on_actionAbout()
 {
     slotAbout();
 }
@@ -406,9 +401,17 @@ void MainWindow::yRotChanged(int v)
     changed(ui->yRotValue,v);
 }
 
-void MainWindow::npSliderChd(int n)
+void MainWindow::npSliderChanged(int n)
 {
     ui->npValue->setNum(n);
+}
+
+void MainWindow::fogChanged(int n)
+{
+    Printf("fog = %d\n",n);
+    ui->fogValue->setNum(n);
+    double f = n ;
+    openGLWidget->openGLThread->fog(f/100.0);
 }
 
 // That's all Folks!
