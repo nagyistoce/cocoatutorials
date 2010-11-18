@@ -261,6 +261,10 @@ void GLThread::run()
 	
 		emit frameNeeded();
 		mSleep(13);
+        if ( Np == 0 ) {
+            Np = 13 ;
+            openGLWidget->mainWindow->on_actionNewProblem();
+        }
 	 }
 }
 
@@ -285,6 +289,14 @@ void GLThread::loadData
 	memcpy(xx,xxx,Np*sizeof(double));
 	memcpy(yy,yyy,Np*sizeof(double));
 	memcpy(zz,zzz,Np*sizeof(double));
+}
+
+bool GLThread::setPaused(bool aPaused)
+{
+    bool result = bPaused;
+    bPaused = aPaused;
+    // openGLWidget->openGThread->isPaused = aPaused;
+    return result;
 }
 
 // That's all Folks!

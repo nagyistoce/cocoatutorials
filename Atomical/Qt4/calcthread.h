@@ -44,6 +44,7 @@ public:
     void chooseEigenmode(int n);
     void stopEigenmodes(void);
     double oldE;
+    bool isPaused;
 
 protected:
     void run();
@@ -56,7 +57,6 @@ signals:
 private:
     bool restart;
     bool abort;
-    bool isPaused;
 
     int      nMaxNp;
     double_p xx,yy,zz;

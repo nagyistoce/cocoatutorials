@@ -50,8 +50,8 @@ public:
    // getters/setters
    bool setAutoZoom(bool aAutoZoom) { bool result = bAutoZoom ; bAutoZoom = aAutoZoom ; return result ; }
 
-   bool isPaused()                  { return bPaused ; }
-   bool setPaused(bool aPaused)     { bool result = bPaused   ; bPaused = aPaused     ; return result ; }
+   bool isPaused() { return bPaused ; }
+   bool setPaused(bool aPaused);
 
    // allow GLWidget access to our private members
    friend class GLWidget;
