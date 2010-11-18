@@ -144,14 +144,16 @@ void GLThread::run()
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Printf("In GLThread::run() - Initialization done, start loop\n");
+    double PI2 = 8.0 * atan2(1.0,1.0);
 
-//    Printf("Here, Np=%d\n",Np);
+    Printf("In GLThread::run() - Initialization done, start loop Np=%d\n",Np);
+
+//    Printf("Here, );
 
     //
     // resize and fog have to be implemented on the OpenGLThread
     while (doRendering) {
-		if(!bPaused){
+        if(!bPaused) {
 			if (doResize) {
 				doResize = false;
                 int side = qMax(width, height);
@@ -212,9 +214,10 @@ void GLThread::run()
 				camRadius=zoom; // Original code
 				camRadius/=zoomMultiplier;
 			}
-	
-			camYaw=-6.28*yRot/(360*16);
-			camPitch=6.28*xRot/(360*16);
+            double y = yRot ;
+            double x = xRot ;
+            camYaw   =-PI2*y/360.0;
+            camPitch = PI2*x/360.0;
 	
 			camX = cos(camYaw) * cos(camPitch) * camRadius;
 			camY = sin(camYaw) * cos(camPitch) * camRadius;

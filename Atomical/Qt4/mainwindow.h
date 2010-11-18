@@ -45,7 +45,6 @@ public:
 
 private:
     Ui::MainWindowClass* ui;
-
     QAction* actionAbout;
 
 public slots:

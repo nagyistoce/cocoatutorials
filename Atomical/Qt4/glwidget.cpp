@@ -28,7 +28,6 @@
 #include "calcthread.h"
 #include "Qt4.h"
 
-
 #ifndef GL_MULTISAMPLE
 #define GL_MULTISAMPLE  0x809D
 #endif
@@ -36,9 +35,9 @@
 GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 , nMaxNp(aMaxNp)
-, mainWindow(NULL)
 {
 //  view = 0;
+    mainWindow=NULL;
     xRot = 0;
     yRot = 0;
     zRot = 0;
@@ -93,9 +92,9 @@ QSize GLWidget::sizeHint() const
 static void qNormalizeAngle(int &angle)
 {
     while (angle < 0)
-        angle += 360 * 16;
-    while (angle > 360 * 16)
-        angle -= 360 * 16;
+        angle += 360 ;
+    while (angle > 360 )
+        angle -= 360 ;
 }
 
 void GLWidget::setXRot(int angle)
@@ -116,24 +115,10 @@ void GLWidget::setYRot(int angle)
     }
 }
 
-void GLWidget::setZRot(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != zRot) {
-        zRot = angle;
-        // emit zRotChanged(angle);
-    }
-}
-
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-    if ( event->modifiers() & Qt::ShiftModifier ) {
-        float z = zRot - event->delta();
-        setZRot(z);
-    } else {
-        int z = zoom + (event->delta() < 0 ? 50 : -50) ; // Zoom a bit slower...
-        setZoom(z);
-    }
+    int z = zoom + (event->delta() < 0 ? 50 : -50) ; // Zoom a bit slower...
+    setZoom(z);
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *e)
@@ -211,15 +196,16 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
+    int dx = event->y() - lastPos.y();
+    int dy = event->x() - lastPos.x();
+        dy = -dy;
 
     if (event->buttons() & Qt::LeftButton) {
-        setXRot(xRot + 4 * dy);
-        setYRot(yRot + 4 * dx);
+        setXRot(xRot + dx);
+        setYRot(yRot + dy);
     } else if (event->buttons() & Qt::RightButton) {
-        setXRot(xRot - 4 * dy);
-        setZRot(zRot - 4 * dx);
+        setXRot(xRot - dx);
+        setYRot(yRot - dy);
     }
     lastPos = event->pos();
 }
