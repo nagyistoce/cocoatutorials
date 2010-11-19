@@ -53,6 +53,8 @@ public:
    bool isPaused() { return bPaused ; }
    bool setPaused(bool aPaused);
 
+   bool renderingHasStopped;
+
    // allow GLWidget access to our private members
    friend class GLWidget;
 signals:

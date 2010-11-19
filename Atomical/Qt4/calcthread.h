@@ -39,6 +39,7 @@ public:
     void doCalc();
     void pause();
     void resume();
+    int maxEigenmode();
 
     void startEigenmodes(int n);
     void chooseEigenmode(int n);

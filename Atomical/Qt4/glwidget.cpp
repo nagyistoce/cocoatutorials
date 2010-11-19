@@ -178,7 +178,10 @@ void GLWidget::stopRendering()
 {
     Printf("stopRendering()...");
     openGLThread->stop();
-    openGLThread->wait();
+    do{
+        usleep(0);
+    }while(!openGLThread->renderingHasStopped);
+//    openGLThread->wait();
     Printf("done!");
 }
 
