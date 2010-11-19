@@ -447,6 +447,10 @@ void calcThread::free_Evals(void){
     n_eigmode=-1;
 }
 
+int calcThread::maxEigenmode(){
+    return encode(2,Np)-1;
+}
+
 void calcThread::chooseEigenmode(int n)
 {
     int j,nn;

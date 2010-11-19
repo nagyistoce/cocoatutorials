@@ -55,6 +55,7 @@ GLThread::GLThread(GLWidget *gl,int maxNp)
     yy      = new double[maxNp];
     zz      = new double[maxNp];
     rrad    = new double[maxNp];
+
 }
 
 GLThread::~GLThread()
@@ -153,6 +154,7 @@ void GLThread::run()
         count--;
     }
 
+    renderingHasStopped=false;
     //
     // resize and fog have to be implemented on the OpenGLThread
     while (doRendering) {
@@ -268,6 +270,7 @@ void GLThread::run()
             openGLWidget->mainWindow->on_actionNewProblem();
         }
 	 }
+    renderingHasStopped=true;
 }
 
 void GLThread::loadData
