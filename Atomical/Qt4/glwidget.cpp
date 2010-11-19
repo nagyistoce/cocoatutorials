@@ -32,7 +32,7 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-GLWidget::GLWidget(int aMaxNp,QWidget *parent)
+GLWidget::GLWidget(int aMaxNp,bool fScreen,QWidget *parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 , nMaxNp(aMaxNp)
 {
@@ -51,7 +51,8 @@ GLWidget::GLWidget(int aMaxNp,QWidget *parent)
     openGLThread = new GLThread(this,MaxNp);
     connect(openGLThread, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
   //updateFrame();
-
+    isFullScreen=fScreen;
+    if(fScreen) setFocusPolicy(Qt::StrongFocus); // Sort of sets the GLwidget as the first responder
     setAutoBufferSwap(false);    
 }
 
@@ -130,7 +131,11 @@ void GLWidget::keyPressEvent(QKeyEvent *e)
         setZoom(zoom-20);
     else if ( c == Qt::Key_PageDown)
         setZoom(zoom+20);
-    else
+    else if ( c == Qt::Key_Escape) {
+        if(isFullScreen){
+            emit exitFullScreen();
+        }
+    } else
         QWidget::keyPressEvent(e);
     // Printf("key = %d\n",c);
 }
@@ -142,6 +147,11 @@ void GLWidget::setZoom(int z)
         zoom=z;
         emit zoomChanged(z);
     }
+}
+
+void GLWidget::forceZoom(int z){
+    zoom=z;
+    emit zoomChanged(z);
 }
 
 void GLWidget::updateThis()
@@ -229,6 +239,12 @@ void GLWidget::receiveData(double *xxx,double *yyy,double *zzz,double rradsp,dou
     memcpy(xx,xxx,Np*sizeof(double));
     memcpy(yy,yyy,Np*sizeof(double));
     memcpy(zz,zzz,Np*sizeof(double));
+}
+
+void GLWidget::getCam(int *xR,int *yR,int *z){
+    *xR=xRot;
+    *yR=yRot;
+    *z=openGLThread->zoom;
 }
 
 // That's all Folks!

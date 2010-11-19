@@ -203,6 +203,8 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     int  c =  event->key();
     if ( c == Qt::Key_Escape || ::tolower(c) == 'q')
         on_actionExit();
+//    if (::tolower(c) == 'q') on_actionExit();
+    else if (::tolower(c) == 'f') toggleFullScreen();
     else
         openGLWidget->keyPressEvent(event);
 }
@@ -244,7 +246,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     pixelFormat.setDepth(TRUE);
     QGLFormat::setDefaultFormat(pixelFormat);
 
-    openGLWidget = new GLWidget(MaxNp);
+    openGLWidget = new GLWidget(MaxNp,false); // set false to when windowed, true when fullscreen
     openGLWidget->mainWindow = this   ;
     ui->verticalLayout_2->addWidget( openGLWidget );
 
@@ -265,6 +267,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     //  Additionally, updatePositions() loads the particles positions into the glWidget
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
     connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
+    connect(openGLWidget, SIGNAL(exitFullScreen()), this, SLOT(turnOffFullScreen()));
     //  This call initializes a problem
     //
     //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
@@ -318,6 +321,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionExit()
 {
+    if(openGLWidget->isFullScreen) toggleWindowed();
     this->window()->close();
 }
 
@@ -407,6 +411,45 @@ void MainWindow::fogChanged(int n)
     f /= 100.0   ;
     ui->fogValue->setNum(f);
     openGLWidget->openGLThread->fog(f);
+}
+
+void MainWindow::toggleFullScreen(){
+    int xR,yR,zL;
+    openGLWidget->getCam(&xR,&yR,&zL);
+    openGLWidget->stopRendering();
+    ui->verticalLayout_2->removeWidget(openGLWidget);
+    delete openGLWidget;
+    openGLWidget = new GLWidget(MaxNp,true);
+    openGLWidget->showFullScreen();
+    connect(openGLWidget, SIGNAL(exitFullScreen()), this, SLOT(turnOffFullScreen()));
+    openGLWidget->setXRot(xR);
+    openGLWidget->setYRot(yR);
+    openGLWidget->forceZoom(zL);
+    double f=ui->fogSlider->value();
+    openGLWidget->openGLThread->fog(f/100.0);
+    openGLWidget->startRendering();
+}
+
+void MainWindow::toggleWindowed(){
+    int xR,yR,zL;
+    openGLWidget->getCam(&xR,&yR,&zL);
+    openGLWidget->stopRendering();
+    delete openGLWidget;
+    openGLWidget = new GLWidget(MaxNp,false);
+    openGLWidget->isFullScreen=false;
+    ui->verticalLayout_2->addWidget(openGLWidget);
+    connect(openGLWidget, SIGNAL(exitFullScreen()), this, SLOT(turnOffFullScreen()));
+    openGLWidget->setXRot(xR);
+    openGLWidget->setYRot(yR);
+    openGLWidget->forceZoom(zL);
+    double f=ui->fogSlider->value();
+    openGLWidget->openGLThread->fog(f/100.0);
+    openGLWidget->startRendering();
+}
+
+void MainWindow::turnOffFullScreen(){
+    printf("I wish the window was back!");
+    toggleWindowed();
 }
 
 // That's all Folks!
