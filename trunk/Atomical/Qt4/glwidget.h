@@ -40,7 +40,7 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidget(int aMaxNp,QWidget* parent = 0);
+    GLWidget(int aMaxNp,bool fScreen,QWidget* parent = 0);
    ~GLWidget();
 
     // void drawGL(double *xx,double *yy,double *zz,double imb,double sep,double rrsp,int NNp,int NNp2,int mmode);
@@ -48,6 +48,8 @@ public:
     void stopRendering();
 
     void receiveData(double *xxx,double *yyy,double *zzz,double rradsp,double ssep,double iimb,int NNp,int NNp2,int mmode);
+    void getCam(int *xR,int *yR,int *z);
+    void forceZoom(int z);
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
@@ -58,6 +60,9 @@ public:
     // allow GLThread and MainWindow to access our private members
     friend class GLThread;
     friend class MainWindow;
+
+    // to handle keypresses
+    bool isFullScreen;
 
 public slots:
     void setXRot(int angle);
@@ -71,6 +76,7 @@ signals:
     void xRotChanged(int angle);
     void yRotChanged(int angle);
     void zoomChanged(int z);
+    void exitFullScreen();
 
 protected:
     void initializeGL();

@@ -70,6 +70,7 @@ private slots:
     void shuffle();
     void performShutdown();
     void ackIsConverged();
+    void turnOffFullScreen();
 
 private:
     GLWidget*   openGLWidget;
@@ -92,6 +93,9 @@ private:
     void initRandomProblem(bool bMode = false,int aMode=3);
 
     void closeEvent(QCloseEvent* event);
+
+    void toggleFullScreen();
+    void toggleWindowed();
 };
 
 #endif // MAINWINDOW_H
