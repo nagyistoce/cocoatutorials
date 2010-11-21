@@ -49,8 +49,6 @@ GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 
     openGLThread = new GLThread(this,MaxNp);
     connect(openGLThread, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
-
-    if(isFullScreen()) setFocusPolicy(Qt::StrongFocus); // Sort of sets the GLwidget as the first responder
     setAutoBufferSwap(false);    
 }
 
@@ -127,9 +125,9 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
          c = isFullScreen() ? 'f' : 'q' ;
 
     if ( ::tolower(c) == 'q')
-        mainWindow->on_actionExit();
+        mainWindow->exit();
     else if (::tolower(c) == 'f')
-        mainWindow->on_actionFullScreen();
+        mainWindow->fullScreen();
     else
         QWidget::keyPressEvent(event);
 }

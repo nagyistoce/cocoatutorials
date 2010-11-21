@@ -20,7 +20,18 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
 #include "Qt4.h"
+
+#ifdef __WINDOWS__
+#include <windows.h>
+#endif
+
+#if __WINDOWS__
+#define vsnprintf _vsnprintf
+#endif
 
 #ifdef   __XWINDOWS__
 #include <X11/Xlib.h>
@@ -37,6 +48,42 @@ int platformInit(int /*argc*/,char** /*argv*/)
     return 0 ;
 }
 #endif
+
+
+#ifdef __WINDOWS__
+extern "C" int Printf(const char * format, ... )
+{
+    char buff[2*4096];
+    char*       p = buff;
+    va_list     args;
+    va_start(args, format);
+    int result = vsnprintf(p, sizeof buff - 3, format, args); // -3 for safety
+    va_end(args);
+    p[result]= 0;
+    OutputDebugStringA(buff);
+
+    return result;
+}
+#endif
+
+extern "C" int System(const char* format, ... )
+{
+    char buff[2*4096];
+    char*       p = buff;
+    va_list     args;
+    va_start(args, format);
+    int result = vsnprintf(buff, sizeof buff, format,args);
+    p[result]= 0;
+    va_end(args);
+
+#if __WINDOWS__
+    WinExec(p,SW_NORMAL);
+#else
+    result = system(buff);
+#endif
+
+    return result;
+}
 
 // That's all Folks!
 ////

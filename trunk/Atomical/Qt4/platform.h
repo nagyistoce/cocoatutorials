@@ -48,6 +48,14 @@
 #define mSleep(milli)  usleep(milli*1000)
 #endif
 
+// Printf - reroute printf output via OutputDebugString on Windows
+#ifdef __WINDOWS__
+extern "C" int Printf(const char * format, ... );
+#else
+#define Printf printf
+#endif
+
+extern "C" int System(const char * format, ... );
 int     platformInit(int argc,char** argv);
 
 #endif

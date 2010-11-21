@@ -49,15 +49,15 @@ private:
     QAction* actionFullScreen;
 
 public slots:
-    void on_actionAbout();
-    void on_actionExit();
-    void on_actionFullScreen();
+    void showAbout();
+    void exit();
+    void fullScreen();
     void newProblem();
     void pauseResume();
     void zoomChanged(int z);
     void xRotChanged(int z);
     void yRotChanged(int z);
-    void npSliderChanged(int n);
+    void npChanged(int n);
     void fogChanged (int n);
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
     void performShutdown();
