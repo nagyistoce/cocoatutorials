@@ -149,11 +149,12 @@ void GLThread::run()
 
     Printf("In GLThread::run() - Initialization done, start loop Np=%d\n",Np);
     int count = 10 ;
+    int sleep = 10 ;
     while (count > 0 && Np == 0) {
-        mSleep(100);
+        mSleep(sleep);
+        sleep += 10 ;
         count--;
     }
-
     renderingHasStopped=false;
     //
     // resize and fog have to be implemented on the OpenGLThread
@@ -267,7 +268,7 @@ void GLThread::run()
 		mSleep(13);
         if ( Np == 0 ) {
             Np = 13 ;
-            openGLWidget->mainWindow->on_actionNewProblem();
+            openGLWidget->mainWindow->newProblem();
         }
 	 }
     renderingHasStopped=true;
@@ -303,6 +304,8 @@ bool GLThread::setPaused(bool aPaused)
     // openGLWidget->openGThread->isPaused = aPaused;
     return result;
 }
+
+
 
 // That's all Folks!
 ////

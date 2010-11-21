@@ -40,7 +40,7 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidget(int aMaxNp,bool fScreen,QWidget* parent = 0);
+    GLWidget(int aMaxNp,QWidget* parent = 0);
    ~GLWidget();
 
     // void drawGL(double *xx,double *yy,double *zz,double imb,double sep,double rrsp,int NNp,int NNp2,int mmode);
@@ -60,9 +60,6 @@ public:
     // allow GLThread and MainWindow to access our private members
     friend class GLThread;
     friend class MainWindow;
-
-    // to handle keypresses
-    bool isFullScreen;
 
 public slots:
     void setXRot(int angle);
