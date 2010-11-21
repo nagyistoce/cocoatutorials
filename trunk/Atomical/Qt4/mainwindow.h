@@ -46,39 +46,29 @@ public:
 private:
     Ui::MainWindowClass* ui;
     QAction* actionAbout;
+    QAction* actionFullScreen;
 
 public slots:
     void on_actionAbout();
-    void on_actionNewProblem();
     void on_actionExit();
+    void on_actionFullScreen();
+    void newProblem();
     void pauseResume();
     void zoomChanged(int z);
     void xRotChanged(int z);
     void yRotChanged(int z);
     void npSliderChanged(int n);
     void fogChanged (int n);
-private:
-    void changed(QLabel* label,QSlider* slider,int v);
-
-// -------------------
-
-protected:
-    void keyPressEvent(QKeyEvent *event);
-
-private slots:
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
-    void shuffle();
     void performShutdown();
     void ackIsConverged();
-    void turnOffFullScreen();
 
-private:
+public:
     GLWidget*   openGLWidget;
-
-    QTimer*     timer;
-
     calcThread* cThread;
 
+private:
+    QTimer*  timer;
     int      Np,Np2,mode;
     double   separation,imbalance,radsp,precision;
 
@@ -92,10 +82,9 @@ private:
     void initProblem(double imb,double sep,double prec,int NNp,int NNp2,int mmode,int flag);
     void initRandomProblem(bool bMode = false,int aMode=3);
 
+    void changed(QLabel* label,QSlider* slider,int v);
+    void keyPressEvent(QKeyEvent* event);
     void closeEvent(QCloseEvent* event);
-
-    void toggleFullScreen();
-    void toggleWindowed();
 };
 
 #endif // MAINWINDOW_H

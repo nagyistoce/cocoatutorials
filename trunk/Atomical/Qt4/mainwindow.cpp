@@ -125,6 +125,7 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
 
     cThread->setup(xx_old,yy_old,zz_old,imbalance,precision,Np,Np2,mode);
     openGLWidget->openGLThread->setPaused(false);
+    Printf("MainWindow::initProblem maxEigenmodes = %d\n",cThread->maxEigenmode());
 }
 
 void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
@@ -137,15 +138,6 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
 
     iimb=1.0;
     mmode=bMode ? aMode : 2+RANDOM_INT(0,1);
-
-/*
-    toggle=RANDOM_INT(0,1);
-    if(toggle){
-        NNp=RANDOM_INT(51,512);
-    } else {
-        NNp=RANDOM_INT(3,50);
-    }
-*/
 
     NNp=atoi(ui->npValue->text().toAscii());
     rranmar(tmp,2);
@@ -187,11 +179,6 @@ void MainWindow::ackIsConverged()
                                         // Problem may be changed only after this returns.
 }
 
-void MainWindow::shuffle()
-{
-    this->on_actionNewProblem();
-}
-
 void MainWindow::performShutdown()
 {
     Printf("About to quit!\n");
@@ -200,19 +187,12 @@ void MainWindow::performShutdown()
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    int  c =  event->key();
-    if ( c == Qt::Key_Escape || ::tolower(c) == 'q')
-        on_actionExit();
-//    if (::tolower(c) == 'q') on_actionExit();
-    else if (::tolower(c) == 'f') toggleFullScreen();
-    else
-        openGLWidget->keyPressEvent(event);
+    openGLWidget->keyPressEvent(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent* /*event*/)
 {
-    Printf("About to quit!\n");
-    openGLWidget->stopRendering();
+    performShutdown();
 }
 
 MainWindow::MainWindow(int maxNp,QWidget *parent)
@@ -250,10 +230,14 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     openGLWidget->mainWindow = this   ;
     ui->verticalLayout_2->addWidget( openGLWidget );
 
-    // manually add to the menu (this is sample code to be removed later)
-    actionAbout = new QAction(tr("A&bout"), this);
+    // manually add to the menu (this is sample code which we might remove later)
+    actionAbout = new QAction(tr("&About"), this);
     ui->menuBar->addAction( actionAbout );
-    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( on_actionAbout() ) );
+    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( on_actionAbout()));
+
+    actionFullScreen = new QAction(tr("&FullScreen"),this);
+    ui->menuBar->addAction( actionFullScreen );
+    connect( actionFullScreen , SIGNAL( triggered() ), this, SLOT( on_actionFullScreen()));
 
     //  Alloc a new calculation thread
     cThread= new calcThread(MaxNp);
@@ -262,12 +246,13 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     connect(openGLWidget,SIGNAL(xRotChanged(int)),this,SLOT(xRotChanged(int)));
     connect(openGLWidget,SIGNAL(yRotChanged(int)),this,SLOT(yRotChanged(int)));
 
+
     //  When a step is calculated, the stepDone() signal is emitted.
     //  It is caught here by updatePositions() so that this class is aware of these positions.
     //  Additionally, updatePositions() loads the particles positions into the glWidget
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
     connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
-    connect(openGLWidget, SIGNAL(exitFullScreen()), this, SLOT(turnOffFullScreen()));
+
     //  This call initializes a problem
     //
     //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
@@ -321,25 +306,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionExit()
 {
-    if(openGLWidget->isFullScreen) toggleWindowed();
-    this->window()->close();
+    if ( isFullScreen() )
+        on_actionFullScreen();
+    else
+        close() ; // window()->close();
 }
 
 #if 0
 // leave this for now.
-// I prefer the font being used here
-// I might decide to use this everywhere in the UI
+// I like the font being used here and might decide to use this everywhere in the UI
 void MainWindow::S_labelUpdate()
 {
 QVariant v;
-/*
      v = glWidget->rotX;
     ui->label_X->setText( v.toString() );
      v = glWidget->rotY;
     ui->label_Y->setText( v.toString() );
      v = glWidget->rotZ;
     ui->label_Z->setText( v.toString() );
-*/
 }
 #endif
 
@@ -352,8 +336,9 @@ void MainWindow::pauseResume()
     Printf("MainWindow::pauseResume\n");
 }
 
-void MainWindow::on_actionNewProblem()
+void MainWindow::newProblem()
 {
+    Printf("MainWindow::newProblem\n");
     cThread->stopEigenmodes();
     int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
@@ -402,7 +387,7 @@ void MainWindow::yRotChanged(int v)
 void MainWindow::npSliderChanged(int n)
 {
     ui->npValue->setNum(n);
-    on_actionNewProblem();
+    newProblem();
 }
 
 void MainWindow::fogChanged(int n)
@@ -413,45 +398,18 @@ void MainWindow::fogChanged(int n)
     openGLWidget->openGLThread->fog(f);
 }
 
-void MainWindow::toggleFullScreen(){
-    int xR,yR,zL;
-    openGLWidget->getCam(&xR,&yR,&zL);
-    openGLWidget->stopRendering();
-    ui->verticalLayout_2->removeWidget(openGLWidget);
-    delete openGLWidget;
-    openGLWidget = new GLWidget(MaxNp,true);
-    openGLWidget->showFullScreen();
-    connect(openGLWidget, SIGNAL(exitFullScreen()), this, SLOT(turnOffFullScreen()));
-    openGLWidget->setXRot(xR);
-    openGLWidget->setYRot(yR);
-    openGLWidget->forceZoom(zL);
-    double f=ui->fogSlider->value();
-    openGLWidget->openGLThread->fog(f/100.0);
-    openGLWidget->startRendering();
-}
-
-void MainWindow::toggleWindowed(){
-    int xR,yR,zL;
-    openGLWidget->getCam(&xR,&yR,&zL);
-    openGLWidget->stopRendering();
-    delete openGLWidget;
-    openGLWidget = new GLWidget(MaxNp,false);
-    openGLWidget->isFullScreen=false;
-    ui->verticalLayout_2->addWidget(openGLWidget);
-    connect(openGLWidget, SIGNAL(exitFullScreen()), this, SLOT(turnOffFullScreen()));
-    openGLWidget->setXRot(xR);
-    openGLWidget->setYRot(yR);
-    openGLWidget->forceZoom(zL);
-    double f=ui->fogSlider->value();
-    openGLWidget->openGLThread->fog(f/100.0);
-    openGLWidget->startRendering();
-}
-
-void MainWindow::turnOffFullScreen(){
-    printf("I wish the window was back!");
-    toggleWindowed();
+void MainWindow::on_actionFullScreen()
+{
+    if ( isFullScreen() ) {
+        showNormal() ;
+        ui->menuBar->show();
+        ui->controls->show();
+    } else {
+        showFullScreen();
+        ui->menuBar->hide();
+        ui->controls->hide();
+    }
 }
 
 // That's all Folks!
 ////
-

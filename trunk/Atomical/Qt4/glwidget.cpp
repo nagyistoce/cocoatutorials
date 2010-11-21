@@ -32,11 +32,10 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-GLWidget::GLWidget(int aMaxNp,bool fScreen,QWidget *parent)
+GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 , nMaxNp(aMaxNp)
 {
-//  view = 0;
     mainWindow=NULL;
     xRot = 0;
     yRot = 0;
@@ -50,9 +49,8 @@ GLWidget::GLWidget(int aMaxNp,bool fScreen,QWidget *parent)
 
     openGLThread = new GLThread(this,MaxNp);
     connect(openGLThread, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
-  //updateFrame();
-    isFullScreen=fScreen;
-    if(fScreen) setFocusPolicy(Qt::StrongFocus); // Sort of sets the GLwidget as the first responder
+
+    if(isFullScreen()) setFocusPolicy(Qt::StrongFocus); // Sort of sets the GLwidget as the first responder
     setAutoBufferSwap(false);    
 }
 
@@ -122,22 +120,18 @@ void GLWidget::wheelEvent(QWheelEvent* event)
     setZoom(z);
 }
 
-void GLWidget::keyPressEvent(QKeyEvent *e)
+void GLWidget::keyPressEvent(QKeyEvent* event)
 {
-    int c = e->key();
-    if ( c == Qt::Key_Right )
-        Printf("right\n");
-    else if ( c == Qt::Key_PageUp)
-        setZoom(zoom-20);
-    else if ( c == Qt::Key_PageDown)
-        setZoom(zoom+20);
-    else if ( c == Qt::Key_Escape) {
-        if(isFullScreen){
-            emit exitFullScreen();
-        }
-    } else
-        QWidget::keyPressEvent(e);
-    // Printf("key = %d\n",c);
+    int  c =  event->key();
+    if ( c == Qt::Key_Escape )
+         c = isFullScreen() ? 'f' : 'q' ;
+
+    if ( ::tolower(c) == 'q')
+        mainWindow->on_actionExit();
+    else if (::tolower(c) == 'f')
+        mainWindow->on_actionFullScreen();
+    else
+        QWidget::keyPressEvent(event);
 }
 
 void GLWidget::setZoom(int z)
@@ -179,9 +173,9 @@ void GLWidget::stopRendering()
     Printf("stopRendering()...");
     openGLThread->stop();
     do{
-        usleep(0);
-    }while(!openGLThread->renderingHasStopped);
-//    openGLThread->wait();
+        mSleep(10);
+    } while ( !openGLThread->renderingHasStopped );
+//  openGLThread->wait();
     Printf("done!");
 }
 
@@ -249,6 +243,8 @@ void GLWidget::getCam(int *xR,int *yR,int *z){
     *yR=yRot;
     *z=openGLThread->zoom;
 }
+
+
 
 // That's all Folks!
 ////
