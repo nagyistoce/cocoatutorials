@@ -11,8 +11,7 @@ SOURCES     +=  main.cpp \
                 about.cpp \
                 calcthread.cpp \
                 GLThread.cpp \
-                platform.cpp \
-                Printf.cpp
+                platform.cpp
 
 HEADERS     +=  mainwindow.h \
                 glwidget.h \
@@ -20,7 +19,6 @@ HEADERS     +=  mainwindow.h \
                 calcthread.h \
                 GLThread.h \
                 platform.h \
-                Printf.h \
                 Qt4.h
 
 FORMS       +=  mainwindow.ui \

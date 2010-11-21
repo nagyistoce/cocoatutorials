@@ -73,7 +73,8 @@ signals:
     void xRotChanged(int angle);
     void yRotChanged(int angle);
     void zoomChanged(int z);
-    void exitFullScreen();
+    void exit();
+    void fullScreen();
 
 protected:
     void initializeGL();

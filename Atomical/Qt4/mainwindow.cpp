@@ -229,8 +229,8 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     openGLWidget = new GLWidget(MaxNp,false); // set false to when windowed, true when fullscreen
     openGLWidget->mainWindow = this   ;
     ui->verticalLayout_2->addWidget( openGLWidget );
-
-    // manually add to the menu (this is sample code which we might remove later)
+#if 0
+    // manually add to the menu (this is sample code and I'll remove it later)
     actionAbout = new QAction(tr("&About"), this);
     ui->menuBar->addAction( actionAbout );
     connect( actionAbout , SIGNAL( triggered() ), this, SLOT( on_actionAbout()));
@@ -238,7 +238,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     actionFullScreen = new QAction(tr("&FullScreen"),this);
     ui->menuBar->addAction( actionFullScreen );
     connect( actionFullScreen , SIGNAL( triggered() ), this, SLOT( on_actionFullScreen()));
-
+#endif
     //  Alloc a new calculation thread
     cThread= new calcThread(MaxNp);
 
@@ -304,12 +304,12 @@ MainWindow::~MainWindow()
     delete [] E      ;
 }
 
-void MainWindow::on_actionExit()
+void MainWindow::exit()
 {
     if ( isFullScreen() )
-        on_actionFullScreen();
+        fullScreen();
     else
-        close() ; // window()->close();
+        close() ;
 }
 
 #if 0
@@ -332,19 +332,21 @@ void MainWindow::pauseResume()
     cThread->pause() ;
     bool paused = openGLWidget->openGLThread->isPaused();
     openGLWidget->openGLThread->setPaused(!paused);
-    ui->pauseResumeButton->setText(QString(paused ? "Pause" : "Resume") );
+    ui->pauseResume->setText(QString(paused ? "Pause" : "Resume") );
     Printf("MainWindow::pauseResume\n");
 }
 
 void MainWindow::newProblem()
 {
     Printf("MainWindow::newProblem\n");
+    if ( openGLWidget->openGLThread->isPaused() )
+        pauseResume();
     cThread->stopEigenmodes();
     int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
 }
 
-void MainWindow::on_actionAbout()
+void MainWindow::showAbout()
 {
     about*  dialog = new about;
     dialog->setWindowFlags(Qt::Tool);
@@ -384,7 +386,7 @@ void MainWindow::yRotChanged(int v)
     openGLWidget->setYRot(v);
 }
 
-void MainWindow::npSliderChanged(int n)
+void MainWindow::npChanged(int n)
 {
     ui->npValue->setNum(n);
     newProblem();
@@ -398,7 +400,7 @@ void MainWindow::fogChanged(int n)
     openGLWidget->openGLThread->fog(f);
 }
 
-void MainWindow::on_actionFullScreen()
+void MainWindow::fullScreen()
 {
     if ( isFullScreen() ) {
         showNormal() ;

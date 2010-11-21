@@ -75,7 +75,7 @@
         <number>4</number>
        </property>
        <item>
-        <widget class="QPushButton" name="pauseResumeButton">
+        <widget class="QPushButton" name="pauseResume">
          <property name="text">
           <string>Pause</string>
          </property>
@@ -577,9 +577,10 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionExit"/>
-    <addaction name="actionAbout"/>
     <addaction name="actionFullScreen"/>
+    <addaction name="actionAbout"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menu_File"/>
   </widget>
@@ -635,15 +636,15 @@ p, li { white-space: pre-wrap; }
    <sender>actionExit</sender>
    <signal>activated()</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>on_actionExit()</slot>
+   <slot>exit()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>405</x>
-     <y>302</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -651,15 +652,15 @@ p, li { white-space: pre-wrap; }
    <sender>actionAbout</sender>
    <signal>activated()</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>on_actionAbout()</slot>
+   <slot>showAbout()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -667,15 +668,15 @@ p, li { white-space: pre-wrap; }
    <sender>actionFullScreen</sender>
    <signal>triggered()</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>on_actionFullScreen()</slot>
+   <slot>fullScreen()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>405</x>
-     <y>302</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -686,12 +687,12 @@ p, li { white-space: pre-wrap; }
    <slot>newProblem()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>723</x>
-     <y>68</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
     <hint type="destinationlabel">
-     <x>405</x>
-     <y>308</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -702,7 +703,135 @@ p, li { white-space: pre-wrap; }
    <slot>fogChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pauseResume</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>pauseResume()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>threeD</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>newProblem()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fogSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>repaint()</slot>
+   <hints>
+    <hint type="sourcelabel">
      <x>788</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pauseResume</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>repaint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>723</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>xRotSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>xRotChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>724</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yRotSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>yRotChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>756</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zoomSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>zoomChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>691</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>npSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>npChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>658</x>
      <y>295</y>
     </hint>
     <hint type="destinationlabel">
