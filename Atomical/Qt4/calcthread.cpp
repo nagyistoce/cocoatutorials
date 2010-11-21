@@ -48,14 +48,14 @@ calcThread::calcThread(int maxNp)
     H=new double *[dim];
     m2=new double *[dim];
 
-    if(H==NULL) printf("WOE!!!\n");
+    if(H==NULL) Printf("WOE!!!\n");
 
     for(i=0;i<dim;i++) {
         Eivs[i]=new double [dim];
         H[i]=new double [dim];
         m2[i]=new double [dim];
 
-        if(H[i]==NULL) printf("WOE!!!\n");
+        if(H[i]==NULL) Printf("WOE!!!\n");
     }
 
     n_eigmode=-1; // When set to -1, the loop calculates relaxation.
@@ -260,7 +260,7 @@ void calcThread::eigen(int n)
 void calcThread::eigen_driver(int dim){
     int i,j;
 
-    printf("\n\n--- eigen_driver() ---\n");
+    Printf("\n\n--- eigen_driver() ---\n");
 
 //    eigen(H,Eivs,Evls,m2,dim);
     eigen(dim);
@@ -390,14 +390,14 @@ void calcThread::alloc_Evals(void)
     H=new double *[dim];
     m2=new double *[dim];
 
-    if(H==NULL) printf("WOE!!!\n");
+    if(H==NULL) Printf("WOE!!!\n");
 
     for(i=0;i<dim;i++) {
         Eivs[i]=new double [dim];
         H[i]=new double [dim];
         m2[i]=new double [dim];
 
-        if(H[i]==NULL) printf("WOE!!!\n");
+        if(H[i]==NULL) Printf("WOE!!!\n");
     }
 /*
     Evls=(double *)malloc(dim*sizeof(double));
@@ -459,13 +459,13 @@ void calcThread::chooseEigenmode(int n)
     if(n<0 || n>encode(2,Np)-1) nn=0; // Default to the ground state
     n_eigmode=encode(2,Np)-1-nn; // Internal sort of eigenmodes is reversed
     faket=0.0;
-    printf("n_eigmode=%d\n",n_eigmode);
+    Printf("n_eigmode=%d\n",n_eigmode);
 
-    printf("//------ %d: %e ------//\n",n_eigmode,Evls[n_eigmode]);
+    Printf("//------ %d: %e ------//\n",n_eigmode,Evls[n_eigmode]);
     for(j=0;j<encode(2,Np);j++){
-        printf("%e\n",Eivs[j][n_eigmode]);
+        Printf("%e\n",Eivs[j][n_eigmode]);
     }
-    printf("\n");
+    Printf("\n");
 }
 
 void calcThread::stopEigenmodes(void)
@@ -486,9 +486,9 @@ void calcThread::startEigenmodes(int nn)
     pause();
     msleep(1);
 
-    printf("Start Eigenmodes()\n");
+    Printf("Start Eigenmodes()\n");
     dim=encode(2,Np);
-    printf("With %d particles in %d dimensions, %d eigenmodes\n",Np,mode,dim);
+    Printf("With %d particles in %d dimensions, %d eigenmodes\n",Np,mode,dim);
 
 //    alloc_Evals();
 
@@ -506,16 +506,16 @@ void calcThread::startEigenmodes(int nn)
 
     for(i=0;i<dim;i++){
         for(j=0;j<dim;j++){
-            printf("%e ",H[i][j]);
+            Printf("%e ",H[i][j]);
         }
-        printf("\n");
+        Printf("\n");
     }
 
-    printf("Done calculating Hessian\n");
+    Printf("Done calculating Hessian\n");
 
     eigen_driver(dim);
 
-    printf("Done calculating Eigenvalues & Eigenvectors\n");
+    Printf("Done calculating Eigenvalues & Eigenvectors\n");
 /*
     for(i=0;i<dim;i++){
         printf("//------ %d: %e ------//\n",i,Evls[i]);
