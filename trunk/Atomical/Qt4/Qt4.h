@@ -24,6 +24,7 @@
 #define __QT4_H__
 
 #include "platform.h"
+#include <stdio.h>
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
