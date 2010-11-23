@@ -32,6 +32,17 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
+SetColor backgrounds[256];
+SetColor red = { true,1.0f,0.0f,0.0f,0.0f };
+SetColor gre = { true,0.0f,1.0f,0.0f,0.0f };
+SetColor ble = { true,0.0f,0.0f,1.0f,0.0f };
+SetColor cya = { true,0.0f,1.0f,1.0f,0.0f };
+SetColor mag = { true,1.0f,0.0f,1.0f,0.0f };
+SetColor yel = { true,1.0f,1.0f,0.0f,0.0f };
+SetColor bla = { true,0.0f,0.0f,0.0f,0.0f };
+SetColor whi = { true,1.0f,1.0f,1.0f,0.0f };
+bool     bBackground[256];
+
 GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 , nMaxNp(aMaxNp)
@@ -49,7 +60,19 @@ GLWidget::GLWidget(int aMaxNp,QWidget *parent)
 
     openGLThread = new GLThread(this,MaxNp);
     connect(openGLThread, SIGNAL(frameNeeded()), this, SLOT(updateFrame()));
-    setAutoBufferSwap(false);    
+    setAutoBufferSwap(false);
+
+    // initialize the backgrounds used by keyPressEvent
+    for ( unsigned c = 0 ; c < lengthof(::backgrounds) ; c ++ )
+        ::bBackground[c]=false;
+    ::backgrounds['r'] = ::red ; ::bBackground['r'] = true;
+    ::backgrounds['g'] = ::gre ; ::bBackground['g'] = true;
+    ::backgrounds['b'] = ::ble ; ::bBackground['b'] = true;
+    ::backgrounds['c'] = ::cya ; ::bBackground['c'] = true;
+    ::backgrounds['m'] = ::mag ; ::bBackground['m'] = true;
+    ::backgrounds['y'] = ::yel ; ::bBackground['y'] = true;
+    ::backgrounds['k'] = ::bla ; ::bBackground['k'] = true;
+    ::backgrounds['w'] = ::whi ; ::bBackground['w'] = true;
 }
 
 GLWidget::~GLWidget()
@@ -112,24 +135,11 @@ void GLWidget::setYRot(int angle)
     }
 }
 
-void GLWidget::wheelEvent(QWheelEvent* event)
+void GLWidget::setBackground(int c)
 {
-    int z = zoom + (event->delta() < 0 ? 50 : -50) ; // Zoom a bit slower...
-    setZoom(z);
-}
-
-void GLWidget::keyPressEvent(QKeyEvent* event)
-{
-    int  c =  event->key();
-    if ( c == Qt::Key_Escape )
-         c = isFullScreen() ? 'f' : 'q' ;
-
-    if ( ::tolower(c) == 'q')
-        mainWindow->exit();
-    else if (::tolower(c) == 'f')
-        mainWindow->fullScreen();
-    else
-        QWidget::keyPressEvent(event);
+    if ( 0 <= c && c < (int) (lengthof(::backgrounds)))
+        if ( ::bBackground[c] )
+            openGLThread->background = ::backgrounds[c];
 }
 
 void GLWidget::setZoom(int z)
@@ -192,6 +202,28 @@ void GLWidget::closeEvent(QCloseEvent* event)
 {
 	stopRendering();
     QGLWidget::closeEvent(event);
+}
+
+void GLWidget::wheelEvent(QWheelEvent* event)
+{
+    int z = zoom + (event->delta() < 0 ? 50 : -50) ; // Zoom a bit slower...
+    setZoom(z);
+}
+
+void GLWidget::keyPressEvent(QKeyEvent* event)
+{
+    int  C =  event->key();
+    if ( C == Qt::Key_Escape )
+         C = isFullScreen() ? 'f' : 'q' ;
+    int  c = ::tolower(C);
+    if ( c == 'q')
+        mainWindow->exit();
+    else if ( c == 'f')
+        mainWindow->fullScreen();
+    else if ( ::bBackground[c] )
+        setBackground(c);
+    else
+        QWidget::keyPressEvent(event);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

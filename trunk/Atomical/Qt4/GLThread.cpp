@@ -48,6 +48,7 @@ GLThread::GLThread(GLWidget *gl,int maxNp)
     doRendering = true;
     doResize    = false;
     doFog       = false;
+    background.bSet = false;
     Np          = 0;
     Np2         = 0;
 
@@ -97,7 +98,7 @@ void GLThread::run()
     GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0}; //set the material to white
 	GLfloat mShininess[] = {16}; //set the shininess of the material
 	GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0}; //set the light specular to white
-	GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0}; //set the light ambient to black
+    GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0}; //set the light ambient to black
     GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0}; //set the diffuse light to white
 
 	GLfloat camYaw,camPitch,camRadius;
@@ -114,8 +115,8 @@ void GLThread::run()
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_POLYGON_SMOOTH);
-
-	glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -159,6 +160,10 @@ void GLThread::run()
     //
     // resize and fog have to be implemented on the OpenGLThread
     while (doRendering) {
+        if ( background.bSet ) {
+            glClearColor(background.r,background.g,background.b,background.a);
+            background.bSet = false ;
+        }
         if(!bPaused) {
 			if (doResize) {
 				doResize = false;

@@ -50,6 +50,8 @@ private:
 
 public slots:
     void showAbout();
+    void showHelp();
+    void showPreferences();
     void exit();
     void fullScreen();
     void newProblem();
@@ -62,6 +64,15 @@ public slots:
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
     void performShutdown();
     void ackIsConverged();
+    void setBackground(int c);
+    void red();
+    void green();
+    void blue();
+    void cyan();
+    void magenta();
+    void yellow();
+    void white();
+    void black();
 
 public:
     GLWidget*   openGLWidget;

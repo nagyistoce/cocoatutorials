@@ -26,6 +26,15 @@
 #include <QThread>
 #include "glwidget.h"
 
+struct SetColor
+{
+    bool    bSet ;
+    GLfloat r;
+    GLfloat g;
+    GLfloat b;
+    GLfloat a;
+};
+
 class GLWidget; // forward declaration
 
 class GLThread : public QThread
@@ -59,6 +68,8 @@ public:
    friend class GLWidget;
 signals:
    void frameNeeded();
+public:
+   SetColor     background ;
 
 private:
    bool         bAutoZoom;

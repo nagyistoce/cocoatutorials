@@ -65,6 +65,7 @@ public slots:
     void setXRot(int angle);
     void setYRot(int angle);
     void setZoom(int z);
+    void setBackground(int c);
 
     void updateThis();
     void updateFrame();
