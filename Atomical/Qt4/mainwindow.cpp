@@ -455,7 +455,8 @@ void MainWindow::other()
         color = QColorDialog::getColor(color, this);
     else
         color = QColorDialog::getColor(color, this, "Select Color", QColorDialog::DontUseNativeDialog);
-    setBackground(color);
+    if ( color.isValid())
+        setBackground(color);
 }
 
 void MainWindow::fullScreen()

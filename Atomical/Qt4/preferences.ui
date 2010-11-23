@@ -6,19 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>209</height>
+    <width>351</width>
+    <height>232</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Atomical Preferences</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QDialogButtonBox" name="cancelOK">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>160</y>
-     <width>321</width>
+     <y>190</y>
+     <width>311</width>
      <height>32</height>
     </rect>
    </property>
@@ -29,68 +35,41 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="color">
-   <property name="geometry">
-    <rect>
-     <x>240</x>
-     <y>10</y>
-     <width>98</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Color</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>20</y>
-     <width>141</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Background Color:</string>
-   </property>
-  </widget>
-  <widget class="QFrame" name="fullScreenFrame">
+  <widget class="QGroupBox" name="fullScreenOptions">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>90</y>
-     <width>321</width>
+     <y>120</y>
+     <width>311</width>
      <height>61</height>
     </rect>
    </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
+   <property name="autoFillBackground">
+    <bool>false</bool>
    </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
+   <property name="styleSheet">
+    <string notr="true">background:pink;border:2px solid black;</string>
    </property>
-   <widget class="QLabel" name="fullScreenOptions">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>151</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Full Screen Options:</string>
-    </property>
-   </widget>
+   <property name="title">
+    <string>Full Screen Options:</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <widget class="QCheckBox" name="bDisplayMenuBar">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>30</y>
+      <x>20</x>
+      <y>20</y>
       <width>151</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:0px;</string>
     </property>
     <property name="text">
      <string>Show Menu Bar</string>
@@ -100,29 +79,107 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>10</y>
+      <y>20</y>
       <width>151</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:0px</string>
     </property>
     <property name="text">
      <string>Show Controls</string>
     </property>
    </widget>
   </widget>
+  <widget class="QGroupBox" name="generalOptions">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>311</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:skyblue;border:2px solid black;</string>
+   </property>
+   <property name="title">
+    <string>General Options:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="color">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>50</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Color</string>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+  </widget>
   <widget class="QCheckBox" name="useNativeControls">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>40</y>
-     <width>181</width>
-     <height>22</height>
+     <x>30</x>
+     <y>60</y>
+     <width>121</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
    </property>
    <property name="text">
     <string>Use Native Controls</string>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="autoExclusive">
+    <bool>true</bool>
+   </property>
   </widget>
+  <widget class="QLabel" name="backgroundColor">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>101</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border:0px;</string>
+   </property>
+   <property name="text">
+    <string>Background Color:</string>
+   </property>
+  </widget>
+  <zorder>cancelOK</zorder>
+  <zorder>fullScreenOptions</zorder>
+  <zorder>generalOptions</zorder>
+  <zorder>useNativeControls</zorder>
+  <zorder>backgroundColor</zorder>
+  <zorder>color</zorder>
  </widget>
  <resources/>
  <connections>
@@ -134,11 +191,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>248</x>
-     <y>254</y>
+     <y>201</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>274</y>
+     <y>214</y>
     </hint>
    </hints>
   </connection>
@@ -150,11 +207,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>316</x>
-     <y>260</y>
+     <y>201</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
-     <y>274</y>
+     <y>214</y>
     </hint>
    </hints>
   </connection>
@@ -165,8 +222,8 @@
    <slot>showColor()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>258</x>
-     <y>163</y>
+     <x>238</x>
+     <y>46</y>
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
