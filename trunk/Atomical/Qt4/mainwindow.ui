@@ -616,6 +616,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionYellow"/>
     <addaction name="actionWhite"/>
     <addaction name="actionBlack"/>
+    <addaction name="actionOther"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
@@ -751,6 +752,14 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+K</string>
    </property>
   </action>
+  <action name="actionOther">
+   <property name="text">
+    <string>Other</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
@@ -787,7 +796,6 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-
   <connection>
    <sender>actionFullScreen</sender>
    <signal>activated()</signal>
@@ -795,8 +803,8 @@ p, li { white-space: pre-wrap; }
    <slot>fullScreen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>
@@ -804,7 +812,6 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-
   <connection>
    <sender>actionPreferences</sender>
    <signal>activated()</signal>
@@ -812,8 +819,8 @@ p, li { white-space: pre-wrap; }
    <slot>showPreferences()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>
@@ -821,7 +828,6 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-
   <connection>
    <sender>actionHelp</sender>
    <signal>activated()</signal>
@@ -829,8 +835,8 @@ p, li { white-space: pre-wrap; }
    <slot>showHelp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>
@@ -838,7 +844,6 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-
   <connection>
    <sender>newProblem</sender>
    <signal>clicked()</signal>
@@ -1015,8 +1020,6 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-
-
   <connection>
    <sender>actionRed</sender>
    <signal>activated()</signal>
@@ -1145,7 +1148,21 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
-
-
+  <connection>
+   <sender>actionOther</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>other()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

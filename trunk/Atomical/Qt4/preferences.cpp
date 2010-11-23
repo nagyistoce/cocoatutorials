@@ -21,11 +21,13 @@
 
 #include "preferences.h"
 #include "ui_preferences.h"
+#include "mainwindow.h"
 #include "Qt4.h"
 
 preferences::preferences(QWidget *parent)
 : QDialog(parent)
 , m_ui(new Ui::preferences)
+, bNative(true)
 {
     m_ui->setupUi(this);
 }
@@ -38,6 +40,25 @@ preferences::~preferences()
 void preferences::linkActivated(QString data)
 {
     ::LinkActivated((const char*)data.toAscii());
+}
+
+void preferences::showColor()
+{
+    MainWindow* mainWindow = (MainWindow*) this->parent() ;
+    QColor color;
+    mainWindow->getBackground(color);
+    if ( bNative )
+        color = QColorDialog::getColor(color, this);
+    else
+        color = QColorDialog::getColor(color, this, "Select Color", QColorDialog::DontUseNativeDialog);
+/*
+    if (color.isValid()) {
+        colorLabel->setText(color.name());
+        colorLabel->setPalette(QPalette(color));
+        colorLabel->setAutoFillBackground(true);
+    }
+*/
+    mainWindow->setBackground(color);
 }
 
 // That's all Folks!

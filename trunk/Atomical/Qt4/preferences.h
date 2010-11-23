@@ -38,10 +38,12 @@ public:
 
 public slots:
     void linkActivated(QString data);
+    void showColor();
 
 
 private:
     Ui::preferences* m_ui;
+    bool bNative;
 };
 
 #endif // PREFERENCES_H

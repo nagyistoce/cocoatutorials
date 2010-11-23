@@ -64,7 +64,9 @@ public slots:
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
     void performShutdown();
     void ackIsConverged();
-    void setBackground(int c);
+    void setBackground(int c); // c = unsigned char 'r' = Red etc....
+    void setBackground(QColor& c);
+    void getBackground(QColor& c);
     void red();
     void green();
     void blue();
@@ -73,6 +75,7 @@ public slots:
     void yellow();
     void white();
     void black();
+    void other();
 
 public:
     GLWidget*   openGLWidget;
