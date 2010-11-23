@@ -55,9 +55,9 @@ extern "C" int Printf(const char * format, ... );
 #define Printf printf
 #endif
 
-extern "C" int System(const char * format, ... );
+extern "C" int  System(const char * format, ... );
 extern "C" void LinkActivated(const char* data);
-int     platformInit(int argc,char** argv);
+int             platformInit(int argc,char** argv);
 
 #endif
 

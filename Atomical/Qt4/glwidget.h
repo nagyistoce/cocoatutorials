@@ -65,7 +65,9 @@ public slots:
     void setXRot(int angle);
     void setYRot(int angle);
     void setZoom(int z);
-    void setBackground(int c);
+    void setBackground(int c); // c = unsigned int 'r' = Red
+    void setBackground(QColor& c);
+    void getBackground(QColor& c);
 
     void updateThis();
     void updateFrame();

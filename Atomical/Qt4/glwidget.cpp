@@ -142,6 +142,24 @@ void GLWidget::setBackground(int c)
             openGLThread->background = ::backgrounds[c];
 }
 
+void GLWidget::setBackground(QColor& c)
+{
+    SetColor k = { true , 1.0f, 1.0f, 1.0f, 0.0f };
+    k.r = c.redF();
+    k.g = c.greenF();
+    k.b = c.blueF();
+    k.a = c.alphaF();
+    openGLThread->background = k ;
+}
+
+void GLWidget::getBackground(QColor& c)
+{
+    c.setRedF  (openGLThread->background.r);
+    c.setGreenF(openGLThread->background.g);
+    c.setBlueF (openGLThread->background.b);
+    c.setAlphaF(openGLThread->background.a);
+}
+
 void GLWidget::setZoom(int z)
 {
     if ( z < 5 ) z = 5 ;

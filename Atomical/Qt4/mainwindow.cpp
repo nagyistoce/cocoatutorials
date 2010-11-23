@@ -369,7 +369,7 @@ void MainWindow::showHelp()
 
 void MainWindow::showPreferences()
 {
-    preferences*  dialog = new preferences;
+    preferences*  dialog = new preferences(this);
     dialog->setWindowFlags(Qt::Tool);
     dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
                 , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
@@ -426,6 +426,17 @@ void MainWindow::setBackground(int c)
     openGLWidget->setBackground(c);
 }
 
+void MainWindow::setBackground(QColor& c)
+{
+    openGLWidget->setBackground(c);
+}
+
+void MainWindow::getBackground(QColor& c)
+{
+    openGLWidget->getBackground(c);
+}
+
+
 void MainWindow::red()      { setBackground('r') ; }
 void MainWindow::green()    { setBackground('g') ; }
 void MainWindow::blue()     { setBackground('b') ; }
@@ -434,6 +445,18 @@ void MainWindow::magenta()  { setBackground('m') ; }
 void MainWindow::yellow()   { setBackground('y') ; }
 void MainWindow::white()    { setBackground('w') ; }
 void MainWindow::black()    { setBackground('k') ; }
+
+void MainWindow::other()
+{
+    QColor color;
+    getBackground(color);
+    bool bNative = true ;
+    if ( bNative )
+        color = QColorDialog::getColor(color, this);
+    else
+        color = QColorDialog::getColor(color, this, "Select Color", QColorDialog::DontUseNativeDialog);
+    setBackground(color);
+}
 
 void MainWindow::fullScreen()
 {
