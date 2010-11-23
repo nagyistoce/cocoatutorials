@@ -58,7 +58,8 @@ void preferences::showColor()
         colorLabel->setAutoFillBackground(true);
     }
 */
-    mainWindow->setBackground(color);
+    if ( color.isValid())
+        mainWindow->setBackground(color);
 }
 
 // That's all Folks!
