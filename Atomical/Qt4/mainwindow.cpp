@@ -24,6 +24,7 @@
 #include "ui_mainwindow.h"
 #include "glwidget.h"
 #include "about.h"
+#include "preferences.h"
 #include <time.h>
 
 #define RANDOM_SEED() srandom(time(NULL))
@@ -233,11 +234,11 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     // manually add to the menu (this is sample code and I'll remove it later)
     actionAbout = new QAction(tr("&About"), this);
     ui->menuBar->addAction( actionAbout );
-    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( on_actionAbout()));
+    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( showAbout()));
 
     actionFullScreen = new QAction(tr("&FullScreen"),this);
     ui->menuBar->addAction( actionFullScreen );
-    connect( actionFullScreen , SIGNAL( triggered() ), this, SLOT( on_actionFullScreen()));
+    connect( actionFullScreen , SIGNAL( triggered() ), this, SLOT( fullScreen()));
 #endif
     //  Alloc a new calculation thread
     cThread= new calcThread(MaxNp);
@@ -360,6 +361,26 @@ void MainWindow::showAbout()
     dialog->activateWindow();
 }
 
+void MainWindow::showHelp()
+{
+    Printf("MainWindow::showHelp - not implemented yet!\n");
+    ::LinkActivated("http://clanmills.com/robin.shtml");
+}
+
+void MainWindow::showPreferences()
+{
+    preferences*  dialog = new preferences;
+    dialog->setWindowFlags(Qt::Tool);
+    dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
+                , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
+                );
+
+    dialog->setWindowIcon(QIcon(":/icon/ikona_32.png"));
+    dialog->setWindowModality(Qt::ApplicationModal);
+    dialog->show();
+    dialog->activateWindow();
+}
+
 void MainWindow::changed(QLabel* label,QSlider* slider,int v)
 {
     QString S;
@@ -399,6 +420,20 @@ void MainWindow::fogChanged(int n)
     ui->fogValue->setNum(f);
     openGLWidget->openGLThread->fog(f);
 }
+
+void MainWindow::setBackground(int c)
+{
+    openGLWidget->setBackground(c);
+}
+
+void MainWindow::red()      { setBackground('r') ; }
+void MainWindow::green()    { setBackground('g') ; }
+void MainWindow::blue()     { setBackground('b') ; }
+void MainWindow::cyan()     { setBackground('c') ; }
+void MainWindow::magenta()  { setBackground('m') ; }
+void MainWindow::yellow()   { setBackground('y') ; }
+void MainWindow::white()    { setBackground('w') ; }
+void MainWindow::black()    { setBackground('k') ; }
 
 void MainWindow::fullScreen()
 {

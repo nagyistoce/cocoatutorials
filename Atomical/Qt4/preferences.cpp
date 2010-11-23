@@ -1,5 +1,5 @@
 //
-//  platform.h
+//  preferences.cpp
 //  This file is part of Atomical
 //
 //  Atomical is free software: you can redistribute it and/or modify
@@ -19,47 +19,27 @@
 //  Additional Engineering by Robin Mills, San Jose, CA, USA. http://clanmills.com
 //
 
-#pragma once
-#ifndef _PLATFORM_H_
-#define _PLATFORM_H_
+#include "preferences.h"
+#include "ui_preferences.h"
+#include "Qt4.h"
 
-#ifdef  __LINUX__
-#ifdef  __APPLE__
-#undef  __LINUX__
-#endif
-#endif
+preferences::preferences(QWidget *parent)
+: QDialog(parent)
+, m_ui(new Ui::preferences)
+{
+    m_ui->setupUi(this);
+}
 
-#ifdef  __LINUX__
-#define __XWINDOWS__
-#endif
+preferences::~preferences()
+{
+    delete m_ui;
+}
 
-#ifdef  __WINDOWS__
-#include <windows.h>
-#define random   rand
-#define srandom srand
-#endif
-
-#define UNUSED(x)x=x
-#define lengthof(x)    sizeof(x)/sizeof(x[0])
-
-#ifdef  __WINDOWS__
-#define mSleep(milli)  Sleep(milli)
-#else
-#define mSleep(milli)  usleep(milli*1000)
-#endif
-
-// Printf - reroute printf output via OutputDebugString on Windows
-#ifdef __WINDOWS__
-extern "C" int Printf(const char * format, ... );
-#else
-#define Printf printf
-#endif
-
-extern "C" int System(const char * format, ... );
-extern "C" void LinkActivated(const char* data);
-int     platformInit(int argc,char** argv);
-
-#endif
+void preferences::linkActivated(QString data)
+{
+    ::LinkActivated((const char*)data.toAscii());
+}
 
 // That's all Folks!
 ////
+

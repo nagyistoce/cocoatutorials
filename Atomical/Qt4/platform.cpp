@@ -85,6 +85,21 @@ extern "C" int System(const char* format, ... )
     return result;
 }
 
+static const char* OPEN =
+#if __WINDOWS__
+"explorer";
+#elif __APPLE__
+"open";
+#else
+"xdg-open";
+#endif
+
+extern "C" void LinkActivated(const char* data)
+{
+    Printf("linkActivated: %s\n",data);
+    System("%s %s\n",OPEN,data);
+}
+
 // That's all Folks!
 ////
 

@@ -35,19 +35,9 @@ about::~about()
     delete m_ui;
 }
 
-const char* OPEN =
-#if __WINDOWS__
-"explorer";
-#elif __APPLE__
-"open";
-#else
-"xdg-open";
-#endif
-
 void about::linkActivated(QString data)
 {
-    Printf("linkActivated: %s\n",(const char*)data.toAscii());
-    System("%s %s\n",OPEN,(const char*)data.toAscii());
+    ::LinkActivated(data.toAscii());
 }
 
 // That's all Folks!
