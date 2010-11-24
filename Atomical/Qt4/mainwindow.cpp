@@ -471,23 +471,23 @@ void MainWindow::other()
 
 void MainWindow::fullScreen()
 {
-    Printf("MainWindow::fullScreen\n");
- //   this->pauseResume();
- //   Qt::WindowFlags flags = this->windowFlags();
- //   Qt::WindowFlags ontop = Qt::WindowStaysOnTopHint | Qt::Tool;
+//  Printf("MainWindow::fullScreen\n");
+//  pauseResume();
+//  Qt::WindowFlags flags = this->windowFlags();
+//  Qt::WindowFlags ontop = Qt::WindowStaysOnTopHint ;//  | Qt::Tool;
 
     if ( isFullScreen() ) {
         showNormal() ;
         ui->menuBar->show();
         ui->controls->show();
-    //    setWindowFlags(flags & ~ontop);
+//      setWindowFlags(flags & ~ontop);
     } else {
         showFullScreen();
         if ( !bFullScreenMenubar ) ui->menuBar->hide();
         if ( !bFullScreenControls) ui->controls->hide();
-    //    setWindowFlags(flags | ontop);
+//      setWindowFlags(flags | ontop);
     }
-//    this->pauseResume();
+//  pauseResume();
 }
 
 void MainWindow::fullScreenMenubar (int v){ bFullScreenMenubar  = v != 0 ;}
