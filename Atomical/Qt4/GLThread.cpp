@@ -27,7 +27,7 @@ double GLThread::CPU_rad(const double* xx, const double* yy,const double* zz, in
 	int i;
 	double x0,y0,z0;
 
-//    Printf("CPU_rad(): N=%d\n",N);fflush(stdout);
+//  Printf("CPU_rad(): N=%d\n",N);
 
 	double res=0.0;
 

@@ -43,7 +43,7 @@
      <number>0</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QHBoxLayout" name="mainLayout">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -66,6 +66,19 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="Line" name="dividerLine">
+        <property name="styleSheet">
+         <string notr="true">background:black;</string>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -80,7 +93,7 @@
        <enum>QFrame::Box</enum>
       </property>
       <property name="lineWidth">
-       <number>1</number>
+       <number>0</number>
       </property>
       <layout class="QVBoxLayout" name="verticalLayoutControls">
        <property name="spacing">
