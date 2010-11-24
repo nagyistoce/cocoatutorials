@@ -24,30 +24,45 @@
 #include "mainwindow.h"
 #include "Qt4.h"
 
-preferences::preferences(QWidget *parent)
+#define B(b) ((b) ? Qt::Checked:Qt::Unchecked)
+
+Preferences::Preferences(QWidget* parent)
 : QDialog(parent)
-, m_ui(new Ui::preferences)
-, bNative(true)
+, m_ui(new Ui::Preferences)
 {
     m_ui->setupUi(this);
+    mainWindow = (MainWindow*) parent;
+    m_ui->fullScreenControls->setCheckState(B(mainWindow->bFullScreenControls ));
+    m_ui->fullScreenMenubar ->setCheckState(B(mainWindow->bFullScreenMenubar  ));
+    m_ui->nativeDialogs     ->setCheckState(B(mainWindow->bNativeDialogs      ));
+    syncBackgroundColor();
 }
 
-preferences::~preferences()
+Preferences::~Preferences()
 {
     delete m_ui;
 }
 
-void preferences::linkActivated(QString data)
+void Preferences::syncBackgroundColor()
+{
+    QColor bg = mainWindow->getBackgroundColor();
+    char style[200];
+    sprintf(style,"background:#%02x%02x%02x;border:2px solid black;",bg.red(),bg.green(),bg.blue());
+    Printf("style = %s\n",style);
+    m_ui->backgroundColorGraphics->setStyleSheet(QString(style));
+}
+
+void Preferences::linkActivated(QString data)
 {
     ::LinkActivated((const char*)data.toAscii());
 }
 
-void preferences::showColor()
+void Preferences::showColor()
 {
-    MainWindow* mainWindow = (MainWindow*) this->parent() ;
     QColor color;
     mainWindow->getBackground(color);
-    if ( bNative )
+    Printf("mainWindow->bNativeDialogs = %d\n",mainWindow->bNativeDialogs);
+    if ( mainWindow->bNativeDialogs )
         color = QColorDialog::getColor(color, this);
     else
         color = QColorDialog::getColor(color, this, "Select Color", QColorDialog::DontUseNativeDialog);
@@ -58,9 +73,13 @@ void preferences::showColor()
         colorLabel->setAutoFillBackground(true);
     }
 */
-    if ( color.isValid())
-        mainWindow->setBackground(color);
+    mainWindow->setBackground(color);
+    syncBackgroundColor();
 }
+
+void Preferences::fullScreenControls(int v)  { mainWindow->fullScreenControls(v);}
+void Preferences::fullScreenMenubar(int v)   { mainWindow->fullScreenMenubar(v);}
+void Preferences::nativeDialogs(int v)       { mainWindow->nativeDialogs(v);}
 
 // That's all Folks!
 ////

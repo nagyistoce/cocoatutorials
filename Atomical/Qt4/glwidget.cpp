@@ -63,7 +63,7 @@ GLWidget::GLWidget(int aMaxNp,QWidget *parent)
     setAutoBufferSwap(false);
 
     // initialize the backgrounds used by keyPressEvent
-    for ( unsigned c = 0 ; c < lengthof(::backgrounds) ; c ++ )
+    for ( int c = 0 ; c < lengthof(::backgrounds) ; c ++ )
         ::bBackground[c]=false;
     ::backgrounds['r'] = ::red ; ::bBackground['r'] = true;
     ::backgrounds['g'] = ::gre ; ::bBackground['g'] = true;
@@ -137,19 +137,21 @@ void GLWidget::setYRot(int angle)
 
 void GLWidget::setBackground(int c)
 {
-    if ( 0 <= c && c < (int) (lengthof(::backgrounds)))
+    if ( 0 <= c && c < lengthof(::backgrounds) )
         if ( ::bBackground[c] )
             openGLThread->background = ::backgrounds[c];
 }
 
 void GLWidget::setBackground(QColor& c)
 {
-    SetColor k = { true , 1.0f, 1.0f, 1.0f, 0.0f };
-    k.r = c.redF();
-    k.g = c.greenF();
-    k.b = c.blueF();
-    k.a = c.alphaF();
-    openGLThread->background = k ;
+    if ( c.isValid() ) {
+        SetColor k = { true , 1.0f, 1.0f, 1.0f, 0.0f };
+        k.r = c.redF();
+        k.g = c.greenF();
+        k.b = c.blueF();
+        k.a = c.alphaF();
+        openGLThread->background = k ;
+    }
 }
 
 void GLWidget::getBackground(QColor& c)
@@ -232,14 +234,19 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
 {
     int  C =  event->key();
     if ( C == Qt::Key_Escape )
-         C = isFullScreen() ? 'f' : 'q' ;
-    int  c = ::tolower(C);
+         C =  isFullScreen() ? 'f' : 'q' ;
+    int  c =  ::tolower(C);
+    if ( c <  0 ) c = 0 ;
+    if ( c >= lengthof(bBackground)) c = lengthof(bBackground)-1;
+
     if ( c == 'q')
         mainWindow->exit();
     else if ( c == 'f')
         mainWindow->fullScreen();
     else if ( ::bBackground[c] )
         setBackground(c);
+    else if ( c == ',' )
+        mainWindow->showPreferences();
     else
         QWidget::keyPressEvent(event);
 }

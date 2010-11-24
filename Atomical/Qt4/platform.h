@@ -40,7 +40,7 @@
 #endif
 
 #define UNUSED(x)x=x
-#define lengthof(x)    sizeof(x)/sizeof(x[0])
+#define lengthof(x)    ((int)sizeof(x)/(int)sizeof(x[0]))
 
 #ifdef  __WINDOWS__
 #define mSleep(milli)  Sleep(milli)

@@ -25,25 +25,32 @@
 #include <QtGui>
 #include <QDialog>
 
+class MainWindow;// forward
+
 namespace Ui {
-    class preferences;
+    class Preferences;
 }
 
-class preferences : public QDialog {
+class Preferences : public QDialog {
     Q_OBJECT
-    Q_DISABLE_COPY(preferences)
+    Q_DISABLE_COPY(Preferences)
 public:
-    explicit preferences(QWidget* parent = 0);
-    virtual ~preferences();
+    explicit Preferences(QWidget* parent = 0);
+    virtual ~Preferences();
 
 public slots:
     void linkActivated(QString data);
     void showColor();
-
+    void fullScreenControls(int v);
+    void fullScreenMenubar(int v);
+    void nativeDialogs(int v);
+    void syncBackgroundColor();
 
 private:
-    Ui::preferences* m_ui;
-    bool bNative;
+    Ui::Preferences* m_ui;
+    MainWindow* mainWindow;
+    friend class MainWindow;
+
 };
 
 #endif // PREFERENCES_H
