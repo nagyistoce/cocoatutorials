@@ -43,11 +43,11 @@ SetColor bla = { true,0.0f,0.0f,0.0f,0.0f };
 SetColor whi = { true,1.0f,1.0f,1.0f,0.0f };
 bool     bBackground[256];
 
-GLWidget::GLWidget(int aMaxNp,QWidget *parent)
+GLWidget::GLWidget(int aMaxNp,QWidget* parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 , nMaxNp(aMaxNp)
 {
-    mainWindow=NULL;
+    mainWindow = (MainWindow*) parent;
     xRot = 0;
     yRot = 0;
     zRot = 0;

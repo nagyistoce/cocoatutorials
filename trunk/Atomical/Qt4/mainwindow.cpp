@@ -26,6 +26,7 @@
 #include "about.h"
 #include "preferences.h"
 #include <time.h>
+#include <QtGui/QFrame>
 
 #define RANDOM_SEED() srandom(time(NULL))
 #define RANDOM_INT(__MIN__, __MAX__) ((__MIN__) + random() % ((__MAX__+1) - (__MIN__)))
@@ -173,7 +174,7 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
 
 void MainWindow::ackIsConverged()
 {
-    printf("Acknowledge that calculation has converged.\n");fflush(stdout);
+    printf("Acknowledge that calculation has converged.\n");
     if ( ui->normalModes->checkState())
         cThread->startEigenmodes(0);    // Once this is toggled, the problem type should not be changed
                                         // Otherwise the whole thing goes crazy :)
@@ -204,8 +205,8 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
 {
     ui->setupUi(this);
 
-    bFullScreenControls=false;
-    bFullScreenMenubar=false;
+    bFullScreenControls=true;
+    bFullScreenMenubar=true;
     bNativeDialogs=true;
 
     nMaxNp = maxNp;
@@ -231,19 +232,9 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     pixelFormat.setDepth(TRUE);
     QGLFormat::setDefaultFormat(pixelFormat);
 
-    openGLWidget = new GLWidget(MaxNp,false); // set false to when windowed, true when fullscreen
-    openGLWidget->mainWindow = this   ;
-    ui->verticalLayout_2->addWidget( openGLWidget );
-#if 0
-    // manually add to the menu (this is sample code and I'll remove it later)
-    actionAbout = new QAction(tr("&About"), this);
-    ui->menuBar->addAction( actionAbout );
-    connect( actionAbout , SIGNAL( triggered() ), this, SLOT( showAbout()));
+    openGLWidget = new GLWidget(MaxNp,this);
+    ui->mainLayout->insertWidget(0, openGLWidget,Qt::AlignLeft );
 
-    actionFullScreen = new QAction(tr("&FullScreen"),this);
-    ui->menuBar->addAction( actionFullScreen );
-    connect( actionFullScreen , SIGNAL( triggered() ), this, SLOT( fullScreen()));
-#endif
     //  Alloc a new calculation thread
     cThread= new calcThread(MaxNp);
 
