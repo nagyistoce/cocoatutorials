@@ -61,6 +61,9 @@ public slots:
     void yRotChanged(int z);
     void npChanged(int n);
     void fogChanged (int n);
+    void radChanged(int n);
+    void sepChanged(int n);
+    void precChanged(int n);
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
     void performShutdown();
     void ackIsConverged();
