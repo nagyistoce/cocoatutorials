@@ -67,6 +67,7 @@ public slots:
     void setBackground(int c); // c = unsigned char 'r' = Red etc....
     void setBackground(QColor& c);
     void getBackground(QColor& c);
+    QColor getBackgroundColor();
     void red();
     void green();
     void blue();
@@ -99,6 +100,17 @@ private:
     void changed(QLabel* label,QSlider* slider,int v);
     void keyPressEvent(QKeyEvent* event);
     void closeEvent(QCloseEvent* event);
+
+    bool bFullScreenMenubar;
+    bool bFullScreenControls;
+    bool bNativeDialogs ;
+
+    void fullScreenMenubar(int);
+    void fullScreenControls(int);
+    void nativeDialogs(int);
+
+
+    friend class Preferences;
 };
 
 #endif // MAINWINDOW_H

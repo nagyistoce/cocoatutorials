@@ -204,6 +204,10 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
 {
     ui->setupUi(this);
 
+    bFullScreenControls=false;
+    bFullScreenMenubar=false;
+    bNativeDialogs=true;
+
     nMaxNp = maxNp;
     xx     = new double[maxNp];
     yy     = new double[maxNp];
@@ -369,16 +373,16 @@ void MainWindow::showHelp()
 
 void MainWindow::showPreferences()
 {
-    preferences*  dialog = new preferences(this);
-    dialog->setWindowFlags(Qt::Tool);
-    dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
-                , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
+    Preferences*  preferences = new Preferences(this);
+    preferences->setWindowFlags(Qt::Tool);
+    preferences->move( int(this->x() + 0.5 * this->width()  - 0.5 * preferences->width())
+                , int(this->y() + 0.5 * this->height() - 0.5 * preferences->height())
                 );
 
-    dialog->setWindowIcon(QIcon(":/icon/ikona_32.png"));
-    dialog->setWindowModality(Qt::ApplicationModal);
-    dialog->show();
-    dialog->activateWindow();
+    preferences->setWindowIcon(QIcon(":/icon/ikona_32.png"));
+    preferences->setWindowModality(Qt::ApplicationModal);
+    preferences->show();
+    preferences->activateWindow();
 }
 
 void MainWindow::changed(QLabel* label,QSlider* slider,int v)
@@ -436,6 +440,13 @@ void MainWindow::getBackground(QColor& c)
     openGLWidget->getBackground(c);
 }
 
+QColor MainWindow::getBackgroundColor()
+{
+    QColor c;
+    getBackground(c);
+    return c;
+}
+
 
 void MainWindow::red()      { setBackground('r') ; }
 void MainWindow::green()    { setBackground('g') ; }
@@ -450,8 +461,7 @@ void MainWindow::other()
 {
     QColor color;
     getBackground(color);
-    bool bNative = true ;
-    if ( bNative )
+    if ( bNativeDialogs )
         color = QColorDialog::getColor(color, this);
     else
         color = QColorDialog::getColor(color, this, "Select Color", QColorDialog::DontUseNativeDialog);
@@ -461,16 +471,28 @@ void MainWindow::other()
 
 void MainWindow::fullScreen()
 {
+    Printf("MainWindow::fullScreen\n");
+ //   this->pauseResume();
+ //   Qt::WindowFlags flags = this->windowFlags();
+ //   Qt::WindowFlags ontop = Qt::WindowStaysOnTopHint | Qt::Tool;
+
     if ( isFullScreen() ) {
         showNormal() ;
         ui->menuBar->show();
         ui->controls->show();
+    //    setWindowFlags(flags & ~ontop);
     } else {
         showFullScreen();
-        ui->menuBar->hide();
-        ui->controls->hide();
+        if ( !bFullScreenMenubar ) ui->menuBar->hide();
+        if ( !bFullScreenControls) ui->controls->hide();
+    //    setWindowFlags(flags | ontop);
     }
+//    this->pauseResume();
 }
+
+void MainWindow::fullScreenMenubar (int v){ bFullScreenMenubar  = v != 0 ;}
+void MainWindow::fullScreenControls(int v){ bFullScreenControls = v != 0 ;}
+void MainWindow::nativeDialogs     (int v){ bNativeDialogs      = v != 0 ;}
 
 // That's all Folks!
 ////
