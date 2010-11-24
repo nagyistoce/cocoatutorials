@@ -239,6 +239,8 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
     if ( c <  0 ) c = 0 ;
     if ( c >= lengthof(bBackground)) c = lengthof(bBackground)-1;
 
+    Printf("GLWidget::keyPressEvent = '%c' (%d)\n",(char)c,c) ;
+
     if ( c == 'q')
         mainWindow->exit();
     else if ( c == 'f')

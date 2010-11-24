@@ -425,6 +425,24 @@ void MainWindow::fogChanged(int n)
     openGLWidget->openGLThread->fog(f);
 }
 
+void MainWindow::radChanged(int n)
+{
+    ui->radValue->setNum(n);
+//    openGLWidget->openGLThread->fog(f);
+}
+
+void MainWindow::sepChanged(int n)
+{
+    ui->sepValue->setNum(n);
+//  openGLWidget->openGLThread->fog(f);
+}
+
+void MainWindow::precChanged(int n)
+{
+    ui->precValue->setNum(n);
+//    openGLWidget->openGLThread->fog(f);
+}
+
 void MainWindow::setBackground(int c)
 {
     openGLWidget->setBackground(c);
