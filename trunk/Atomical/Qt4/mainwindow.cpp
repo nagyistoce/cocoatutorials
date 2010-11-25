@@ -233,6 +233,7 @@ MainWindow::MainWindow(int maxNp,QWidget *parent)
     QGLFormat::setDefaultFormat(pixelFormat);
 
     openGLWidget = new GLWidget(MaxNp,this);
+    openGLWidget->setBackground('b');
     ui->mainLayout->insertWidget(0, openGLWidget,Qt::AlignLeft );
 
     //  Alloc a new calculation thread
