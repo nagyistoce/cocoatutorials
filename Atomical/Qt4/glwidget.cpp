@@ -33,12 +33,14 @@
 #endif
 
 SetColor backgrounds[256];
-SetColor red = { true,1.0f,0.0f,0.0f,0.0f };
-SetColor gre = { true,0.0f,1.0f,0.0f,0.0f };
-SetColor ble = { true,0.0f,0.0f,1.0f,0.0f };
-SetColor cya = { true,0.0f,1.0f,1.0f,0.0f };
-SetColor mag = { true,1.0f,0.0f,1.0f,0.0f };
-SetColor yel = { true,1.0f,1.0f,0.0f,0.0f };
+//  RGB
+//  CMY C=GB M=RB Y=RG W=RGB B=0 !
+SetColor red = { true,0.9f,0.1f,0.1f,0.0f };
+SetColor gre = { true,0.2f,0.9f,0.2f,0.0f };
+SetColor ble = { true,0.0f,0.4f,1.0f,0.0f };
+SetColor cya = { true,0.1f,0.8f,0.8f,0.0f };
+SetColor mag = { true,0.8f,0.1f,0.8f,0.0f };
+SetColor yel = { true,0.9f,0.9f,0.1f,0.0f };
 SetColor bla = { true,0.0f,0.0f,0.0f,0.0f };
 SetColor whi = { true,1.0f,1.0f,1.0f,0.0f };
 bool     bBackground[256];
