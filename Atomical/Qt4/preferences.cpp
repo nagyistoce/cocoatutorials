@@ -23,6 +23,7 @@
 #include "ui_preferences.h"
 #include "mainwindow.h"
 #include "Qt4.h"
+#include "qt4settings.h"
 
 #define B(b) ((b) ? Qt::Checked:Qt::Unchecked)
 
@@ -66,15 +67,14 @@ void Preferences::showColor()
         color = QColorDialog::getColor(color, this);
     else
         color = QColorDialog::getColor(color, this, "Select Color", QColorDialog::DontUseNativeDialog);
-/*
-    if (color.isValid()) {
-        colorLabel->setText(color.name());
-        colorLabel->setPalette(QPalette(color));
-        colorLabel->setAutoFillBackground(true);
-    }
-*/
+
     mainWindow->setBackground(color);
     syncBackgroundColor();
+
+
+    theSettings->settings->setValue(theSettings->sBackgroundRed  ,QVariant(color.red()  ) );
+    theSettings->settings->setValue(theSettings->sBackgroundGreen,QVariant(color.green()) );
+    theSettings->settings->setValue(theSettings->sBackgroundBlue ,QVariant(color.blue() ) );
 }
 
 void Preferences::fullScreenControls(int v)  { mainWindow->fullScreenControls(v);}

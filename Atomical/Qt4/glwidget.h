@@ -68,6 +68,8 @@ public slots:
     void setBackground(int c); // c = unsigned int 'r' = Red
     void setBackground(QColor& c);
     void getBackground(QColor& c);
+  QColor getBackgroundColor();
+
 
     void updateThis();
     void updateFrame();

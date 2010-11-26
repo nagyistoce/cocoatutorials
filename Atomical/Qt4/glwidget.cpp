@@ -164,6 +164,13 @@ void GLWidget::getBackground(QColor& c)
     c.setAlphaF(openGLThread->background.a);
 }
 
+QColor GLWidget::getBackgroundColor()
+{
+    QColor c;
+    getBackground(c);
+    return c;
+}
+
 void GLWidget::setZoom(int z)
 {
     if ( z < 5 ) z = 5 ;

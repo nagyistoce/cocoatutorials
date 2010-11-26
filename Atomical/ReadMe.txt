@@ -4,12 +4,26 @@ ReadMe.txt
 Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
-- Move the Printf.{cpp}h} code to platform.{cpp|h} and remove Printf.{cpp|h}
+
+- button for starting the normal modes and a spinbox choosing which eigenmode to display
+- calcThread->startEigenmodes(int N)
+- calcThread->chooseEigenmode(int N)
+- calcThread->stopEigenmodes();
+- Precision, Radius, Ratio
+  MainWindow::double   separation,imbalance,radsp,precision;
+
+- Preferences storage
+
+- Display information in the feedback zone
+
 - Refactor Qt4 "core" code into a DLL (so,framework)
 - Create a screensaver version for Windows/Linux 
+
 (Robin's in England and has no access at the moment to a Mac) 
 
+
 Fabio's next tasks:
+- Give Robin a advice to get the UI correct and to call the correct API
 - Rename calcThread.{cpp|h} as WignerModel.{cpp|h} (and variable cThread to be modelThread)
 
 Known issues
@@ -32,6 +46,7 @@ http://clanmills.com
 
 Revision History
 ----------------
+2010-11-24 10:07:02GMT  Updated the TODO list.  Add preference panel.
 2010-11-18 23:15:18GMT  UI is more or less complete (I think).
 2010-11-16 01:58:38GMT  Fog fixed (and fog check box added to UI)
 2010-11-15 21:01:46GMT  Added code to make the links in the about box bring up the browser

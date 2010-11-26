@@ -23,6 +23,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QSettings>
 #include <QLabel>
 #include <QSlider>
 #include "Qt4.h"
@@ -40,13 +41,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(int maxNp,QWidget *parent = 0);
+    MainWindow(int maxNp,QWidget* parent = 0);
    ~MainWindow();
 
 private:
     Ui::MainWindowClass* ui;
-    QAction* actionAbout;
-    QAction* actionFullScreen;
 
 public slots:
     void showAbout();
@@ -64,13 +63,15 @@ public slots:
     void radChanged(int n);
     void sepChanged(int n);
     void precChanged(int n);
+    void eigenmodeValueChanged();
+    void normalModesChanged();
     void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
     void performShutdown();
     void ackIsConverged();
     void setBackground(int c); // c = unsigned char 'r' = Red etc....
     void setBackground(QColor& c);
     void getBackground(QColor& c);
-    QColor getBackgroundColor();
+  QColor getBackgroundColor();
     void red();
     void green();
     void blue();
@@ -94,11 +95,13 @@ private:
     double_p xx,yy,zz;
     double_p xx_old,yy_old,zz_old;
     double_p E;
+    int      eigenModeMaxNp;
 
     void init_double_layer();
     void Initialize();
     void initProblem(double imb,double sep,double prec,int NNp,int NNp2,int mmode,int flag);
     void initRandomProblem(bool bMode = false,int aMode=3);
+    void rranmar(float tmp[],int N);
 
     void changed(QLabel* label,QSlider* slider,int v);
     void keyPressEvent(QKeyEvent* event);
@@ -111,7 +114,6 @@ private:
     void fullScreenMenubar(int);
     void fullScreenControls(int);
     void nativeDialogs(int);
-
 
     friend class Preferences;
 };

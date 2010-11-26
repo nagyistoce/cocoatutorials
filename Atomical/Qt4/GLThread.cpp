@@ -22,24 +22,6 @@
 #include "Qt4.h"
 #include "GLThread.h"
 
-double GLThread::CPU_rad(const double* xx, const double* yy,const double* zz, int N)
-{
-	int i;
-	double x0,y0,z0;
-
-//  Printf("CPU_rad(): N=%d\n",N);
-
-	double res=0.0;
-
-	for(i=0;i<N;i++){
-		x0=xx[i];y0=yy[i];z0=zz[i];
-		rrad[i]=sqrt(x0*x0+y0*y0+z0*z0);
-		if(rrad[i]>res) res=rrad[i];
-	}
-
-	return res;
-}
-
 GLThread::GLThread(GLWidget *gl,int maxNp)
 : QThread()
 , openGLWidget(gl)
@@ -67,6 +49,23 @@ GLThread::~GLThread()
     delete [] rrad ;
 }
 
+double GLThread::CPU_rad(const double* xx, const double* yy,const double* zz, int N)
+{
+	int i;
+	double x0,y0,z0;
+
+//  Printf("CPU_rad(): N=%d\n",N);
+
+	double res=0.0;
+
+	for(i=0;i<N;i++){
+		x0=xx[i];y0=yy[i];z0=zz[i];
+		rrad[i]=sqrt(x0*x0+y0*y0+z0*z0);
+		if(rrad[i]>res) res=rrad[i];
+	}
+
+	return res;
+}
 
 void GLThread::stop()
 {
@@ -89,8 +88,6 @@ void GLThread::fog(float density /* = 0.0 */)
 void GLThread::run()
 {
 	/********** The initialization goes here *************/
-
-
     Printf("In GLThread::run() - Initialization\n");
 
     openGLWidget->makeCurrent();
@@ -179,7 +176,9 @@ void GLThread::run()
             if ( doFog ) {
                 doFog = false;
                 glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
-                GLfloat fogColor[] = {0.0, 0.0, 0.0, 1.0};
+                float  fb  = 1.0 ; // fogBlackener 1.0 = None < 1.0 = darker
+                QColor fog = this->openGLWidget->getBackgroundColor();
+                GLfloat fogColor[4] = {fog.redF()*fb, fog.greenF()*fb, fog.blueF()*fb, 1.0};
 
                 if ( fogDensity > 0.0 ) {
                     glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
@@ -243,13 +242,15 @@ void GLThread::run()
 				glPushMatrix();
 				GLfloat e=(GLfloat)(rrad[i]/rradius);
 				if(mode==2 && Np2>0 && separation>0){
-					if(xx[i]>0.0){
+					if(xx[i]>0.0)
 						glColor4f(.5+.5*e,0,0,alpha);
-					} else {
+					else
 						glColor4f(0,0,.5+.5*e,alpha);
-					}
 				} else {
-					if(i%2 && imbalance>1.0) glColor4f(e,0.2+0.8*(imbalance-1)/9,(1-e),alpha); else glColor4f(e,0,(1-e),alpha);
+					if(i%2 && imbalance>1.0)
+						glColor4f(e,0.2+0.8*(imbalance-1)/9,(1-e),alpha);
+					else
+						glColor4f(e,0,(1-e),alpha);
 				}
 
 				glTranslatef(xx[i], yy[i], zz[i]);

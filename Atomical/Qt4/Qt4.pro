@@ -12,7 +12,8 @@ SOURCES     +=  main.cpp \
                 calcthread.cpp \
                 GLThread.cpp \
                 platform.cpp \
-    preferences.cpp
+                preferences.cpp \
+                qt4settings.cpp
 
 HEADERS     +=  mainwindow.h \
                 glwidget.h \
@@ -21,11 +22,12 @@ HEADERS     +=  mainwindow.h \
                 GLThread.h \
                 platform.h \
                 Qt4.h \
-    preferences.h
+                preferences.h \
+                qt4settings.h
 
 FORMS       +=  mainwindow.ui \
                 about.ui \
-    preferences.ui
+                preferences.ui
 
 RESOURCES   +=  res.qrc
 

@@ -37,6 +37,9 @@
 #define MaxNp 5000
 typedef double *double_p;
 
+class      Qt4Settings;
+extern "C" Qt4Settings* theSettings;
+
 #endif
 
 // That's all Folks!
