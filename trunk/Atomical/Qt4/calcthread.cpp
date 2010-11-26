@@ -23,11 +23,13 @@
 #include "calcthread.h"
 #include <stdlib.h>
 
-calcThread::calcThread(int maxNp)
+calcThread::calcThread(int maxNp,int aEigenModeMaxNp)
 : QThread()
-, nMaxNp(maxNp)
-, Np(0)
 {
+    Np=0;
+    nMaxNp=maxNp;
+    eigenModeMaxNp=aEigenModeMaxNp;
+
     int i,dim;
 
     xx     = new double[maxNp];
@@ -260,14 +262,14 @@ void calcThread::eigen(int n)
 void calcThread::eigen_driver(int dim){
     int i,j;
 
-    Printf("\n\n--- eigen_driver() ---\n");
-
-//    eigen(H,Eivs,Evls,m2,dim);
     eigen(dim);
-    for(i=0;i<dim;i++) {
+#if 0
+    Printf("\n\n--- eigen_driver() ---\n");
+    for(int i=0;i<dim;i++) {
         if(fabs(Evls[i])<1e-5) Evls[i]=0;
         Evls[i]=sqrt(fabs(Evls[i]));
     }
+#endif
     eigsrt(Evls,Eivs,dim);
 
     double tmp;
@@ -479,18 +481,15 @@ void calcThread::stopEigenmodes(void)
 
 void calcThread::startEigenmodes(int nn)
 {
-    int dim,i,j;
+    if(Np>eigenModeMaxNp) return;
 
-    if(Np>100) return;
-
+    int dim;
     pause();
     msleep(1);
 
     Printf("Start Eigenmodes()\n");
     dim=encode(2,Np);
     Printf("With %d particles in %d dimensions, %d eigenmodes\n",Np,mode,dim);
-
-//    alloc_Evals();
 
     memcpy(ax,xx_old,Np*sizeof(double));
     memcpy(ay,yy_old,Np*sizeof(double));
@@ -503,28 +502,28 @@ void calcThread::startEigenmodes(int nn)
 */
     if(H==NULL) Printf("Oh my gosh!\n");
     calc_Hessian();
-
-    for(i=0;i<dim;i++){
-        for(j=0;j<dim;j++){
+#if 0
+    for(int i=0;i<dim;i++){
+        for(int j=0;j<dim;j++){
             Printf("%e ",H[i][j]);
         }
         Printf("\n");
     }
-
     Printf("Done calculating Hessian\n");
+#endif
 
     eigen_driver(dim);
-
+#if 0
     Printf("Done calculating Eigenvalues & Eigenvectors\n");
-/*
-    for(i=0;i<dim;i++){
-        printf("//------ %d: %e ------//\n",i,Evls[i]);
-        for(j=0;j<dim;j++){
-            printf("%e\n",Eivs[j][i]);
+    for(int i=0;i<dim;i++){
+        Printf("//------ %d: %e ------//\n",i,Evls[i]);
+        for(int j=0;j<dim;j++){
+            Printf("%e\n",Eivs[j][i]);
         }
-        printf("\n");
+        Printf("\n");
     }
-*/
+#endif
+
     chooseEigenmode(nn);
     resume();
 }

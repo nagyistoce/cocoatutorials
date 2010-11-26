@@ -17,7 +17,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Atomical - by Fabio and Robin</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -140,16 +140,6 @@
            </property>
            <property name="text">
             <string>3D</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="normalModes">
-           <property name="text">
-            <string>N Modes</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -606,17 +596,20 @@
           <number>9</number>
          </property>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QCheckBox" name="normalModes">
            <property name="text">
-            <string>EMode:</string>
+            <string>Modes</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="eigenmodeValue">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
@@ -794,7 +787,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>812</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -1405,11 +1398,43 @@ p, li { white-space: pre-wrap; }
    <sender>precSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>precChanged()</slot>
+   <slot>precChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>779</x>
      <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>eigenmodeValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>eigenmodeValueChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>765</x>
+     <y>466</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>normalModes</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>normalModesChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>684</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>

@@ -20,6 +20,7 @@
 //
 
 #include "Qt4.h"
+#include "qt4settings.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "glwidget.h"
@@ -34,31 +35,96 @@
 #define DEMO_MODE  1
 #define DEMO_DELAY_IN_SECONDS 10
 
-static void rranmar(float tmp[],int N)
+MainWindow::MainWindow(int maxNp,QWidget* parent)
+: QMainWindow(parent)
+, ui(new Ui::MainWindowClass)
+, Np(0)
+, Np2(0)
+, eigenModeMaxNp(100)
 {
-    int i;
-    for(i=0;i<N;i++){
-        tmp[i]=(double)random()/(double)RAND_MAX;
-    }
-}
+    ui->setupUi(this);
 
-void MainWindow::init_double_layer()
-{
-    int i;
-    Printf("MainWindow::init_double_layer() started\n");
-    if(Np2>0){
-        if(Np2>Np) return;
-        for(i=0;i<Np2;i++){
-            // Printf("MainWindow::init_double_layer() %d in layer 1\n",i);
-            xx_old[i]=-separation;
-            xx[i]=-separation;
-        }
-        for(i=Np2;i<Np;i++){
-            // Printf("MainWindow::init_double_layer() %d in layer 2\n",i);
-            xx_old[i]=+separation;
-            xx[i]=separation;
-        }
-    }
+    bFullScreenControls = theSettings->settings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
+    bFullScreenMenubar  = theSettings->settings->value(theSettings->sFullScreenMenubar,theSettings->vTrue).toBool();
+    bNativeDialogs      = theSettings->settings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
+
+    nMaxNp = maxNp;
+    xx     = new double[maxNp];
+    yy     = new double[maxNp];
+    zz     = new double[maxNp];
+    xx_old = new double[maxNp];
+    yy_old = new double[maxNp];
+    zz_old = new double[maxNp];
+    E      = new double[maxNp];
+
+//  Init the RNGs
+    srandom(time(NULL));
+    RANDOM_SEED();
+
+//  Init the OpenGL pixel format (other initialization in GLThread)
+    QGLFormat pixelFormat;
+    pixelFormat.setDoubleBuffer(TRUE);
+    pixelFormat.setAlpha(TRUE);
+    pixelFormat.setRgba(TRUE);
+    pixelFormat.setDirectRendering(TRUE);
+    pixelFormat.setAccum(TRUE);
+    pixelFormat.setDepth(TRUE);
+    QGLFormat::setDefaultFormat(pixelFormat);
+
+    openGLWidget = new GLWidget(MaxNp,this);
+    openGLWidget->setBackground('b');
+    ui->mainLayout->insertWidget(0, openGLWidget,Qt::AlignLeft );
+
+    //  Alloc a new calculation thread
+    cThread= new calcThread(MaxNp,eigenModeMaxNp);
+
+    connect(openGLWidget,SIGNAL(zoomChanged(int)),this,SLOT(zoomChanged(int)));
+    connect(openGLWidget,SIGNAL(xRotChanged(int)),this,SLOT(xRotChanged(int)));
+    connect(openGLWidget,SIGNAL(yRotChanged(int)),this,SLOT(yRotChanged(int)));
+
+    //  When a step is calculated, the stepDone() signal is emitted.
+    //  It is caught here by updatePositions() so that this class is aware of these positions.
+    //  Additionally, updatePositions() loads the particles positions into the glWidget
+    connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
+    connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
+
+    //  This call initializes a problem
+    //
+    //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
+    //
+    //  IMBALANCE: a double parameter, must be >= 1.0
+    //  SEPARATION: a double parameter, must be >= 0.0
+    //  TARGET_PRECISION: a double parameter in the range 1e-16 <= x <= 1
+    //  Np: an integer parameter, in the range 2 <= x <= MaxNp
+    //  Np2: an integer parameter, in the range 0 <= x <= Np
+    //  MODE: an integer parameter, with value 2 or 3   -   2d or 3d of course)
+    //  FLAG: an integer parameter, with value 0 or 1   -   ?? fog on/off for 3d ??
+    //
+    //  Whenever a new molecule needs to be calculated, FLAG should be set to 1.
+    //
+    //  If IMBALANCE, SEPARATION or TARGET_PRECISION are modified, we assume the user
+    //  does not want to reshuffle the particles, so we call is with FLAG set to 0
+    //
+    //  Examples
+    //
+    //  initProblem(1.0,0.2,1e-9,256,128,2,1); // To init a new molecule calculation
+    //
+    //  initProblem(1.0,0.5,1e-9,256,128,2,0); // To update the SEPARATION parameter
+
+    //  Then, we start the calculation and the rendering. They both live in their threads
+    //  and communicate via signals and slots.
+    cThread->doCalc();
+    openGLWidget->startRendering();
+
+    //  At this point, the UI should take care of interacting with the user and call
+    //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
+    //  screensaver). Note that initProblem() can be called without stopping any thread.
+
+//#if DEMO_MODE
+//    timer = new QTimer(this);
+//    connect(timer,SIGNAL(timeout()),this,SLOT(shuffle()));
+//    timer->start(1000*DEMO_DELAY_IN_SECONDS); // Shuffle the parameters every so seconds
+//#endif
 }
 
 void MainWindow::Initialize(void)
@@ -101,6 +167,79 @@ void MainWindow::Initialize(void)
     }
 
     if(mode==2) init_double_layer();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+    delete [] xx     ;
+    delete [] yy     ;
+    delete [] zz     ;
+    delete [] xx_old ;
+    delete [] yy_old ;
+    delete [] zz_old ;
+    delete [] E      ;
+}
+
+void MainWindow::exit()
+{
+    if ( isFullScreen() )
+        fullScreen();
+    else
+        close() ;
+}
+
+void MainWindow::rranmar(float tmp[],int N)
+{
+    int i;
+    for(i=0;i<N;i++){
+        tmp[i]=(double)random()/(double)RAND_MAX;
+    }
+}
+
+
+
+#if 0
+// leave this for now.
+// I like the font being used here and might decide to use this everywhere in the UI
+void MainWindow::S_labelUpdate()
+{
+QVariant v;
+     v = glWidget->rotX;
+    ui->label_X->setText( v.toString() );
+     v = glWidget->rotY;
+    ui->label_Y->setText( v.toString() );
+     v = glWidget->rotZ;
+    ui->label_Z->setText( v.toString() );
+}
+#endif
+
+void MainWindow::pauseResume()
+{
+    cThread->pause() ;
+    bool paused = openGLWidget->openGLThread->isPaused();
+    openGLWidget->openGLThread->setPaused(!paused);
+    ui->pauseResume->setText(QString(paused ? "Pause" : "Resume") );
+    Printf("MainWindow::pauseResume\n");
+}
+
+void MainWindow::init_double_layer()
+{
+    int i;
+    Printf("MainWindow::init_double_layer() started\n");
+    if(Np2>0){
+        if(Np2>Np) return;
+        for(i=0;i<Np2;i++){
+            // Printf("MainWindow::init_double_layer() %d in layer 1\n",i);
+            xx_old[i]=-separation;
+            xx[i]=-separation;
+        }
+        for(i=Np2;i<Np;i++){
+            // Printf("MainWindow::init_double_layer() %d in layer 2\n",i);
+            xx_old[i]=+separation;
+            xx[i]=separation;
+        }
+    }
 }
 
 void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int mmode,int flag)
@@ -174,11 +313,9 @@ void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *E
 
 void MainWindow::ackIsConverged()
 {
-    printf("Acknowledge that calculation has converged.\n");
-    if ( ui->normalModes->checkState())
-        cThread->startEigenmodes(0);    // Once this is toggled, the problem type should not be changed
-                                        // Otherwise the whole thing goes crazy :)
-                                        // Problem may be changed only after this returns.
+    Printf("Acknowledge that calculation has converged.\n");
+    ui->eigenmodeValue->setEnabled(true);
+    eigenmodeValueChanged();
 }
 
 void MainWindow::performShutdown()
@@ -195,142 +332,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 void MainWindow::closeEvent(QCloseEvent* /*event*/)
 {
     performShutdown();
-}
-
-MainWindow::MainWindow(int maxNp,QWidget *parent)
-: QMainWindow(parent)
-, ui(new Ui::MainWindowClass)
-, Np(0)
-, Np2(0)
-{
-    ui->setupUi(this);
-
-    bFullScreenControls=true;
-    bFullScreenMenubar=true;
-    bNativeDialogs=true;
-
-    nMaxNp = maxNp;
-    xx     = new double[maxNp];
-    yy     = new double[maxNp];
-    zz     = new double[maxNp];
-    xx_old = new double[maxNp];
-    yy_old = new double[maxNp];
-    zz_old = new double[maxNp];
-    E      = new double[maxNp];
-
-//  Init the RNGs
-    srandom(time(NULL));
-    RANDOM_SEED();
-
-//  Init the OpenGL pixel format (other initialization in GLThread)
-    QGLFormat pixelFormat;
-    pixelFormat.setDoubleBuffer(TRUE);
-    pixelFormat.setAlpha(TRUE);
-    pixelFormat.setRgba(TRUE);
-    pixelFormat.setDirectRendering(TRUE);
-    pixelFormat.setAccum(TRUE);
-    pixelFormat.setDepth(TRUE);
-    QGLFormat::setDefaultFormat(pixelFormat);
-
-    openGLWidget = new GLWidget(MaxNp,this);
-    openGLWidget->setBackground('b');
-    ui->mainLayout->insertWidget(0, openGLWidget,Qt::AlignLeft );
-
-    //  Alloc a new calculation thread
-    cThread= new calcThread(MaxNp);
-
-    connect(openGLWidget,SIGNAL(zoomChanged(int)),this,SLOT(zoomChanged(int)));
-    connect(openGLWidget,SIGNAL(xRotChanged(int)),this,SLOT(xRotChanged(int)));
-    connect(openGLWidget,SIGNAL(yRotChanged(int)),this,SLOT(yRotChanged(int)));
-
-
-    //  When a step is calculated, the stepDone() signal is emitted.
-    //  It is caught here by updatePositions() so that this class is aware of these positions.
-    //  Additionally, updatePositions() loads the particles positions into the glWidget
-    connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
-    connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
-
-    //  This call initializes a problem
-    //
-    //  initProblem(IMBALANCE,SEPARATION,TARGET_PRECISION,Np,Np2,MODE,FLAG)
-    //
-    //  IMBALANCE: a double parameter, must be >= 1.0
-    //  SEPARATION: a double parameter, must be >= 0.0
-    //  TARGET_PRECISION: a double parameter in the range 1e-16 <= x <= 1
-    //  Np: an integer parameter, in the range 2 <= x <= MaxNp
-    //  Np2: an integer parameter, in the range 0 <= x <= Np
-    //  MODE: an integer parameter, with value 2 or 3   -   2d or 3d of course)
-    //  FLAG: an integer parameter, with value 0 or 1   -   ?? fog on/off for 3d ??
-    //
-    //  Whenever a new molecule needs to be calculated, FLAG should be set to 1.
-    //
-    //  If IMBALANCE, SEPARATION or TARGET_PRECISION are modified, we assume the user
-    //  does not want to reshuffle the particles, so we call is with FLAG set to 0
-    //
-    //  Examples
-    //
-    //  initProblem(1.0,0.2,1e-9,256,128,2,1); // To init a new molecule calculation
-    //
-    //  initProblem(1.0,0.5,1e-9,256,128,2,0); // To update the SEPARATION parameter
-
-    //  Then, we start the calculation and the rendering. They both live in their threads
-    //  and communicate via signals and slots.
-    cThread->doCalc();
-    openGLWidget->startRendering();
-
-    //  At this point, the UI should take care of interacting with the user and call
-    //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
-    //  screensaver). Note that initProblem() can be called without stopping any thread.
-
-//#if DEMO_MODE
-//    timer = new QTimer(this);
-//    connect(timer,SIGNAL(timeout()),this,SLOT(shuffle()));
-//    timer->start(1000*DEMO_DELAY_IN_SECONDS); // Shuffle the parameters every so seconds
-//#endif
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-    delete [] xx     ;
-    delete [] yy     ;
-    delete [] zz     ;
-    delete [] xx_old ;
-    delete [] yy_old ;
-    delete [] zz_old ;
-    delete [] E      ;
-}
-
-void MainWindow::exit()
-{
-    if ( isFullScreen() )
-        fullScreen();
-    else
-        close() ;
-}
-
-#if 0
-// leave this for now.
-// I like the font being used here and might decide to use this everywhere in the UI
-void MainWindow::S_labelUpdate()
-{
-QVariant v;
-     v = glWidget->rotX;
-    ui->label_X->setText( v.toString() );
-     v = glWidget->rotY;
-    ui->label_Y->setText( v.toString() );
-     v = glWidget->rotZ;
-    ui->label_Z->setText( v.toString() );
-}
-#endif
-
-void MainWindow::pauseResume()
-{
-    cThread->pause() ;
-    bool paused = openGLWidget->openGLThread->isPaused();
-    openGLWidget->openGLThread->setPaused(!paused);
-    ui->pauseResume->setText(QString(paused ? "Pause" : "Resume") );
-    Printf("MainWindow::pauseResume\n");
 }
 
 void MainWindow::newProblem()
@@ -406,6 +407,7 @@ void MainWindow::yRotChanged(int v)
 void MainWindow::npChanged(int n)
 {
     ui->npValue->setNum(n);
+    ui->normalModes->setEnabled(n <= eigenModeMaxNp);
     newProblem();
 }
 
@@ -435,6 +437,31 @@ void MainWindow::precChanged(int n)
 //    openGLWidget->openGLThread->fog(f);
 }
 
+void MainWindow::eigenmodeValueChanged()
+{
+    Printf("MainWindow::eigenmodeValueChanged\n");
+    if ( ui->normalModes->isEnabled() ) {
+        if ( ui->normalModes->checkState()) {
+            int mode = ui->eigenmodeValue->value();
+            cThread->startEigenmodes(mode); // Once this is toggled, the problem type should not be changed
+                                            // Otherwise the whole thing goes crazy :)
+                                            // Problem may be changed only after this returns.
+        }
+    }
+}
+
+void MainWindow::normalModesChanged()
+{
+    Printf("MainWindow::normalModexChanged\n");
+    if ( ui->eigenmodeValue->isEnabled() ) {
+        if ( !ui->normalModes->checkState()) {
+            cThread->stopEigenmodes();
+        } else {
+            eigenmodeValueChanged();
+        }
+    }
+}
+
 void MainWindow::setBackground(int c)
 {
     openGLWidget->setBackground(c);
@@ -452,11 +479,8 @@ void MainWindow::getBackground(QColor& c)
 
 QColor MainWindow::getBackgroundColor()
 {
-    QColor c;
-    getBackground(c);
-    return c;
+    return openGLWidget->getBackgroundColor();
 }
-
 
 void MainWindow::red()      { setBackground('r') ; }
 void MainWindow::green()    { setBackground('g') ; }

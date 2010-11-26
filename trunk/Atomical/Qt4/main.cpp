@@ -25,20 +25,28 @@
 #include <stdio.h>
 
 #include "Qt4.h"
+#include "qt4settings.h"
 #include "mainwindow.h"
 #include "about.h"
 
-int main(int argc, char *argv[])
+Qt4Settings* theSettings;
+
+int main(int argc, char* argv[])
 {
     setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
     platformInit(argc,argv);
     QApplication a(argc, argv);
 
-    MainWindow w(MaxNp);
-    w.setWindowTitle( "Atomical by Fabio and Robin" );
-    w.show();
+    theSettings = new Qt4Settings();
 
-    return a.exec();
+    MainWindow mainWindow(MaxNp);
+    mainWindow.show();
+    int result = a.exec();
+
+    delete theSettings ;
+    theSettings = NULL ;
+
+    return result ;
 }
 
 // That's all Folks!
