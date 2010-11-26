@@ -5,18 +5,16 @@
 #include <QSettings>
 #include <QVariant>
 
-class Qt4Settings : public QObject
+class Qt4Settings : public QSettings
 {
     Q_OBJECT
 public:
     explicit Qt4Settings();
-    virtual ~Qt4Settings();
 
 public:
-    QSettings* settings ;
     QString    sFullScreenControls ;
     QString    sFullScreenMenubar;
-    QString    sNativeControls;
+    QString    sNativeDialogs;
 
     QString    sBackgroundRed;
     QString    sBackgroundGreen;

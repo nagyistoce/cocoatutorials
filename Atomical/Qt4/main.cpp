@@ -33,19 +33,18 @@ Qt4Settings* theSettings;
 
 int main(int argc, char* argv[])
 {
-    setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
+    int result = 0;
+
     platformInit(argc,argv);
     QApplication a(argc, argv);
 
-    theSettings = new Qt4Settings();
+    Qt4Settings settings ;
+    theSettings = &settings ;
 
     MainWindow mainWindow(MaxNp);
     mainWindow.show();
-    int result = a.exec();
 
-    delete theSettings ;
-    theSettings = NULL ;
-
+    result = a.exec();
     return result ;
 }
 

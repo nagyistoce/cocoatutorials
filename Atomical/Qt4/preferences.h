@@ -27,11 +27,13 @@
 
 class MainWindow;// forward
 
-namespace Ui {
+namespace Ui
+{
     class Preferences;
 }
 
-class Preferences : public QDialog {
+class Preferences : public QDialog
+{
     Q_OBJECT
     Q_DISABLE_COPY(Preferences)
 public:
@@ -41,13 +43,13 @@ public:
 public slots:
     void linkActivated(QString data);
     void showColor();
-    void fullScreenControls(int v);
-    void fullScreenMenubar(int v);
-    void nativeDialogs(int v);
+    void fullScreenControls();
+    void fullScreenMenubar();
+    void nativeDialogs();
     void syncBackgroundColor();
 
 private:
-    Ui::Preferences* m_ui;
+    Ui::Preferences* ui;
     MainWindow* mainWindow;
     friend class MainWindow;
 

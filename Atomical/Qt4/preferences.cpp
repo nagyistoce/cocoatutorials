@@ -29,19 +29,19 @@
 
 Preferences::Preferences(QWidget* parent)
 : QDialog(parent)
-, m_ui(new Ui::Preferences)
+, ui(new Ui::Preferences)
 {
-    m_ui->setupUi(this);
+    ui->setupUi(this);
     mainWindow = (MainWindow*) parent;
-    m_ui->fullScreenControls->setCheckState(B(mainWindow->bFullScreenControls ));
-    m_ui->fullScreenMenubar ->setCheckState(B(mainWindow->bFullScreenMenubar  ));
-    m_ui->nativeDialogs     ->setCheckState(B(mainWindow->bNativeDialogs      ));
+    ui->fullScreenControls->setCheckState(B(mainWindow->bFullScreenControls ));
+    ui->fullScreenMenubar ->setCheckState(B(mainWindow->bFullScreenMenubar  ));
+    ui->nativeDialogs     ->setCheckState(B(mainWindow->bNativeDialogs      ));
     syncBackgroundColor();
 }
 
 Preferences::~Preferences()
 {
-    delete m_ui;
+    delete ui;
 }
 
 void Preferences::syncBackgroundColor()
@@ -50,7 +50,7 @@ void Preferences::syncBackgroundColor()
     char style[200];
     sprintf(style,"background:#%02x%02x%02x;border:2px solid black;",bg.red(),bg.green(),bg.blue());
     Printf("style = %s\n",style);
-    m_ui->backgroundColorGraphics->setStyleSheet(QString(style));
+    ui->backgroundColorGraphics->setStyleSheet(QString(style));
 }
 
 void Preferences::linkActivated(QString data)
@@ -72,14 +72,26 @@ void Preferences::showColor()
     syncBackgroundColor();
 
 
-    theSettings->settings->setValue(theSettings->sBackgroundRed  ,QVariant(color.red()  ) );
-    theSettings->settings->setValue(theSettings->sBackgroundGreen,QVariant(color.green()) );
-    theSettings->settings->setValue(theSettings->sBackgroundBlue ,QVariant(color.blue() ) );
+    theSettings->setValue(theSettings->sBackgroundRed  ,QVariant(color.red()  ) );
+    theSettings->setValue(theSettings->sBackgroundGreen,QVariant(color.green()) );
+    theSettings->setValue(theSettings->sBackgroundBlue ,QVariant(color.blue() ) );
 }
 
-void Preferences::fullScreenControls(int v)  { mainWindow->fullScreenControls(v);}
-void Preferences::fullScreenMenubar(int v)   { mainWindow->fullScreenMenubar(v);}
-void Preferences::nativeDialogs(int v)       { mainWindow->nativeDialogs(v);}
+void Preferences::fullScreenControls()
+{
+    mainWindow->fullScreenControls(ui->fullScreenControls->checkState()!=Qt::Unchecked);
+}
+
+void Preferences::fullScreenMenubar()
+{
+    mainWindow->fullScreenMenubar(ui->fullScreenMenubar->checkState()!=Qt::Unchecked);
+}
+
+void Preferences::nativeDialogs()
+{
+    mainWindow->nativeDialogs(ui->nativeDialogs->checkState()!=Qt::Unchecked);
+}
+
 
 // That's all Folks!
 ////
