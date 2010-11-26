@@ -45,9 +45,9 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     ui->setupUi(this);
 
     sHelpURL="http://clanmills.com/robin.shtml";
-    bFullScreenControls = theSettings->settings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
-    bFullScreenMenubar  = theSettings->settings->value(theSettings->sFullScreenMenubar,theSettings->vFalse).toBool();
-    bNativeDialogs      = theSettings->settings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
+    bFullScreenControls = theSettings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
+    bFullScreenMenubar  = theSettings->value(theSettings->sFullScreenMenubar ,theSettings->vFalse).toBool();
+    bNativeDialogs      = theSettings->value(theSettings->sNativeDialogs     ,theSettings->vTrue).toBool();
 
     nMaxNp = maxNp;
     xx     = new double[maxNp];
@@ -525,9 +525,26 @@ void MainWindow::fullScreen()
 //  pauseResume();
 }
 
-void MainWindow::fullScreenMenubar (int v){ bFullScreenMenubar  = v != 0 ;}
-void MainWindow::fullScreenControls(int v){ bFullScreenControls = v != 0 ;}
-void MainWindow::nativeDialogs     (int v){ bNativeDialogs      = v != 0 ;}
+void MainWindow::fullScreenControls(bool b)
+{
+    Printf(" MainWindow::fullScreenControls");
+    bFullScreenControls = b ;
+    theSettings->setValue(theSettings->sFullScreenControls,b?theSettings->vTrue:theSettings->vFalse);
+}
+
+void MainWindow::fullScreenMenubar(bool b)
+{
+    Printf(" MainWindow::fullScreenMenubar");
+    bFullScreenMenubar  = b ;
+    theSettings->setValue(theSettings->sFullScreenMenubar,b?theSettings->vTrue:theSettings->vFalse);
+}
+
+void MainWindow::nativeDialogs(bool b)
+{
+    Printf(" MainWindow::nativeDialogs\n");
+    bNativeDialogs      = b ;
+    theSettings->setValue(theSettings->sNativeDialogs,b?theSettings->vTrue:theSettings->vFalse);
+}
 
 // That's all Folks!
 ////

@@ -113,9 +113,9 @@ const char*  sHelpURL; // url of help file (eg "http://clanmills.com/robin.shtml
     bool bFullScreenControls;
     bool bNativeDialogs ;
 
-    void fullScreenMenubar(int);
-    void fullScreenControls(int);
-    void nativeDialogs(int);
+    void fullScreenMenubar(bool);
+    void fullScreenControls(bool);
+    void nativeDialogs(bool);
 
     friend class Preferences;
 };

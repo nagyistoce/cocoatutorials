@@ -265,13 +265,13 @@
   </connection>
   <connection>
    <sender>fullScreenControls</sender>
-   <signal>stateChanged(int)</signal>
+   <signal>clicked()</signal>
    <receiver>Preferences</receiver>
-   <slot>fullScreenControls(int)</slot>
+   <slot>fullScreenControls()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>150</y>
+     <x>255</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>175</x>
@@ -281,13 +281,13 @@
   </connection>
   <connection>
    <sender>fullScreenMenubar</sender>
-   <signal>stateChanged(int)</signal>
+   <signal>clicked()</signal>
    <receiver>Preferences</receiver>
-   <slot>fullScreenMenubar(int)</slot>
+   <slot>fullScreenMenubar()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>150</y>
+     <x>255</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>175</x>
@@ -297,13 +297,13 @@
   </connection>
   <connection>
    <sender>nativeDialogs</sender>
-   <signal>stateChanged(int)</signal>
+   <signal>clicked()</signal>
    <receiver>Preferences</receiver>
-   <slot>nativeDialogs(int)</slot>
+   <slot>nativeDialogs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>150</y>
+     <x>255</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>175</x>

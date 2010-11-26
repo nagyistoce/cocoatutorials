@@ -455,26 +455,25 @@ int calcThread::maxEigenmode(){
 
 void calcThread::chooseEigenmode(int n)
 {
-    int j,nn;
-
-    nn=n;
+    int nn=n;
     if(n<0 || n>encode(2,Np)-1) nn=0; // Default to the ground state
     n_eigmode=encode(2,Np)-1-nn; // Internal sort of eigenmodes is reversed
     faket=0.0;
     Printf("n_eigmode=%d\n",n_eigmode);
-
+#if 0
     Printf("//------ %d: %e ------//\n",n_eigmode,Evls[n_eigmode]);
-    for(j=0;j<encode(2,Np);j++){
+    for(int j=0;j<encode(2,Np);j++){
         Printf("%e\n",Eivs[j][n_eigmode]);
     }
     Printf("\n");
+#endif
 }
 
 void calcThread::stopEigenmodes(void)
 {
     pause();
     msleep(1);
-//    free_Evals();
+//  free_Evals();
     n_eigmode=-1;
     resume(); // Resumes in relaxation mode
 }

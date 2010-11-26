@@ -29,26 +29,35 @@
 #include <windows.h>
 #endif
 
+static const char* platformName =
 #if __WINDOWS__
 #define vsnprintf _vsnprintf
+"Microsoft Windows";
+#endif
+#if __APPLE__
+"MacOSX";
+#endif
+#ifdef   __XWINDOWS__
+"XWindows";
 #endif
 
 #ifdef   __XWINDOWS__
 #include <X11/Xlib.h>
-int platformInit(int /*argc*/,char** /*argv*/)
-{
-    XInitThreads();
-    Printf("platformInit() XWINDOWS\n");
-    return 0;
-}
 #else
-int platformInit(int /*argc*/,char** /*argv*/)
-{
-    Printf("platformInit (vanilla) called\n");
-    return 0 ;
-}
+static void XInitThreads() { return ; }
 #endif
 
+
+int platformInit(int argc,char** argv)
+{
+    XInitThreads();
+    setbuf(stdout,NULL);  // don't buffer stdout so we don't need fflush(stdout) calls!
+    Printf("platformInit() %s\n",platformName);
+    return 0;
+
+    UNUSED(argc);
+    UNUSED(argv);
+}
 
 #ifdef __WINDOWS__
 extern "C" int Printf(const char * format, ... )

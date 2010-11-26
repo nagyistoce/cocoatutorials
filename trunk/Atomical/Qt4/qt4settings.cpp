@@ -1,12 +1,11 @@
 #include "qt4settings.h"
 
 Qt4Settings::Qt4Settings()
+: QSettings(QSettings::IniFormat,QSettings::UserScope,QString("clanmills.com"),QString("Atomical"))
 {
-    settings = new QSettings(QSettings::IniFormat,QSettings::UserScope,QString("clanmills.com"),QString("Atomical"));
-
-    sFullScreenControls = "general/fullScreenControls";
-    sFullScreenMenubar  = "general/fullScreenMenubar";
-    sNativeControls     = "general/nativeControls";
+    sFullScreenControls = "global/fullScreenControls";
+    sFullScreenMenubar  = "global/fullScreenMenubar";
+    sNativeDialogs      = "global/nativeDialogs";
 
     sBackgroundRed      = "background/red";
     sBackgroundGreen    = "background/green";
@@ -15,10 +14,3 @@ Qt4Settings::Qt4Settings()
     vTrue=true;
     vFalse=false;
 }
-
-Qt4Settings::~Qt4Settings()
-{
-    settings->sync();
-    delete settings ;
-}
-

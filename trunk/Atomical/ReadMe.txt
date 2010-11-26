@@ -30,8 +30,6 @@ Known issues
 | This isn't working very well on Windows      |
 | Robin's going to do some digging about       |
 | - vibration modes are slow (timing, I think) |
-| - Preferences don't persist                  |
-| - keyStrokes don't seem to be working        |
 | - the eigenModeMax stuff is suspect          |
 +----------------------------------------------+
 
@@ -84,7 +82,7 @@ Here are parameter ranges which work:
 
 Revision History
 ----------------
-2010-11-26 10:40:25GMT  Updated this file.
+2010-11-26 10:40:25GMT  Updated this file. 14:15 Update:  Preferences persist and keystrokes work on Windows.
 2010-11-18 23:15:18GMT  UI is more or less complete (I think).
 2010-11-16 01:58:38GMT  Fog fixed (and fog check box added to UI)
 2010-11-15 21:01:46GMT  Added code to make the links in the about box bring up the browser
