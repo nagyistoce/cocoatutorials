@@ -4,30 +4,36 @@ ReadMe.txt
 Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
-
-- button for starting the normal modes and a spinbox choosing which eigenmode to display
-- calcThread->startEigenmodes(int N)
-- calcThread->chooseEigenmode(int N)
-- calcThread->stopEigenmodes();
-- Precision, Radius, Ratio
-  MainWindow::double   separation,imbalance,radsp,precision;
-
-- Preferences storage
-
-- Display information in the feedback zone
-
+- Fabio's list (see details below)
+  1 Default displayMenubar = false (done)
+  2 Fog to respect background color (done)
+    Help (Fabio volunteered and can update MainWindow::sHelpURL when ready)
+  3 Spin button for Np
+  4 Spin button for Np2 (int range 0..Np)
+  5 No action required (comment about something)
+  6 Coordinate enable/disable Modes/EigenvalueMax (done, to be tested)
+  7 Change prec to imbalance (and wire to model, range double 0.0 .. 10.0)
+  8 Add a "Surprise" button (random problem).  New problem should be less violent!
+  9 Wire rad to radsp in the model (range double 0.0 .. 3.0)
+ 10 Feedback Display: energy, radius of the molecule, convergence, and the number of particles within the sphere
+- Get Preferences to persist on all platforms (done, to be tested)
 - Refactor Qt4 "core" code into a DLL (so,framework)
 - Create a screensaver version for Windows/Linux 
 
-(Robin's in England and has no access at the moment to a Mac) 
-
-
 Fabio's next tasks:
-- Give Robin a advice to get the UI correct and to call the correct API
 - Rename calcThread.{cpp|h} as WignerModel.{cpp|h} (and variable cThread to be modelThread)
 
 Known issues
 ------------
+
++----------------------------------------------+
+| This isn't working very well on Windows      |
+| Robin's going to do some digging about       |
+| - vibration modes are slow (timing, I think) |
+| - Preferences don't persist                  |
+| - keyStrokes don't seem to be working        |
+| - the eigenModeMax stuff is suspect          |
++----------------------------------------------+
 
 No crash on Resize with a MBP 13", OsX 10.6.5 with graphics update 1.0 and NVidia 9400M integrated graphics.
 Qt4/Mac/Resize window isn't working correctly
@@ -44,9 +50,41 @@ rmills@clanmills.com
 http://clanmills.com
 
 
+----
+-- email from Fabio --
+1) I would choose as a default to have the menubar disabled in fullscreen mode.
+
+Choosing backgroud is also very nice.
+
+2) We need to "propagate" the RGB components of the bgnd to the GLThread code where fog is, so that we change its colour to the background one (otherwise, fog looks funny). I also *love* the colourwell option!!!
+
+Preferences are also a very nice addition.
+
+The web help page...I like it! I will take care of writing documentation if you like!
+
+Concerning controls, we are 90% there. I'll tell you how the UI should work in my opinion
+
+3) The number of particles should be set by a spinbox, similar to the one for the Emodes. A slider for the range 3...5000 is just not very precise. Alternatively, we can leave the slider but make it "interactive" so that the label changes *while* one drags the slider (in Cocoa, this is called "continuous" mode).
+4) Also for Np2, the number of particles in layer 2, there should be a slider/spinbox.
+5) I like the idea of having normal modes calculation set as a check box.
+6) The spinbox for Emodes should have a maximum value set at the maximum eigenmode allowed compatible with Np. When you change Np, that maximum value should be changed. If one chooses Np>100, for which eigenmodes are not calculated anymore, the spinbox and the check box should be grayed out/disabled. The box should also be gray until the modes are actually calculated. The, changing the number should change the displayed mode (chooseEigenmode(n) method of calcthread). If one restarts with a new problem, the box is gray until eigenmodes are calculated & so on...
+7) I would swap the "prec" slider with one setting "imbalance". The behaviour of "imbalance" and "separation" should be that of *changing* the value but not reinitializing the problem. This way, you could start with a cluster of Np=10 particles and Np=3, separation=0 and then, by increasing it, see three particles "separating" from the main cluster. This can be done by calling initProblem() with FLAG (the last
+parameter) set to zero.
+8) In general, restarting a new problem should not reshuffle parameters, all should be set by the user. If we want, we can add a "Surprise!" button which chooses random parameters and sets the UI accordingly.
+9) The radius slider should set radsp. This is used in the GLThread to render a yellow translucent sphere used to count the particles. In turns, this number of particles should be displayed into the UI...
+10) ...into the nice "feedback" space you left! There, I'd put the energy, radius of the molecule, convergence and the number of particles within the sphere (got from within the GLThread).
+
+Here are parameter ranges which work:
+
+*) Separation: from 0 to 3. Double.
+*) Imbalance: from 1 to 10. Double.
+*) Np2: from 0 to Np.
+-- end of email --
+----
+
 Revision History
 ----------------
-2010-11-24 10:07:02GMT  Updated the TODO list.  Add preference panel.
+2010-11-26 10:40:25GMT  Updated this file.
 2010-11-18 23:15:18GMT  UI is more or less complete (I think).
 2010-11-16 01:58:38GMT  Fog fixed (and fog check box added to UI)
 2010-11-15 21:01:46GMT  Added code to make the links in the about box bring up the browser

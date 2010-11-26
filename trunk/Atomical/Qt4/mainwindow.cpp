@@ -44,8 +44,9 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
 {
     ui->setupUi(this);
 
+    sHelpURL="http://clanmills.com/robin.shtml";
     bFullScreenControls = theSettings->settings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
-    bFullScreenMenubar  = theSettings->settings->value(theSettings->sFullScreenMenubar,theSettings->vTrue).toBool();
+    bFullScreenMenubar  = theSettings->settings->value(theSettings->sFullScreenMenubar,theSettings->vFalse).toBool();
     bNativeDialogs      = theSettings->settings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
 
     nMaxNp = maxNp;
@@ -361,7 +362,7 @@ void MainWindow::showAbout()
 void MainWindow::showHelp()
 {
     Printf("MainWindow::showHelp - not implemented yet!\n");
-    ::LinkActivated("http://clanmills.com/robin.shtml");
+    ::LinkActivated(sHelpURL);
 }
 
 void MainWindow::showPreferences()

@@ -87,6 +87,8 @@ public:
     calcThread* cThread;
 
 private:
+const char*  sHelpURL; // url of help file (eg "http://clanmills.com/robin.shtml")
+
     QTimer*  timer;
     int      Np,Np2,mode;
     double   separation,imbalance,radsp,precision;
