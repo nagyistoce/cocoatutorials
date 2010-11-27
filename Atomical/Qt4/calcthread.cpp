@@ -609,7 +609,7 @@ void calcThread::run()
             }
             faket+=1.0;
         }
-        emit stepDone(xx,yy,zz/*,&E*/);
+        emit stepDone(xx,yy,zz,&E);
         mSleep(2);
     }
 }

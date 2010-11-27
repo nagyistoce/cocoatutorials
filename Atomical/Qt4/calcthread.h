@@ -54,7 +54,7 @@ protected:
 signals:
     void isConverged();
     void done();
-    void stepDone(double *xxx,double *yyy,double *zzz/*,double *EE*/);
+    void stepDone(double *xxx,double *yyy,double *zzz,double* EE);
 
 private:
     // General purpose

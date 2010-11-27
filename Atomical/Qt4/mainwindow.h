@@ -54,7 +54,8 @@ public slots:
     void exit();
     void fullScreen();
     void newProblem();
-    void newProblemEnable();
+    void surprise();
+    void newProblemEnable(bool bFlashAndBeep = true);
     void pauseResume();
     void zoomChanged(int z);
     void xRotChanged(int z);
@@ -66,9 +67,9 @@ public slots:
     void radChanged(double v);
     void sepChanged(int n);
     void precChanged(int n);
-    void eigenmodeValueChanged();
+    void eigenmodeChanged(int n,bool bStartEigenmodes = true);
     void normalModesChanged();
-    void updatePositions(double *xxx,double *yyy,double *zzz/*,double *E*/);
+    void updatePositions(double *xxx,double *yyy,double *zzz,double* E);
     void performShutdown();
     void ackIsConverged();
     void setBackground(int c); // c = unsigned char 'r' = Red etc....
@@ -115,6 +116,7 @@ const char*  sHelpURL; // url of help file (eg "http://clanmills.com/robin.shtml
     bool bFullScreenMenubar;
     bool bFullScreenControls;
     bool bNativeDialogs ;
+    bool bConverged;
 
     void fullScreenMenubar(bool);
     void fullScreenControls(bool);

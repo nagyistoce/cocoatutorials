@@ -109,9 +109,9 @@
         <enum>QLayout::SetNoConstraint</enum>
        </property>
        <item>
-        <widget class="QPushButton" name="pauseResume">
+        <widget class="QPushButton" name="surpriseButton">
          <property name="text">
-          <string>Pause</string>
+          <string>Surprise!</string>
          </property>
         </widget>
        </item>
@@ -632,6 +632,13 @@
         </layout>
        </item>
        <item>
+        <widget class="QPushButton" name="pauseResume">
+         <property name="text">
+          <string>Pause</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="feedbackLayout">
          <item>
           <spacer name="horizontalSpacer_5">
@@ -668,9 +675,9 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QLabel" name="label_3">
+              <widget class="QLabel" name="labelE">
                <property name="text">
-                <string>x:</string>
+                <string>E:</string>
                </property>
               </widget>
              </item>
@@ -691,7 +698,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_X">
+              <widget class="QLabel" name="feedbackE">
                <property name="text">
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -801,7 +808,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>812</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -1428,7 +1435,7 @@ p, li { white-space: pre-wrap; }
    <sender>eigenmodeValue</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>eigenmodeValueChanged()</slot>
+   <slot>eigenmodeChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>765</x>
@@ -1481,6 +1488,22 @@ p, li { white-space: pre-wrap; }
     <hint type="sourcelabel">
      <x>724</x>
      <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>surpriseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>surprise()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>734</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>
