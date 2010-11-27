@@ -49,8 +49,11 @@ void Preferences::syncBackgroundColor()
     QColor bg = mainWindow->getBackgroundColor();
     char style[200];
     sprintf(style,"background:#%02x%02x%02x;border:2px solid black;",bg.red(),bg.green(),bg.blue());
-    Printf("style = %s\n",style);
+//  Printf("style = %s\n",style);
     ui->backgroundColorGraphics->setStyleSheet(QString(style));
+    theSettings->setValue(theSettings->sBackgroundRed  ,QVariant(bg.red()  ) );
+    theSettings->setValue(theSettings->sBackgroundGreen,QVariant(bg.green()) );
+    theSettings->setValue(theSettings->sBackgroundBlue ,QVariant(bg.blue() ) );
 }
 
 void Preferences::linkActivated(QString data)
@@ -70,11 +73,6 @@ void Preferences::showColor()
 
     mainWindow->setBackground(color);
     syncBackgroundColor();
-
-
-    theSettings->setValue(theSettings->sBackgroundRed  ,QVariant(color.red()  ) );
-    theSettings->setValue(theSettings->sBackgroundGreen,QVariant(color.green()) );
-    theSettings->setValue(theSettings->sBackgroundBlue ,QVariant(color.blue() ) );
 }
 
 void Preferences::fullScreenControls()
@@ -91,7 +89,6 @@ void Preferences::nativeDialogs()
 {
     mainWindow->nativeDialogs(ui->nativeDialogs->checkState()!=Qt::Unchecked);
 }
-
 
 // That's all Folks!
 ////
