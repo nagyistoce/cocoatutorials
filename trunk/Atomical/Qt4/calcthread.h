@@ -47,6 +47,7 @@ public:
     // data
   double oldE;
     bool isPaused;
+  double imbalance,E,targetPrecision;
 
 protected:
     void run();
@@ -88,7 +89,6 @@ private:
 
     int      Np,Np2,mode,do_calc;
     int      n_eigmode;
-    double   imbalance,E,targetPrecision;
 
     // Vibrational modes
     bool    allocated_evals;

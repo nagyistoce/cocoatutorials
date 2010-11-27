@@ -12,7 +12,9 @@ Robin's next tasks:
   4 Spin button for Np2 (int range 0..Np)   (done)
   5 No action required                      (done)
   6 Coordinate enable/disable Modes/EigenvalueMax (done, to be tested)
-  7 Change prec to imbalance (and wire to model, range double 0.0 .. 10.0)
+  7 Change prec to imbalance
+    - wire to model, range double 0.0 .. 10.0
+    - default 3 ;
   8 Add a "Surprise" button (random problem)(done)
     New problem should be less violent!     (mostly done)
   9 Wire rad to radsp in the model          (done)
