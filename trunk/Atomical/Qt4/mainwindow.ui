@@ -95,12 +95,6 @@
     </item>
     <item>
      <widget class="QFrame" name="controls">
-      <property name="maximumSize">
-       <size>
-        <width>175</width>
-        <height>16777215</height>
-       </size>
-      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -130,6 +124,23 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QSpinBox" name="npSpinBox">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+           </property>
+           <property name="maximum">
+            <number>5000</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="np2SpinBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QCheckBox" name="threeD">
            <property name="minimumSize">
@@ -174,7 +185,7 @@
               <number>3</number>
              </property>
              <property name="maximum">
-              <number>2003</number>
+              <number>203</number>
              </property>
              <property name="pageStep">
               <number>100</number>
@@ -452,11 +463,14 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="minimum">
+              <number>0</number>
+             </property>
              <property name="maximum">
-              <number>20</number>
+              <number>300</number>
              </property>
              <property name="pageStep">
-              <number>1</number>
+              <number>10</number>
              </property>
              <property name="tracking">
               <bool>true</bool>
@@ -468,7 +482,7 @@
               <enum>QSlider::TicksBelow</enum>
              </property>
              <property name="tickInterval">
-              <number>2</number>
+              <number>30</number>
              </property>
             </widget>
            </item>
@@ -1094,7 +1108,7 @@ p, li { white-space: pre-wrap; }
    <sender>threeD</sender>
    <signal>clicked()</signal>
    <receiver>MainWindowClass</receiver>
-   <slot>newProblem()</slot>
+   <slot>newProblemEnable()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>20</x>
@@ -1435,6 +1449,38 @@ p, li { white-space: pre-wrap; }
     <hint type="sourcelabel">
      <x>684</x>
      <y>465</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>npSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>npChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>684</x>
+     <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>np2SpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>np2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>724</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>405</x>

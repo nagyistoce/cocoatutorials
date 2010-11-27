@@ -254,7 +254,7 @@ void GLThread::run()
 				}
 
 				glTranslatef(xx[i], yy[i], zz[i]);
-				if(i%2) gluSphere(glq, 0.2+0.2*(imbalance-1)/4, 40, 40); else gluSphere(glq, 0.2, 40, 40);
+				gluSphere(glq, (i%2) ? 0.2+0.2*(imbalance-1)/4 : 0.2 , 40, 40);
 				if(rrad[i]<=radsp) NNpin++;
 				glPopMatrix();
 			}
@@ -273,7 +273,7 @@ void GLThread::run()
 		emit frameNeeded();
 		mSleep(13);
         if ( Np == 0 ) {
-            Np = 13 ;
+            openGLWidget->mainWindow->npChanged(13);
             openGLWidget->mainWindow->newProblem();
         }
 	 }
