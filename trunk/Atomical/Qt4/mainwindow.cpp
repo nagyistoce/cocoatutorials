@@ -29,6 +29,7 @@
 #include <time.h>
 #include <QtGui/QFrame>
 
+#define B(b) ((b) ? Qt::Checked:Qt::Unchecked)
 #define RANDOM_SEED() srandom(time(NULL))
 #define RANDOM_INT(__MIN__, __MAX__) ((__MIN__) + random() % ((__MAX__+1) - (__MIN__)))
 
@@ -41,6 +42,7 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
 , Np(0)
 , Np2(0)
 , eigenModeMaxNp(100)
+, bConverged(false)
 {
     ui->setupUi(this);
 
@@ -48,6 +50,7 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     bFullScreenControls = theSettings->value(theSettings->sFullScreenControls,theSettings->vTrue).toBool();
     bFullScreenMenubar  = theSettings->value(theSettings->sFullScreenMenubar ,theSettings->vFalse).toBool();
     bNativeDialogs      = theSettings->value(theSettings->sNativeDialogs     ,theSettings->vTrue).toBool();
+    QColor bgColor      = theSettings->backgroundColor();
 
     nMaxNp = maxNp;
     xx     = new double[maxNp];
@@ -73,8 +76,7 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     QGLFormat::setDefaultFormat(pixelFormat);
 
     openGLWidget = new GLWidget(MaxNp,this);
-    QColor color = theSettings->backgroundColor();
-    openGLWidget->setBackground(color);
+    openGLWidget->setBackground(bgColor);
     ui->mainLayout->insertWidget(0, openGLWidget,Qt::AlignLeft );
 
     //  Alloc a new calculation thread
@@ -87,7 +89,7 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     //  When a step is calculated, the stepDone() signal is emitted.
     //  It is caught here by updatePositions() so that this class is aware of these positions.
     //  Additionally, updatePositions() loads the particles positions into the glWidget
-    connect(cThread, SIGNAL(stepDone(double* ,double* ,double* /*,double* */)), this, SLOT(updatePositions(double* ,double* ,double* /*,double * */)));
+    connect(cThread, SIGNAL(stepDone(double* ,double* ,double* ,double* )), this, SLOT(updatePositions(double* ,double* ,double* ,double* )));
     connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
 
     //  This call initializes a problem
@@ -117,6 +119,8 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     //  and communicate via signals and slots.
     cThread->doCalc();
     openGLWidget->startRendering();
+    npChanged(13);
+    newProblem();
 
     //  At this point, the UI should take care of interacting with the user and call
     //  initProblem() as needed. To exemplify this, here is a "demo mode" (from my
@@ -249,6 +253,7 @@ void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,
     radsp = this->rad();
     separation=sep;
     imbalance=imb;
+    bConverged=false;
     Np=NNp;
     Np2=NNp2;
     mode=mmode;
@@ -309,20 +314,33 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     initProblem(iimb,ssep,1e-9,NNp,NNp2,mmode,1);
 }
 
-void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz/*,double *EE*/)
+void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz,double* EE)
 {
     memcpy(xx,xxx,Np*sizeof(double));
     memcpy(yy,yyy,Np*sizeof(double));
     memcpy(zz,zzz,Np*sizeof(double));
 
     openGLWidget->receiveData(xx,yy,zz,radsp,separation,imbalance,Np,Np2,mode);
+    char    sE[100];
+    sprintf(sE,"%f",*EE);
+    ui->feedbackE->setText(QString(sE));
+    // I should format with QString, however I haven't studied that yet.
+    // QString sE;
+    // sE.setNum(EE);
 }
 
 void MainWindow::ackIsConverged()
 {
-    Printf("Acknowledge that calculation has converged.\n");
+    Printf("MainWindow::ackIsConverged\n");
+    bConverged = true;
     ui->eigenmodeValue->setEnabled(true);
-    eigenmodeValueChanged();
+    ui->normalModes->setEnabled(true);
+    if ( ui->normalModes->checkState()) {
+        int mode = ui->eigenmodeValue->value();
+        cThread->startEigenmodes(mode); // Once this is toggled, the problem type should not be changed
+                                        // Otherwise the whole thing goes crazy :)
+                                        // Problem may be changed only after this returns.
+    }
 }
 
 void MainWindow::performShutdown()
@@ -353,17 +371,30 @@ void MainWindow::newProblem()
     openGLWidget->setFocus(); // bring focus to widget (to capture key strokes)
 }
 
-void MainWindow::newProblemEnable()
+void MainWindow::surprise()
+{
+    newProblemEnable(false);
+    npChanged(RANDOM_INT(1,100));
+    np2Changed(RANDOM_INT(1,99));
+    eigenmodeChanged(RANDOM_INT(0,30),false);
+    ui->threeD->setCheckState(B(RANDOM_INT(0,2)));
+    ui->normalModes->setCheckState(B(RANDOM_INT(0,2)));
+    newProblem();
+}
+
+void MainWindow::newProblemEnable(bool bFlashAndBeep /* = false */)
 {
     if ( !ui->newProblem->isEnabled() ) {
         ui->newProblem->setEnabled(true);
-        QApplication::beep();
-        QColor c = getBackgroundColor();
-        setBackground('w');
-        mSleep(200);
-        setBackground('b');
-        mSleep(200);
-        setBackground(c);
+        if ( bFlashAndBeep ) {
+            QApplication::beep();
+            QColor c = getBackgroundColor();
+            setBackground('w');
+            mSleep(200);
+            setBackground('b');
+            mSleep(200);
+            setBackground(c);
+        }
     }
     ui->np2SpinBox->setEnabled(!ui->threeD->isChecked());
 }
@@ -485,16 +516,13 @@ void MainWindow::precChanged(int n)
 //    openGLWidget->openGLThread->fog(f);
 }
 
-void MainWindow::eigenmodeValueChanged()
+void MainWindow::eigenmodeChanged(int n /*=-1 */,bool bStartEigenmodes /* = true */)
 {
-    Printf("MainWindow::eigenmodeValueChanged\n");
-    if ( ui->normalModes->isEnabled() ) {
-        if ( ui->normalModes->checkState()) {
-            int mode = ui->eigenmodeValue->value();
-            cThread->startEigenmodes(mode); // Once this is toggled, the problem type should not be changed
-                                            // Otherwise the whole thing goes crazy :)
-                                            // Problem may be changed only after this returns.
-        }
+//  Printf("MainWindow::eigenmodeValueChanged\n");
+    if ( n >= 0 ) ui->eigenmodeValue->setValue(n); // yes, we can pass negative
+    if ( bStartEigenmodes && ui->normalModes->checkState() ) {
+        n = ui->eigenmodeValue->value();
+        cThread->startEigenmodes(n);
     }
 }
 
@@ -505,7 +533,7 @@ void MainWindow::normalModesChanged()
         if ( !ui->normalModes->checkState()) {
             cThread->stopEigenmodes();
         } else {
-            eigenmodeValueChanged();
+            eigenmodeChanged(-1,bConverged);
         }
     }
 }

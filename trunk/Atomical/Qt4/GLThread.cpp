@@ -272,11 +272,7 @@ void GLThread::run()
 	
 		emit frameNeeded();
 		mSleep(13);
-        if ( Np == 0 ) {
-            openGLWidget->mainWindow->npChanged(13);
-            openGLWidget->mainWindow->newProblem();
-        }
-	 }
+    }
     renderingHasStopped=true;
 }
 
