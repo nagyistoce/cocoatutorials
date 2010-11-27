@@ -284,7 +284,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::updateFrame()
 {
-//    Printf("In updateFrame()\n");
+//    Printf("GLWidget::updateFrame()\n");
 //    Printf("LoadData: Np=%d\n",Np);
     openGLThread->loadData(xx,yy,zz,(double)zoom,xRot,yRot,radsp,separation,imbalance,Np,Np2,mode);
 }

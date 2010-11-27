@@ -54,13 +54,16 @@ public slots:
     void exit();
     void fullScreen();
     void newProblem();
+    void newProblemEnable();
     void pauseResume();
     void zoomChanged(int z);
     void xRotChanged(int z);
     void yRotChanged(int z);
     void npChanged(int n);
+    void np2Changed(int n);
     void fogChanged (int n);
     void radChanged(int n);
+    void radChanged(double v);
     void sepChanged(int n);
     void precChanged(int n);
     void eigenmodeValueChanged();
@@ -116,6 +119,8 @@ const char*  sHelpURL; // url of help file (eg "http://clanmills.com/robin.shtml
     void fullScreenMenubar(bool);
     void fullScreenControls(bool);
     void nativeDialogs(bool);
+
+    double rad();
 
     friend class Preferences;
 };

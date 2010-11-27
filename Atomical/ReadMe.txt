@@ -5,16 +5,17 @@ Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
 - Fabio's list (see details below)
-  1 Default displayMenubar = false (done)
-  2 Fog to respect background color (done)
+  1 Default displayMenubar = false          (done)
+  2 Fog to respect background color         (done)
     Help (Fabio volunteered and can update MainWindow::sHelpURL when ready)
-  3 Spin button for Np
-  4 Spin button for Np2 (int range 0..Np)
-  5 No action required (comment about something)
+  3 Spin button for Np                      (done)
+  4 Spin button for Np2 (int range 0..Np)   (done)
+  5 No action required                      (done)
   6 Coordinate enable/disable Modes/EigenvalueMax (done, to be tested)
   7 Change prec to imbalance (and wire to model, range double 0.0 .. 10.0)
-  8 Add a "Surprise" button (random problem).  New problem should be less violent!
-  9 Wire rad to radsp in the model (range double 0.0 .. 3.0)
+  8 Add a "Surprise" button (random problem).
+    New problem should be less violent!
+  9 Wire rad to radsp in the model          (done)
  10 Feedback Display: energy, radius of the molecule, convergence, and the number of particles within the sphere
 - Get Preferences to persist on all platforms (done, to be tested)
 - Refactor Qt4 "core" code into a DLL (so,framework)
@@ -27,10 +28,10 @@ Known issues
 ------------
 
 +----------------------------------------------+
-| This isn't working very well on Windows      |
-| Robin's going to do some digging about       |
-| - vibration modes are slow (timing, I think) |
-| - the eigenModeMax stuff is suspect          |
+| 1) The eigenModeMax stuff is suspect and can |
+|    cause Qt4 to hang (both Linux/Windows)    |
+| 2) vibration modes are very slow on Windows  |
+|    Robin's going to do some digging around.  |
 +----------------------------------------------+
 
 No crash on Resize with a MBP 13", OsX 10.6.5 with graphics update 1.0 and NVidia 9400M integrated graphics.

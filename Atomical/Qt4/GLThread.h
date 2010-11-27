@@ -64,12 +64,11 @@ public:
 
    volatile bool renderingHasStopped;
 
-   // allow GLWidget access to our private members
-   friend class GLWidget;
 signals:
    void frameNeeded();
 public:
    SetColor     background ;
+   double 		radsp, separation, imbalance;
 
 private:
    bool         bAutoZoom;
@@ -91,7 +90,12 @@ private:
    double 		zoom,xRot,yRot;
    int    		Np,Np2;
    int			mode;
-   double 		radsp, separation, imbalance;
+
+   // allow GLWidget access to our private members
+   friend class GLWidget;
 };
 
 #endif // GLTHREAD_H
+
+// That's all Folks!
+////

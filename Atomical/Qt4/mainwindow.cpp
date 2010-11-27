@@ -217,10 +217,10 @@ QVariant v;
 
 void MainWindow::pauseResume()
 {
-    cThread->pause() ;
     bool paused = openGLWidget->openGLThread->isPaused();
-    openGLWidget->openGLThread->setPaused(!paused);
     ui->pauseResume->setText(QString(paused ? "Pause" : "Resume") );
+    // openGLWidget->openGLThread->setPaused(!paused);
+    if ( paused ) cThread->resume(); else cThread->pause();
     Printf("MainWindow::pauseResume\n");
 }
 
@@ -245,7 +245,7 @@ void MainWindow::init_double_layer()
 
 void MainWindow::initProblem(double imb,double sep,double prec,int NNp,int NNp2,int mmode,int flag)
 {
-    radsp=0.0;
+    radsp = this->rad();
     separation=sep;
     imbalance=imb;
     Np=NNp;
@@ -281,20 +281,25 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     iimb=1.0;
     mmode=bMode ? aMode : 2+RANDOM_INT(0,1);
 
-    NNp=atoi(ui->npValue->text().toAscii());
+    NNp=ui->npValue->text().toInt();
     rranmar(tmp,2);
     if(mmode==3){
         NNp2=0;
         ssep=0.0;
     } else {
-        toggle=RANDOM_INT(0,1);
-        if(toggle){
-                NNp2=RANDOM_INT(1,NNp/2);
-                ssep=2*tmp[0];
-        } else {
-                NNp2=0;
-                ssep=0.0;
-        }
+        //toggle=RANDOM_INT(0,1);
+        //if(toggle){
+        //        NNp2=RANDOM_INT(1,NNp/2);
+        //        ssep=2*tmp[0];
+        //} else {
+        //        NNp2=0;
+        //        ssep=0.0;
+        //}
+        // Robin's version to respect NNp2
+        NNp2=ui->np2SpinBox->value();
+        if ( NNp2 > NNp ) NNp2=NNp-1;
+        if ( NNp2 < 0   ) NNp2=0;
+        ssep = NNp2 ? 2*tmp[0] : 0.0;
     }
 
     toggle=RANDOM_INT(0,1);
@@ -343,6 +348,23 @@ void MainWindow::newProblem()
     cThread->stopEigenmodes();
     int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
+    ui->newProblem->setEnabled(false);
+    openGLWidget->setFocus(); // bring focus to widget (to capture key strokes)
+}
+
+void MainWindow::newProblemEnable()
+{
+    if ( !ui->newProblem->isEnabled() ) {
+        ui->newProblem->setEnabled(true);
+        QApplication::beep();
+        QColor c = getBackgroundColor();
+        setBackground('w');
+        mSleep(200);
+        setBackground('b');
+        mSleep(200);
+        setBackground(c);
+    }
+    ui->np2SpinBox->setEnabled(!ui->threeD->isChecked());
 }
 
 void MainWindow::showAbout()
@@ -408,8 +430,15 @@ void MainWindow::yRotChanged(int v)
 void MainWindow::npChanged(int n)
 {
     ui->npValue->setNum(n);
+    ui->npSpinBox->setValue(n);
     ui->normalModes->setEnabled(n <= eigenModeMaxNp);
-    newProblem();
+    newProblemEnable();
+}
+
+void MainWindow::np2Changed(int n)
+{
+    newProblemEnable();
+    UNUSED(n);
 }
 
 void MainWindow::fogChanged(int n)
@@ -422,9 +451,26 @@ void MainWindow::fogChanged(int n)
 
 void MainWindow::radChanged(int n)
 {
-    ui->radValue->setNum(n);
-//    openGLWidget->openGLThread->fog(f);
+    double v = n ;
+    v    /= 100.0;
+    ui->radValue->setNum(v);
+    ui->radSlider->setValue(n);
+    radsp=v;
+    openGLWidget->radsp = v   ;
+    openGLWidget->openGLThread->radsp = v ;
 }
+
+void MainWindow::radChanged(double v)
+{
+    radChanged((int)(v*100.0)) ;
+}
+
+double MainWindow::rad()
+{
+    double v = (double) ui->radSlider->value() ;
+    return v / 100.0 ;
+}
+
 
 void MainWindow::sepChanged(int n)
 {
