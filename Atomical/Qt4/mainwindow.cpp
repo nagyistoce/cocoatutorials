@@ -311,7 +311,11 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     toggle=RANDOM_INT(0,1);
     if(toggle) iimb=1.1+0.3*tmp[1];
 
-    initProblem(iimb,ssep,1e-9,NNp,NNp2,mmode,1);
+    double prec = 1 ;
+    for ( int i = 1 ; i < ui->precValue->text().toInt() ; i++ )
+        prec /= 10.0 ;
+
+    initProblem(iimb,ssep,prec,NNp,NNp2,mmode,1);
 }
 
 void MainWindow::updatePositions(double *xxx,double *yyy,double *zzz,double* EE)
@@ -513,7 +517,14 @@ void MainWindow::sepChanged(int n)
 void MainWindow::precChanged(int n)
 {
     ui->precValue->setNum(n);
-//    openGLWidget->openGLThread->fog(f);
+    if ( !bConverged ) {
+        double prec = 1.0 ;
+        for ( int i = 1 ; i < n ; n++ )
+            prec /= 10.0 ;
+      cThread->targetPrecision = prec;
+    } else {
+        newProblemEnable();
+    }
 }
 
 void MainWindow::eigenmodeChanged(int n /*=-1 */,bool bStartEigenmodes /* = true */)
