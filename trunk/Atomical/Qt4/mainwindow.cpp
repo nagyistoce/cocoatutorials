@@ -530,10 +530,11 @@ void MainWindow::precChanged(int n)
 void MainWindow::eigenmodeChanged(int n /*=-1 */,bool bStartEigenmodes /* = true */)
 {
 //  Printf("MainWindow::eigenmodeValueChanged\n");
-    if ( n >= 0 ) ui->eigenmodeValue->setValue(n); // yes, we can pass negative
+    if ( n >= 0 ) ui->eigenmodeValue->setValue(n); // yes, we can be passed a negative
     if ( bStartEigenmodes && ui->normalModes->checkState() ) {
         n = ui->eigenmodeValue->value();
         cThread->startEigenmodes(n);
+        // cThread->eigen(n);
     }
 }
 
