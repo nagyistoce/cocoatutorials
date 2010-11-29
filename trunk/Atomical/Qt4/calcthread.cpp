@@ -29,6 +29,10 @@ calcThread::calcThread(int maxNp,int aEigenModeMaxNp)
     Np=0;
     nMaxNp=maxNp;
     eigenModeMaxNp=aEigenModeMaxNp;
+    calculateEigenmode=-1;
+    lastNp = -1;
+    lastMode = -1;
+    lastDim = -1;
 
     int i,dim;
 
@@ -480,50 +484,60 @@ void calcThread::stopEigenmodes(void)
 
 void calcThread::startEigenmodes(int nn)
 {
+    calculateEigenmode = nn;
+}
+
+void calcThread::calculateEigenmodes(int nn)
+{
     if(Np>eigenModeMaxNp) return;
 
     int dim;
     pause();
-    msleep(1);
 
     Printf("Start Eigenmodes()\n");
     dim=encode(2,Np);
     Printf("With %d particles in %d dimensions, %d eigenmodes\n",Np,mode,dim);
+    if ( lastNp != Np || lastMode != mode || lastDim != dim ) {
 
-    memcpy(ax,xx_old,Np*sizeof(double));
-    memcpy(ay,yy_old,Np*sizeof(double));
-    memcpy(az,zz_old,Np*sizeof(double));
+        memcpy(ax,xx_old,Np*sizeof(double));
+        memcpy(ay,yy_old,Np*sizeof(double));
+        memcpy(az,zz_old,Np*sizeof(double));
 /*
-    H=(double **)malloc(dim*sizeof(double *));
-    for(i=0;i<dim;i++) H[i]=(double *)malloc(dim*sizeof(double));
-    m2=(double **)malloc(dim*sizeof(double *));
-    for(i=0;i<dim;i++) m2[i]=(double *)malloc(dim*sizeof(double));
+        H=(double **)malloc(dim*sizeof(double *));
+        for(i=0;i<dim;i++) H[i]=(double *)malloc(dim*sizeof(double));
+        m2=(double **)malloc(dim*sizeof(double *));
+        for(i=0;i<dim;i++) m2[i]=(double *)malloc(dim*sizeof(double));
 */
-    if(H==NULL) Printf("Oh my gosh!\n");
-    calc_Hessian();
+        if(H==NULL) Printf("Oh my gosh!\n");
+        calc_Hessian();
 #if 0
-    for(int i=0;i<dim;i++){
-        for(int j=0;j<dim;j++){
-            Printf("%e ",H[i][j]);
+        for(int i=0;i<dim;i++){
+            for(int j=0;j<dim;j++){
+                Printf("%e ",H[i][j]);
+            }
+            Printf("\n");
         }
-        Printf("\n");
-    }
-    Printf("Done calculating Hessian\n");
+        Printf("Done calculating Hessian\n");
 #endif
 
-    eigen_driver(dim);
+        eigen_driver(dim);
 #if 0
-    Printf("Done calculating Eigenvalues & Eigenvectors\n");
-    for(int i=0;i<dim;i++){
-        Printf("//------ %d: %e ------//\n",i,Evls[i]);
-        for(int j=0;j<dim;j++){
-            Printf("%e\n",Eivs[j][i]);
+        Printf("Done calculating Eigenvalues & Eigenvectors\n");
+        for(int i=0;i<dim;i++){
+            Printf("//------ %d: %e ------//\n",i,Evls[i]);
+            for(int j=0;j<dim;j++){
+                Printf("%e\n",Eivs[j][i]);
+            }
+            Printf("\n");
         }
-        Printf("\n");
-    }
 #endif
-
+        lastNp   = Np;
+        lastMode = mode;
+        lastDim  = dim ;
+    }
     chooseEigenmode(nn);
+
+    emit calculateEigenmodesDone();
     resume();
 }
 
@@ -570,6 +584,11 @@ void calcThread::run()
     int dim,j,ci,ii;
 
     forever {
+        if (                    calculateEigenmode >= 0 ) {
+            calculateEigenmodes(calculateEigenmode);
+            Printf("calcThread::calculateEigenmodes done\n");
+                                calculateEigenmode = -1 ;
+        }
         // Here, insert logic to deal with eigenmodes...
         if(n_eigmode==-1){
             if(do_calc && !isPaused){

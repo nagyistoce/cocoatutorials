@@ -11,7 +11,7 @@ Robin's next tasks:
   3 Spin button for Np                      (done)
   4 Spin button for Np2 (int range 0..Np)   (done)
   5 No action required                      (done)
-  6 Coordinate enable/disable Modes/EigenvalueMax (done, to be tested)
+  6 Coordinate enable/disable Modes/EigenvalueMax (done)
   7 Change prec to imbalance
     - wire to model, range double 0.0 .. 10.0
     - default 3 ;
@@ -32,14 +32,6 @@ Fabio's next tasks:
 
 Known issues
 ------------
-
-+----------------------------------------------+
-| 1) The eigenModeMax stuff is suspect and can |
-|    cause Qt4 to hang (both Linux/Windows)    |
-| 2) vibration modes are very slow on Windows  |
-|    Robin's going to do some digging around.  |
-| I think both are performance issues          |
-+----------------------------------------------+
 
 No crash on Resize with a MBP 13", OsX 10.6.5 with graphics update 1.0 and NVidia 9400M integrated graphics.
 Qt4/Mac/Resize window isn't working correctly
@@ -90,6 +82,7 @@ Here are parameter ranges which work:
 
 Revision History
 ----------------
+2010-11-29 01:55:13EST  Fixed the UI Hang/eigenvalue troubles
 2010-11-26 10:40:25GMT  Updated this file. 14:15 Update:  Preferences persist and keystrokes work on Windows.
 2010-11-18 23:15:18GMT  UI is more or less complete (I think).
 2010-11-16 01:58:38GMT  Fog fixed (and fog check box added to UI)

@@ -68,6 +68,7 @@ public slots:
     void sepChanged(int n);
     void precChanged(int n);
     void eigenmodeChanged(int n,bool bStartEigenmodes = true);
+    void calculateEigenmodesDone();
     void normalModesChanged();
     void updatePositions(double *xxx,double *yyy,double *zzz,double* E);
     void performShutdown();

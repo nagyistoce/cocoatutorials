@@ -42,7 +42,8 @@ public:
     int  maxEigenmode();
     void eigen(int n);
 
-    void startEigenmodes(int n);
+    void startEigenmodes(int n); // call this from another thread
+    void calculateEigenmodes(int n); // this is called from the run() loop
     void chooseEigenmode(int n);
     void stopEigenmodes(void);
     // data
@@ -57,6 +58,7 @@ signals:
     void isConverged();
     void done();
     void stepDone(double *xxx,double *yyy,double *zzz,double* EE);
+    void calculateEigenmodesDone();
 
 private:
     // General purpose
@@ -81,6 +83,7 @@ private:
     //  data
     bool     restart;
     bool     abort;
+    volatile int calculateEigenmode;
 
     int      nMaxNp;
     int      eigenModeMaxNp;
@@ -95,6 +98,10 @@ private:
     double *Evls, **m2, **Eivs, **H;
     double *ax, *ay, *az, faket;
     int     olddim;
+
+    int     lastNp;
+    int     lastMode;
+    int     lastDim;
 };
 
 #endif // CALCTHREAD_H
