@@ -91,6 +91,7 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     //  Additionally, updatePositions() loads the particles positions into the glWidget
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* ,double* )), this, SLOT(updatePositions(double* ,double* ,double* ,double* )));
     connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
+    connect(cThread, SIGNAL(calculateEigenmodesDone()), this, SLOT(calculateEigenmodesDone()));
 
     //  This call initializes a problem
     //
@@ -311,9 +312,7 @@ void MainWindow::initRandomProblem(bool bMode /*=false*/,int aMode /*= 3 */)
     toggle=RANDOM_INT(0,1);
     if(toggle) iimb=1.1+0.3*tmp[1];
 
-    double prec = 1 ;
-    for ( int i = 1 ; i < ui->precValue->text().toInt() ; i++ )
-        prec /= 10.0 ;
+    double prec = 1e-2;
 
     initProblem(iimb,ssep,prec,NNp,NNp2,mmode,1);
 }
@@ -372,6 +371,7 @@ void MainWindow::newProblem()
     int amode = ui->threeD->checkState() ? 3 : 2 ;
     initRandomProblem(true,amode);
     ui->newProblem->setEnabled(false);
+    ui->eigenmodeValue->setEnabled(false);
     openGLWidget->setFocus(); // bring focus to widget (to capture key strokes)
 }
 
@@ -467,6 +467,7 @@ void MainWindow::npChanged(int n)
 {
     ui->npValue->setNum(n);
     ui->npSpinBox->setValue(n);
+    ui->npSlider->setValue(n);
     ui->normalModes->setEnabled(n <= eigenModeMaxNp);
     newProblemEnable();
 }
@@ -517,25 +518,24 @@ void MainWindow::sepChanged(int n)
 void MainWindow::precChanged(int n)
 {
     ui->precValue->setNum(n);
-    if ( !bConverged ) {
-        double prec = 1.0 ;
-        for ( int i = 1 ; i < n ; n++ )
-            prec /= 10.0 ;
-      cThread->targetPrecision = prec;
-    } else {
-        newProblemEnable();
-    }
+//    openGLWidget->openGLThread->fog(f);
 }
 
 void MainWindow::eigenmodeChanged(int n /*=-1 */,bool bStartEigenmodes /* = true */)
 {
 //  Printf("MainWindow::eigenmodeValueChanged\n");
-    if ( n >= 0 ) ui->eigenmodeValue->setValue(n); // yes, we can be passed a negative
+    if ( n >= 0 ) ui->eigenmodeValue->setValue(n); // yes, we can pass negative
     if ( bStartEigenmodes && ui->normalModes->checkState() ) {
         n = ui->eigenmodeValue->value();
         cThread->startEigenmodes(n);
-        // cThread->eigen(n);
+        ui->eigenmodeValue->setEnabled(false);
     }
+}
+
+void MainWindow::calculateEigenmodesDone()
+{
+    Printf("MainWindow::calculateEigenmodesDone\n");
+    ui->eigenmodeValue->setEnabled(true);
 }
 
 void MainWindow::normalModesChanged()
