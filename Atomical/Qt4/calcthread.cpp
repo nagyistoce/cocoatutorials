@@ -34,8 +34,6 @@ calcThread::calcThread(int maxNp,int aEigenModeMaxNp)
     lastMode = -1;
     lastDim = -1;
 
-    int i,dim;
-
     xx     = new double[maxNp];
     yy     = new double[maxNp];
     zz     = new double[maxNp];
@@ -46,7 +44,7 @@ calcThread::calcThread(int maxNp,int aEigenModeMaxNp)
     ay     = new double[maxNp];
     az     = new double[maxNp];
 
-    dim=303; // Hard wired: eigenmodes for at most 100 particles
+    int dim=encode(2,nMaxNp);
 
     Evls=new double[dim];
 
@@ -56,7 +54,7 @@ calcThread::calcThread(int maxNp,int aEigenModeMaxNp)
 
     if(H==NULL) Printf("WOE!!!\n");
 
-    for(i=0;i<dim;i++) {
+    for(int i=0;i<dim;i++) {
         Eivs[i]=new double [dim];
         H[i]=new double [dim];
         m2[i]=new double [dim];
@@ -71,8 +69,6 @@ calcThread::calcThread(int maxNp,int aEigenModeMaxNp)
 
 calcThread::~calcThread()
 {
-    int i,dim;
-
     delete [] xx     ;
     delete [] yy     ;
     delete [] zz     ;
@@ -83,9 +79,9 @@ calcThread::~calcThread()
     delete [] ay     ;
     delete [] az     ;
 
-    dim=303;
+    int dim = encode(2,nMaxNp);
 
-    for(i=0;i<dim;i++) {
+    for(int i=0;i<dim;i++) {
         delete [] Eivs[i];
         delete [] H[i];
         delete [] m2[i];
