@@ -474,7 +474,6 @@ void MainWindow::npChanged(int n)
 
     // UI visual feedback
     char style[100];
-    char back[100];
     if ( n > eigenModeMaxNp ) {
         sprintf(style,"color:red;");
     } else {
@@ -483,10 +482,12 @@ void MainWindow::npChanged(int n)
     ui->npValue->setStyleSheet(style);
     ui->npLabel->setStyleSheet(style);
     ui->npSpinBox->setStyleSheet(style);
-    ui->normalModes->setStyleSheet(style);
-
-    if ( n > eigenModeMaxNp ) sprintf(style,"background:pink;");
     ui->eigenmodeValue->setStyleSheet(style);
+
+    // oddly, the spin box doesn't respect the color, so change his background
+    if ( n > eigenModeMaxNp )
+        sprintf(style,"background:pink;");
+    ui->normalModes->setStyleSheet(style);
 }
 
 void MainWindow::np2Changed(int n)
