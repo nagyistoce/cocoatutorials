@@ -86,6 +86,7 @@ public slots:
     void white();
     void black();
     void other();
+    void calcProgress(QString);
 
 public:
     GLWidget*   openGLWidget;
