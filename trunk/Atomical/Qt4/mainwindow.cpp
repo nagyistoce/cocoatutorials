@@ -469,8 +469,24 @@ void MainWindow::npChanged(int n)
     ui->npValue->setNum(n);
     ui->npSpinBox->setValue(n);
     ui->npSlider->setValue(n);
-    ui->normalModes->setEnabled(n <= eigenModeMaxNp);
+    ui->normalModes->setEnabled(n <= this->eigenModeMaxNp);
     newProblemEnable();
+
+    // UI visual feedback
+    char style[100];
+    char back[100];
+    if ( n > eigenModeMaxNp ) {
+        sprintf(style,"color:red;");
+    } else {
+        style[0]=0;
+    }
+    ui->npValue->setStyleSheet(style);
+    ui->npLabel->setStyleSheet(style);
+    ui->npSpinBox->setStyleSheet(style);
+    ui->normalModes->setStyleSheet(style);
+
+    if ( n > eigenModeMaxNp ) sprintf(style,"background:pink;");
+    ui->eigenmodeValue->setStyleSheet(style);
 }
 
 void MainWindow::np2Changed(int n)
@@ -541,7 +557,7 @@ void MainWindow::calculateEigenmodesDone()
 
 void MainWindow::normalModesChanged()
 {
-    Printf("MainWindow::normalModexChanged\n");
+    Printf("MainWindow::normalModesChanged\n");
     if ( ui->eigenmodeValue->isEnabled() ) {
         if ( !ui->normalModes->checkState()) {
             cThread->stopEigenmodes();
