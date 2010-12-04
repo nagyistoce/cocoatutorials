@@ -25,6 +25,7 @@ Robin's next tasks:
     number of particles within the sphere
 - Add feedback during eigenvalue calculation  (done)
 - Get Preferences to persist on all platforms (done)
+- Enable the UI to terminate/cancel calcs
 - Refactor Qt4 "core" code into a DLL (so,framework)
 - Create a screensaver version for Windows/Linux 
 
