@@ -140,26 +140,27 @@ void calcThread::__CPU_update()
 
 double calcThread::__CPU_energy()
 {
-	int i,k;
-	double EE,x0,y0,x1,y1,z0,z1,pref,res;
+	double result=0.0;
 
-	res=0.0;
-
-	for (i=0;i < Np;i++) {
-		EE=0.0;
-		x0=xx[i];y0=yy[i];z0=zz[i];
+	for (int i=0;i < Np;i++) {
+		double EE=0.0;
+		double x0=xx[i];
+		double y0=yy[i];
+		double z0=zz[i];
 		EE+=x0*x0+y0*y0+z0*z0;
-		for(k=i+1;k<Np;k++) {
-			x1=xx[k];y1=yy[k];z1=zz[k];
-			pref=1.0;
+		for(int k=i+1;k<Np;k++) {
+			double x1=xx[k];
+			double y1=yy[k];
+			double z1=zz[k];
+			double pref=1.0;
 			if(i%2) pref*=imbalance;
 			if(k%2) pref*=imbalance;
 			EE+=pref/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)*(z1-z0));
 		}
-		res+=EE;
+		result+=EE;
 	}
 
-	return res;
+	return result;
 }
 
 void calcThread::__CPU_poscpy()
@@ -170,19 +171,19 @@ void calcThread::__CPU_poscpy()
 }
 
 // Eigenvalue problem, needed for the vibrational modes
-void calcThread::eigsrt(double *d, double **v, int n)
+void calcThread::eigsrt(double* d, double** v, int n)
 {
-    int k,j,i;
-    double p;
+    for (int i=0;i<n;i++) {
+        int k=i;
+        double p=d[k];
+        for (int j=i;j<n;j++)
+            if (d[j] >= p)
+                p=d[k=j];
 
-    for (i=0;i<n;i++) {
-        p=d[k=i];
-        for (j=i;j<n;j++)
-            if (d[j] >= p) p=d[k=j];
         if (k != i) {
             d[k]=d[i];
             d[i]=p;
-            for (j=0;j<n;j++) {
+            for (int j=0;j<n;j++) {
                 p=v[i][j];
                 v[i][j]=v[k][j];
                 v[k][j]=p;
@@ -194,10 +195,8 @@ void calcThread::eigsrt(double *d, double **v, int n)
 void calcThread::twst(double **m, int i,int j,double cc,double ss,int n)
 {
     int k=n;
-    double t;
-
     while(k--){
-        t = cc*m[i][k]+ss*m[j][k];
+        double t = cc*m[i][k]+ss*m[j][k];
         m[j][k] = -ss*m[i][k]+cc*m[j][k];
         m[i][k] = t;
     }
@@ -205,6 +204,7 @@ void calcThread::twst(double **m, int i,int j,double cc,double ss,int n)
 
 void calcThread::eigen(int n)
 {
+    emit calcProgress("eigen begin");
 //void calcThread::eigen(double **m, double *l, double **vc, double **m2, int n){
 //                              H       Evls          Eivs          m2     dim
     double q,mod,t,th,cc,ss;
@@ -213,16 +213,20 @@ void calcThread::eigen(int n)
     i=n;
     while(i--) {
         j=n;
-        while(j--) m2[i][j] = H[i][j];
+        while(j--)
+            m2[i][j] = H[i][j];
     }
 
     i=n;
     while(i--) {
         j=n;
-        while(j--) Eivs[i][j] = i==j; // Was [i][j] but think it's transposed that way
+        while(j--)
+            Eivs[i][j] = i==j; // Was [i][j] but think it's transposed that way
     }
 
+    int count = 0;
     while(1){
+
         mod = 0;
         i=0,
         j=0;
@@ -240,6 +244,14 @@ void calcThread::eigen(int n)
             }
         }
 
+        count++ ;
+        if ( ! (count % 1000) ) {
+            char buff[100];
+            sprintf(buff,"eigen %6.3e",mod);
+            emit calcProgress(buff);
+        }
+
+        // do we need UI to specify accuracy?
         if(mod < 0.00000000001) break;
 
         th = 0.5*atan(2*m2[i][j]/(m2[i][i] - m2[j][j]));
@@ -261,12 +273,14 @@ void calcThread::eigen(int n)
     while(j--){
         Evls[j] = m2[j][j];
     };
+    emit calcProgress("eigen done");
 }
 
-void calcThread::eigen_driver(int dim){
-    int i,j;
-
+void calcThread::eigen_driver(int dim)
+{
+    emit calcProgress("eigen begin");
     eigen(dim);
+
 #if 0
     Printf("\n\n--- eigen_driver() ---\n");
     for(int i=0;i<dim;i++) {
@@ -274,19 +288,21 @@ void calcThread::eigen_driver(int dim){
         Evls[i]=sqrt(fabs(Evls[i]));
     }
 #endif
+    emit calcProgress("eigen srt");
     eigsrt(Evls,Eivs,dim);
 
-    double tmp;
-    for(i=0;i<dim;i++){
-        for(j=i+1;j<dim;j++){
-            tmp=Eivs[i][j];
+    emit calcProgress("eigen rev");
+    for(int i=0;i<dim;i++){
+        for(int j=i+1;j<dim;j++){
+            double tmp=Eivs[i][j];
             Eivs[i][j]=Eivs[j][i];
             Eivs[j][i]=tmp;
         }
     }
+    emit calcProgress("eigen done");
 }
 
-// Code for the vibrational modes calculation
+// Code folabel_4r the vibrational modes calculation
 void calcThread::cshift(int ci,int i,double dd)
 {
     switch(ci){
@@ -361,20 +377,21 @@ void calcThread::decode(int ii,int *ci,int *i)
     *i=n.rem;
 }
 
-void calcThread::calc_Hessian(void)
+void calcThread::calc_Hessian(int dim)
 {
-    int dim,ii,jj;
-    int ci,i,cj,j;
-    double tmp;
+    for(int ii=0;ii<dim;ii++)
+    {
+        char buff[100];
+        sprintf(buff,"Hessian %d/%d",ii,dim);
+        emit calcProgress(buff);
 
-    dim=encode(2,Np);
-
-    for(ii=0;ii<dim;ii++){
+        int ci,i;
         decode(ii,&ci,&i);
         H[ii][ii]=HH(ci, i, ci, i);
-        for(jj=ii+1;jj<dim;jj++){
+        for(int jj=ii+1;jj<dim;jj++){
+            int cj,j;
             decode(jj,&cj,&j);
-            tmp=HH(ci, i, cj, j);
+            double tmp=HH(ci, i, cj, j);
             H[ii][jj]=tmp;
             H[jj][ii]=tmp;
         }
@@ -509,7 +526,7 @@ void calcThread::calculateEigenmodes(int nn)
         for(i=0;i<dim;i++) m2[i]=(double *)malloc(dim*sizeof(double));
 */
         if(H==NULL) Printf("Oh my gosh!\n");
-        calc_Hessian();
+        calc_Hessian(dim);
 #if 0
         for(int i=0;i<dim;i++){
             for(int j=0;j<dim;j++){

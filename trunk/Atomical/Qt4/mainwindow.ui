@@ -717,16 +717,16 @@ p, li { white-space: pre-wrap; }
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <layout class="QHBoxLayout" name="calcLayout">
              <item>
-              <widget class="QLabel" name="label_4">
+              <widget class="QLabel" name="calcTitle">
                <property name="text">
-                <string>y:</string>
+                <string>Calcs:</string>
                </property>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_2">
+              <spacer name="calcSpacer">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -742,7 +742,7 @@ p, li { white-space: pre-wrap; }
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_Y">
+              <widget class="QLabel" name="calcLabel">
                <property name="text">
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;

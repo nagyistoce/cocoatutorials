@@ -92,6 +92,7 @@ MainWindow::MainWindow(int maxNp,QWidget* parent)
     connect(cThread, SIGNAL(stepDone(double* ,double* ,double* ,double* )), this, SLOT(updatePositions(double* ,double* ,double* ,double* )));
     connect(cThread, SIGNAL(isConverged()), this, SLOT(ackIsConverged()));
     connect(cThread, SIGNAL(calculateEigenmodesDone()), this, SLOT(calculateEigenmodesDone()));
+    connect(cThread, SIGNAL(calcProgress(QString)),this,SLOT(calcProgress(QString)));
 
     //  This call initializes a problem
     //
@@ -631,6 +632,11 @@ void MainWindow::nativeDialogs(bool b)
     Printf(" MainWindow::nativeDialogs\n");
     bNativeDialogs      = b ;
     theSettings->setValue(theSettings->sNativeDialogs,b?theSettings->vTrue:theSettings->vFalse);
+}
+
+void MainWindow::calcProgress(QString s)
+{
+    ui->calcLabel->setText(s);
 }
 
 // That's all Folks!

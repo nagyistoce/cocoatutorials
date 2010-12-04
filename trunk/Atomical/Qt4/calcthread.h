@@ -59,6 +59,7 @@ signals:
     void done();
     void stepDone(double *xxx,double *yyy,double *zzz,double* EE);
     void calculateEigenmodesDone();
+    void calcProgress(QString);
 
 private:
     // General purpose
@@ -73,9 +74,9 @@ private:
 
     void cshift(int ci,int i,double dd);
   double HH(int ci,int i,int cj,int j);
-    int  encode(int ci,int i);
+     int encode(int ci,int i);
     void decode(int ii,int *ci,int *i);
-    void calc_Hessian(void);
+    void calc_Hessian(int dim);
     void alloc_Evals(void);
     void free_Evals(void);
     void Eigenmodes(void);
