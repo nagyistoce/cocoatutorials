@@ -5,27 +5,29 @@ Atomical is a project between Fabio and Robin.
 
 Robin's next tasks:
 - Fabio's list (see details below)
-  1 Default displayMenubar = false          (done)
-  2 Fog to respect background color         (done)
+  1 Default displayMenubar = false            (done)
+  2 Fog to respect background color           (done)
     Help (Fabio volunteered and can update MainWindow::sHelpURL when ready)
-  3 Spin button for Np                      (done)
-  4 Spin button for Np2 (int range 0..Np)   (done)
-  5 No action required                      (done)
+  3 Spin button for Np                        (done)
+  4 Spin button for Np2 (int range 0..Np)     (done)
+  5 No action required                        (done)
   6 Coordinate enable/disable Modes/EigenvalueMax (done)
   7 Change prec to imbalance
     - wire to model, range double 0.0 .. 10.0
     - default 3 ;
-  8 Add a "Surprise" button (random problem)(done)
-    New problem should be less violent!     (mostly done)
-  9 Wire rad to radsp in the model          (done)
+  8 Add a "Surprise" button (random problem)  (done)
+    New problem should be less violent!       (mostly done)
+  9 Wire rad to radsp in the model            (done)
  10 Feedback Display:
-    energy                                  (done)
+    energy                                    (done)
     radius of the molecule
     convergence
     number of particles within the sphere
-- Get Preferences to persist on all platforms (done, to be tested)
+- Add feedback during eigenvalue calculation  (done)
+- Get Preferences to persist on all platforms (done)
 - Refactor Qt4 "core" code into a DLL (so,framework)
 - Create a screensaver version for Windows/Linux 
+
 
 Fabio's next tasks:
 - Rename calcThread.{cpp|h} as WignerModel.{cpp|h} (and variable cThread to be modelThread)
