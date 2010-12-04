@@ -374,13 +374,15 @@ void MainWindow::newProblem()
     ui->newProblem->setEnabled(false);
     ui->eigenmodeValue->setEnabled(false);
     openGLWidget->setFocus(); // bring focus to widget (to capture key strokes)
+
 }
 
 void MainWindow::surprise()
 {
     newProblemEnable(false);
-    npChanged(RANDOM_INT(1,100));
-    np2Changed(RANDOM_INT(1,99));
+    int maxPoints=eigenModeMaxNp + eigenModeMaxNp/2;
+    npChanged(RANDOM_INT(1,maxPoints));
+    np2Changed(RANDOM_INT(1,maxPoints-1));
     eigenmodeChanged(RANDOM_INT(0,30),false);
     ui->threeD->setCheckState(B(RANDOM_INT(0,2)));
     ui->normalModes->setCheckState(B(RANDOM_INT(0,2)));
