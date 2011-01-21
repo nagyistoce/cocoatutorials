@@ -41,24 +41,23 @@
 #include <QtGui>
 #include <QtWebKit>
 #include "mainwindow.h"
-
-//! [1]
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(const QUrl& url)
+: ui(new Ui::MainWindowClass)
 {
     progress = 0;
+    ui->setupUi(this);
 
     QFile file;
     file.setFileName(":/jquery.min.js");
     file.open(QIODevice::ReadOnly);
     jQuery = file.readAll();
     file.close();
-//! [1]
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-//! [2]
-    view = new QWebView(this);
+    view = ui->webView ; // new QWebView(this);
     view->load(url);
     connect(view, SIGNAL(loadFinished(bool)), SLOT(adjustLocation()));
     connect(view, SIGNAL(titleChanged(QString)), SLOT(adjustTitle()));
@@ -69,21 +68,19 @@ MainWindow::MainWindow(const QUrl& url)
     locationEdit->setSizePolicy(QSizePolicy::Expanding, locationEdit->sizePolicy().verticalPolicy());
     connect(locationEdit, SIGNAL(returnPressed()), SLOT(changeLocation()));
 
-    QToolBar *toolBar = addToolBar(tr("Navigation"));
+    QToolBar *toolBar = ui->toolBar ; // addToolBar(tr("Navigation"));
     toolBar->addAction(view->pageAction(QWebPage::Back));
     toolBar->addAction(view->pageAction(QWebPage::Forward));
     toolBar->addAction(view->pageAction(QWebPage::Reload));
     toolBar->addAction(view->pageAction(QWebPage::Stop));
     toolBar->addWidget(locationEdit);
-//! [2]
 
-    QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+    QMenu *viewMenu = ui->menuView ; // menuBar()->addMenu(tr("&View"));
     QAction* viewSourceAction = new QAction("Page Source", this);
     connect(viewSourceAction, SIGNAL(triggered()), SLOT(viewSource()));
     viewMenu->addAction(viewSourceAction);
 
-//! [3]
-    QMenu *effectMenu = menuBar()->addMenu(tr("&Effect"));
+    QMenu *effectMenu = ui->menuEffects; //  menuBar()->addMenu(tr("&Effect"));
     effectMenu->addAction("Highlight all links", this, SLOT(highlightAllLinks()));
 
     rotateAction = new QAction(this);
@@ -93,16 +90,14 @@ MainWindow::MainWindow(const QUrl& url)
     connect(rotateAction, SIGNAL(toggled(bool)), this, SLOT(rotateImages(bool)));
     effectMenu->addAction(rotateAction);
 
-    QMenu *toolsMenu = menuBar()->addMenu(tr("&Tools"));
+    QMenu *toolsMenu = ui->menuTools ; // menuBar()->addMenu(tr("&Tools"));
     toolsMenu->addAction(tr("Remove GIF images"), this, SLOT(removeGifImages()));
     toolsMenu->addAction(tr("Remove all inline frames"), this, SLOT(removeInlineFrames()));
     toolsMenu->addAction(tr("Remove all object elements"), this, SLOT(removeObjectElements()));
     toolsMenu->addAction(tr("Remove all embedded elements"), this, SLOT(removeEmbeddedElements()));
-
-    setCentralWidget(view);
+    setCentralWidget(view) ; // ui->centralwidget);// view);
     setUnifiedTitleAndToolBarOnMac(true);
 }
-//! [3]
 
 void MainWindow::viewSource()
 {
@@ -125,7 +120,7 @@ void MainWindow::slotSourceDownloaded()
 //! [4]
 void MainWindow::adjustLocation()
 {
-    locationEdit->setText(view->url().toString());
+    // locationEdit->setText(view->url().toString());
 }
 
 void MainWindow::changeLocation()
@@ -163,7 +158,7 @@ void MainWindow::finishLoading(bool)
     adjustTitle();
     view->page()->mainFrame()->evaluateJavaScript(jQuery);
 
-    rotateImages(rotateAction->isChecked());
+    // rotateImages(rotateAction->isChecked());
 }
 //! [6]
 
