@@ -2,14 +2,28 @@ TARGET        =  Qt4
 TEMPLATE      =  app
 
 QT           +=  webkit network
-HEADERS       =  mainwindow.h
+HEADERS       =  mainwindow.h \
+    about.h \
+    platform.h
 
 SOURCES       =  main.cpp \
-                 mainwindow.cpp
+                 mainwindow.cpp \
+    about.cpp \
+    platform.cpp
 
 RESOURCES     =  jquery.qrc
 
-FORMS        +=  mainwindow.ui
+FORMS        +=  mainwindow.ui \
+    preferences.ui \
+    about.ui
+
+win32 {
+    DEFINES +=  __WINDOWS__=1
+}
+
+unix {
+    DEFINES +=  __LINUX__=1
+}
 
 
 # install

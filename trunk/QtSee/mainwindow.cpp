@@ -40,7 +40,10 @@
 
 #include <QtGui>
 #include <QtWebKit>
+#include <QMessageBox>
 #include "mainwindow.h"
+#include "about.h"
+#include "preferences.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(const QUrl& url)
@@ -99,6 +102,59 @@ MainWindow::MainWindow(const QUrl& url)
     setUnifiedTitleAndToolBarOnMac(true);
 }
 
+void MainWindow::alert(QString s)
+{
+    QMessageBox box(this);
+    box.setWindowTitle("QtSee Alert");
+    box.setText(s);
+    box.exec();
+}
+
+void MainWindow::notImplementedYet(const char* s)
+{
+    QString result;
+    QTextStream(&result) << "<center><p>Command not implement yet!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>"
+                         << "<b>" << QString(s) << "</b></center>";
+    alert(result);
+}
+
+void MainWindow::actionOpen()          { notImplementedYet("Open"         ); }
+void MainWindow::actionSave()          { notImplementedYet("Save"         ); }
+void MainWindow::actionSaveAs()        { notImplementedYet("SaveAs"       ); }
+void MainWindow::actionPrint()         { notImplementedYet("Print"        ); }
+void MainWindow::actionCut()           { notImplementedYet("Cut"          ); }
+void MainWindow::actionCopy()          { notImplementedYet("Copy"         ); }
+void MainWindow::actionDelete()        { notImplementedYet("Delete"       ); }
+void MainWindow::actionPaste()         { notImplementedYet("Paste"        ); }
+void MainWindow::actionPreferences()   { notImplementedYet("Preferences"  ); }
+void MainWindow::actionFullScreen()    { notImplementedYet("FullScreen"   ); }
+void MainWindow::actionOnScreenTools()
+{
+    notImplementedYet("OnScreen Tools"   );
+    //static bool bToggle = true ;
+    //bToggle = !bToggle;
+    //setCentralWidget(bToggle?view:ui->centralwidget);// view);
+}
+
+void MainWindow::actionExit()
+{
+    close() ;
+}
+
+void MainWindow::actionAbout()
+{
+    about*  dialog = new about;
+    dialog->setWindowFlags(Qt::Tool);
+    dialog->move( int(this->x() + 0.5 * this->width()  - 0.5 * dialog->width())
+                , int(this->y() + 0.5 * this->height() - 0.5 * dialog->height())
+                );
+
+    dialog->setWindowIcon(QIcon(":/icon/ikona_32.png"));
+    dialog->setWindowModality(Qt::ApplicationModal);
+    dialog->show();
+    dialog->activateWindow();
+}
+
 void MainWindow::viewSource()
 {
     QNetworkAccessManager* accessManager = view->page()->networkAccessManager();
@@ -117,7 +173,6 @@ void MainWindow::slotSourceDownloaded()
     reply->deleteLater();
 }
 
-//! [4]
 void MainWindow::adjustLocation()
 {
     // locationEdit->setText(view->url().toString());
@@ -133,9 +188,7 @@ void MainWindow::changeLocation()
     view->load(url);
     view->setFocus();
 }
-//! [4]
 
-//! [5]
 void MainWindow::adjustTitle()
 {
     if (progress <= 0 || progress >= 100)
@@ -149,9 +202,7 @@ void MainWindow::setProgress(int p)
     progress = p;
     adjustTitle();
 }
-//! [5]
 
-//! [6]
 void MainWindow::finishLoading(bool)
 {
     progress = 100;
@@ -160,17 +211,13 @@ void MainWindow::finishLoading(bool)
 
     // rotateImages(rotateAction->isChecked());
 }
-//! [6]
 
-//! [7]
 void MainWindow::highlightAllLinks()
 {
     QString code = "$('a').each( function () { $(this).css('background-color', 'yellow') } )";
     view->page()->mainFrame()->evaluateJavaScript(code);
 }
-//! [7]
 
-//! [8]
 void MainWindow::rotateImages(bool invert)
 {
     QString code;
@@ -180,9 +227,7 @@ void MainWindow::rotateImages(bool invert)
         code = "$('img').each( function () { $(this).css('-webkit-transition', '-webkit-transform 2s'); $(this).css('-webkit-transform', 'rotate(0deg)') } )";
     view->page()->mainFrame()->evaluateJavaScript(code);
 }
-//! [8]
 
-//! [9]
 void MainWindow::removeGifImages()
 {
     QString code = "$('[src*=gif]').remove()";
@@ -206,5 +251,4 @@ void MainWindow::removeEmbeddedElements()
     QString code = "$('embed').remove()";
     view->page()->mainFrame()->evaluateJavaScript(code);
 }
-//! [9]
 

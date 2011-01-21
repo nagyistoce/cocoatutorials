@@ -78,13 +78,32 @@ protected slots:
     void removeObjectElements();
     void removeEmbeddedElements();
 
+//  menu actions
+    void actionOpen();
+    void actionSave();
+    void actionSaveAs();
+    void actionPrint();
+    void actionExit();
+    void actionCut();
+    void actionCopy();
+    void actionDelete();
+    void actionPaste();
+    void actionPreferences();
+    void actionFullScreen();
+    void actionOnScreenTools();
+    void actionAbout();
+
+//  alert boxes
+    void notImplementedYet(const char* s);
+    void alert(QString s);
+
 private:
     Ui::MainWindowClass* ui;
 
-    QString jQuery;
-    QWebView *view;
-    QLineEdit *locationEdit;
-    QAction *rotateAction;
-    int progress;
+    QString     jQuery;
+    QWebView*   view;
+    QLineEdit*  locationEdit;
+    QAction*    rotateAction;
+    int         progress;
 //! [1]
 };
