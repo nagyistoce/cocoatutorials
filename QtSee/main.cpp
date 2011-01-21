@@ -40,9 +40,11 @@
 
 #include <QtGui>
 #include "mainwindow.h"
+#include "platform.h"
 
 int main(int argc, char * argv[])
 {
+    platformInit(argc,argv);
     QApplication app(argc, argv);
     QUrl url;
     if (argc > 1)
