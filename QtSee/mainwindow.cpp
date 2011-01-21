@@ -41,10 +41,13 @@
 #include <QtGui>
 #include <QtWebKit>
 #include <QMessageBox>
+
+#include "QtSee.h"
 #include "mainwindow.h"
 #include "about.h"
 #include "preferences.h"
 #include "ui_mainwindow.h"
+#include <QTemporaryFile>
 
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
@@ -71,7 +74,7 @@ MainWindow::MainWindow(const QUrl& url)
     locationEdit->setSizePolicy(QSizePolicy::Expanding, locationEdit->sizePolicy().verticalPolicy());
     connect(locationEdit, SIGNAL(returnPressed()), SLOT(changeLocation()));
 
-    QToolBar *toolBar = ui->toolBar ; // addToolBar(tr("Navigation"));
+    QToolBar *toolBar = addToolBar(tr("Navigation")); // ui->toolBar ; // addToolBar(tr("Navigation"));
     toolBar->addAction(view->pageAction(QWebPage::Back));
     toolBar->addAction(view->pageAction(QWebPage::Forward));
     toolBar->addAction(view->pageAction(QWebPage::Reload));
@@ -175,14 +178,52 @@ void MainWindow::slotSourceDownloaded()
 
 void MainWindow::adjustLocation()
 {
-    // locationEdit->setText(view->url().toString());
+    locationEdit->setText(view->url().toString());
 }
 
 void MainWindow::changeLocation()
 {
     QString l = locationEdit->text();
+#if 1
     if (    l == "help" ) {
+#if   defined(__WINDOWS__)
             l = "file:///C:/Users/rmills/clanmills/robinali.gif" ;
+#elif defined(__XWINDOWS__)
+            l = "file:///home/rmills/R.jpg";
+#elif defined(__APPLE__)
+            l = "file:///Users/rmills/R.jpg";
+#endif
+            // alert(l);
+#endif
+#if 0
+            // http://www.qtcentre.org/archive/index.php/t-20431.html
+            QFile file;
+            file.setFileName(":photo");
+            file.open(QIODevice::ReadOnly);
+            static char  buffer[200000];
+            int len = sizeof(buffer) ; // file.readData(buffer,sizeof buffer);
+            QDataStream in(&file);
+            len = in.readRawData(buffer,len);
+            file.close();
+            QString m = QString("size = %1 len = %2").arg(file.size()).arg(len);
+            alert(m);
+
+//          QTemporaryFile* pTemp = QTemporaryFile::createLocalFile();
+            QTemporaryFile temp ;
+//            temp.open(QIODevice::WriteOnly);
+            QDataStream out(&temp);
+            out.writeRawData(buffer,len);
+//            temp.close();
+
+            //pTemp->setAutoRemove(false);
+            // pTemp->copy()
+            // QTemporaryFile::copy(":/photo.jpg",pTemp->fileName());
+            // temp.writeData(buffer,len);
+            // temp.w
+            // temp.close();
+            // pTemp->close();
+            alert(temp.fileName());
+#endif
     }
     QUrl url = QUrl(l);
     view->load(url);
@@ -209,7 +250,7 @@ void MainWindow::finishLoading(bool)
     adjustTitle();
     view->page()->mainFrame()->evaluateJavaScript(jQuery);
 
-    // rotateImages(rotateAction->isChecked());
+    rotateImages(rotateAction->isChecked());
 }
 
 void MainWindow::highlightAllLinks()

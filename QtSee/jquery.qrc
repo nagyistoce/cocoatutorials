@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/" >
+    <qresource prefix="/">
         <file>jquery.min.js</file>
+        <file alias="photo">Resources/photo.jpg</file>
     </qresource>
 </RCC>
