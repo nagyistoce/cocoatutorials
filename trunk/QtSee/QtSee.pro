@@ -3,19 +3,23 @@ TEMPLATE      =  app
 
 QT           +=  webkit network
 HEADERS       =  mainwindow.h \
-    about.h \
-    platform.h
+                 about.h \
+                 platform.h \
+                 QtSee.h
 
 SOURCES       =  main.cpp \
                  mainwindow.cpp \
-    about.cpp \
-    platform.cpp
+                 about.cpp \
+                 platform.cpp
 
 RESOURCES     =  jquery.qrc
 
-FORMS        +=  mainwindow.ui \
-    preferences.ui \
-    about.ui
+FORMS         += mainwindow.ui \
+                 preferences.ui \
+                 about.ui
+
+OTHER_FILES   += Resources/photo.jpg \
+    Resources/photo.jpg
 
 win32 {
     DEFINES +=  __WINDOWS__=1
