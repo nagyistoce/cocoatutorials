@@ -39,11 +39,18 @@
 ****************************************************************************/
 
 #include <QtGui>
+#include <QtGui/QMainWindow>
+#include "ui_mainwindow.h"
 
 class QWebView;
 QT_BEGIN_NAMESPACE
 class QLineEdit;
 QT_END_NAMESPACE
+
+namespace Ui
+{
+    class MainWindowClass;
+}
 
 //! [1]
 class MainWindow : public QMainWindow
@@ -72,6 +79,8 @@ protected slots:
     void removeEmbeddedElements();
 
 private:
+    Ui::MainWindowClass* ui;
+
     QString jQuery;
     QWebView *view;
     QLineEdit *locationEdit;
