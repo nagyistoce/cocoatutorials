@@ -152,6 +152,17 @@ void MainWindow::actionExit()
     close() ;
 }
 
+void MainWindow::actionHelp()
+{
+    command("help");
+}
+
+void MainWindow::command(QString c)
+{
+    locationEdit->setText(c);
+    changeLocation();
+}
+
 void MainWindow::actionAbout()
 {
     about*  dialog = new about;
@@ -191,19 +202,21 @@ void MainWindow::adjustLocation()
 
 void MainWindow::changeLocation()
 {
-    QString l = locationEdit->text();
+    QString location = locationEdit->text();
 
-    // if the user enter "help", show a photo from the resources
-    if ( l == "help" ) {
+    // if the user entered "help", show a photo from the resources
+    if ( location == "help" ) {
         QFile file(":photo");
         QTemporaryFile* pTemp  = QTemporaryFile::createLocalFile(file);
         QString newName=QString("%1.jpg").arg(pTemp->fileName());
         pTemp->rename(newName);
-        l=QString("file://%1").arg(newName);
-        // alert(l);
+        location=QString("file:///%1").arg(newName);
+        location.replace("\\","/");
+        location.replace("////","///");
+        alert(location);
     }
 
-    QUrl url = QUrl(l);
+    QUrl url = QUrl(location);
     view->load(url);
     view->setFocus();
 }

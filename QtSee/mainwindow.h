@@ -92,6 +92,10 @@ protected slots:
     void actionFullScreen();
     void actionOnScreenTools();
     void actionAbout();
+    void actionHelp();
+
+//  execute a command
+    void command(QString c);
 
 //  alert boxes
     void notImplementedYet(const char* s);
