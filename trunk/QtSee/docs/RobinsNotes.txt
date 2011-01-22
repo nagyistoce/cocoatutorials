@@ -1,0 +1,92 @@
+QtSee Project
+-------------
+
+TODO (in priorty order)
+-----------------------
+
+1 Get Alan engaged and active on the project.
+2 Better photo experience better (zoom, pan etc)
+3 Get the web server working
+4 Figure out a lot more architecture
+
+Diary
+-----
+2011-01-21 Bootstrapped the web-browser part in Qt (M/W/L)
+2011-01-20 Wrote down objectives and searched for technology
+2011-01-19 Agreed with Alan to do the project
+
+Objectives
+----------
+
+I’ve got some definite ideas about what I’d like to achieve and these include:
+
+1 Easy to use cross-platform photo browser/slide show/light table
+
+2 Easy to script (in JavaScript or Python or something)
+-	Publishing to the web (or Google WebAlbums,
+    or PDF or whatever is done using a script)
+
+3 Light table is also a collage maker
+-	The light table will probably be implemented using WebKit/HTML5
+-	The whole UI might even be implemented in WebKit/HTML5
+
+4 Operates on the file system and stores the metadata in the photos themselves
+(using the exiv2 library)
+- No central database of photos (other than application preferences)
+
+5 Installer for Windows, DMG Installer for Mac.  Don’t know what’s best for Unix
+
+6 We need a test plan
+
+7 Code is stored in google code using SVN
+
+I’d like us to declare “job done” by the end of March.
+I don’t want this to go on very long.  We both learn some tricks and drop it.
+
+For the first couple of months, I’m going to put this into
+code.google.com/p/cocoatutorials/QtSee
+
+If we decide (around the end of March) to continue, we can open a new repository
+using git and continue from there.  
+
+Elements of Software Development
+--------------------------------
+
+ 1 The IDEA
+ 2 Architecture
+ 3 Writing code
+ 4 Fixing bugs
+ 5 Porting
+ 6 Building
+ 7 Testing
+ 8 Installer
+ 9 Localization
+10 Documentation
+11 Supporting users
+
+We're not going to deal with all of this.  We won't get much past item 3.
+
+How to implement this 
+---------------------
+
+I’ve made two great discoveries.
+
+1)	Qt-SDK’s demo program fancybrowser looks like to a good place to start
+
+2)	Lighttpd.net – lightway, hi-performance web server
+I’ve build and configured it to run on Windows (yeah!). 
+I’ve got it serving the local copy of clanmills.com on localhost:3000
+
+So the architecture is clear.
+- QtSee will be a web browser and by default he browses localhost:3000
+- 3000 will be a user preference.
+- When the user wants to browse the photos in a directory
+  Example: c:\Users\rmills\Documents\Dropbox\Photos\2011\RobinsBirthday
+  The application will create a cached directory and browse
+  the photos using the web browser and web server.
+
+Once we’ve got the apparatus in place, most of the programming will be done in JavaScript (for the browser).  Provides QtScript (the JavaScript in WebKit) – so we can probably do the server side programming also in JavaScript.
+
+Robin Mills
+2011-01-21
+http://clanmills.com
