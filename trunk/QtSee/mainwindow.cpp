@@ -63,7 +63,7 @@ MainWindow::MainWindow(const QUrl& url)
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    view = ui->webView ; // new QWebView(this);
+    view = ui->webView ;
     view->load(url);
     connect(view, SIGNAL(loadFinished(bool)), SLOT(adjustLocation()));
     connect(view, SIGNAL(titleChanged(QString)), SLOT(adjustTitle()));
@@ -74,19 +74,19 @@ MainWindow::MainWindow(const QUrl& url)
     locationEdit->setSizePolicy(QSizePolicy::Expanding, locationEdit->sizePolicy().verticalPolicy());
     connect(locationEdit, SIGNAL(returnPressed()), SLOT(changeLocation()));
 
-    QToolBar *toolBar = addToolBar(tr("Navigation")); // ui->toolBar ; // addToolBar(tr("Navigation"));
+    QToolBar *toolBar = addToolBar(tr("Navigation"));
     toolBar->addAction(view->pageAction(QWebPage::Back));
     toolBar->addAction(view->pageAction(QWebPage::Forward));
     toolBar->addAction(view->pageAction(QWebPage::Reload));
     toolBar->addAction(view->pageAction(QWebPage::Stop));
     toolBar->addWidget(locationEdit);
 
-    QMenu *viewMenu = ui->menuView ; // menuBar()->addMenu(tr("&View"));
+    QMenu *viewMenu = ui->menuView ;
     QAction* viewSourceAction = new QAction("Page Source", this);
     connect(viewSourceAction, SIGNAL(triggered()), SLOT(viewSource()));
     viewMenu->addAction(viewSourceAction);
 
-    QMenu *effectMenu = ui->menuEffects; //  menuBar()->addMenu(tr("&Effect"));
+    QMenu *effectMenu = ui->menuEffects;
     effectMenu->addAction("Highlight all links", this, SLOT(highlightAllLinks()));
 
     rotateAction = new QAction(this);
@@ -96,7 +96,7 @@ MainWindow::MainWindow(const QUrl& url)
     connect(rotateAction, SIGNAL(toggled(bool)), this, SLOT(rotateImages(bool)));
     effectMenu->addAction(rotateAction);
 
-    QMenu *toolsMenu = ui->menuTools ; // menuBar()->addMenu(tr("&Tools"));
+    QMenu *toolsMenu = ui->menuTools ;
     toolsMenu->addAction(tr("Remove GIF images"), this, SLOT(removeGifImages()));
     toolsMenu->addAction(tr("Remove all inline frames"), this, SLOT(removeInlineFrames()));
     toolsMenu->addAction(tr("Remove all object elements"), this, SLOT(removeObjectElements()));
@@ -130,7 +130,15 @@ void MainWindow::actionCopy()          { notImplementedYet("Copy"         ); }
 void MainWindow::actionDelete()        { notImplementedYet("Delete"       ); }
 void MainWindow::actionPaste()         { notImplementedYet("Paste"        ); }
 void MainWindow::actionPreferences()   { notImplementedYet("Preferences"  ); }
-void MainWindow::actionFullScreen()    { notImplementedYet("FullScreen"   ); }
+
+void MainWindow::actionFullScreen()
+{
+    if ( isFullScreen() )
+        showNormal();
+    else
+        showFullScreen() ;
+}
+
 void MainWindow::actionOnScreenTools()
 {
     notImplementedYet("OnScreen Tools"   );
@@ -184,47 +192,17 @@ void MainWindow::adjustLocation()
 void MainWindow::changeLocation()
 {
     QString l = locationEdit->text();
-#if 1
-    if (    l == "help" ) {
-#if   defined(__WINDOWS__)
-            l = "file:///C:/Users/rmills/clanmills/robinali.gif" ;
-#elif defined(__XWINDOWS__)
-            l = "file:///home/rmills/R.jpg";
-#elif defined(__APPLE__)
-            l = "file:///Users/rmills/R.jpg";
-#endif
-            // alert(l);
-#endif
-#if 0
-            // http://www.qtcentre.org/archive/index.php/t-20431.html
-            QFile file;
-            file.setFileName(":photo");
-            file.open(QIODevice::ReadOnly);
-            static char  buffer[200000];
-            int len = sizeof(buffer) ; // file.readData(buffer,sizeof buffer);
-            QDataStream in(&file);
-            len = in.readRawData(buffer,len);
-            file.close();
-            QString m = QString("size = %1 len = %2").arg(file.size()).arg(len);
-            alert(m);
 
-//          QTemporaryFile* pTemp = QTemporaryFile::createLocalFile();
-            QTemporaryFile temp ;
-//            temp.open(QIODevice::WriteOnly);
-            QDataStream out(&temp);
-            out.writeRawData(buffer,len);
-//            temp.close();
-
-            //pTemp->setAutoRemove(false);
-            // pTemp->copy()
-            // QTemporaryFile::copy(":/photo.jpg",pTemp->fileName());
-            // temp.writeData(buffer,len);
-            // temp.w
-            // temp.close();
-            // pTemp->close();
-            alert(temp.fileName());
-#endif
+    // if the user enter "help", show a photo from the resources
+    if ( l == "help" ) {
+        QFile file(":photo");
+        QTemporaryFile* pTemp  = QTemporaryFile::createLocalFile(file);
+        QString newName=QString("%1.jpg").arg(pTemp->fileName());
+        pTemp->rename(newName);
+        l=QString("file://%1").arg(newName);
+        // alert(l);
     }
+
     QUrl url = QUrl(l);
     view->load(url);
     view->setFocus();

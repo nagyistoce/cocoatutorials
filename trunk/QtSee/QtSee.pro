@@ -1,4 +1,4 @@
-TARGET        =  Qt4
+TARGET        =  QtSee
 TEMPLATE      =  app
 
 QT           +=  webkit network
