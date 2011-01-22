@@ -198,8 +198,10 @@ void MainWindow::changeLocation()
     QString location = locationEdit->text();
 
     // if the user entered "help", show a photo from the resources
+    static int p = 0 ;
     if ( location == "help" ) {
-        QFile file(":photo");
+        if ( p > 18 ) p = 0;
+        QFile file(QString(":/Resources/p%1.jpg").arg(++p));
         QTemporaryFile* pTemp  = QTemporaryFile::createLocalFile(file);
         QString newName=QString("%1.jpg").arg(pTemp->fileName());
         pTemp->rename(newName);

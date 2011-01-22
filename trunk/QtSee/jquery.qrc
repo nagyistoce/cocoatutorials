@@ -2,5 +2,23 @@
     <qresource prefix="/">
         <file>jquery.min.js</file>
         <file alias="photo">Resources/photo.jpg</file>
+        <file>Resources/p1.jpg</file>
+        <file>Resources/p2.jpg</file>
+        <file>Resources/p3.jpg</file>
+        <file>Resources/p4.jpg</file>
+        <file>Resources/p5.jpg</file>
+        <file>Resources/p6.jpg</file>
+        <file>Resources/p7.jpg</file>
+        <file>Resources/p8.jpg</file>
+        <file>Resources/p9.jpg</file>
+        <file>Resources/p10.jpg</file>
+        <file>Resources/p11.jpg</file>
+        <file>Resources/p12.jpg</file>
+        <file>Resources/p13.jpg</file>
+        <file>Resources/p14.jpg</file>
+        <file>Resources/p15.jpg</file>
+        <file>Resources/p16.jpg</file>
+        <file>Resources/p17.jpg</file>
+        <file>Resources/p18.jpg</file>
     </qresource>
 </RCC>
