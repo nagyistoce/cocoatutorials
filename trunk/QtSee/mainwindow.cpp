@@ -33,6 +33,7 @@
 
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
+, bWebView(true)
 {
     progress = 0;
     ui->setupUi(this);
@@ -57,12 +58,20 @@ MainWindow::MainWindow(const QUrl& url)
     connect(locationEdit, SIGNAL(returnPressed()), SLOT(changeLocation()));
 
     toolBar = addToolBar(tr("Navigation"));
+    //toolBar->addAction(icon,"back",self,actionBack);
+
+
     toolBar->addAction(view->pageAction(QWebPage::Back));
     toolBar->addAction(view->pageAction(QWebPage::Forward));
     toolBar->addAction(view->pageAction(QWebPage::Reload));
     toolBar->addAction(view->pageAction(QWebPage::Stop));
-    toolBar->addWidget(locationEdit);
 
+    //toolBar->addAction(actionBack);
+    //toolBar->addAction(actionForward);
+    //toolBar->addAction(actionReload);
+    //toolBar->addAction(actionStop);
+
+    toolBar->addWidget(locationEdit);
 
     QMenu *viewMenu = ui->menuView ;
     QAction* viewSourceAction = new QAction("Page Source", this);
@@ -88,6 +97,19 @@ MainWindow::MainWindow(const QUrl& url)
     setUnifiedTitleAndToolBarOnMac(true);
 }
 
+void MainWindow::term()
+{
+    ::Printf("good night!");
+    if ( tempFiles.size() ) {
+        for ( unsigned p = 0 ; p < tempFiles.size() ; p ++) {
+            const char* filename = tempFiles[p].toAscii();
+            ::remove(filename);
+            // Printf("deleting temporary file '%s'\n",filename);
+        }
+        tempFiles.clear();
+    }
+}
+
 void MainWindow::alert(QString s)
 {
     QMessageBox box(this);
@@ -106,7 +128,18 @@ void MainWindow::notImplementedYet(const char* s)
 
 void MainWindow::actionOpen()          { notImplementedYet("Open"         ); }
 void MainWindow::actionSave()          { notImplementedYet("Save"         ); }
-void MainWindow::actionSaveAs()        { notImplementedYet("SaveAs"       ); }
+void MainWindow::actionSaveAs()
+{
+//  QString fileName =
+    QFileDialog::getSaveFileName(this);
+#if 0
+    if (fileName.isEmpty())
+        return false;
+
+    return saveFile(fileName);
+#endif
+}
+
 void MainWindow::actionPrint()         { notImplementedYet("Print"        ); }
 void MainWindow::actionCut()           { notImplementedYet("Cut"          ); }
 void MainWindow::actionCopy()          { notImplementedYet("Copy"         ); }
@@ -142,12 +175,33 @@ void MainWindow::actionOnScreenTools()
 
 void MainWindow::actionExit()
 {
+    term();
     close() ;
 }
 
 void MainWindow::actionHelp()
 {
     command("help");
+}
+
+void MainWindow::actionBack()
+{
+    view->pageAction(QWebPage::Back);
+}
+
+void MainWindow::actionForward()
+{
+    view->pageAction(QWebPage::Forward);
+}
+
+void MainWindow::actionReload()
+{
+    view->pageAction(QWebPage::Reload);
+}
+
+void MainWindow::actionStop()
+{
+    view->pageAction(QWebPage::Stop);
 }
 
 void MainWindow::command(QString c)
@@ -193,27 +247,55 @@ void MainWindow::adjustLocation()
     locationEdit->setText(view->url().toString());
 }
 
+QString MainWindow::command_help(QString& c)
+{
+    static const unsigned int maxFiles = 18;
+    QString             location = c;
+    static unsigned int p = 0 ;
+
+    if ( ! tempFiles.size() ) {
+        for ( p = 1 ; p < maxFiles ; p++ ) {
+            QFile file(QString(":/Resources/p%1.jpg").arg(p));
+            QTemporaryFile* pTemp  = QTemporaryFile::createLocalFile(file);
+            QString newName=QString("%1.jpg").arg(pTemp->fileName());
+            pTemp->rename(newName);
+            tempFiles.insert(tempFiles.end(),newName);
+        }
+    }
+
+    if ( p >= tempFiles.size() ) p = 0 ;
+    if ( tempFiles.size()) {
+         location = QString("file:///%1").arg(tempFiles[p++]);
+         location.replace("\\","/");
+         location.replace("////","///");
+    }
+//  alert (location);
+    return location;
+}
+
+QString MainWindow::command_run(QString& c)
+{
+    QString location = c;
+    return location;
+}
+
 void MainWindow::changeLocation()
 {
     QString location = locationEdit->text();
 
     // if the user entered "help", show a photo from the resources
-    static int p = 0 ;
-    if ( location == "help" ) {
-        if ( p > 18 ) p = 0;
-        QFile file(QString(":/Resources/p%1.jpg").arg(++p));
-        QTemporaryFile* pTemp  = QTemporaryFile::createLocalFile(file);
-        QString newName=QString("%1.jpg").arg(pTemp->fileName());
-        pTemp->rename(newName);
-        location=QString("file:///%1").arg(newName);
-        location.replace("\\","/");
-        location.replace("////","///");
-    //  alert(location);
+    if ( location == "help" ) location = command_help(location);
+    if ( location == "run"  ) location = command_run(location);
+    if ( location == "back"  ) {
+         location = "";
+         actionBack();
     }
 
-    QUrl url = QUrl(location);
-    view->load(url);
-    view->setFocus();
+    if ( location.length()) {
+        QUrl url = QUrl(location);
+        view->load(url);
+        view->setFocus();
+    }
 }
 
 void MainWindow::adjustTitle()

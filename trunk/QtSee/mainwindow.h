@@ -28,6 +28,8 @@
 #include <QtGui/QMainWindow>
 #include "ui_mainwindow.h"
 
+#include <vector>
+
 class QWebView;
 QT_BEGIN_NAMESPACE
 class QLineEdit;
@@ -38,13 +40,14 @@ namespace Ui
     class MainWindowClass;
 }
 
-//! [1]
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(const QUrl& url);
+             MainWindow(const QUrl& url);
+    virtual ~MainWindow() { term() ; }
+    void     term();
 
 protected slots:
 
@@ -79,9 +82,15 @@ protected slots:
     void actionOnScreenTools();
     void actionAbout();
     void actionHelp();
+    void actionForward();
+    void actionBack();
+    void actionReload();
+    void actionStop();
 
-//  execute a command
-    void command(QString c);
+//  execute commands
+    void    command(QString c);
+    QString command_help(QString& c);
+    QString command_run (QString& c);
 
 //  alert boxes
     void notImplementedYet(const char* s);
@@ -96,7 +105,9 @@ private:
     QAction*    rotateAction;
     int         progress;
     QToolBar*   toolBar;
-//! [1]
+    bool        bWebView;
+
+    std::vector<QString> tempFiles;
 };
 
 #endif
