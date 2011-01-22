@@ -23,82 +23,19 @@
    <property name="styleSheet">
     <string notr="true">background:cyan;</string>
    </property>
-   <widget class="QWidget" name="horizontalLayoutWidget">
+   <widget class="QWebView" name="webView">
     <property name="geometry">
      <rect>
-      <x>8</x>
-      <y>55</y>
-      <width>787</width>
-      <height>492</height>
+      <x>10</x>
+      <y>10</y>
+      <width>781</width>
+      <height>531</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QWebView" name="webView">
-       <property name="styleSheet">
-        <string notr="true">background:navy;</string>
-       </property>
-       <property name="url">
-        <url>
-         <string>about:blank</string>
-        </url>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QToolBar" name="toolBar">
-    <property name="geometry">
-     <rect>
-      <x>7</x>
-      <y>4</y>
-      <width>332</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background:white;border:2px solid navy;</string>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>36</width>
-      <height>36</height>
-     </size>
+    <property name="url">
+     <url>
+      <string>about:blank</string>
+     </url>
     </property>
    </widget>
   </widget>
@@ -108,7 +45,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -218,6 +155,9 @@
   <action name="actionFullScreen">
    <property name="text">
     <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionOnScreenTools">
@@ -421,20 +361,37 @@
     </hint>
    </hints>
   </connection>
-
   <connection>
    <sender>actionFullScreen</sender>
    <signal>triggered()</signal>
    <receiver>MainWindowClass</receiver>
    <slot>actionFullScreen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
-
   <connection>
    <sender>actionOnScreenTools</sender>
    <signal>triggered()</signal>
    <receiver>MainWindowClass</receiver>
    <slot>actionOnScreenTools()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
-
  </connections>
 </ui>
