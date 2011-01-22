@@ -41,7 +41,25 @@ FORMS         += mainwindow.ui \
                  about.ui
 
 OTHER_FILES   += Resources/photo.jpg \
-    Resources/photo.jpg
+    Resources/photo.jpg \
+    Resources/p18.jpg \
+    Resources/p17.jpg \
+    Resources/p16.jpg \
+    Resources/p15.jpg \
+    Resources/p14.jpg \
+    Resources/p13.jpg \
+    Resources/p12.jpg \
+    Resources/p11.jpg \
+    Resources/p10.jpg \
+    Resources/p9.jpg \
+    Resources/p8.jpg \
+    Resources/p7.jpg \
+    Resources/p6.jpg \
+    Resources/p5.jpg \
+    Resources/p4.jpg \
+    Resources/p3.jpg \
+    Resources/p2.jpg \
+    Resources/p1.jpg
 
 win32 {
     DEFINES +=  __WINDOWS__=1
