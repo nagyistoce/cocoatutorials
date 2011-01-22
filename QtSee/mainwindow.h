@@ -95,6 +95,7 @@ private:
     QLineEdit*  locationEdit;
     QAction*    rotateAction;
     int         progress;
+    QToolBar*   toolBar;
 //! [1]
 };
 

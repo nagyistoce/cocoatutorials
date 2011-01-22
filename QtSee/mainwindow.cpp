@@ -56,12 +56,13 @@ MainWindow::MainWindow(const QUrl& url)
     locationEdit->setSizePolicy(QSizePolicy::Expanding, locationEdit->sizePolicy().verticalPolicy());
     connect(locationEdit, SIGNAL(returnPressed()), SLOT(changeLocation()));
 
-    QToolBar *toolBar = addToolBar(tr("Navigation"));
+    toolBar = addToolBar(tr("Navigation"));
     toolBar->addAction(view->pageAction(QWebPage::Back));
     toolBar->addAction(view->pageAction(QWebPage::Forward));
     toolBar->addAction(view->pageAction(QWebPage::Reload));
     toolBar->addAction(view->pageAction(QWebPage::Stop));
     toolBar->addWidget(locationEdit);
+
 
     QMenu *viewMenu = ui->menuView ;
     QAction* viewSourceAction = new QAction("Page Source", this);
@@ -115,18 +116,28 @@ void MainWindow::actionPreferences()   { notImplementedYet("Preferences"  ); }
 
 void MainWindow::actionFullScreen()
 {
+#if defined __APPLE__
+    // FullScreen works on the Mac, however showNormal hangs afte a showFullScreen
+    static bool bFull = false;
+    if ( bFull )
+        showNormal();
+    else
+        this->showMaximized();
+    bFull = !bFull ;
+#else
     if ( isFullScreen() )
         showNormal();
     else
         showFullScreen() ;
+#endif
 }
 
 void MainWindow::actionOnScreenTools()
 {
-    notImplementedYet("OnScreen Tools"   );
-    //static bool bToggle = true ;
-    //bToggle = !bToggle;
-    //setCentralWidget(bToggle?view:ui->centralwidget);// view);
+    if ( toolBar->isHidden() )
+        toolBar->show();
+    else
+        toolBar->hide();
 }
 
 void MainWindow::actionExit()
