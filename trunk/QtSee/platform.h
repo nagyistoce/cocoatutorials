@@ -16,13 +16,15 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//  Additional Engineering by Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA.
 //  http://clanmills.com
 //
 
 #pragma once
 #ifndef _PLATFORM_H_
 #define _PLATFORM_H_
+
+#include <QtCore>
 
 #ifdef  __LINUX__
 #ifdef  __APPLE__
@@ -56,6 +58,7 @@ extern "C" int Printf(const char * format, ... );
 #define Printf printf
 #endif
 
+extern "C" const char* SS(QString s);
 extern "C" int  System(const char * format, ... );
 extern "C" void LinkActivated(const char* data);
 int             platformInit(int argc,char** argv);

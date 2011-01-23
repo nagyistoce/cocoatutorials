@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//  Additional Engineering by Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA.
 //  http://clanmills.com
 //
 
@@ -109,6 +109,12 @@ extern "C" void LinkActivated(const char* data)
     Printf("linkActivated: %s\n",data);
     System("%s %s\n",OPEN,data);
 }
+
+extern "C" const char* SS(QString s)
+{
+    return (const char*) s.toAscii() ;
+}
+
 
 // That's all Folks!
 ////

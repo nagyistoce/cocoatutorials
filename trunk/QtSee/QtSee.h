@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//  Additional Engineering by Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA.
 //  http://clanmills.com
 //
 

@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//  Additional Engineering by Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA.
 //  http://clanmills.com
 //
 
@@ -34,6 +34,7 @@
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
 , bWebView(true)
+, next_photo(0)
 {
     progress = 0;
     ui->setupUi(this);
@@ -126,8 +127,43 @@ void MainWindow::notImplementedYet(const char* s)
     alert(result);
 }
 
-void MainWindow::actionOpen()          { notImplementedYet("Open"         ); }
-void MainWindow::actionSave()          { notImplementedYet("Save"         ); }
+void MainWindow::actionOpen()
+{
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    if ( dialog.exec() ) {
+        photos.clear();
+        next_photo=0 ;
+
+        // sort options
+        QDir::Filters   filter = QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Files ;
+        QDir::SortFlags sort   = QDir::Time|QDir::Reversed ;
+        QStringList     name   ;
+                        name   << "*.jpg" << "*.gif" << "*.tiff" << "*.bmp";
+
+        // read the directory
+        QDir          dir    = dialog.directory();
+        dir.setSorting(sort);
+        dir.setFilter (filter);
+        dir.setNameFilters(name);
+        QFileInfoList files  = dir.entryInfoList() ;
+
+        // copy the paths to the photos list
+        for ( int p = 0 ; p < files.size() ; p++ ) {
+            QString path = files[p].absoluteFilePath();
+            photos << path;
+        //  Printf("adding %s\n",SS(path));
+        }
+    }
+
+    command("help");
+}
+
+void MainWindow::actionSave()
+{
+    actionSaveAs() ;
+}
+
 void MainWindow::actionSaveAs()
 {
 //  QString fileName =
@@ -249,10 +285,11 @@ void MainWindow::adjustLocation()
 
 QString MainWindow::command_help(QString& c)
 {
-    static const unsigned int maxFiles = 18;
-    QString             location = c;
-    static unsigned int p = 0 ;
+    static const int maxFiles = 18;
+    QString          location = c;
+    int              p;
 
+    // copy resource photos to the temporary directory
     if ( ! tempFiles.size() ) {
         for ( p = 1 ; p < maxFiles ; p++ ) {
             QFile file(QString(":/Resources/p%1.jpg").arg(p));
@@ -263,9 +300,18 @@ QString MainWindow::command_help(QString& c)
         }
     }
 
-    if ( p >= tempFiles.size() ) p = 0 ;
-    if ( tempFiles.size()) {
-         location = QString("file:///%1").arg(tempFiles[p++]);
+    // populate the photos with the tempFiles if necessary
+    if ( ! photos.length() ) {
+        for ( p = 0 ; p < (int) tempFiles.size() ; p++ )
+            photos << tempFiles[p];
+    }
+
+    // display the next photo
+    p = next_photo++;
+    if ( p >= photos.size() || p < 0 )
+        p = 0 ;
+    if ( photos.size()) {
+         location = QString("file:///%1").arg(photos[p++]);
          location.replace("\\","/");
          location.replace("////","///");
     }

@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//  Additional Engineering by Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA.
 //  http://clanmills.com
 //
 
@@ -106,6 +106,8 @@ private:
     int         progress;
     QToolBar*   toolBar;
     bool        bWebView;
+    QStringList photos;
+    int         next_photo;
 
     std::vector<QString> tempFiles;
 };
