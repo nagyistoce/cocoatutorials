@@ -127,33 +127,46 @@ void MainWindow::notImplementedYet(const char* s)
     alert(result);
 }
 
+void MainWindow::updatePhotos(QDir& dir,QStringList& photos)
+{
+    // sort options
+    QDir::Filters   filter = QDir::NoDotAndDotDot | QDir::AllEntries | QDir::QDir::AllDirs ;
+    QDir::SortFlags sort   = QDir::Time|QDir::Reversed ;
+    QStringList     name   ;
+                    name   << "*.jpg" << "*.gif" << "*.tiff" << "*.bmp";
+
+    // read the directory
+    dir.setSorting(sort);
+    dir.setFilter (filter);
+    dir.setNameFilters(name);
+
+    QFileInfoList files  = dir.entryInfoList() ;
+
+    // copy the file paths to the photos list
+    for ( int p = 0 ; p < files.size() ; p++ ) {
+        QFileInfo file = files[p];
+        QString   path = file.absoluteFilePath();
+        if ( file.isDir() ) {
+            QDir d(path);
+            updatePhotos(d,photos);
+        } else {
+            photos << path;
+            Printf("adding %s\n",SS(path));
+        }
+    }
+
+}
+
 void MainWindow::actionOpen()
 {
     QFileDialog dialog;
-    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    dialog.setFileMode(QFileDialog::Directory); //  | QFileDialog::ExistingFile);
+    dialog.setOption(QFileDialog::ShowDirsOnly);
     if ( dialog.exec() ) {
         photos.clear();
         next_photo=0 ;
-
-        // sort options
-        QDir::Filters   filter = QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Files ;
-        QDir::SortFlags sort   = QDir::Time|QDir::Reversed ;
-        QStringList     name   ;
-                        name   << "*.jpg" << "*.gif" << "*.tiff" << "*.bmp";
-
-        // read the directory
-        QDir          dir    = dialog.directory();
-        dir.setSorting(sort);
-        dir.setFilter (filter);
-        dir.setNameFilters(name);
-        QFileInfoList files  = dir.entryInfoList() ;
-
-        // copy the paths to the photos list
-        for ( int p = 0 ; p < files.size() ; p++ ) {
-            QString path = files[p].absoluteFilePath();
-            photos << path;
-        //  Printf("adding %s\n",SS(path));
-        }
+        QDir dir = dialog.directory();
+        updatePhotos(dir,photos);
     }
 
     command("help");
@@ -310,8 +323,10 @@ QString MainWindow::command_help(QString& c)
     p = next_photo++;
     if ( p >= photos.size() || p < 0 )
         p = 0 ;
+    QString photo;
     if ( photos.size()) {
-         location = QString("file:///%1").arg(photos[p++]);
+         photo    = photos[p++];
+         location = QString("file:///%1").arg(photo);
          location.replace("\\","/");
          location.replace("////","///");
     }
@@ -325,6 +340,7 @@ QString MainWindow::command_help(QString& c)
 
     // update and display the template
     html.replace("__LOCATION__",location);
+    html.replace("__TITLE__",photo);
     view->page()->mainFrame()->setContent(SS(html));
     locationEdit->setText(location);
     location = "";

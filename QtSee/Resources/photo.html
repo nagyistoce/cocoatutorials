@@ -1,27 +1,35 @@
 <html>
+<head>
+<title>__TITLE__</title>
+</head>
 <script>
-
 var ratio=0
 function resize()
 {
-    var border = 40
-    var which  = "photo" ;
-    var elem   = document.getElementById(which);
+    var border  = 20; // border all round
+    var top     =  0; // additional top/bottom border
+    var which   = "photo" ;
+    var elem    = document.getElementById(which);
     if ( !elem ) return false;
 
     if ( !ratio )
         ratio   = elem.height/elem.width;
     var width   = document.body.clientWidth;
-    var height  = document.body.clientHeight;
-    elem.width  = width       - border;
-    elem.height = width*ratio - border;
+    var height  = document.body.clientHeight-top;
 
-    elem.style.top  = (height - elem.height)/2 ;
-    elem.style.left = (width  - elem.width )/2 ;
+    var  aspect = height/width;
+    if ( aspect > ratio ) {
+      elem.width     = width       - border;
+      elem.height    = width*ratio - border - top/2 ;
+    } else {
+      elem.height    = height - border - top/2 ;
+      elem.width     = height/ratio - border   ;
+    }
+    elem.style.top   = (height - elem.height)/2 ;
+    elem.style.left  = (width  - elem.width )/2 ;
 
 //  console.log("w,h = ",width + "," + height + " ratio = " + ratio);
 }
-
 </script>
 
 <body style="background:black;" onresize="resize();">
