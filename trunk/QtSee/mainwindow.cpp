@@ -322,11 +322,10 @@ void MainWindow::showPhoto()
 {
     static const int maxFiles = 18;
     QString          location;
-    int              p;
 
     // copy resource photos to the temporary directory
     if ( ! tempFiles.size() ) {
-        for ( p = 1 ; p < maxFiles ; p++ ) {
+        for ( int p = 1 ; p < maxFiles ; p++ ) {
             QFile file(QString(":/Resources/p%1.jpg").arg(p));
             QTemporaryFile* pTemp  = QTemporaryFile::createLocalFile(file);
             QString newName=QString("%1.jpg").arg(pTemp->fileName());
@@ -337,17 +336,16 @@ void MainWindow::showPhoto()
 
     // populate the photos with the tempFiles if necessary
     if ( ! photos.length() ) {
-        for ( p = 0 ; p < (int) tempFiles.size() ; p++ )
+        for ( int p = 0 ; p < (int) tempFiles.size() ; p++ )
             photos << tempFiles[p];
     }
 
     // display the next photo
-    p = next_photo++;
-    if ( p >= photos.size() || p < 0 )
-        p = 0 ;
+    if ( next_photo >= photos.size() || next_photo < 0 )
+        next_photo = 0 ;
     QString photo;
     if ( photos.size()) {
-         photo    = photos[p++];
+         photo    = photos[next_photo++];
          location = QString("file:///%1").arg(photo);
          location.replace("\\","/");
          location.replace("////","///");
@@ -367,7 +365,7 @@ void MainWindow::showPhoto()
     locationEdit->setText(location);
 }
 
-QString MainWindow::command_help(QString& c)
+QString MainWindow::command_help(QString& /*c*/)
 {
     showPhoto();
     return "";
