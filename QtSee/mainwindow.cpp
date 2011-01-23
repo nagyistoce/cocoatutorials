@@ -316,6 +316,19 @@ QString MainWindow::command_help(QString& c)
          location.replace("////","///");
     }
 //  alert (location);
+
+    // stamp a web page using the template in the resources
+    QFile file(":/Resources/photo.html");
+    file.open(QIODevice::ReadOnly);
+    QString html  = file.readAll();
+    file.close();
+
+    // update and display the template
+    html.replace("__LOCATION__",location);
+    view->page()->mainFrame()->setContent(SS(html));
+    locationEdit->setText(location);
+    location = "";
+
     return location;
 }
 

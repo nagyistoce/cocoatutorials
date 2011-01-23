@@ -20,5 +20,6 @@
         <file>Resources/p16.jpg</file>
         <file>Resources/p17.jpg</file>
         <file>Resources/p18.jpg</file>
+        <file>Resources/photo.html</file>
     </qresource>
 </RCC>

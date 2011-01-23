@@ -1,0 +1,32 @@
+<html>
+<script>
+
+var ratio=0
+function resize()
+{
+    var border = 40
+    var which  = "photo" ;
+    var elem   = document.getElementById(which);
+    if ( !elem ) return false;
+
+    if ( !ratio )
+        ratio   = elem.height/elem.width;
+    var width   = document.body.clientWidth;
+    var height  = document.body.clientHeight;
+    elem.width  = width       - border;
+    elem.height = width*ratio - border;
+
+    elem.style.top  = (height - elem.height)/2 ;
+    elem.style.left = (width  - elem.width )/2 ;
+
+//  console.log("w,h = ",width + "," + height + " ratio = " + ratio);
+}
+
+</script>
+
+<body style="background:black;" onresize="resize();">
+<center>
+<img id="photo" style="top:20px;left:20px;position:absolute;" name="photo" onload="resize()"  src="__LOCATION__">
+</center>
+</body>
+</html>
