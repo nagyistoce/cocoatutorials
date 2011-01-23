@@ -59,7 +59,8 @@ OTHER_FILES   += Resources/photo.jpg \
     Resources/p4.jpg \
     Resources/p3.jpg \
     Resources/p2.jpg \
-    Resources/p1.jpg
+    Resources/p1.jpg \
+    docs/RobinsNotes.txt
 
 win32 {
     DEFINES +=  __WINDOWS__=1
