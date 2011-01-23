@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//         and Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA
 //  http://clanmills.com
 //
 
@@ -168,8 +168,7 @@ void MainWindow::actionOpen()
         QDir dir = dialog.directory();
         updatePhotos(dir,photos);
     }
-
-    command("help");
+    showPhoto();
 }
 
 void MainWindow::actionSave()
@@ -228,19 +227,42 @@ void MainWindow::actionExit()
     close() ;
 }
 
+void MainWindow::actionBack()
+{
+}
+
+void MainWindow::actionForward()
+{
+}
+
 void MainWindow::actionHelp()
 {
     command("help");
 }
 
-void MainWindow::actionBack()
+void MainWindow::actionPrev()
 {
-    view->pageAction(QWebPage::Back);
+    next_photo-=2;
+    showPhoto();
+
 }
 
-void MainWindow::actionForward()
+void MainWindow::actionNext()
 {
-    view->pageAction(QWebPage::Forward);
+    showPhoto();
+}
+
+void MainWindow::actionFirst()
+{
+    next_photo=0;
+    showPhoto();
+
+}
+
+void MainWindow::actionLast()
+{
+    next_photo=photos.length()-1;
+    showPhoto();
 }
 
 void MainWindow::actionReload()
@@ -296,10 +318,10 @@ void MainWindow::adjustLocation()
     locationEdit->setText(view->url().toString());
 }
 
-QString MainWindow::command_help(QString& c)
+void MainWindow::showPhoto()
 {
     static const int maxFiles = 18;
-    QString          location = c;
+    QString          location;
     int              p;
 
     // copy resource photos to the temporary directory
@@ -343,9 +365,12 @@ QString MainWindow::command_help(QString& c)
     html.replace("__TITLE__",photo);
     view->page()->mainFrame()->setContent(SS(html));
     locationEdit->setText(location);
-    location = "";
+}
 
-    return location;
+QString MainWindow::command_help(QString& c)
+{
+    showPhoto();
+    return "";
 }
 
 QString MainWindow::command_run(QString& c)
@@ -361,10 +386,6 @@ void MainWindow::changeLocation()
     // if the user entered "help", show a photo from the resources
     if ( location == "help" ) location = command_help(location);
     if ( location == "run"  ) location = command_run(location);
-    if ( location == "back"  ) {
-         location = "";
-         actionBack();
-    }
 
     if ( location.length()) {
         QUrl url = QUrl(location);

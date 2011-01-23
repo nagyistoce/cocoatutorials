@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//         and Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA
 //  http://clanmills.com
 //
 
@@ -75,6 +75,8 @@ extern "C" int Printf(const char * format, ... )
     return result;
 }
 #endif
+
+extern "C" int Println(const char* s) { return Printf("%s\n",s); }
 
 extern "C" int System(const char* format, ... )
 {
