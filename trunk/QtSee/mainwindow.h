@@ -16,7 +16,7 @@
 //  along with QtSee.  If not, see <http://www.gnu.org/licenses/>.
 //
 //  Written by Alan Mills, Camberley, England
-//         and Robin Mills, San Jose, CA, USA.
+//         and Robin Mills, San Jose, CA, USA
 //  http://clanmills.com
 //
 
@@ -86,6 +86,10 @@ protected slots:
     void actionBack();
     void actionReload();
     void actionStop();
+    void actionFirst();
+    void actionLast();
+    void actionNext();
+    void actionPrev();
 
 //  execute commands
     void    command(QString c);
@@ -98,6 +102,7 @@ protected slots:
 
 //  other methods
     void updatePhotos(QDir& dir,QStringList& photos);
+    void showPhoto();
 
 private:
     Ui::MainWindowClass* ui;
