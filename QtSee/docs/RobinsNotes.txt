@@ -11,6 +11,7 @@ TODO (in priorty order)
 
 Diary
 -----
+2011-01-22 Added File/Open to display directories of photos
 2011-01-21 Bootstrapped the web-browser part in Qt (M/W/L)
 2011-01-20 Wrote down objectives and searched for technology
 2011-01-19 Agreed with Alan to do the project
