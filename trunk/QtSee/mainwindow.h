@@ -96,6 +96,9 @@ protected slots:
     void notImplementedYet(const char* s);
     void alert(QString s);
 
+//  other methods
+    void updatePhotos(QDir& dir,QStringList& photos);
+
 private:
     Ui::MainWindowClass* ui;
 
