@@ -23,13 +23,13 @@
 #include <QtGui>
 #include <QtWebKit>
 #include <QMessageBox>
+#include <QTemporaryFile>
 
 #include "QtSee.h"
 #include "mainwindow.h"
 #include "about.h"
 #include "preferences.h"
 #include "ui_mainwindow.h"
-#include <QTemporaryFile>
 
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
@@ -38,6 +38,11 @@ MainWindow::MainWindow(const QUrl& url)
 {
     progress = 0;
     ui->setupUi(this);
+
+#if __APPLE__
+    QIcon icon(":/Contents/Resources/QtSee.icns");
+    this->setWindowIcon(icon);
+#endif
 
     QFile file;
     file.setFileName(":/jquery.min.js");
@@ -60,7 +65,6 @@ MainWindow::MainWindow(const QUrl& url)
 
     toolBar = addToolBar(tr("Navigation"));
     //toolBar->addAction(icon,"back",self,actionBack);
-
 
     toolBar->addAction(view->pageAction(QWebPage::Back));
     toolBar->addAction(view->pageAction(QWebPage::Forward));
@@ -94,7 +98,7 @@ MainWindow::MainWindow(const QUrl& url)
     toolsMenu->addAction(tr("Remove all inline frames"), this, SLOT(removeInlineFrames()));
     toolsMenu->addAction(tr("Remove all object elements"), this, SLOT(removeObjectElements()));
     toolsMenu->addAction(tr("Remove all embedded elements"), this, SLOT(removeEmbeddedElements()));
-    setCentralWidget(view) ; // ui->centralwidget);// view);
+    setCentralWidget(view) ;
     setUnifiedTitleAndToolBarOnMac(true);
 }
 

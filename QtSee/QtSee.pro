@@ -71,6 +71,10 @@ unix {
     DEFINES +=  __LINUX__=1
 }
 
+macx {
+  ICON        =  QtSee.icns
+}
+
 
 # install
 #target.path   = $$[QT_INSTALL_EXAMPLES]/webkit/QtSee
