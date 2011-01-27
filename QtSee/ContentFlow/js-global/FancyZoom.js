@@ -439,7 +439,7 @@ function zoomDoneIn(zoomdiv, theID) {
 	if (!browserIsIE) fadeElementSetup("ZoomClose", 0, 100, 5);
 
 	// Get keypresses
-	document.onkeypress = getKey;
+	// document.onkeypress = getKey;
 	
 }
 

@@ -1907,28 +1907,30 @@ ContentFlow.prototype = {
 
 
     /*
-     * ==================== Key strok ====================
+     * ==================== Key stroke ====================
      */
 
     /*
      * handles keystroke events
      */
     _keyStroke: function(event) {
+		var result = true ;
         if(!event) var event = window.event;
-
-        if (event.which) {
-            var keyCode = event.which;
+		
+        var keyCode;
+        
+        if ( event.which ) {
+    		keyCode = event.which;
         } else if (event.keyCode) {
-            var keyCode = event.keyCode;
+        	keyCode = event.keyCode;
         }
 
         if (this.conf.keys[keyCode]) {
             this.conf.keys[keyCode].bind(this)();
-            return Event.stop(event);
+            result = Event.stop(event);
         }
-        else {
-            return true;
-        }
+        
+        return result ;
     },
     
     /*
