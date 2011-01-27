@@ -163,6 +163,64 @@ void MainWindow::updatePhotos(QDir& dir,QStringList& photos)
 
 void MainWindow::actionOpen()
 {
+    // get the user to select a directory
+    // I've tried a lot of other stuff here
+    // I really wanted to be able to select one or more files/directories
+    // however, I haven't found a way to do this
+    // I've left the "dead" code below for another day
+    QString dirpath = QFileDialog::getExistingDirectory
+                    ( this
+                    , tr("Open Directory")
+                    , QDir::homePath()
+                    , QFileDialog::ShowDirsOnly
+                    );
+    if ( dirpath.length() ) {
+        QDir    dir(dirpath);
+        updatePhotos(dir,photos);
+        showPhoto();
+    }
+
+#if 0
+    photos.clear();
+    next_photo=0 ;
+    QStringList files = QFileDialog::getOpenFileNames
+                    ( this
+                    , tr("Select photos or directories")
+                    , QDir::homePath()
+                    );
+    for ( int f = 0 ; f < files.length() ; f++ ) {
+        QString file = files[f] ;
+        if ( QFileInfo(file).isDir() ) {
+            QDir dir(file);
+            updatePhotos(dir,photos);
+        } else {
+            photos << file ;
+        }
+    }
+    showPhoto();
+#endif
+
+#if 0
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::Directory);
+    if ( dialog.exec() ) {
+        photos.clear();
+        next_photo=0 ;
+        QStringList files = dialog.selectedFiles();
+        for ( int f = 0 ; f < files.length() ; f++ ) {
+            QString file = files[f] ;
+            if ( QFileInfo(file).isDir() ) {
+                QDir dir(file);
+                updatePhotos(dir,photos);
+            } else {
+                photos << file ;
+            }
+        }
+        showPhoto();
+    }
+#endif
+
+#if 0
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::Directory); //  | QFileDialog::ExistingFile);
     dialog.setOption(QFileDialog::ShowDirsOnly);
@@ -171,8 +229,9 @@ void MainWindow::actionOpen()
         next_photo=0 ;
         QDir dir = dialog.directory();
         updatePhotos(dir,photos);
+        showPhoto();
     }
-    showPhoto();
+#endif
 }
 
 void MainWindow::actionSave()
