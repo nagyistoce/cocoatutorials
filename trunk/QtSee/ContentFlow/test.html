@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+
+<title>ContentFlow Test</title>
+
+<link rel="stylesheet" type="text/css" href="contentflow.css">
+<script language="JavaScript" type="text/javascript" src="contentflow.js"></script>
+<script src="js-global/FancyZoom.js" type="text/javascript"></script>
+<script src="js-global/FancyZoomHTML.js" type="text/javascript"></script>
+
+<script>
+
+var myFlow ;
+var photo  ;
+var link   ;
+
+function findPos(obj)
+{
+	var curleft = curtop = 0;
+	try {
+		if (obj.offsetParent) {
+			do {
+				curleft += obj.offsetLeft;
+				curtop  += obj.offsetTop;
+			} while (obj = obj.offsetParent);
+		}
+	} catch ( e ) {} ;
+	return [curleft,curtop];
+}
+
+function px(n)
+{
+	return '' + parseInt(n) + 'px' ;
+}
+
+function debug(n)
+{
+	if ( console.log ) {
+		console.log(n)
+	}
+}
+
+function initCallbacks()
+{
+	// open the box
+	myFlow.conf.open = function(item)
+	{
+		// http://www.howtocreate.co.uk/tutorials/javascript/domevents
+		if ( document.createEvent ) {
+		    imgPreload.src = item.content.getAttribute('src');
+		    
+		    var title = item.content.getAttribute('title');
+		    if (title) link.setAttribute('title',title);
+		    else       link.removeAttribute('title');
+		    
+		//  debug('open title = ' + title) ;
+		    
+  			var evObj = document.createEvent('MouseEvents');
+  			evObj.initMouseEvent( 'click', true, true, window, 1, 1400, 700, 600, 500, false, false, false, false, 0, null );
+  			zoomClick(link,evObj);
+		}
+	}
+	
+	myFlow.conf.close = function(item)
+	{
+		if ( zoomOpen ) {
+  			zoomDone("ZoomBox","ZoomImage");
+  			
+			var  zoomClose = document.getElementById("ZoomClose") ;
+  			if ( zoomClose )
+  		 		 zoomClose.style.visibility = "hidden";
+  				
+  			var  capDiv = document.getElementById(zoomCaptionDiv);
+  			if ( capDiv )
+  				 capDiv.style.visibility = "hidden";
+  		}
+	}
+	
+	myFlow.conf.toggle = function(item)
+	{
+		if ( zoomOpen ) {
+			this.close(item);
+		} else {
+	  		this.onclickActiveItem(item);
+		}
+	}
+
+	myFlow.conf.onMakeActiveOld = myFlow.conf.onMakeActive;
+	myFlow.conf.onMakeActive = function(item)
+	{
+		var title=item.content.getAttribute('title');
+		var src=item.content.getAttribute('src');
+		show(src) ;
+		this.onMakeActiveOld(item);
+		if ( zoomOpen ) {
+			document.getElementById("ZoomImage").src = src ;
+			if ( includeCaption && title ) { 
+				document.getElementById(zoomCaption).innerHTML = title ;
+			}
+		}
+	}
+
+	myFlow.conf.onMoveToOld = myFlow.conf.onMoveTo;
+	myFlow.conf.onMoveTo = function(item)
+	{
+		this.onMoveToOld(item);
+	}
+	
+	myFlow.conf.onclickActiveItem = function(item)
+	{
+		this.open(item);
+	}
+
+	myFlow.conf.escKey   = function(item) { this.toggle(item) ; }
+	myFlow.conf.spaceKey = function(item) { this.toggle(item) ; }
+}
+
+function resize()
+{
+	var bZoomOpen = zoomOpen;
+	if (bZoomOpen) myFlow.conf.close(myFlow.getActiveItem());
+	
+	var shadow  =     0.3 ;
+    var border  =      20 ; // border all round
+    var top     =      30 ; // additional top border
+    var Top     = parseInt(myFlow.maxHeight * (1.0 + shadow));
+
+//  debug("Top = " , Top) ;
+
+    var which   = "photo" ;
+    photo       = document.getElementById(which)
+    if ( !photo ) return false;
+    
+    var ratio = 0.75 ;
+    try {
+    	var image = new Image;
+    	image.src = photo.src;
+    	ratio = image.height/image.width;
+    	if ( isNaN(ratio) || (ratio < 0.1 || ratio > 10.0) ) ratio = 0.75; 
+    } catch (e) {};
+    // debug(ratio);
+
+    // what's the biggest width and height of the photo?
+    var width   = window.innerWidth  - 4*border   ;
+    var height  = window.innerHeight - 4*border - Top - top ;
+
+    var  aspect = height/width;
+    if ( aspect > ratio ) {
+      height    = parseInt(width*ratio) ;
+    } else {
+      width     = parseInt(height/ratio);
+    }
+    photo.style.top   = px(0) ; // px(border+top+myFlow.maxHeight*(shadow+1.0));
+    photo.style.height= px(0) ; // px(height) ;
+    photo.style.width = px(0) ; // px(width)  ;
+    photo.style.left  = px(0) ; // px((window.innerWidth-width)/2);
+    
+//  debug("photo.style.top = "    + photo.style.top
+//       +" left = "   + photo.style.left
+//       +" height = " + photo.style.height
+//       +" width = "  + photo.style.width
+//       );
+
+	if (bZoomOpen) myFlow.conf.open(myFlow.getActiveItem());
+
+}
+
+function show(photo)
+{
+	debug(photo) ;
+
+    var which = 'photo' ;    
+    var elem = document.getElementById(which);
+    if (elem == undefined || elem == null) return false;
+	elem.src = photo;
+	
+    link = document.getElementById('link');
+    if (link == undefined || link == null) return false;
+	link.href = photo;
+}
+</script>
+
+<script>
+	myFlow = new ContentFlow('myFlow',
+	{ reflectionHeight 	: 1
+	, circularFlow		: true
+	, verticalFlowX		: true
+	, startItem         : 3
+	, visibleItems      : 5
+	, loadingTimeout    : 60000
+	, endOpacity        : 1.0
+	, scaleFactor       : 1.5
+	}
+	);
+</script>
+
+</head>
+<body onload="initCallbacks();setupZoom();" style="background:black;" onresize="resize();">
+<center>
+	<h1 style="font-family:'Comic Sans MS',Arial;color:white;">Taking the boys to SFO</h1>
+	<div class="ContentFlow" name="myFlow" id="myFlow">
+		<div class="loadIndicator"><div class="indicator"></div></div>
+			<div class="flow">
+				<img class="item" src="Images/IMG_2500.jpg" title="Dennis and Terri"       "/>
+				<img class="item" src="Images/IMG_2501.jpg" title="Where it all began"     "/>
+				<img class="item" src="Images/IMG_2502.jpg" title="Ali with her boys"      "/>
+				<img class="item" src="Images/IMG_2504.jpg" title="Google Android"         "/>
+				<img class="item" src="Images/IMG_2505.jpg" title="Google Sign"	           "/>
+				<img class="item" src="Images/IMG_2506.jpg" title="Art"	                   "/>
+				<img class="item" src="Images/IMG_2507.jpg" title="Android Office"	       "/>
+				<img class="item" src="Images/IMG_2509.jpg" title="Mills Family"           "/>
+				<img class="item" src="Images/IMG_2510.jpg" title="Google fun"	           "/>
+				<img class="item" src="Images/IMG_2511.jpg" title="Lance"                  "/>
+				<img class="item" src="Images/IMG_2512.jpg" title="Back at the car"	       "/>
+				<img class="item" src="Images/IMG_2513.jpg" title="Google Maps"	           "/>
+				<img class="item" src="Images/IMG_2514.jpg" title="Ali and Jamie"          "/>
+				<img class="item" src="Images/IMG_2516.jpg" title="Jamie in Target"	       "/>
+				<img class="item" src="Images/IMG_2517.jpg" title="SFO International"      "/>
+				<img class="item" src="Images/IMG_2518.jpg" title="Alan, Ali and Jamie"	   "/>
+				<img class="item" src="Images/IMG_2519.jpg" title="Jamie and iPhone"       "/>
+				<img class="item" src="Images/IMG_2520.jpg" title="Alan and Ali"           "/>
+				<img class="item" src="Images/IMG_2521.jpg" title="BA 747 (flashed)"       "/>
+				<img class="item" src="Images/IMG_2522.jpg" title="BA 747 (not flashed)"   "/>
+			</div>
+		<div class="scrollbar"><div class="slider"><div class="position"></div></div></div>
+		<div class="globalCaption"></div>
+	</div>
+	<a name="link" id="link" href="Images/IMG_2500.jpg"><img name="photo" id="photo" style="z-index:0px solid white;100;top:0px;width:400;height:300;left:300;position:absolute;"></a>
+</center>
+</body>
+</html>
