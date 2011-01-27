@@ -57,7 +57,6 @@ function initCallbacks()
 	//  debug('open title = ' + title) ;
 
   		zoomClick(link);
-  		myFlow.focus();
 	}
 	
 	myFlow.conf.close = function(item)
@@ -97,6 +96,7 @@ function initCallbacks()
 				document.getElementById(zoomCaption).innerHTML = title ;
 			}
 		}
+  		myFlow.Container.focus();
 	}
 
 	myFlow.conf.onMoveToOld = myFlow.conf.onMoveTo;
