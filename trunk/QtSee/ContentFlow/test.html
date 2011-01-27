@@ -7,9 +7,9 @@
 <title>ContentFlow Test</title>
 
 <link rel="stylesheet" type="text/css" href="contentflow.css">
-<script language="JavaScript" type="text/javascript" src="contentflow.js"></script>
-<script src="js-global/FancyZoom.js" type="text/javascript"></script>
-<script src="js-global/FancyZoomHTML.js" type="text/javascript"></script>
+<script src="contentflow.js"             language="JavaScript" type="text/javascript" ></script>
+<script src="js-global/FancyZoom.js"     language="JavaScript" type="text/javascript" ></script>
+<script src="js-global/FancyZoomHTML.js" language="JavaScript" type="text/javascript" ></script>
 
 <script>
 
@@ -48,20 +48,16 @@ function initCallbacks()
 	// open the box
 	myFlow.conf.open = function(item)
 	{
-		// http://www.howtocreate.co.uk/tutorials/javascript/domevents
-		if ( document.createEvent ) {
-		    imgPreload.src = item.content.getAttribute('src');
+  		imgPreload.src = item.content.getAttribute('src');
 		    
-		    var title = item.content.getAttribute('title');
-		    if (title) link.setAttribute('title',title);
-		    else       link.removeAttribute('title');
-		    
-		//  debug('open title = ' + title) ;
-		    
-  			var evObj = document.createEvent('MouseEvents');
-  			evObj.initMouseEvent( 'click', true, true, window, 1, 1400, 700, 600, 500, false, false, false, false, 0, null );
-  			zoomClick(link,evObj);
-		}
+	    var title = item.content.getAttribute('title');
+	    if (title) link.setAttribute('title',title);
+	    else       link.removeAttribute('title');
+
+	//  debug('open title = ' + title) ;
+
+  		zoomClick(link);
+  		myFlow.focus();
 	}
 	
 	myFlow.conf.close = function(item)
@@ -94,7 +90,7 @@ function initCallbacks()
 		var title=item.content.getAttribute('title');
 		var src=item.content.getAttribute('src');
 		show(src) ;
-		this.onMakeActiveOld(item);
+	//	this.onMakeActiveOld(item);
 		if ( zoomOpen ) {
 			document.getElementById("ZoomImage").src = src ;
 			if ( includeCaption && title ) { 
