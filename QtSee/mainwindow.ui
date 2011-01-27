@@ -45,7 +45,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -199,7 +199,7 @@
     <string>Next</string>
    </property>
    <property name="shortcut">
-    <string>Right</string>
+    <string>Ctrl+Right</string>
    </property>
   </action>
   <action name="actionPrev">
@@ -207,7 +207,7 @@
     <string>Prev</string>
    </property>
    <property name="shortcut">
-    <string>Left</string>
+    <string>Ctrl+Left</string>
    </property>
   </action>
   <action name="actionFirst">
