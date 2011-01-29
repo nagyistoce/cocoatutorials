@@ -85,7 +85,9 @@ function insertZoomHTML() {
 	inImage2.setAttribute('width','30');
 	inImage2.setAttribute('height','30');
 	inImage2.setAttribute('border','0');
-	inImage2.style.cursor = 'pointer';		
+	inImage2.style.cursor = 'pointer';
+	inImage2.setAttribute('id','zoomCloseBox');
+	inImage2.setAttribute('name','zoomCloseBox');
 	inClosebox.appendChild(inImage2);
 	
 	// SHADOW
