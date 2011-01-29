@@ -1915,10 +1915,10 @@ ContentFlow.prototype = {
      */
     _keyStroke: function(event) {
 		var result = true ;
-        if(!event) var event = window.event;
+        if(!event) event = window.event;
+        if(!event) return result;
 		
         var keyCode;
-        
         if ( event.which ) {
     		keyCode = event.which;
         } else if (event.keyCode) {
