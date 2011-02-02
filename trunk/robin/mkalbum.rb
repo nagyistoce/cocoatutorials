@@ -1,12 +1,28 @@
 #!/usr/bin/env ruby
 
 ##
+#
+$syntax = "Usage: mkalbum.rb [options] photo-dir name [from [to]] (--help for help)"
+#
+#   returns   0   OK
+#             1   --help or --man requested
+#             2   --man can't find its input file
+#             3   syntax error
+#             4   no files found
+#             5   from/to illegal date format
+#             6   ContentFlow not implemented yet
+##
+
+##
 # pull in the libraries
 require 'find'
 require 'rubygems'
 require 'exifr'
 require 'builder'
 require 'optparse'
+require 'date'
+require 'time'
+require 'parsedate'
 
 ##
 # generate a guid (not totally unique, but fast and propably good enough)
@@ -26,6 +42,42 @@ end
 ##
 
 ##
+# recover a datestring from a string (with a little massage if necessary)
+# Example: if today is 2011-02-03 (Feb 3, 2011)
+# argument:  arg          bLate
+#            '01-18'      false     => '2011-01-18 00:00:00'
+#            '2011-01-18' true      => '2011-01-18 23:59:59'
+#            '06:50'      t|f       => '2011-02-3  06:50'
+def fixdate(arg,bLate=false)
+    now=Date.today # DateTime.now
+	x = arg
+	x = "#{now.strftime('%Y-')}#{arg}"        if /^\d\d-\d\d/.match(x)
+	x = "#{now.strftime('%Y-%m-%d ')}#{arg}"  if ! /^\d\d\d\d-\d\d-\d\d/.match(x)
+	r = DateTime.parse(x)
+	if r
+		if bLate
+			r = "#{r.to_s[0..9]} 23:59:59"
+		else
+			r=r.strftime('%Y-%m-%d %H:%M:%S')
+		end
+	end
+	return r
+end
+##
+
+##
+# seterror - set the error variable and report
+def seterror(error,n,msg,bSyntax=false)
+    if error==0
+    	error=n
+    	puts $syntax if bSyntax
+    	puts msg     if !bSyntax && msg
+    end
+    error
+end
+##
+
+##
 # main  - main entry point of course
 def main
 	error=0
@@ -37,7 +89,7 @@ def main
     optparse = OptionParser.new do|opts|
         # Set a banner, displayed at the top
         # of the help screen.
-        opts.banner = "Usage: mkalbum.rb [options] photo-dir name [from [to]] (--help for help)"
+        opts.banner = $syntax
     
         # Define the options, and what they do
         options[:verbose] = false
@@ -57,17 +109,25 @@ def main
             options[:verbose] = true
         end
     
+        options[:picasa] = false
+        opts.on( '-p', '--picasa', 'Output picasa album file' ) do
+            options[:picasa]   = true
+        end
+    
         # This displays the help screen, all programs are
         # assumed to have this option.
         opts.on( '-h', '--help', 'Display this screen' ) do
             puts opts
-            error=1
+            puts "    from/to := date/time"
+            puts "    date:      2011-01-18  or 01-18 (this year assumed)"
+            puts "    time:      06:45"
+            error=seterror(error,1,nil)
         end
     end
     optparse.parse!
     
     ##
-    # print the manual to stdout if requested (and exit)
+    # print the manual to stdout if requested
     if (error==0) && options[:man]
    	    error=1
         ext = File.extname(__FILE__)
@@ -84,11 +144,11 @@ def main
                 end
             end
         else
-            puts "*** Could not find #{man}"
-    	    error=2
+            error=seterror(error,2,"*** Could not find #{man}",false)
         end		
     end
     
+    ##
     # process what remains in ARGV
     if (error==0) && ( (2..4).include? ARGV.length )
         any  = 'any'
@@ -102,21 +162,17 @@ def main
         	to   = '2199-12-31'
         end
         
-        ##
-        # parse the dates
-        # much better to use a pattern to test the date/time formats
-        # (this will do for the moment)
-        now = Time.now
-        now = now.strftime('%Y-%m-%d ')
-        
-        # append time if missing
-        from = from + " 00:00:00" if !from.match(':') 
-        to   = to   + " 23:59:59" if !to.match(':') 
-        
-        # prefix date if missing
-        from = now + from if !from.match('-') 
-        to   = now + to   if !to.match('-') 
-        
+        from = fixdate(from,false)
+        to   = fixdate(to  ,true)
+        puts "in main: from = #{from}"
+        puts "in main: to   = #{to}"
+        error = 5 if !from
+        error = 5 if !to
+    end
+    
+    ##
+    # build the files array
+    if (error==0) && from && to
         ##
         # swap from/to if necessary
         r = [from,to].sort
@@ -148,11 +204,11 @@ def main
               if matched
                  f = File.expand_path(f)
                  dt = EXIFR::JPEG.new(f).date_time
+                 dt = fixdate(dt.strftime('%Y-%m-%d %H:%M:%S')) if dt
                  matched=dt
               end
               
-              if matched
-                 dt = dt.strftime('%Y-%m-%d %H:%M:%S')
+              if matched && dt
                  photos[dt] = f
                  puts "#{f} -> #{dt}" if options[:debug]
               end
@@ -174,13 +230,15 @@ def main
         	end
         end
     else
-        puts "Usage: mkalbum.rb [options] photo-dir name [from [to]] (--help for help)"
-        error=3
+    	error=seterror(error,3,nil,true)
     end
+
+    error=seterror(error,4,"*** NO FILES in Album")                if files.length == 0
+    error=seterror(error,6,"*** ContentFlow not implemented yet!") if ( error==0) && !options[:picasa]
     
     ##
     # write out the album for the files
-    if files.length > 0 
+    if (error==0) && options[:picasa] 
         puts '' if options[:verbose]
 
         ##
@@ -215,10 +273,9 @@ def main
         end
         xml_file.close
         puts "xml written to #{xml_filename}"
-    else
-        puts "*** NO FILES in Album" if error==0
-        error = 4 if error==0
     end
+    
+    	
     
 	error    
 end
