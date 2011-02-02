@@ -1,0 +1,65 @@
+mkalbum.txt
+-----------
+
+mkalbum.rb [options] photo-dir album-name [from [to]]   (--help for help)
+
+Example
+-------
+
+mkalbum.rb ~/Documents/Dropbox/Photos/2011 "Robin's Birthday" 2011-01-14 2011-01-18
+
+
+The purpose of this program is to write a Picasa Album.
+This is located at:
+Windows: %HOME%\AppData\Local\Google\Picasa2Albums\a3ec2c2f4279705a0a14ccf4fec8a065
+	2011-01-31  15:58             1,690 0dce99456a8cd10dd72162f8a66075e4.pal
+	2011-01-31  15:58             5,742 97c6f7d85bbe5d4b4e8084d3fb94ba8c.pal
+	
+Mac:  ~/Library/Application Support/Google/Picasa3/Picasa3Albums
+
+Restriction
+-----------
+
+Unfortunately, this doesn't do anything useful.  Although the script generates
+the .pal (Picasa Album) file (in XML), Picasa doesn't seem to understand the file!
+
+
+Discussion
+----------
+
+I realised before finishing this script that it wasn't going to be useful because Picasa didn't respect the output.  However I finished the script anyway because it was my first script written in Ruby.  It illustrates quite a lot of useful stuff including:
+
+1) Command-line parsing
+2) Recursively searching directories
+3) Writing XML
+4) Reading EXIF data from image files
+5) Generating guids
+6) Reading and writing files
+
+Robin Mills
+http://clanmills.com
+robin@clanmills.com
+
+Revision
+2011-02-01 Initial version
+
+Appendix
+--------
+
+Example output:
+
+<picasa2album>
+  <DBID>423c563ecafe42b57aefef321e65b44c</DBID>
+  <AlbumID>2a9d41092c5745df58aa315da3f093b7</AlbumID>
+  <property name="uid" value="2a9d41092c5745df58aa315da3f093b7" type="string"/>
+  <property name="token" value="]album:2a9d41092c5745df58aa315da3f093b7" type="string"/>
+  <property name="name" value="Robin's Birthday" type="string"/>
+  <property name="date" value="40574.633530" type="real64"/>
+  <property name="category" value="0" type="num"/>
+  <files>
+    <filename>/Users/rmills/Documents/Dropbox/Photos/2011/RobinsBirthday/IMG_2475.jpg</filename>
+    <filename>/Users/rmills/Documents/Dropbox/Photos/2011/RobinsBirthday/IMG_2476.jpg</filename>
+    ....
+    <filename>/Users/rmills/Documents/Dropbox/Photos/2011/RobinsBirthday/IMG_2522.jpg</filename>
+  </files>
+</picasa2album>
