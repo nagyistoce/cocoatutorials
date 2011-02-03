@@ -8,9 +8,22 @@ Example
 
 mkalbum.rb ~/Documents/Dropbox/Photos/2011 "Robin's Birthday" 2011-01-14 2011-01-18
 
+The purpose of this program is to write a photograph album.
 
-The purpose of this program is to write a Picasa Album.
-This is located at:
+Currently, the default mode is to write a "ContentFlow" album.
+
+Known Issues
+------------
+
+1 Portrait Images are being incorrectly scaled.
+2 Focus issue in browser
+3 Space in directory name upsets windows opening browser on result
+4 Performance on MacBook in Safari
+
+Picasa album
+------------
+
+The Picasa album is located at:
 Windows: %HOME%\AppData\Local\Google\Picasa2Albums\a3ec2c2f4279705a0a14ccf4fec8a065
 	2011-01-31  15:58             1,690 0dce99456a8cd10dd72162f8a66075e4.pal
 	2011-01-31  15:58             5,742 97c6f7d85bbe5d4b4e8084d3fb94ba8c.pal
@@ -20,14 +33,13 @@ Mac:  ~/Library/Application Support/Google/Picasa3/Picasa3Albums
 Restriction
 -----------
 
-Unfortunately, this doesn't do anything useful.  Although the script generates
+Unfortunately, the Picasa doesn't do anything useful.  Although the script generates
 the .pal (Picasa Album) file (in XML), Picasa doesn't seem to understand the file!
-
 
 Discussion
 ----------
 
-I realised before finishing this script that it wasn't going to be useful because Picasa didn't respect the output.  However I finished the script anyway because it was my first script written in Ruby.  It illustrates quite a lot of useful stuff including:
+I realised before finishing this script that the Picasa Album feature is useful because Picasa didn't respect the output.  However I finished the script anyway because it was my first script written in Ruby.  It illustrates quite a lot of useful stuff including:
 
 1) Command-line parsing
 2) Recursively searching directories
@@ -35,18 +47,21 @@ I realised before finishing this script that it wasn't going to be useful becaus
 4) Reading EXIF data from image files
 5) Generating guids
 6) Reading and writing files
+7) Scaling images
+8) Using template ascii files
 
 Robin Mills
 http://clanmills.com
 robin@clanmills.com
 
 Revision
+2011=02-02 Updated to describe ContentFlow (very briefly)
 2011-02-01 Initial version
 
 Appendix
 --------
 
-Example output:
+Example Picasa Album output:
 
 <picasa2album>
   <DBID>423c563ecafe42b57aefef321e65b44c</DBID>
