@@ -420,6 +420,9 @@ HERE
 
 		        t_img    = img.scale(options[:scale])
 		        t_img.write(File.join(images,t_name))
+		        t_img = nil
+		        img   = nil
+		        GC.start
 		    	jpg+=1
 		    end
 		    
