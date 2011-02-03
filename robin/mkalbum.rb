@@ -24,7 +24,7 @@ require 'builder'
 require 'optparse'
 require 'date'
 require 'time'
-require 'FileUtils'
+require 'fileutils'
 require 'RMagick'
 
 ##
