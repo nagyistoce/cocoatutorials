@@ -15,20 +15,19 @@ Currently, the default mode is to write a "ContentFlow" album.
 Known Issues
 ------------
 
-1 Portrait Images are being incorrectly scaled.
+1 Performance on MacBook in Safari
 2 Focus issue in browser
-3 Space in directory name upsets windows opening browser on result
-4 Performance on MacBook in Safari
+3 Portrait Images are being incorrectly scaled.
 
 Picasa album
 ------------
 
 The Picasa album is located at:
 Windows: %HOME%\AppData\Local\Google\Picasa2Albums\a3ec2c2f4279705a0a14ccf4fec8a065
-	2011-01-31  15:58             1,690 0dce99456a8cd10dd72162f8a66075e4.pal
-	2011-01-31  15:58             5,742 97c6f7d85bbe5d4b4e8084d3fb94ba8c.pal
+	     2011-01-31  15:58             1,690 0dce99456a8cd10dd72162f8a66075e4.pal
+	     2011-01-31  15:58             5,742 97c6f7d85bbe5d4b4e8084d3fb94ba8c.pal
 	
-Mac:  ~/Library/Application Support/Google/Picasa3/Picasa3Albums
+Mac:     ~/Library/Application Support/Google/Picasa3/Picasa3Albums
 
 Restriction
 -----------
