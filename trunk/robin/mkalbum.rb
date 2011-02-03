@@ -11,6 +11,8 @@ $syntax = "Usage: mkalbum.rb [options] photo-dir name [from [to]] (--help for he
 #             4   no files found
 #             5   from/to illegal date format
 #             6   ContentFlow not implemented yet
+#             7   the output directory already exists
+#             8   an essential directory does not exist
 ##
 
 ##
@@ -23,6 +25,66 @@ require 'optparse'
 require 'date'
 require 'time'
 require 'parsedate'
+require 'FileUtils'
+require 'RMagick'
+
+##
+# recursive directory copier
+class DaCopier
+    # http://iamneato.com/2009/07/28/copy-folders-recursively
+    def initialize(exclude=[],verbose=false)
+        @exclude = exclude
+        @verbose = verbose
+    end
+
+    def copy(src, dest)
+        stage(dest) if File.directory?(src)
+        
+        Dir.foreach(src) do |file|
+            next if exclude?(file)
+    
+            s = File.join(src, file)
+            d = File.join(dest, file)
+    
+            if File.directory?(s)
+                FileUtils.mkdir(d)
+                copy(s, d)
+            else
+                FileUtils.cp(s, d)
+            end
+            puts d if verbose
+        end if File.directory?(src)
+        
+        puts "src = #{src}" if verbose
+        
+        if File.file?(src)
+            FileUtils.cp(src,dest)
+            puts dest if verbose
+        end
+    end
+
+private
+    def stage(dest)
+        if File.directory?(dest)
+            FileUtils.rm_rf(dest)
+        end
+        FileUtils.mkdir(dest)
+    end
+    
+    def exclude?(file)
+        @exclude.each do |s|
+            if file.match(/#{s}/i)
+                return true
+            end
+        end
+        false
+    end
+    
+    def verbose
+    	@verbose
+    end
+end
+##
 
 ##
 # generate a guid (not totally unique, but fast and propably good enough)
@@ -87,8 +149,7 @@ def main
     ##
     # parse the command line options
     optparse = OptionParser.new do|opts|
-        # Set a banner, displayed at the top
-        # of the help screen.
+        # Set a banner, displayed at the top of the help screen.
         opts.banner = $syntax
     
         # Define the options, and what they do
@@ -97,25 +158,39 @@ def main
             options[:verbose] = true
         end
     
-        # Define the options, and what they do
-        options[:man] = false
-        opts.on( '-m', '--man', 'Output man page' ) do
-            options[:man] = true
-        end
-
         options[:debug] = false
         opts.on( '-d', '--debug', 'Output a lot of information' ) do
             options[:debug]   = true
             options[:verbose] = true
         end
     
+        options[:contentView] = true
         options[:picasa] = false
         opts.on( '-p', '--picasa', 'Output picasa album file' ) do
             options[:picasa]   = true
+            options[:contentView] = false
         end
     
-        # This displays the help screen, all programs are
-        # assumed to have this option.
+        options[:overwrite] = false
+        opts.on( '-o', '--overwrite', 'overwrite the output' ) do
+            options[:overwrite]   = true
+        end
+    
+        options[:title] = ''
+        opts.on( '-t', '--title [title]', 'title for the album' ) do | title |
+            options[:title] = title.to_s
+        end
+    
+        options[:scale] = 0.15
+        opts.on( '-s', '--scale [scale]', 'scale original image' ) do | scale |
+            options[:scale] = scale.to_f
+        end
+    
+        options[:man] = false
+        opts.on( '-m', '--man', 'Output man page' ) do
+            options[:man] = true
+        end
+
         opts.on( '-h', '--help', 'Display this screen' ) do
             puts opts
             puts "    from/to := date/time"
@@ -129,7 +204,7 @@ def main
     ##
     # print the manual to stdout if requested
     if (error==0) && options[:man]
-   	    error=1
+        error=seterror(error,1,nil)
         ext = File.extname(__FILE__)
 		man = File.join(File.dirname(__FILE__), File.basename(__FILE__,ext) + ".txt")
 		puts man
@@ -164,15 +239,16 @@ def main
         
         from = fixdate(from,false)
         to   = fixdate(to  ,true)
-        puts "in main: from = #{from}"
-        puts "in main: to   = #{to}"
         error = 5 if !from
         error = 5 if !to
     end
     
+    error=seterror(error,3,nil,true) if !from || !to
+    title = options[:title].length ? options[:title] : File.basename(name)
+
     ##
     # build the files array
-    if (error==0) && from && to
+    if error==0
         ##
         # swap from/to if necessary
         r = [from,to].sort
@@ -181,12 +257,12 @@ def main
         
         ##
         # announce ourselves
-        if options[:verbose]
-            puts '--------------------------------'
-            puts "from = #{from}"
-            puts "to   = #{to}"
-            puts '--------------------------------'
-        end
+        puts '--------------------------------'
+        puts "title = #{title}"
+        puts "name  = #{name} (reading from #{dir} and scale = #{options[:scale]})"
+        puts "from  = #{from}"
+        puts "to    = #{to}"
+        puts '--------------------------------'
         
         ##
         # build a hash/dictionary date-time <-> path to file
@@ -229,15 +305,11 @@ def main
         	    puts "SKIP #{from} #{to} #{dt} #{f}" if options[:debug]
         	end
         end
-    else
-    	error=seterror(error,3,nil,true)
     end
-
-    error=seterror(error,4,"*** NO FILES in Album")                if files.length == 0
-    error=seterror(error,6,"*** ContentFlow not implemented yet!") if ( error==0) && !options[:picasa]
+    error=seterror(error,4,"*** NO FILES in Album") if files.length == 0
     
     ##
-    # write out the album for the files
+    # write a picasa album for the files
     if (error==0) && options[:picasa] 
         puts '' if options[:verbose]
 
@@ -262,7 +334,7 @@ def main
             xml.AlbumID albumid
         
             props.each do | prop |
-              xml.property( 'name' => prop['name'] , 'value' => prop['value'] , 'type' => prop['type']) 
+                xml.property( 'name' => prop['name'] , 'value' => prop['value'] , 'type' => prop['type']) 
             end
         
             xml.files do
@@ -275,8 +347,83 @@ def main
         puts "xml written to #{xml_filename}"
     end
     
-    	
+    ##
+    # update a file and substitute
+    def templateUpdate(filename,a,b)
+    	lines = IO.read(filename)
+    	f     = File.open(filename,'w')
+    	lines.each do | line |
+    		line=line.gsub(a,b)
+    		f.write(line)
+    	end
+    	f.close()
+    end
     
+    ##
+    # write a "ContentView" album for the files
+    if (error==0) && options[:contentView] 
+ 		root        = File.join(File.dirname(__FILE__), "mkalbum")
+ 		contentFlow = "ContentFlow"
+ 		fancyZoom   = "FancyZoom"
+ 		images      = "Images"
+ 		template    = 'index.template'
+ 		index       = 'index.html'
+ 		
+		FileUtils.rm_rf(name) if options[:overwrite] && File.directory?(name)
+		FileUtils.rm(name)    if options[:overwrite] && File.exist?(name)
+		
+		error=seterror(error,7,"*** directory #{name} already exists!") if File.exist?(name) 
+		error=seterror(error,7,"*** directory #{name} already exists!") if File.directory?(name) 
+
+        # Make sure everything ready to be copied
+		if error==0
+		    FileUtils.mkdir(name)
+		    FileUtils.mkdir(File.join(name,images))
+		    error=seterror(error,8,"*** directory #{name} doesn't exist!") if !File.directory?(name) 
+		    error=seterror(error,8,"*** directory #{root} doesn't exist!") if !File.directory?(root) 
+        end
+        
+        if error==0
+ 		    images      = File.join(name,'Images')
+		    exclude = ["^\\."]
+		    dc = DaCopier.new(exclude,options[:verbose])
+		    dc.copy(File.join(root,contentFlow), File.join(name,contentFlow ))
+		    dc.copy(File.join(root,fancyZoom)  , File.join(name,fancyZoom   ))
+		    dc.copy(File.join(root,images)     , File.join(name,images      ))
+		    dc.copy(File.join(root,template)   , File.join(name,index)       )
+		    
+		    t_next = <<HERE
+<img class="item" src="Images/__name__" title="__title__"/>
+__NEXT__
+HERE
+
+		    jpg=0
+		    files.each do | file |
+                puts "scaling image #{file}"
+                img      = Magick::Image.read(file).first
+                t_name   = "#{jpg}.jpg"
+                t_title  = File.basename(file)
+                
+		        s_next   = t_next ;
+		        s_next   = s_next.gsub('__name__',t_name)
+		        s_next   = s_next.gsub('__title__',t_title)
+		    	templateUpdate(File.join(name,index),'__NEXT__'   ,s_next)
+
+		        t_img    = img.scale(options[:scale])
+		        t_img.write(File.join(images,t_name))
+		    	jpg+=1
+		    end
+		    
+		    templateUpdate(File.join(name,index),'__TITLE__',title)
+		    templateUpdate(File.join(name,index),'__NEXT__','')
+
+		    cmd = "open \"#{File.join(name,index)}\""
+		    puts cmd
+		    system cmd
+		end
+    end
+
+	# return value
 	error    
 end
 ##
