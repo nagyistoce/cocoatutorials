@@ -24,7 +24,7 @@ require 'builder'
 require 'optparse'
 require 'date'
 require 'time'
-require 'parsedate'
+# require 'parsedate'
 require 'FileUtils'
 require 'RMagick'
 
@@ -417,9 +417,9 @@ HERE
 		    templateUpdate(File.join(name,index),'__TITLE__',title)
 		    templateUpdate(File.join(name,index),'__NEXT__','')
 
-		    cmd = "open \"#{File.join(name,index)}\""
-		    puts cmd
-		    system cmd
+		    Dir.chdir(name)
+		    puts "open \"#{File.join(name,index)}\""
+		    system "open #{index}"
 		end
     end
 
