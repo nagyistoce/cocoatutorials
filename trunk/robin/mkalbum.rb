@@ -24,7 +24,6 @@ require 'builder'
 require 'optparse'
 require 'date'
 require 'time'
-# require 'parsedate'
 require 'FileUtils'
 require 'RMagick'
 
@@ -140,6 +139,25 @@ end
 ##
 
 ##
+# update a file and substitute
+def templateUpdate(filename,a,b)
+    file  = File.open(filename,'r')
+    lines = []
+    while (line = file.gets)
+        lines << line
+    end
+    file.close()
+        
+    file = File.open(filename,'w')
+    for line in lines
+        line=line.gsub(a,b)
+        file.write(line)
+    end
+    file.close()
+end
+##
+
+##
 # main  - main entry point of course
 def main
 	error=0
@@ -244,7 +262,8 @@ def main
     end
     
     error=seterror(error,3,nil,true) if !from || !to
-    title = options[:title].length ? options[:title] : File.basename(name)
+    title = options[:title]
+    title = File.basename(name) if !title || title.length() == 0
 
     ##
     # build the files array
@@ -348,18 +367,6 @@ def main
     end
     
     ##
-    # update a file and substitute
-    def templateUpdate(filename,a,b)
-    	lines = IO.read(filename)
-    	f     = File.open(filename,'w')
-    	lines.each do | line |
-    		line=line.gsub(a,b)
-    		f.write(line)
-    	end
-    	f.close()
-    end
-    
-    ##
     # write a "ContentView" album for the files
     if (error==0) && options[:contentView] 
  		root        = File.join(File.dirname(__FILE__), "mkalbum")
@@ -398,10 +405,12 @@ __NEXT__
 HERE
 
 		    jpg=0
-		    files.each do | file |
+		    for file in files
                 puts "scaling image #{file}"
                 img      = Magick::Image.read(file).first
                 t_name   = "#{jpg}.jpg"
+            # 	unfortunately exifr cannot read Iptc meta-data (used by Picasa)
+            #	t_title  = img.get_exif_by_entry['Iptc.Application2.Caption']
                 t_title  = File.basename(file)
                 
 		        s_next   = t_next ;
