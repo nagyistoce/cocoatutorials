@@ -38,13 +38,13 @@ class DaCopier
 
     def copy(src, dest)
         stage(dest) if File.directory?(src)
-        
+
         Dir.foreach(src) do |file|
             next if exclude?(file)
-    
+
             s = File.join(src, file)
             d = File.join(dest, file)
-    
+
             if File.directory?(s)
                 FileUtils.mkdir(d)
                 copy(s, d)
@@ -53,9 +53,9 @@ class DaCopier
             end
             puts d if verbose
         end if File.directory?(src)
-        
+
         puts "src = #{src}" if verbose
-        
+
         if File.file?(src)
             FileUtils.cp(src,dest)
             puts dest if verbose
@@ -69,7 +69,7 @@ private
         end
         FileUtils.mkdir(dest)
     end
-    
+
     def exclude?(file)
         @exclude.each do |s|
             if file.match(/#{s}/i)
@@ -78,9 +78,9 @@ private
         end
         false
     end
-    
+
     def verbose
-    	@verbose
+        @verbose
     end
 end
 ##
@@ -88,7 +88,7 @@ end
 ##
 # generate a guid (not totally unique, but fast and propably good enough)
 def genuuid
-	# http://www.ruby-forum.com/topic/164078
+    # http://www.ruby-forum.com/topic/164078
     values = [
         rand(0x0010000),
         rand(0x0010000),
@@ -111,18 +111,18 @@ end
 #            '06:50'      t|f       => '2011-02-3  06:50'
 def fixdate(arg,bLate=false)
     now=Date.today # DateTime.now
-	x = arg
-	x = "#{now.strftime('%Y-')}#{arg}"        if /^\d\d-\d\d/.match(x)
-	x = "#{now.strftime('%Y-%m-%d ')}#{arg}"  if ! /^\d\d\d\d-\d\d-\d\d/.match(x)
-	r = DateTime.parse(x)
-	if r
-		if bLate
-			r = "#{r.to_s[0..9]} 23:59:59"
-		else
-			r=r.strftime('%Y-%m-%d %H:%M:%S')
-		end
-	end
-	return r
+    x = arg
+    x = "#{now.strftime('%Y-')}#{arg}"        if /^\d\d-\d\d/.match(x)
+    x = "#{now.strftime('%Y-%m-%d ')}#{arg}"  if ! /^\d\d\d\d-\d\d-\d\d/.match(x)
+    r = DateTime.parse(x)
+    if r
+        if bLate
+            r = "#{r.to_s[0..9]} 23:59:59"
+        else
+            r=r.strftime('%Y-%m-%d %H:%M:%S')
+        end
+    end
+    return r
 end
 ##
 
@@ -130,9 +130,9 @@ end
 # seterror - set the error variable and report
 def seterror(error,n,msg,bSyntax=false)
     if error==0
-    	error=n
-    	puts $syntax if bSyntax
-    	puts msg     if !bSyntax && msg
+        error=n
+        puts $syntax if bSyntax
+        puts msg     if !bSyntax && msg
     end
     error
 end
@@ -147,7 +147,7 @@ def templateUpdate(filename,a,b)
         lines << line
     end
     file.close()
-        
+
     file = File.open(filename,'w')
     for line in lines
         line=line.gsub(a,b)
@@ -160,7 +160,7 @@ end
 ##
 # main  - main entry point of course
 def main
-	error=0
+    error=0
     files = []
     options = {}
 
@@ -169,41 +169,41 @@ def main
     optparse = OptionParser.new do|opts|
         # Set a banner, displayed at the top of the help screen.
         opts.banner = $syntax
-    
+
         # Define the options, and what they do
         options[:verbose] = false
         opts.on( '-v', '--verbose', 'Output information' ) do
             options[:verbose] = true
         end
-    
+
         options[:debug] = false
         opts.on( '-d', '--debug', 'Output a lot of information' ) do
             options[:debug]   = true
             options[:verbose] = true
         end
-    
+
         options[:contentView] = true
         options[:picasa] = false
         opts.on( '-p', '--picasa', 'Output picasa album file' ) do
             options[:picasa]   = true
             options[:contentView] = false
         end
-    
+
         options[:overwrite] = false
         opts.on( '-o', '--overwrite', 'overwrite the output' ) do
             options[:overwrite]   = true
         end
-    
+
         options[:title] = ''
         opts.on( '-t', '--title [title]', 'title for the album' ) do | title |
             options[:title] = title.to_s
         end
-    
+
         options[:scale] = 0.15
         opts.on( '-s', '--scale [scale]', 'scale original image' ) do | scale |
             options[:scale] = scale.to_f
         end
-    
+
         options[:man] = false
         opts.on( '-m', '--man', 'Output man page' ) do
             options[:man] = true
@@ -218,14 +218,14 @@ def main
         end
     end
     optparse.parse!
-    
+
     ##
     # print the manual to stdout if requested
     if (error==0) && options[:man]
         error=seterror(error,1,nil)
         ext = File.extname(__FILE__)
-		man = File.join(File.dirname(__FILE__), File.basename(__FILE__,ext) + ".txt")
-		puts man
+        man = File.join(File.dirname(__FILE__), File.basename(__FILE__,ext) + ".txt")
+        puts man
         # Make sure the file exists
         if (File.exist?(man)) then
 
@@ -238,9 +238,9 @@ def main
             end
         else
             error=seterror(error,2,"*** Could not find #{man}",false)
-        end		
+        end     
     end
-    
+
     ##
     # process what remains in ARGV
     if (error==0) && (2..4).include?(ARGV.length)
@@ -249,20 +249,16 @@ def main
         name = ARGV[1]
         from = ARGV.length >= 3 ? ARGV[2] : any
         to   = ARGV.length >= 4 ? ARGV[3] : from
-        
-    	error=seterror(error,8,"*** directory #{dir} does not exist",false) if !File.directory?(dir)
-    	if error==0
-            if from == any
-        	    from = '1900-01-01'
-        	    to   = '2199-12-31'
-            end
-        
+
+        error=seterror(error,8,"*** directory #{dir} does not exist",false) if !File.directory?(dir)
+        from = '1900-01-01' if from == any
+        to   = '2999-12-31' if to   == any
+
         from = fixdate(from,false)
         to   = fixdate(to  ,true)
-        end
         error=seterror(error,5,nil,true) if !from || !to
-	else
-	    error=seterror(error,3,nil,true)
+    else
+        error=seterror(error,3,nil,true)
     end
 
     ##
@@ -275,7 +271,7 @@ def main
         r = [from,to].sort
         from = r[0]
         to   = r[1]
-        
+
         ##
         # announce ourselves
         puts '--------------------------------'
@@ -284,12 +280,12 @@ def main
         puts "from  = #{from}"
         puts "to    = #{to}"
         puts '--------------------------------'
-        
+
         ##
         # build a hash/dictionary date-time <-> path to file
         photos = {} 
         exts = [ 'jpg','tiff'] # extensions to match
-        
+
         Find.find("#{dir}/") do |f|
               next if File.directory?(f)
               matched = false
@@ -297,38 +293,38 @@ def main
                  matched = f.match(/.#{ext}$/i)
                  break if matched
               end
-              
+
               if matched
                  f = File.expand_path(f)
                  dt = EXIFR::JPEG.new(f).date_time
                  dt = fixdate(dt.strftime('%Y-%m-%d %H:%M:%S')) if dt
                  matched=dt
               end
-              
+
               if matched && dt
                  photos[dt] = f
                  puts "#{f} -> #{dt}" if options[:debug]
               end
-              
+
               if ! matched
                  puts "IGNORE #{f}" if options[:verbose]
               end
         end if File.directory?(dir)
-    
+
         ##
         # filter off the interesting files
         photos.keys.sort.each do | dt |
             if (from < dt) && (dt < to) 
-        	    f=photos[dt]
-        	    puts "#{dt} -> #{f}" if options[:verbose]
-        	    files.push(f)
-        	else
-        	    puts "SKIP #{from} #{to} #{dt} #{f}" if options[:debug]
-        	end
+                f=photos[dt]
+                puts "#{dt} -> #{f}" if options[:verbose]
+                files.push(f)
+            else
+                puts "SKIP #{from} #{to} #{dt} #{f}" if options[:debug]
+            end
         end
     end
     error=seterror(error,4,"*** NO FILES in Album") if files.length == 0
-    
+
     ##
     # write a picasa album for the files
     if (error==0) && options[:picasa] 
@@ -345,7 +341,7 @@ def main
                   ]
         xml_filename = albumid + '.pal'
         xml_file     = File.open(xml_filename,'w')
-    
+
         ##
         # write out the xml for the album
         # http://www.xml.com/pub/a/2006/01/04/creating-xml-with-ruby-and-builder.html?page=2
@@ -353,11 +349,11 @@ def main
         xml.picasa2album do
             xml.DBID    genuuid
             xml.AlbumID albumid
-        
+
             props.each do | prop |
                 xml.property( 'name' => prop['name'] , 'value' => prop['value'] , 'type' => prop['type']) 
             end
-        
+
             xml.files do
                 files.each do | filename |
                     xml.filename( filename )
@@ -367,78 +363,78 @@ def main
         xml_file.close
         puts "xml written to #{xml_filename}"
     end
-    
+
     ##
     # write a "ContentView" album for the files
     if (error==0) && options[:contentView] 
- 		root        = File.join(File.dirname(__FILE__), "mkalbum")
- 		contentFlow = "ContentFlow"
- 		fancyZoom   = "FancyZoom"
- 		images      = "Images"
- 		template    = 'index.template'
- 		index       = 'index.html'
- 		
-		FileUtils.rm_rf(name) if options[:overwrite] && File.directory?(name)
-		FileUtils.rm(name)    if options[:overwrite] && File.exist?(name)
-		
-		error=seterror(error,7,"*** directory #{name} already exists!") if File.exist?(name) 
-		error=seterror(error,7,"*** directory #{name} already exists!") if File.directory?(name) 
+        root        = File.join(File.dirname(__FILE__), "mkalbum")
+        contentFlow = "ContentFlow"
+        fancyZoom   = "FancyZoom"
+        images      = "Images"
+        template    = 'index.template'
+        index       = 'index.html'
+        
+        FileUtils.rm_rf(name) if options[:overwrite] && File.directory?(name)
+        FileUtils.rm(name)    if options[:overwrite] && File.exist?(name)
+        
+        error=seterror(error,7,"*** directory #{name} already exists!") if File.exist?(name) 
+        error=seterror(error,7,"*** directory #{name} already exists!") if File.directory?(name) 
 
         # Make sure everything ready to be copied
-		if error==0
-		    FileUtils.mkdir(name)
-		    FileUtils.mkdir(File.join(name,images))
-		    error=seterror(error,8,"*** directory #{name} doesn't exist!") if !File.directory?(name) 
-		    error=seterror(error,8,"*** directory #{root} doesn't exist!") if !File.directory?(root) 
-        end
-        
         if error==0
- 		    images      = File.join(name,'Images')
-		    exclude = ["^\\."]
-		    dc = DaCopier.new(exclude,options[:verbose])
-		    dc.copy(File.join(root,contentFlow), File.join(name,contentFlow ))
-		    dc.copy(File.join(root,fancyZoom)  , File.join(name,fancyZoom   ))
-		    dc.copy(File.join(root,images)     , File.join(name,images      ))
-		    dc.copy(File.join(root,template)   , File.join(name,index)       )
-		    
-		    t_next = <<HERE
+            FileUtils.mkdir(name)
+            FileUtils.mkdir(File.join(name,images))
+            error=seterror(error,8,"*** directory #{name} doesn't exist!") if !File.directory?(name) 
+            error=seterror(error,8,"*** directory #{root} doesn't exist!") if !File.directory?(root) 
+        end
+
+        if error==0
+            images      = File.join(name,'Images')
+            exclude = ["^\\."]
+            dc = DaCopier.new(exclude,options[:verbose])
+            dc.copy(File.join(root,contentFlow), File.join(name,contentFlow ))
+            dc.copy(File.join(root,fancyZoom)  , File.join(name,fancyZoom   ))
+            dc.copy(File.join(root,images)     , File.join(name,images      ))
+            dc.copy(File.join(root,template)   , File.join(name,index)       )
+            
+            t_next = <<HERE
 <img class="item" src="Images/__name__" title="__title__"/>
 __NEXT__
 HERE
 
-		    jpg=0
-		    for file in files
+            jpg=0
+            for file in files
                 puts "scaling image #{file}"
                 img      = Magick::Image.read(file).first
                 t_name   = "#{jpg}.jpg"
-            # 	unfortunately exifr cannot read Iptc meta-data (used by Picasa)
-            #	t_title  = img.get_exif_by_entry['Iptc.Application2.Caption']
-                t_title  = File.basename(file)
-                
-		        s_next   = t_next ;
-		        s_next   = s_next.gsub('__name__',t_name)
-		        s_next   = s_next.gsub('__title__',t_title)
-		    	templateUpdate(File.join(name,index),'__NEXT__'   ,s_next)
+            #   unfortunately exifr cannot read Iptc meta-data (used by Picasa)
+            #   t_title  = img.get_exif_by_entry['Iptc.Application2.Caption']
+                t_title  = File.basename(file,File.extname(file))
 
-		        t_img    = img.scale(options[:scale])
-		        t_img.write(File.join(images,t_name))
-		        t_img = nil
-		        img   = nil
-		        GC.start
-		    	jpg+=1
-		    end
-		    
-		    templateUpdate(File.join(name,index),'__TITLE__',title)
-		    templateUpdate(File.join(name,index),'__NEXT__','')
+                s_next   = t_next ;
+                s_next   = s_next.gsub('__name__',t_name)
+                s_next   = s_next.gsub('__title__',t_title)
+                templateUpdate(File.join(name,index),'__NEXT__'   ,s_next)
 
-		    Dir.chdir(name)
-		    puts "open \"#{File.join(name,index)}\""
-		    system "open #{index}"
-		end
+                t_img    = img.scale(options[:scale])
+                t_img.write(File.join(images,t_name))
+                t_img = nil
+                img   = nil
+                GC.start
+                jpg+=1
+            end
+            
+            templateUpdate(File.join(name,index),'__TITLE__',title)
+            templateUpdate(File.join(name,index),'__NEXT__','')
+
+            Dir.chdir(name)
+            puts "open \"#{File.join(name,index)}\""
+            system "open #{index}"
+        end
     end
 
-	# return value
-	error    
+    # return value
+    error    
 end
 ##
 
