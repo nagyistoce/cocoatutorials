@@ -2,7 +2,7 @@
 
 ##
 #
-$syntax = "Usage: mkalbum.rb [options] photo-dir name [from [to]] (--help for help)"
+$syntax = "Usage: mkalbum.rb [options] photo-dir [name [from [to]]] (--help for help)"
 #
 #   returns   0   OK
 #             1   --help or --man requested
@@ -25,7 +25,8 @@ require 'optparse'
 require 'date'
 require 'time'
 require 'fileutils'
-require 'RMagick'
+require 'rmagick'
+require 'progressbar'
 
 ##
 # recursive directory copier
@@ -243,12 +244,12 @@ def main
 
     ##
     # process what remains in ARGV
-    if (error==0) && (2..4).include?(ARGV.length)
+    if (error==0) && (1..4).include?(ARGV.length)
         any  = 'any'
         dir  = ARGV[0]
-        name = ARGV[1]
-        from = ARGV.length >= 3 ? ARGV[2] : any
-        to   = ARGV.length >= 4 ? ARGV[3] : from
+        name = ARGV.length >= 2 ? ARGV[1] : String.new(File.basename(dir))
+        from = ARGV.length >= 3 ? ARGV[2] : String.new(any)
+        to   = ARGV.length >= 4 ? ARGV[3] : String.new(from)
 
         error=seterror(error,8,"*** directory #{dir} does not exist",false) if !File.directory?(dir)
         from = '1900-01-01' if from == any
@@ -286,7 +287,7 @@ def main
         photos = {} 
         exts = [ 'jpg','tiff'] # extensions to match
 
-        Find.find("#{dir}/") do |f|
+        Find.find(dir) do |f|
               next if File.directory?(f)
               matched = false
               for ext in exts
@@ -309,7 +310,7 @@ def main
               if ! matched
                  puts "IGNORE #{f}" if options[:verbose]
               end
-        end if File.directory?(dir)
+        end # if File.directory?(dir)
 
         ##
         # filter off the interesting files
@@ -389,7 +390,8 @@ def main
         end
 
         if error==0
-            images      = File.join(name,'Images')
+            bar     = ProgressBar.new("Scale images", files.length()) if ! options[:verbose]
+            images  = File.join(name,'Images')
             exclude = ["^\\."]
             dc = DaCopier.new(exclude,options[:verbose])
             dc.copy(File.join(root,contentFlow), File.join(name,contentFlow ))
@@ -401,10 +403,10 @@ def main
 <img class="item" src="Images/__name__" title="__title__"/>
 __NEXT__
 HERE
-
             jpg=0
             for file in files
-                puts "scaling image #{file}"
+                bar.inc(1)                   if !options[:verbose]
+                puts "scaling image #{file}" if  options[:verbose]
                 img      = Magick::Image.read(file).first
                 t_name   = "#{jpg}.jpg"
             #   unfortunately exifr cannot read Iptc meta-data (used by Picasa)
