@@ -426,6 +426,7 @@ HERE
             
             templateUpdate(File.join(name,index),'__TITLE__',title)
             templateUpdate(File.join(name,index),'__NEXT__','')
+            File.chmod(0755, File.join(name,index)) 
 
             Dir.chdir(name)
             puts "open \"#{File.join(name,index)}\""
