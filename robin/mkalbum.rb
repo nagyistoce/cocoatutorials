@@ -25,7 +25,7 @@ require 'optparse'
 require 'date'
 require 'time'
 require 'fileutils'
-require 'rmagick'
+require 'RMagick'
 require 'progressbar'
 
 ##
