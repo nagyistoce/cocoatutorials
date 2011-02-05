@@ -243,7 +243,7 @@ def main
     
     ##
     # process what remains in ARGV
-    if (error==0) && ( (2..4).include? ARGV.length )
+    if (error==0) && (2..4).include?(ARGV.length)
         any  = 'any'
         dir  = ARGV[0]
         name = ARGV[1]
@@ -257,17 +257,17 @@ def main
         
         from = fixdate(from,false)
         to   = fixdate(to  ,true)
-        error = 5 if !from
-        error = 5 if !to
+        error=seterror(error,5,nil,true) if !from
+        error=seterror(error,5,nil,true) if !to
     end
     
     error=seterror(error,3,nil,true) if !from || !to
-    title = options[:title]
-    title = File.basename(name) if !title || title.length() == 0
 
     ##
     # build the files array
     if error==0
+        title = options[:title]
+        title = File.basename(name) if !title || title.length() == 0
         ##
         # swap from/to if necessary
         r = [from,to].sort
