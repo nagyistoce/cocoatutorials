@@ -262,6 +262,7 @@ def main
     end
     
     error=seterror(error,3,nil,true) if !from || !to
+    error=seterror(error,8,"*** directory #{dir} does not exist",false) if !File.directory?(dir)
 
     ##
     # build the files array
@@ -311,7 +312,7 @@ def main
               if ! matched
                  puts "IGNORE #{f}" if options[:verbose]
               end
-        end
+        end if File.directory?(dir)
     
         ##
         # filter off the interesting files
