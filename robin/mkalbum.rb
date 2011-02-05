@@ -250,19 +250,20 @@ def main
         from = ARGV.length >= 3 ? ARGV[2] : any
         to   = ARGV.length >= 4 ? ARGV[3] : from
         
-        if from == any
-        	from = '1900-01-01'
-        	to   = '2199-12-31'
-        end
+    	error=seterror(error,8,"*** directory #{dir} does not exist",false) if !File.directory?(dir)
+    	if error==0
+            if from == any
+        	    from = '1900-01-01'
+        	    to   = '2199-12-31'
+            end
         
         from = fixdate(from,false)
         to   = fixdate(to  ,true)
-        error=seterror(error,5,nil,true) if !from
-        error=seterror(error,5,nil,true) if !to
+        end
+        error=seterror(error,5,nil,true) if !from || !to
+	else
+	    error=seterror(error,3,nil,true)
     end
-    
-    error=seterror(error,3,nil,true) if !from || !to
-    error=seterror(error,8,"*** directory #{dir} does not exist",false) if !File.directory?(dir)
 
     ##
     # build the files array
