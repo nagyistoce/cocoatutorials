@@ -25,8 +25,13 @@ require 'optparse'
 require 'date'
 require 'time'
 require 'fileutils'
-require 'RMagick'
 require 'progressbar'
+
+begin 
+$bRMagick=require 'RMagick'
+rescue LoadError
+$bRMagick=false
+end
 
 ##
 # recursive directory copier
@@ -55,7 +60,7 @@ class DaCopier
             puts d if verbose
         end if File.directory?(src)
 
-        puts "src = #{src}" if verbose
+        puts "cp #{src} #{dest}".chomp if verbose
 
         if File.file?(src)
             FileUtils.cp(src,dest)
@@ -275,11 +280,13 @@ def main
 
         ##
         # announce ourselves
+        found = $bRMagick ? "found" : "NOT found"
         puts '--------------------------------'
         puts "title = #{title}"
         puts "name  = #{name} (reading from #{dir} and scale = #{options[:scale]})"
         puts "from  = #{from}"
         puts "to    = #{to}"
+        puts "RMagic= #{found}"
         puts '--------------------------------'
 
         ##
@@ -390,7 +397,7 @@ def main
         end
 
         if error==0
-            bar     = ProgressBar.new("Scale images", files.length()) if ! options[:verbose]
+            bar     = ProgressBar.new("Scale images", files.length()) if !options[:verbose]
             images  = File.join(name,'Images')
             exclude = ["^\\."]
             dc = DaCopier.new(exclude,options[:verbose])
@@ -405,21 +412,31 @@ __NEXT__
 HERE
             jpg=0
             for file in files
-                bar.inc(1)                   if !options[:verbose]
-                puts "scaling image #{file}" if  options[:verbose]
-                img      = Magick::Image.read(file).first
-                t_name   = "#{jpg}.jpg"
             #   unfortunately exifr cannot read Iptc meta-data (used by Picasa)
             #   t_title  = img.get_exif_by_entry['Iptc.Application2.Caption']
                 t_title  = File.basename(file,File.extname(file))
+                t_name   = "#{jpg}.jpg"
 
                 s_next   = t_next ;
                 s_next   = s_next.gsub('__name__',t_name)
                 s_next   = s_next.gsub('__title__',t_title)
                 templateUpdate(File.join(name,index),'__NEXT__'   ,s_next)
 
-                t_img    = img.scale(options[:scale])
-                t_img.write(File.join(images,t_name))
+                puts "scaling image #{file}" if  options[:verbose]
+                bar.inc(1)                   if !options[:verbose]
+                t_name = File.join(images,t_name)
+                if $bRMagick
+                    img      = Magick::Image.read(file).first
+                    t_img    = img.scale(options[:scale])
+                    t_img.write(t_name)
+                else
+                    # this is Mac specific (for now)
+                    dc.copy(file,t_name)
+                    cmd  = "sips -Z 500 \"#{t_name}\""
+                    puts cmd                          if  options[:verbose]
+                    cmd += " 2>/dev/null >/dev/null"  if !options[:verbose]
+                    system(cmd) 
+                end
                 t_img = nil
                 img   = nil
                 GC.start
@@ -431,7 +448,7 @@ HERE
             File.chmod(0755, File.join(name,index)) 
 
             Dir.chdir(name)
-            puts "open \"#{File.join(name,index)}\""
+            puts "\nopen \"#{File.join(name,index)}\""
             system "open #{index}"
         end
     end
