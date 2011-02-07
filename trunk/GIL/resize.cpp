@@ -35,16 +35,27 @@
 // better to use the MSVC project
 //
 
+static void sub(char* s,char c,char k)
+{
+    int l = strlen(s);
+    for ( int  i  = 0 ; i < l ; i++ )
+        if ( s[i] == c )
+             s[i] = k;
+}
+
 int main(int argc,char* argv[])
 {
     if ( argc != 4 && argc != 5 ) return printf("%s\n","syntax: resize from-file to-file scale [quality]");
 
     int    arg     = 1;
-    char*  from    = argv[arg++];
-    char*  to      = argv[arg++];
+    char*  from    = strdup(argv[arg++]);
+    char*  to      = strdup(argv[arg++]);
     double scale   = atof(argv[arg++]);
     int    quality = arg < argc ? atoi(argv[arg++]) : 75;
-
+#ifdef WIN32
+    sub(from,'/','\\');
+    sub(to,'/','\\');
+#endif
     using namespace boost::gil;
 
     // read the image
@@ -52,7 +63,7 @@ int main(int argc,char* argv[])
     jpeg_read_image(from,img);
     int W=(int)img.width();
     int H=(int)img.height();
-    printf("image size = %d,%d quality = %d scale = %6.3f\n",W,H,quality,scale);
+//  printf("image %s -> %s size = %d,%d quality = %d scale = %6.3f\n",from,to,W,H,quality,scale);
     double w = W*scale + 0.5;
     double h = H*scale + 0.5;
     W        = (int) w      ;

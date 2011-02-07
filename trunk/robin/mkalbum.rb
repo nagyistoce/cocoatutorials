@@ -35,7 +35,7 @@ $bRMagick=false
 end
 
 $bMac     = RUBY_PLATFORM.match('darwin')
-$bWindows = RUBY_PLATFORM.match('indows')
+$bWindows = RUBY_PLATFORM.match('indows') || RUBY_PLATFORM.match('ming')
 $bLinux   = RUBY_PLATFORM.match('inux')
 
 ##
@@ -465,11 +465,18 @@ HERE
                     bin    = File.join(bin,'linux'  ) if $bLinux 
                     bin    = File.join(bin,'mac'    ) if $bMac
                     resize = File.join(bin,'resize' )
-
-                    cmd    = "\"#{resize}\"  \"#{file}\"  \"#{t_name}\"  #{scale}  #{quality}"
-                    puts cmd                            if  options[:verbose]
-                    cmd   += " 2>/dev/null >/dev/null"  if !options[:verbose]
+                    file   = File.expand_path(file)
+                    t_name = File.expand_path(t_name)
+                    
+                    # execute resize in the directory in which he lives (to keep ming happy)
+                    t_dir  = Dir.pwd
+                    Dir.chdir(File.dirname(resize))
+                    cmd    = "resize  \"#{file}\"  \"#{t_name}\"  #{scale}  #{quality}"
+                    puts cmd         if  options[:verbose]
+                    cmd   += ' 2>/dev/null >/dev/null' if (!$bWindows) && !options[:verbose]
                     system(cmd) 
+                    Dir.chdir(t_dir)
+
                 end
                 img = nil
                 GC.start
