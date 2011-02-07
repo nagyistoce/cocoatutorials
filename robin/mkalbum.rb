@@ -149,8 +149,8 @@ end
 def seterror(error,n,msg,bSyntax=false)
     if error==0
         error=n
+        puts msg     if msg
         puts $syntax if bSyntax
-        puts msg     if !bSyntax && msg
     end
     error
 end
@@ -184,68 +184,72 @@ def main
 
     ##
     # parse the command line options
-    optparse = OptionParser.new do|opts|
-        # Set a banner, displayed at the top of the help screen.
-        opts.banner = $syntax
+    begin 
+        optparse = OptionParser.new do|opts|
+            # Set a banner, displayed at the top of the help screen.
+            opts.banner = $syntax
 
-        # Define the options, and what they do
-        options[:verbose] = false
-        opts.on( '-v', '--verbose', 'Output information' ) do
-            options[:verbose] = true
-        end
+            # Define the options, and what they do
+            options[:verbose] = false
+            opts.on( '-v', '--verbose', 'Output information' ) do
+                options[:verbose] = true
+            end
 
-        options[:debug] = false
-        opts.on( '-d', '--debug', 'Output a lot of information' ) do
-            options[:debug]   = true
-            options[:verbose] = true
-        end
+            options[:debug] = false
+            opts.on( '-d', '--debug', 'Output a lot of information' ) do
+                options[:debug]   = true
+                options[:verbose] = true
+            end
 
-        options[:contentView] = true
-        options[:picasa] = false
-        opts.on( '-p', '--picasa', 'Output picasa album file' ) do
-            options[:picasa]   = true
-            options[:contentView] = false
-        end
+            options[:contentView] = true
+            options[:picasa] = false
+            opts.on( '-p', '--picasa', 'Output picasa album file' ) do
+                options[:picasa]   = true
+                options[:contentView] = false
+            end
 
-        options[:overwrite] = false
-        opts.on( '-o', '--overwrite', 'overwrite the output' ) do
-            options[:overwrite]   = true
-        end
+            options[:overwrite] = false
+            opts.on( '-o', '--overwrite', 'overwrite the output' ) do
+                options[:overwrite]   = true
+            end
 
-        options[:rmagick] = 'auto'
-        opts.on( '-r', '--rmagick [off|on|auto]', 'use rmagick' ) do | rmagick |
-            options[:rmagick]  = rmagick
-        end
+            options[:rmagick] = 'auto'
+            opts.on( '-r', '--rmagick [off|on|auto]', 'use rmagick' ) do | rmagick |
+                options[:rmagick]  = rmagick
+            end
 
-        options[:quality] = 75
-        opts.on( '-q', '--quality [quality]', 'output image quality' ) do | quality |
-            options[:quality] = quality.to_i
-        end
+            options[:quality] = 75
+            opts.on( '-q', '--quality [quality]', 'output image quality' ) do | quality |
+                options[:quality] = quality.to_i
+            end
 
-        options[:scale] = 0.15
-        opts.on( '-s', '--scale [scale]', 'scale original image' ) do | scale |
-            options[:scale] = scale.to_f
-        end
+            options[:scale] = 0.20
+            opts.on( '-s', '--scale [scale]', 'scale original image' ) do | scale |
+                options[:scale] = scale.to_f
+            end
 
-        options[:title] = ''
-        opts.on( '-t', '--title [title]', 'title for the album' ) do | title |
-            options[:title] = title.to_s
-        end
+            options[:title] = ''
+            opts.on( '-t', '--title [title]', 'title for the album' ) do | title |
+                options[:title] = title.to_s
+            end
 
-        options[:man] = false
-        opts.on( '-m', '--man', 'Output man page' ) do
-            options[:man] = true
-        end
+            options[:man] = false
+            opts.on( '-m', '--man', 'Output man page' ) do
+                options[:man] = true
+            end
 
-        opts.on( '-h', '--help', 'Display this screen' ) do
-            puts opts
-            puts "    from/to := date/time"
-            puts "    date:      2011-01-18  or 01-18 (this year assumed)"
-            puts "    time:      06:45"
-            error=seterror(error,1,nil)
+            opts.on( '-h', '--help', 'Display this screen' ) do
+                puts opts
+                puts "    from/to := date/time"
+                puts "    date:      2011-01-18  or 01-18 (this year assumed)"
+                puts "    time:      06:45"
+                error=seterror(error,1,nil)
+            end
         end
+        optparse.parse!
+    rescue
+        error=seterror(error,3,"*** Syntax error",true)
     end
-    optparse.parse!
 
     ##
     # print the manual to stdout if requested
@@ -268,7 +272,7 @@ def main
             error=seterror(error,2,"*** Could not find #{man}",false)
         end     
     end
-    
+
     error=seterror(error,9,"*** RMagick is not available",false) if (!$bRMagick) && (options[:rmagick] == 'on')
     $bRMagick = false if (error==0) && (options[:rmagick] == 'off')
 
@@ -305,13 +309,13 @@ def main
 
         ##
         # announce ourselves
-        found = $bRMagick ? "found" : "NOT found"
+        graphics = $bRMagick ? "RMagick" : "builtin resize utility"
         puts '--------------------------------'
-        puts "title = #{title}"
-        puts "name  = #{name} (reading from #{dir} and scale = #{options[:scale]})"
-        puts "from  = #{from}"
-        puts "to    = #{to}"
-        puts "RMagic= #{found}"
+        puts "title         = #{title}"
+        puts "dir           = #{dir}"
+        puts "from .. to    = #{from} .. #{to}"
+        puts "scale,quality = #{options[:scale]}, #{options[:quality]}"
+        puts "graphics      = #{graphics}"
         puts '--------------------------------'
 
         ##
@@ -406,10 +410,10 @@ def main
         images      = "Images"
         template    = 'index.template'
         index       = 'index.html'
-        
+
         FileUtils.rm_rf(name) if options[:overwrite] && File.directory?(name)
         FileUtils.rm(name)    if options[:overwrite] && File.exist?(name)
-        
+
         error=seterror(error,7,"*** directory #{name} already exists!") if File.exist?(name) 
         error=seterror(error,7,"*** directory #{name} already exists!") if File.directory?(name) 
 
@@ -430,7 +434,7 @@ def main
             dc.copy(File.join(root,fancyZoom)  , File.join(name,fancyZoom   ))
             dc.copy(File.join(root,images)     , File.join(name,images      ))
             dc.copy(File.join(root,template)   , File.join(name,index)       )
-            
+
             t_next = <<HERE
 <img class="item" src="Images/__name__" title="__title__"/>
 __NEXT__
@@ -452,7 +456,7 @@ HERE
                 t_name  = File.join(images,t_name)
                 scale   = options[:scale]
                 quality = options[:quality]
-                
+
                 if $bRMagick
                     img   = Magick::Image.read(file).first
                     t_img = img.scale(scale)
@@ -467,7 +471,7 @@ HERE
                     resize = File.join(bin,'resize' )
                     file   = File.expand_path(file)
                     t_name = File.expand_path(t_name)
-                    
+
                     # execute resize in the directory in which he lives (to keep ming happy)
                     t_dir  = Dir.pwd
                     Dir.chdir(File.dirname(resize))
@@ -482,7 +486,7 @@ HERE
                 GC.start
                 jpg+=1
             end
-            
+
             templateUpdate(File.join(name,index),'__TITLE__',spaceCap(title))
             templateUpdate(File.join(name,index),'__NEXT__','')
             File.chmod(0755, File.join(name,index)) 
