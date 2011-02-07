@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IJGWin32", "IJGWin32\IJGWin32.vcproj", "{1B081719-1565-4F99-840B-262ECB3C502F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resize", "Resize\Resize.vcproj", "{84EF2B5D-6B3D-4A7B-B013-05592B300170}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B081719-1565-4F99-840B-262ECB3C502F} = {1B081719-1565-4F99-840B-262ECB3C502F}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B081719-1565-4F99-840B-262ECB3C502F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B081719-1565-4F99-840B-262ECB3C502F}.Debug|Win32.Build.0 = Debug|Win32
+		{1B081719-1565-4F99-840B-262ECB3C502F}.Release|Win32.ActiveCfg = Release|Win32
+		{1B081719-1565-4F99-840B-262ECB3C502F}.Release|Win32.Build.0 = Release|Win32
+		{84EF2B5D-6B3D-4A7B-B013-05592B300170}.Debug|Win32.ActiveCfg = Debug|Win32
+		{84EF2B5D-6B3D-4A7B-B013-05592B300170}.Debug|Win32.Build.0 = Debug|Win32
+		{84EF2B5D-6B3D-4A7B-B013-05592B300170}.Release|Win32.ActiveCfg = Release|Win32
+		{84EF2B5D-6B3D-4A7B-B013-05592B300170}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
