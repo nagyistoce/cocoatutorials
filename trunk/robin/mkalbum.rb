@@ -456,17 +456,9 @@ HERE
                 if $bRMagick
                     img   = Magick::Image.read(file).first
                     t_img = img.scale(scale)
-                    t_img.write(t_name)
+                    t_img.write(t_name) { self.quality = quality }
                     t_img = nil
-                    # The documentation about 'quality' is contradictory
-                    # and I've been unable to get it to work
-                    # t_img[:quality] = quality
-                    # t_img.write(t_name,Magick::CompressionType.new('JPEGCompression',quality))
                 else
-                    # this is Mac specific (for now)
-                    # dc.copy(file,t_name)
-                    # cmd  = "sips -Z 500 \"#{t_name}\""
-
                     # the bin holds the resize utility to use instead of RMagick
                     bin    = File.join(root,'bin'   )
                     bin    = File.join(bin,'windows') if $bWindows 
