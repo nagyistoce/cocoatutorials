@@ -13,6 +13,7 @@ $syntax = "Usage: mkalbum.rb [options] photo-dir [name [from [to]]] (--help for 
 #             6   ContentFlow not implemented yet
 #             7   the output directory already exists
 #             8   an essential directory does not exist
+#             9   RMagick is requested and not available
 ##
 
 ##
@@ -32,6 +33,10 @@ $bRMagick=require 'RMagick'
 rescue LoadError
 $bRMagick=false
 end
+
+$bMac     = RUBY_PLATFORM.match('darwin')
+$bWindows = RUBY_PLATFORM.match('indows')
+$bLinux   = RUBY_PLATFORM.match('inux')
 
 ##
 # recursive directory copier
@@ -105,6 +110,13 @@ def genuuid
         rand(0x1000000),
      ] 
      "%04x%04x%04x%04x%04x%06x%06x" % values
+end
+##
+
+##
+# spaceCap "LasVegas" "Las Vegas"
+def spaceCap(s)
+    return s.gsub(/([a-z])([A-Z])/,'\1 \2')
 end
 ##
 
@@ -200,14 +212,24 @@ def main
             options[:overwrite]   = true
         end
 
-        options[:title] = ''
-        opts.on( '-t', '--title [title]', 'title for the album' ) do | title |
-            options[:title] = title.to_s
+        options[:rmagick] = 'auto'
+        opts.on( '-r', '--rmagick [off|on|auto]', 'use rmagick' ) do | rmagick |
+            options[:rmagick]  = rmagick
+        end
+
+        options[:quality] = 75
+        opts.on( '-q', '--quality [quality]', 'output image quality' ) do | quality |
+            options[:quality] = quality.to_i
         end
 
         options[:scale] = 0.15
         opts.on( '-s', '--scale [scale]', 'scale original image' ) do | scale |
             options[:scale] = scale.to_f
+        end
+
+        options[:title] = ''
+        opts.on( '-t', '--title [title]', 'title for the album' ) do | title |
+            options[:title] = title.to_s
         end
 
         options[:man] = false
@@ -246,6 +268,9 @@ def main
             error=seterror(error,2,"*** Could not find #{man}",false)
         end     
     end
+    
+    error=seterror(error,9,"*** RMagick is not available",false) if (!$bRMagick) && (options[:rmagick] == 'on')
+    $bRMagick = false if (error==0) && (options[:rmagick] == 'off')
 
     ##
     # process what remains in ARGV
@@ -424,26 +449,42 @@ HERE
 
                 puts "scaling image #{file}" if  options[:verbose]
                 bar.inc(1)                   if !options[:verbose]
-                t_name = File.join(images,t_name)
+                t_name  = File.join(images,t_name)
+                scale   = options[:scale]
+                quality = options[:quality]
+                
                 if $bRMagick
-                    img      = Magick::Image.read(file).first
-                    t_img    = img.scale(options[:scale])
+                    img   = Magick::Image.read(file).first
+                    t_img = img.scale(scale)
                     t_img.write(t_name)
+                    t_img = nil
+                    # The documentation about 'quality' is contradictory
+                    # and I've been unable to get it to work
+                    # t_img[:quality] = quality
+                    # t_img.write(t_name,Magick::CompressionType.new('JPEGCompression',quality))
                 else
                     # this is Mac specific (for now)
-                    dc.copy(file,t_name)
-                    cmd  = "sips -Z 500 \"#{t_name}\""
-                    puts cmd                          if  options[:verbose]
-                    cmd += " 2>/dev/null >/dev/null"  if !options[:verbose]
+                    # dc.copy(file,t_name)
+                    # cmd  = "sips -Z 500 \"#{t_name}\""
+
+                    # the bin holds the resize utility to use instead of RMagick
+                    bin    = File.join(root,'bin'   )
+                    bin    = File.join(bin,'windows') if $bWindows 
+                    bin    = File.join(bin,'linux'  ) if $bLinux 
+                    bin    = File.join(bin,'mac'    ) if $bMac
+                    resize = File.join(bin,'resize' )
+
+                    cmd    = "\"#{resize}\"  \"#{file}\"  \"#{t_name}\"  #{scale}  #{quality}"
+                    puts cmd                            if  options[:verbose]
+                    cmd   += " 2>/dev/null >/dev/null"  if !options[:verbose]
                     system(cmd) 
                 end
-                t_img = nil
-                img   = nil
+                img = nil
                 GC.start
                 jpg+=1
             end
             
-            templateUpdate(File.join(name,index),'__TITLE__',title)
+            templateUpdate(File.join(name,index),'__TITLE__',spaceCap(title))
             templateUpdate(File.join(name,index),'__NEXT__','')
             File.chmod(0755, File.join(name,index)) 
 
