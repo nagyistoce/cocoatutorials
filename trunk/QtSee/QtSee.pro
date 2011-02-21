@@ -31,12 +31,16 @@ QT           +=  webkit  \
 HEADERS       =  mainwindow.h \
                  about.h      \
                  platform.h   \
-                 QtSee.h
+                 QtSee.h \
+    File.h \
+    Debug.h
 
 SOURCES       =  main.cpp       \
                  mainwindow.cpp \
                  about.cpp      \
-                 platform.cpp
+                 platform.cpp \
+    File.cpp \
+    Debug.cpp
 
 RESOURCES     =  jquery.qrc
 
