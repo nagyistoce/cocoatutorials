@@ -31,6 +31,9 @@
 #include "preferences.h"
 #include "ui_mainwindow.h"
 
+#include "File.h"
+#include "Debug.h"
+
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
 , m_debugger(NULL)
@@ -333,14 +336,34 @@ void MainWindow::actionLast()
 
 void MainWindow::runScript(const QString& fileName, bool debug)
 {
-    if ( m_debugger ) return ;
+    if (  m_debugger ) return ;
+    if ( !m_engine   )  m_engine = new QScriptEngine();
+    if ( !m_engine   ) return ;
+
+/*
+    QString in("/Users/rmills/R.jpg");
+    QString out("/Users/rmills/R_scaled.jpg");
+
+    Println("about to open image");
+    QImage image(in);
+    Printf("image size = %d,%d\n",image.width(),image.height());
+    int w = image.width()/4;
+    int h = image.height()/4;
+    Println("about to scale image");
+    image.scaled(QSize(w,h));
+    Println("about to save image");
+    image.save(out);
+    Println("done");
+*/
+    // add File, _ and __
+    File::registerClass(m_engine,"File");
+    registerDebugShort (m_engine,"_");
+    registerDebugLong  (m_engine,"__");
 
     QFile file(fileName);
     file.open(QIODevice::ReadOnly);
     QString contents = file.readAll();
     file.close();
-    if ( !m_engine )
-        m_engine = new QScriptEngine();
 
 #ifndef QT_NO_SCRIPTTOOLS
     if (debug) {
