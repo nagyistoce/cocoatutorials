@@ -23,20 +23,24 @@
 TARGET        =  QtSee
 TEMPLATE      =  app
 
-QT           +=  webkit network
+QT           +=  webkit  \
+                 network \
+                 script  \
+                 scripttools
+
 HEADERS       =  mainwindow.h \
-                 about.h \
-                 platform.h \
+                 about.h      \
+                 platform.h   \
                  QtSee.h
 
-SOURCES       =  main.cpp \
+SOURCES       =  main.cpp       \
                  mainwindow.cpp \
-                 about.cpp \
+                 about.cpp      \
                  platform.cpp
 
 RESOURCES     =  jquery.qrc
 
-FORMS         += mainwindow.ui \
+FORMS         += mainwindow.ui  \
                  preferences.ui \
                  about.ui
 
