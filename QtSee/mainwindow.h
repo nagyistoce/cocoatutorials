@@ -26,8 +26,18 @@
 
 #include <QtGui>
 #include <QtGui/QMainWindow>
-#include "ui_mainwindow.h"
 
+#ifndef QT_NO_SCRIPTTOOLS
+#include <QAction>
+#include <QApplication>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QScriptEngineDebugger>
+// #include "/Library/Frameworks/QtScriptTools.framework/Versions/4/Headers/QScriptEngineDebugger"
+#endif
+
+#include "ui_mainwindow.h"
 #include <vector>
 
 class QWebView;
@@ -90,6 +100,7 @@ protected slots:
     void actionLast();
     void actionNext();
     void actionPrev();
+    void actionDebug();
 
 //  execute commands
     void    command(QString c);
@@ -100,12 +111,18 @@ protected slots:
     void notImplementedYet(const char* s);
     void alert(QString s);
 
-//  other methods
+//  execute scripts
+    void runScript(const QString& fileName,bool debug);
+
+    //  other methods
     void updatePhotos(QDir& dir,QStringList& photos);
     void showPhoto();
 
 private:
-    Ui::MainWindowClass* ui;
+    Ui::MainWindowClass*   ui;
+    QScriptEngineDebugger* m_debugger;
+    QMainWindow*           m_debugWindow;
+    QScriptEngine*         m_engine;
 
     QString     jQuery;
     QWebView*   view;

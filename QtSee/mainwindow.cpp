@@ -33,6 +33,9 @@
 
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
+, m_debugger(NULL)
+, m_debugWindow(NULL)
+, m_engine(NULL)
 , bWebView(true)
 , next_photo(0)
 {
@@ -326,6 +329,54 @@ void MainWindow::actionLast()
 {
     next_photo=photos.length()-1;
     showPhoto();
+}
+
+void MainWindow::runScript(const QString& fileName, bool debug)
+{
+    if ( m_debugger ) return ;
+
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    QString contents = file.readAll();
+    file.close();
+    if ( !m_engine )
+        m_engine = new QScriptEngine();
+
+#ifndef QT_NO_SCRIPTTOOLS
+    if (debug) {
+        if (!m_debugger) {
+            m_debugger = new QScriptEngineDebugger(this);
+            m_debugWindow = m_debugger->standardWindow();
+            m_debugWindow->setWindowModality(Qt::ApplicationModal);
+            m_debugWindow->resize(1280, 704);
+        }
+        m_debugger->attachTo(m_engine);
+        m_debugger->action(QScriptEngineDebugger::InterruptAction)->trigger();
+    } else {
+        if (m_debugger)
+            m_debugger->detach();
+    }
+#else
+    Q_UNUSED(debug);
+#endif
+    // QScriptValue ret =
+        m_engine->evaluate(contents, fileName);
+
+#ifndef QT_NO_SCRIPTTOOLS
+    if (m_debugWindow)
+        m_debugWindow->hide();
+#endif
+    delete m_debugger;
+    m_debugger = NULL;
+
+    // if (ret.isError())
+        // reportScriptError(ret);
+}
+
+void MainWindow::actionDebug()
+{
+    ::Println("actionDebug");
+    runScript(QString("/Users/rmills/test.js"),true);
 }
 
 void MainWindow::actionReload()
