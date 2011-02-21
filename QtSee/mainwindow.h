@@ -34,7 +34,6 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QScriptEngineDebugger>
-// #include "/Library/Frameworks/QtScriptTools.framework/Versions/4/Headers/QScriptEngineDebugger"
 #endif
 
 #include "ui_mainwindow.h"

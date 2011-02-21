@@ -376,7 +376,9 @@ void MainWindow::runScript(const QString& fileName, bool debug)
 void MainWindow::actionDebug()
 {
     ::Println("actionDebug");
-    runScript(QString("/Users/rmills/test.js"),true);
+    QString test = QDir::homePath()+ QDir::separator()+ QString("test.js");
+    ::Printf("test = %s\n",test.toAscii().data());
+    runScript(test,true);
 }
 
 void MainWindow::actionReload()
