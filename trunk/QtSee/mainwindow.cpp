@@ -33,6 +33,11 @@
 
 #include "File.h"
 #include "Debug.h"
+#include <exiv2/exiv2.hpp>
+
+#include <iostream>
+#include <iomanip>
+#include <cassert>
 
 MainWindow::MainWindow(const QUrl& url)
 : ui(new Ui::MainWindowClass)
@@ -334,11 +339,65 @@ void MainWindow::actionLast()
     showPhoto();
 }
 
+void removeNulls(std::string& s)
+{
+    size_t n ;
+    while ( (n=s.find_first_of((char)0)) != std::string::npos )
+        s.replace(n,1,"");
+}
+
+static void exifprint(const char* filename)
+{
+    Printf("exifprint filename = %s\n",filename);
+    try {
+        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
+        assert(image.get() != 0);
+        image->readMetadata();
+
+        Exiv2::ExifData &exifData = image->exifData();
+        if (exifData.empty()) {
+            std::string error(filename);
+            error += ": No Exif data found in the file";
+            throw Exiv2::Error(1, error);
+        }
+
+        std::ostringstream oss (std::ostringstream::out);
+
+        Exiv2::ExifData::const_iterator end = exifData.end();
+        for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+            const char* tn = i->typeName();
+
+            oss << std::setw(44) << std::setfill(' ') << std::left
+                      << i->key() << " "
+                      << "0x" << std::setw(4) << std::setfill('0') << std::right
+                      << std::hex << i->tag() << " "
+                      << std::setw(9) << std::setfill(' ') << std::left
+                      << (tn ? tn : "Unknown") << " "
+                      << std::dec << std::setw(3)
+                      << std::setfill(' ') << std::right
+                      << i->count() << "  "
+                      << std::dec << i->value()
+                      << "\n";
+        }
+        oss << std::endl;
+        oss << "That's all Folks in " << filename << std::endl;
+        oss.flush();
+        std::string output = oss.str();
+        removeNulls(output);
+        ::Printf("%s\n",output.c_str());
+    } catch ( ... ) {
+        Printf("*** unable to open filename = %s\n",filename);
+    }
+}
+
 void MainWindow::runScript(const QString& fileName, bool debug)
 {
     if (  m_debugger ) return ;
-    if ( !m_engine   )  m_engine = new QScriptEngine();
+    if ( !m_engine   ) m_engine = new QScriptEngine();
     if ( !m_engine   ) return ;
+
+    exifprint("R.jpg");
+    // exifprint("C:/Robin/Projects/cocoatutorials/QtSee-build-desktop/R.jpg");
 
 /*
     QString in("/Users/rmills/R.jpg");

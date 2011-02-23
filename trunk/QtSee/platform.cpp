@@ -63,7 +63,7 @@ int platformInit(int argc,char** argv)
 #ifdef __WINDOWS__
 extern "C" int Printf(const char * format, ... )
 {
-    char buff[2*4096];
+    char buff[128*1024];
     char*       p = buff;
     va_list     args;
     va_start(args, format);

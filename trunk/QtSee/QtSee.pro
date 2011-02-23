@@ -72,15 +72,22 @@ OTHER_FILES   += Resources/photo.jpg \
     Resources/photo.html
 
 win32 {
-    DEFINES +=  __WINDOWS__=1
+    DEFINES      += __WINDOWS__=1
+    INCLUDEPATH  += $$quote(C:/MinGW/msys/1.0/local/include)
+    LIBS         += $$quote(C:/MinGW/msys/1.0/local/lib/libexiv2.dll.a)
 }
 
+
 unix {
-    DEFINES +=  __LINUX__=1
+    DEFINES      += __LINUX__=1
+    INCLUDEPATH  += /usr/local/include
+    LIBS         += -L/usr/local/lib -lexiv2
 }
 
 macx {
-  ICON        =  QtSee.icns
+    ICON          = QtSee.icns
+    INCLUDEPATH  += /usr/local/include
+    LIBS         += -L/usr/local/lib -lexiv2
 }
 
 
