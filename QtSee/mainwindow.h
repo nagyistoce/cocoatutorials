@@ -100,6 +100,7 @@ protected slots:
     void actionNext();
     void actionPrev();
     void actionDebug();
+    void actionRun();
 
 //  execute commands
     void    command(QString c);

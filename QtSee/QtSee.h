@@ -1,5 +1,5 @@
 //
-//  QtSee.cpp
+//  QtSee.h
 //  This file is part of QtSee
 //
 //  QtSee is free software: you can redistribute it and/or modify
@@ -24,6 +24,20 @@
 #define QTSEE_H
 
 #include "platform.h"
+#include "mainwindow.h"
+
+class QtSeeApplication : public QApplication
+{
+public:
+    QtSeeApplication(int &argc, char **argv, int v = QT_VERSION)
+    : QApplication(argc,argv,v)
+    {} ;
+
+public:
+    MainWindow* m_browser;
+};
+
+extern QtSeeApplication* theApp ;
 
 #endif // QTSEE_H
 

@@ -22,19 +22,23 @@
 
 #include <QtGui>
 #include "mainwindow.h"
-#include "platform.h"
+#include "QtSee.h"
+
+QtSeeApplication* theApp ;
 
 int main(int argc, char * argv[])
 {
     platformInit(argc,argv);
-    QApplication app(argc, argv);
+    QtSeeApplication app(argc, argv);
+    theApp = &app;
+
     QUrl url;
     if (argc > 1)
         url = QUrl(argv[1]);
     else
         url = QUrl("http://clanmills.com") ; // "http://www.google.com/ncr");
-    MainWindow *browser = new MainWindow(url);
-    browser->show();
+    theApp->m_browser = new MainWindow(url);
+    theApp->m_browser->show();
     return app.exec();
 }
 
