@@ -118,7 +118,7 @@ void MainWindow::term()
     ::Printf("good night!");
     if ( tempFiles.size() ) {
         for ( unsigned p = 0 ; p < tempFiles.size() ; p ++) {
-            const char* filename = tempFiles[p].toAscii();
+            const char* filename = SS(tempFiles[p]);
             ::remove(filename);
             // Printf("deleting temporary file '%s'\n",filename);
         }
@@ -339,7 +339,7 @@ void MainWindow::actionLast()
     showPhoto();
 }
 
-void removeNulls(std::string& s)
+static void removeNulls(std::string& s)
 {
     size_t n ;
     while ( (n=s.find_first_of((char)0)) != std::string::npos )
@@ -390,50 +390,48 @@ static void exifprint(const char* filename)
     }
 }
 
+static void contentsCleaner(QString& contents)
+{
+    // strip off #! line at top of code
+    if (contents.startsWith("#!")) {
+        contents.remove(0, contents.indexOf("\n"));
+    }
+}
+
 void MainWindow::runScript(const QString& fileName, bool debug)
 {
     if (  m_debugger ) return ;
-    if ( !m_engine   ) m_engine = new QScriptEngine();
-    if ( !m_engine   ) return ;
 
-    exifprint("R.jpg");
-    // exifprint("C:/Robin/Projects/cocoatutorials/QtSee-build-desktop/R.jpg");
-
-/*
-    QString in("/Users/rmills/R.jpg");
-    QString out("/Users/rmills/R_scaled.jpg");
-
-    Println("about to open image");
-    QImage image(in);
-    Printf("image size = %d,%d\n",image.width(),image.height());
-    int w = image.width()/4;
-    int h = image.height()/4;
-    Println("about to scale image");
-    image.scaled(QSize(w,h));
-    Println("about to save image");
-    image.save(out);
-    Println("done");
-*/
-    // add File, _ and __
-    File::registerClass(m_engine,"File");
-    registerDebugShort (m_engine,"_");
-    registerDebugLong  (m_engine,"__");
+    if ( !m_engine   ) {
+        m_engine = new QScriptEngine();
+        if ( m_engine ) {
+            // add File, _ and __
+            File::registerClass(m_engine,"File");
+            debugRegisterShort (m_engine,"_");
+            debugRegisterLong  (m_engine,"__");
+            debugRegisterAlert (m_engine,"alert");
+        }
+    }
+    if ( !m_engine ) exifprint("") ;
+    if ( !m_engine ) return ;
 
     QFile file(fileName);
     file.open(QIODevice::ReadOnly);
     QString contents = file.readAll();
     file.close();
+    contentsCleaner(contents);
+//    alert(contents);
 
 #ifndef QT_NO_SCRIPTTOOLS
     if (debug) {
-        if (!m_debugger) {
-            m_debugger = new QScriptEngineDebugger(this);
+        if (!m_debugger) m_debugger = new QScriptEngineDebugger(this);
+        if ( m_debugger ) {
             m_debugWindow = m_debugger->standardWindow();
             m_debugWindow->setWindowModality(Qt::ApplicationModal);
             m_debugWindow->resize(1280, 704);
+            m_debugger->attachTo(m_engine);
+            m_debugger->action(QScriptEngineDebugger::InterruptAction)->trigger();
         }
-        m_debugger->attachTo(m_engine);
-        m_debugger->action(QScriptEngineDebugger::InterruptAction)->trigger();
     } else {
         if (m_debugger)
             m_debugger->detach();
@@ -458,9 +456,43 @@ void MainWindow::runScript(const QString& fileName, bool debug)
 void MainWindow::actionDebug()
 {
     ::Println("actionDebug");
-    QString test = QDir::homePath()+ QDir::separator()+ QString("test.js");
-    ::Printf("test = %s\n",test.toAscii().data());
-    runScript(test,true);
+    // QDir::separator() == '\\' on Windows and I want / to be consistent with QDir
+    //QString test = QString("%1/%2").arg(QDir::homePath()).arg("test.js");
+    //::Printf("test = %s\n",SS(test));
+
+    runScript(QString(":/Resources/mkalbum.qs"),true);
+/*
+    QString message = QString("appDirPath = %1\n"
+                              "test.js = %2\n"
+                             ).arg(theApp->applicationDirPath())
+                              .arg(test)
+                             ;
+
+    alert(message);
+*/
+    // exifprint("R.jpg");
+    // exifprint("C:/Robin/Projects/cocoatutorials/QtSee-build-desktop/R.jpg");
+
+/*
+    QString in("/Users/rmills/R.jpg");
+    QString out("/Users/rmills/R_scaled.jpg");
+
+    Println("about to open image");
+    QImage image(in);
+    Printf("image size = %d,%d\n",image.width(),image.height());
+    int w = image.width()/4;
+    int h = image.height()/4;
+    Println("about to scale image");
+    image.scaled(QSize(w,h));
+    Println("about to save image");
+    image.save(out);
+    Println("done");
+*/
+}
+
+void MainWindow::actionRun()
+{
+    runScript(QString(":/Resources/mkalbum.qs"),false);
 }
 
 void MainWindow::actionReload()

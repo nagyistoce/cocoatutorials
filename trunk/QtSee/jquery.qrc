@@ -21,5 +21,6 @@
         <file>Resources/p17.jpg</file>
         <file>Resources/p18.jpg</file>
         <file>Resources/photo.html</file>
+        <file>Resources/mkalbum.qs</file>
     </qresource>
 </RCC>

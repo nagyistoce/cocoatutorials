@@ -2,8 +2,11 @@
 // Debug.cpp
 
 #include "Debug.h"
+#include "QtSee.h"
+
 #include <QSet>
 #include <QString>
+#include <QMessageBox>
 
 static QString wee(QString s)
 {
@@ -85,12 +88,36 @@ static QScriptValue debugLong(QScriptContext *ctx, QScriptEngine *eng)
     return debug_(ctx,eng,true);
 }
 
-void registerDebugShort(QScriptEngine* engine,const char* name)
+static QScriptValue qs_alert(QScriptContext* ctx, QScriptEngine* eng)
+{
+    QMessageBox box(theApp->m_browser);
+
+    QString s;
+    QString NL("\n");
+    for ( int index = 0 ; index < ctx->argumentCount() ; index++ ) {
+        s += ctx->argument(index).toString() + NL ;
+    }
+    box.setWindowTitle("QScript Alert");
+    box.setText(s);
+    box.exec();
+
+    QScriptValue result ;
+    return result;
+}
+
+void debugRegisterAlert(QScriptEngine* engine,const char* name)
+{
+    engine->globalObject().setProperty(name, engine->newFunction(::qs_alert));
+    QScriptValue global(engine->globalObject());
+    engine->globalObject().setProperty("$",global);
+}
+
+void debugRegisterShort(QScriptEngine* engine,const char* name)
 {
     engine->globalObject().setProperty(QLatin1String(name), engine->newFunction(debugShort));
 }
 
-void registerDebugLong(QScriptEngine* engine,const char* name)
+void debugRegisterLong(QScriptEngine* engine,const char* name)
 {
     engine->globalObject().setProperty(QLatin1String(name), engine->newFunction(debugLong));
 }

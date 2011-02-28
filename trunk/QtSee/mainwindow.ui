@@ -241,6 +241,9 @@
    <property name="text">
     <string>Run ...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
  </widget>
  <customwidgets>
@@ -545,6 +548,22 @@
    <signal>triggered()</signal>
    <receiver>MainWindowClass</receiver>
    <slot>actionDebug()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRun</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowClass</receiver>
+   <slot>actionRun()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

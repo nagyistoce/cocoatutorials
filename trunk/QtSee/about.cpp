@@ -38,7 +38,7 @@ about::~about()
 
 void about::linkActivated(QString data)
 {
-    ::LinkActivated(data.toAscii());
+    ::LinkActivated(SS(data));
 }
 
 // That's all Folks!

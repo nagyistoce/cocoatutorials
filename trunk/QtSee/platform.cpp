@@ -114,7 +114,7 @@ extern "C" void LinkActivated(const char* data)
 
 extern "C" const char* SS(QString s)
 {
-    return (const char*) s.toAscii() ;
+    return (const char*) s.toAscii().data() ;
 }
 
 

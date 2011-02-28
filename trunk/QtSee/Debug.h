@@ -22,8 +22,9 @@
 
 #include <QStringList>
 
-void registerDebugShort(QScriptEngine* engine,const char* name);
-void registerDebugLong(QScriptEngine* engine,const char* name);
+void debugRegisterShort(QScriptEngine* engine,const char* name);
+void debugRegisterLong (QScriptEngine* engine,const char* name);
+void debugRegisterAlert(QScriptEngine* engine,const char* name);
 
 #endif // DEBUG_H
 
