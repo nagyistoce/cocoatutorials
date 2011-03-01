@@ -13,7 +13,7 @@ static QString wee(QString s)
     return s.length() < 60 ? s : s.left(40)+ QString(" ... " ) + s.right(15) ;
 }
 
-static QScriptValue debug_(QScriptContext* ctx, QScriptEngine* eng,bool bFull)
+static QScriptValue debug_(QScriptContext* ctx, QScriptEngine* engine,bool bFull)
 {
     QString result;
     int argc = ctx->argumentCount() ;
@@ -75,20 +75,20 @@ static QScriptValue debug_(QScriptContext* ctx, QScriptEngine* eng,bool bFull)
         }
         result.append(markarg);
     }
-    return eng->toScriptValue(result);
+    return engine->toScriptValue(result);
 }
 
-static QScriptValue debugShort(QScriptContext *ctx, QScriptEngine *eng)
+static QScriptValue debugShort(QScriptContext *ctx, QScriptEngine* engine)
 {
-    return debug_(ctx,eng,false);
+    return debug_(ctx,engine,false);
 }
 
-static QScriptValue debugLong(QScriptContext *ctx, QScriptEngine *eng)
+static QScriptValue debugLong(QScriptContext *ctx, QScriptEngine* engine)
 {
-    return debug_(ctx,eng,true);
+    return debug_(ctx,engine,true);
 }
 
-static QScriptValue qs_alert(QScriptContext* ctx, QScriptEngine* eng)
+static QScriptValue qs_alert(QScriptContext* ctx, QScriptEngine* /*engine */)
 {
     QMessageBox box(theApp->m_browser);
 
