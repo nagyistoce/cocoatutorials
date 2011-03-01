@@ -85,9 +85,12 @@ unix {
 }
 
 macx {
-    ICON          = QtSee.icns
-    INCLUDEPATH  += /usr/local/include
-    LIBS         += -L/usr/local/lib -lexiv2
+    ICON            = QtSee.icns
+    INCLUDEPATH    += /usr/local/include
+    LIBS           += -L/usr/local/lib -lexiv2
+#    QMAKE_LDFLAGS  += -arch i386
+#    QMAKE_CFLAGS   += -arch i386
+#    QMAKE_CXXFLAGS += -arch i386
 }
 
 
