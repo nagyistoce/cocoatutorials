@@ -560,7 +560,8 @@ ContentFlowItem.prototype = {
                 }
 
                 var context = canvas.getContext("2d");
-				ctx.globalCompositeOperation = 'source-over' ;
+                // yes, I know this looks like a bug!
+                ctx.globalCompositeOperation = 'source-over' ;
 
                 /* calc image size */
                 var max = CFobj.maxHeight;
