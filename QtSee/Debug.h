@@ -14,17 +14,18 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDateTime>
+#include <QStringList>
 
 #include <QScriptValue>
 #include <QScriptEngine>
 #include <QScriptContext>
 #include <QScriptValueIterator>
 
-#include <QStringList>
-
-void debugRegisterShort(QScriptEngine* engine,const char* name);
-void debugRegisterLong (QScriptEngine* engine,const char* name);
-void debugRegisterAlert(QScriptEngine* engine,const char* name);
+void debugRegisterShort (QScriptEngine* engine,const char* name);
+void debugRegisterLong  (QScriptEngine* engine,const char* name);
+void debugRegisterAlert (QScriptEngine* engine,const char* name);
+void debugRegisterGlobal(QScriptEngine* engine,const char* name);
+void debugRegisterSystem(QScriptEngine* engine,const char* name);
 
 #endif // DEBUG_H
 

@@ -105,11 +105,64 @@ static QScriptValue qs_alert(QScriptContext* ctx, QScriptEngine* /*engine */)
     return result;
 }
 
+static QString Q(QString s)
+{
+    const int nSpecial = 3;
+    QString special[nSpecial];
+    bool   bQuote = true ;
+
+    special[0] = ">" ;
+    special[1] = "2>";
+    special[2] = "|" ;
+
+    for ( int index = 0 ; bQuote && index < nSpecial ; index++ ) {
+        bQuote = s.indexOf(special[index])==-1 ;
+    }
+
+    if ( bQuote ) {
+        QString q('"');
+        s= q + s.replace('"',"\\\"") + q ;
+    }
+    return s;
+}
+
+static QScriptValue qs_system(QScriptContext* ctx, QScriptEngine* /*engine */)
+{
+    QScriptValue result ;
+    if ( ctx->argumentCount() ) {
+        QString cmd;
+        QString space(" ");
+        if ( ctx->argumentCount() == 1 ) {
+            cmd = ctx->argument(0).toString();
+        } else for ( int index = 0 ; index < ctx->argumentCount() ; index++ ) {
+            cmd += Q(ctx->argument(index).toString()) + space ;
+        }
+        if ( cmd.length() ) {
+            qDebug() << "cmd = " << cmd << "\n";
+            int nResult = system(SS(cmd));
+            result.setData(nResult) ;
+        }
+    }
+
+    return result;
+}
+
+void debugRegisterGlobal(QScriptEngine* engine,const char* name)
+{
+    QScriptValue global(engine->globalObject());
+    global.setProperty(name,global);
+}
+
+void debugRegisterSystem(QScriptEngine* engine,const char* name)
+{
+    QScriptValue global(engine->globalObject());
+    global.setProperty(name, engine->newFunction(::qs_system));
+}
+
 void debugRegisterAlert(QScriptEngine* engine,const char* name)
 {
-    engine->globalObject().setProperty(name, engine->newFunction(::qs_alert));
     QScriptValue global(engine->globalObject());
-    engine->globalObject().setProperty("$",global);
+    global.setProperty(name, engine->newFunction(::qs_alert));
 }
 
 void debugRegisterShort(QScriptEngine* engine,const char* name)
