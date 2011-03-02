@@ -410,9 +410,11 @@ void MainWindow::runScript(const QString& fileName, bool debug)
             debugRegisterShort (m_engine,"_");
             debugRegisterLong  (m_engine,"__");
             debugRegisterAlert (m_engine,"alert");
+            debugRegisterGlobal(m_engine,"$$");
+            debugRegisterSystem(m_engine,"system");
         }
     }
-    if ( !m_engine ) exifprint("") ;
+    if ( !m_engine ) Q_UNUSED(exifprint("")) ;
     if ( !m_engine ) return ;
 
     QFile file(fileName);
