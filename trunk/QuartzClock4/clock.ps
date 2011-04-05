@@ -1,0 +1,53 @@
+%!PS
+%%File: clock.ps
+/xc     280 def  % center of clock
+/yc     330 def
+/radius 250 def  % size
+/hour     1 def  % time at the moment (1:50:25)
+/minute  50 def
+/second  25 def
+
+/hour hour minute 60 div add def
+
+/blue  { 0 0  1 setrgbcolor } def
+/green { 0 1  0 setrgbcolor } def
+/red   { 1 0  0 setrgbcolor } def
+/blue  { 0 0  1 setrgbcolor } def
+/white { 1 1  1 setrgbcolor } def
+/linen { 1 1 .9 setrgbcolor } def
+/black { 0 0  0 setrgbcolor } def
+
+/mangle { 6 mul        } def % number mangle number % convert minutes to degrees
+/hangle { 5 mul mangle } def % number hangle number % convert hours to degrees
+
+/hand { % xc yx width angle length hand - % draw a hand on the clock face
+  gsave
+    /length exch def
+    /angle  exch def
+    /width  exch def
+    
+    width setlinewidth 1 setlinecap
+    moveto
+    length width sub angle sin mul
+    length width sub angle cos mul
+    rlineto stroke
+  grestore  
+} def
+
+20 20 translate
+
+% draw the page
+gsave linen 0 0 xc 2 mul yc 2 mul rectfill   grestore
+gsave black 0 0 xc 2 mul yc 2 mul rectstroke grestore
+
+% fill clock background, stroke the perimeter
+gsave blue                  xc yc radius 0 360 arc fill   grestore
+gsave black 30 setlinewidth xc yc radius 0 360 arc stroke grestore
+
+% draw the hands of the clock
+red   xc yc 18 hour   hangle radius hand
+green xc yc 10 minute mangle radius hand
+white xc yc  4 second mangle radius hand
+
+showpage
+%%EOF
