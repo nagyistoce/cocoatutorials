@@ -44,8 +44,12 @@
     NSLog(@"preferencesShow");
     if ( ! preferences )
            preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
-    if (   preferences )
+    if (   preferences ) {
         [  preferences showWindow : sender ];
+        preferences.windowView = [window contentView];
+        preferences.iconView = [[window contentView]myIcon];
+    }
+    
     [[[window contentView]myIcon]setDockedBackground:[NSColor greenColor]];
 }    
 

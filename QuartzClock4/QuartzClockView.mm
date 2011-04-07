@@ -137,6 +137,7 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
 @synthesize dockedBackground;
 @synthesize myIcon;
 
+
 - (void) dealloc 
 {
 	[self stopClockUpdates];
