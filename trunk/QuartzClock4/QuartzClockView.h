@@ -53,6 +53,7 @@
 // methods
 - (void) stopClockUpdates;
 - (void) startClockUpdates;
+- (void) update;
 
 @end
 
