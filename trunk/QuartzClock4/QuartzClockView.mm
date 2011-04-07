@@ -134,6 +134,8 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
 @synthesize isDocked;
 @synthesize initialLocation;
 @synthesize initialSize;
+@synthesize dockedBackground;
+@synthesize myIcon;
 
 - (void) dealloc 
 {
@@ -146,6 +148,8 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
 {
 	self = [super init];
 	isDocked = NO;
+    dockedBackground = [NSColor redColor];
+
 	return self ;
 }
 
@@ -165,6 +169,7 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
     myIcon = [[QuartzClockView alloc]init] ;
 	[myIcon setIsDocked:YES] ;
 	[[NSApp dockTile] setContentView: myIcon];
+    [[self window] setContentView:self];
 	[self startClockUpdates];
 }
 
@@ -354,7 +359,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[rectPath fill];
 		
 		// fill a blue circle
-		[[NSColor blueColor]setFill];
+        [self.dockedBackground setFill];
 		[circlePath fill];
 		
 		// stroke a white circle

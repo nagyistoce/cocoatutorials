@@ -29,6 +29,7 @@
 	BOOL				bCmdKey;
 	NSPoint				initialLocation;
     NSSize              initialSize;
+    NSColor*            dockedBackground;
 }
 
 // Class methods
@@ -37,15 +38,17 @@
 + (NSUInteger) borderToggle : (NSUInteger) now;
 
 // actions
-- (IBAction) saveAs       : (id) sender;
-- (IBAction) setTitleNow  : (id) sender;
-- (IBAction) borderToggle : (id) sender;
-- (IBAction) faceToggle   : (id) sender;
+- (IBAction) saveAs           : (id) sender;
+- (IBAction) setTitleNow      : (id) sender;
+- (IBAction) borderToggle     : (id) sender;
+- (IBAction) faceToggle       : (id) sender;
 
 // property getter/setters
-@property BOOL    isDocked;
-@property NSPoint initialLocation; // position of mouse at mouse down
-@property NSSize  initialSize;     // size of window at mouse down
+@property           BOOL     isDocked;
+@property           NSPoint  initialLocation; // position of mouse at mouse down
+@property           NSSize   initialSize;     // size of window at mouse down
+@property (copy)    NSColor* dockedBackground;
+@property (assign)  QuartzClockView*	myIcon;
 
 // methods
 - (void) stopClockUpdates;
