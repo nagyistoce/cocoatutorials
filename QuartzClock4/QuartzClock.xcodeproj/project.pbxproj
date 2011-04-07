@@ -13,6 +13,8 @@
 		8D11072D0486CEB800E47090 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.mm */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		A161A0A71342EEF800FCFFF3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A161A0A61342EEF800FCFFF3 /* Carbon.framework */; };
+		A17AB727134C3B9F00C1234B /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = A17AB726134C3B9F00C1234B /* Preferences.xib */; };
+		A17AB72A134C3DEA00C1234B /* QuartzClockPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = A17AB729134C3DEA00C1234B /* QuartzClockPreferences.mm */; };
 		A19899741182916100F3CD0F /* QuartzClock.icns in Resources */ = {isa = PBXBuildFile; fileRef = A19899731182916100F3CD0F /* QuartzClock.icns */; };
 		A19B4BF211827DAD001A421A /* QuartzClockView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A19B4BF111827DAD001A421A /* QuartzClockView.mm */; };
 		A19B4C0311827EB2001A421A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A19B4C0211827EB2001A421A /* Quartz.framework */; };
@@ -32,6 +34,9 @@
 		8D1107310486CEB800E47090 /* QuartzClock-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "QuartzClock-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* QuartzClock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuartzClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A161A0A61342EEF800FCFFF3 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = ../../../../../System/Library/Frameworks/Carbon.framework; sourceTree = "<group>"; };
+		A17AB726134C3B9F00C1234B /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
+		A17AB728134C3DEA00C1234B /* QuartzClockPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuartzClockPreferences.h; sourceTree = "<group>"; };
+		A17AB729134C3DEA00C1234B /* QuartzClockPreferences.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QuartzClockPreferences.mm; sourceTree = "<group>"; };
 		A19899731182916100F3CD0F /* QuartzClock.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = QuartzClock.icns; sourceTree = "<group>"; };
 		A19B4BF011827DAD001A421A /* QuartzClockView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuartzClockView.h; sourceTree = "<group>"; };
 		A19B4BF111827DAD001A421A /* QuartzClockView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QuartzClockView.mm; sourceTree = "<group>"; };
@@ -55,6 +60,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				A17AB728134C3DEA00C1234B /* QuartzClockPreferences.h */,
+				A17AB729134C3DEA00C1234B /* QuartzClockPreferences.mm */,
 				256AC3D80F4B6AC300CF3369 /* QuartzClockAppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* QuartzClockAppDelegate.mm */,
 				A19B4BF011827DAD001A421A /* QuartzClockView.h */,
@@ -119,6 +126,7 @@
 				8D1107310486CEB800E47090 /* QuartzClock-Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+				A17AB726134C3B9F00C1234B /* Preferences.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -182,6 +190,7 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				A19899741182916100F3CD0F /* QuartzClock.icns in Resources */,
+				A17AB727134C3B9F00C1234B /* Preferences.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +204,7 @@
 				8D11072D0486CEB800E47090 /* main.mm in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* QuartzClockAppDelegate.mm in Sources */,
 				A19B4BF211827DAD001A421A /* QuartzClockView.mm in Sources */,
+				A17AB72A134C3DEA00C1234B /* QuartzClockPreferences.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,15 +19,20 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "QuartzClockPreferences.h"
+
 
 @interface QuartzClockAppDelegate : NSObject
 //#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1060
 	<NSWindowDelegate,NSApplicationDelegate>
 //#endif
 {
+    QuartzClockPreferences*  preferences;
     NSWindow* window;
 }
+- (IBAction) preferencesShow  : (id) sender;
 
+@property (assign) QuartzClockPreferences*  preferences;
 @property (assign) IBOutlet NSWindow* window;
 
 @end

@@ -20,10 +20,12 @@
 
 #import "QuartzClockAppDelegate.h"
 #import "QuartzClockView.h"
+#import "QuartzClockPreferences.h"
 
 @implementation QuartzClockAppDelegate
 
 @synthesize window;
+@synthesize preferences;
 
 - (void) applicationDidFinishLaunching : (NSNotification *) aNotification
 { 
@@ -34,7 +36,18 @@
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     [window setBackgroundColor:background];
+    self.preferences = nil;
 }
+
+- (IBAction) preferencesShow  : (id) sender
+{
+    NSLog(@"preferencesShow");
+    if ( ! preferences )
+           preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
+    if (   preferences )
+        [  preferences showWindow : sender ];
+    [[[window contentView]myIcon]setDockedBackground:[NSColor greenColor]];
+}    
 
 - (BOOL) windowShouldClose : (id) sender // (NSNotification *) notification
 {
