@@ -23,9 +23,7 @@
 
 
 @interface QuartzClockAppDelegate : NSObject
-//#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1060
 	<NSWindowDelegate,NSApplicationDelegate>
-//#endif
 {
     QuartzClockPreferences*  preferences;
     NSWindow* window;
@@ -36,3 +34,6 @@
 @property (assign) IBOutlet NSWindow* window;
 
 @end
+
+// That's all Folks!
+////

@@ -1,5 +1,5 @@
 //
-//  QuartzClockPreferences.h
+//  Extensions.h
 //  This file is part of QuartzClock
 // 
 //  QuartzClock is free software: you can redistribute it and/or modify
@@ -18,28 +18,22 @@
 //  Written by Robin Mills, San Jose, CA, USA. 2010 http://clanmills.com
 //
 
-#import <Cocoa/Cocoa.h>
-#import "QuartzClockView.h"
+#import <Foundation/Foundation.h>
 
+NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* menus = nil );
 
-@interface QuartzClockPreferences : NSWindowController
-    <NSWindowDelegate>
-{
-    IBOutlet NSColorWell* colorWell;
-    
-    QuartzClockView* iconView;
-    QuartzClockView* windowView;
-@private
-    
-}
+// http://www.cocoadev.com/index.pl?TestForKeyDownOnLaunch
 
-@property (assign) NSColorWell*     colorWell;
-@property (assign) QuartzClockView* iconView;
-@property (assign) QuartzClockView* windowView;
+@interface NSEvent (ModifierKeys)
++ (BOOL) isControlKeyDown;
++ (BOOL) isOptionKeyDown;
++ (BOOL) isCommandKeyDown;
++ (BOOL) isShiftKeyDown;
+@end
 
-- (IBAction) changeColor:(id) sender;
-- (IBAction) changeColorSelected:(id) sender;
-
+// http://www.cocoadev.com/index.pl?GradientFill
+@interface NSBezierPath (GradientFill)
+- (void)fillGradientFrom : (NSColor*) inStartColor to : (NSColor*) inEndColor angle : (float)inAngle ;
 @end
 
 // That's all Folks!

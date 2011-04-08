@@ -36,24 +36,19 @@
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     [window setBackgroundColor:background];
-    self.preferences = nil;
+     preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
 }
 
-- (IBAction) preferencesShow  : (id) sender
+- (IBAction) preferencesShow : (id) sender
 {
     NSLog(@"preferencesShow");
-    if ( ! preferences )
-           preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
-    if (   preferences ) {
-        [  preferences showWindow : sender ];
-        preferences.windowView = [window contentView];
-        preferences.iconView = [[window contentView]myIcon];
-    }
-    
-    [[[window contentView]myIcon]setDockedBackground:[NSColor greenColor]];
+    [preferences showWindow:sender];
+    [preferences setWindowView:[window contentView]];
+    [preferences setIconView:[[window contentView]myIcon]];
+    [[preferences colorWell] setColor:[[preferences iconView] dockedBackground]];
 }    
 
-- (BOOL) windowShouldClose : (id) sender // (NSNotification *) notification
+- (BOOL) windowShouldClose : (id) sender
 {
     [window orderOut:nil];
 	return NO ;
@@ -83,3 +78,6 @@ static int min(int x,int y) { return x < y ? x : y ; }
 }
 
 @end
+
+// That's all Folks!
+////

@@ -25,6 +25,7 @@
 @implementation QuartzClockPreferences
 @synthesize iconView;
 @synthesize windowView;
+@synthesize colorWell;
 
 - (id) initWithWindow : (NSWindow *) aWindow
 {
@@ -38,7 +39,7 @@
     return self;
 }
 
-- (IBAction) changeColor:(id) sender
+- (IBAction) changeColor : (id) sender
 {
     NSLog(@"changeColor");
     [iconView setDockedBackground:[sender color]];
@@ -74,3 +75,6 @@
 }
 
 @end
+
+// That's all Folks!
+////

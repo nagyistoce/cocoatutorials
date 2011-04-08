@@ -19,6 +19,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+
 @interface QuartzClockView : NSView
 {
 	
@@ -57,3 +58,5 @@
 
 @end
 
+// That's all Folks!
+////
