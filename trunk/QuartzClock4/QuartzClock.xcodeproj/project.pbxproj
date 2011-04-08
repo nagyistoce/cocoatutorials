@@ -12,6 +12,7 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.mm */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		A14763BC134EDF2D007491B8 /* Extensions.mm in Sources */ = {isa = PBXBuildFile; fileRef = A14763BB134EDF2D007491B8 /* Extensions.mm */; };
 		A161A0A71342EEF800FCFFF3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A161A0A61342EEF800FCFFF3 /* Carbon.framework */; };
 		A17AB727134C3B9F00C1234B /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = A17AB726134C3B9F00C1234B /* Preferences.xib */; };
 		A17AB72A134C3DEA00C1234B /* QuartzClockPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = A17AB729134C3DEA00C1234B /* QuartzClockPreferences.mm */; };
@@ -33,6 +34,8 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* QuartzClock-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "QuartzClock-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* QuartzClock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuartzClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A14763BA134EDF2D007491B8 /* Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Extensions.h; sourceTree = "<group>"; };
+		A14763BB134EDF2D007491B8 /* Extensions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Extensions.mm; sourceTree = "<group>"; };
 		A161A0A61342EEF800FCFFF3 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = ../../../../../System/Library/Frameworks/Carbon.framework; sourceTree = "<group>"; };
 		A17AB726134C3B9F00C1234B /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
 		A17AB728134C3DEA00C1234B /* QuartzClockPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuartzClockPreferences.h; sourceTree = "<group>"; };
@@ -66,6 +69,8 @@
 				256AC3D90F4B6AC300CF3369 /* QuartzClockAppDelegate.mm */,
 				A19B4BF011827DAD001A421A /* QuartzClockView.h */,
 				A19B4BF111827DAD001A421A /* QuartzClockView.mm */,
+				A14763BA134EDF2D007491B8 /* Extensions.h */,
+				A14763BB134EDF2D007491B8 /* Extensions.mm */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -205,6 +210,7 @@
 				256AC3DA0F4B6AC300CF3369 /* QuartzClockAppDelegate.mm in Sources */,
 				A19B4BF211827DAD001A421A /* QuartzClockView.mm in Sources */,
 				A17AB72A134C3DEA00C1234B /* QuartzClockPreferences.mm in Sources */,
+				A14763BC134EDF2D007491B8 /* Extensions.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
