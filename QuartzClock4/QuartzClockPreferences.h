@@ -43,7 +43,7 @@
 - (IBAction) gradientSelected   : (id) sender;
 - (IBAction) handsSelected      : (id) sender;
 - (IBAction) rimSelected        : (id) sender;
-- (IBAction) ticksSelected      : (id) sender;
+- (IBAction) marksSelected      : (id) sender;
 
 - (IBAction) dockViewSelected   : (id) sender; // from the radio group
 - (IBAction) windowViewSelected : (id) sender;
@@ -52,7 +52,6 @@
 - (void)     syncColor          : (id) sender;
 
 // properties getters/setters
-@property (assign) NSColorWell*     colorWell;
 @property (assign) QuartzClockView* dockView;
 @property (assign) QuartzClockView* windowView;
 

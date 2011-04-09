@@ -24,6 +24,7 @@
 #import "Extensions.h"
 
 @implementation QuartzClockView
+
 @synthesize isDocked;
 @synthesize initialLocation;
 @synthesize initialSize;
@@ -31,7 +32,7 @@
 @synthesize gradientColor;
 @synthesize handsColor;
 @synthesize rimColor;
-@synthesize ticksColor;
+@synthesize marksColor;
 
 - (void) dealloc 
 {
@@ -45,7 +46,7 @@
     backgroundColor      = [NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:1.0];
     gradientColor        = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:0.0 alpha:1.0];
     handsColor           = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
-    ticksColor           = [NSColor colorWithCalibratedRed:0.5 green:0.5 blue:0.5 alpha:1.0];
+    [self setMarksColor:[NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0]];
     rimColor             = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
     NSLog(@"initColors %@",self);
 }
@@ -269,6 +270,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         [self.backgroundColor setFill];
 		[circlePath fill];
 		
+		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
 		// stroke a white circle
 		[rimColor setStroke];
 		[circlePath setLineWidth:margin/2];
