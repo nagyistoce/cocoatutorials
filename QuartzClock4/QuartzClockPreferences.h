@@ -34,6 +34,8 @@
     QuartzClockView*        selectedView;
     QuartzClockView*        dockView;
     QuartzClockView*        windowView;
+    
+    QuartzClockView*        clock;
 @private
     
 }
@@ -51,7 +53,8 @@
 - (IBAction) windowViewSelected : (id) sender;
 
 // methods
-- (void)     syncColor  : (id) sender;
+- (void)     syncColor    : (id) sender;
+- (void)     setYourClock : (QuartzClockView*) clock;
 
 // properties getters/setters
 @property (assign) NSColorWell*     colorWell;

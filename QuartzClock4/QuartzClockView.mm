@@ -255,7 +255,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 {
 	// NSLog(@"drawRect");
 	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	NSRect r = [self bounds] ;
+	NSRect r = dirtyRect ; // [self bounds] ;
 	
 	NSBezierPath* rectPath = [NSBezierPath bezierPath];
 	[rectPath appendBezierPathWithRect:r];

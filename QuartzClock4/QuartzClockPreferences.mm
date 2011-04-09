@@ -41,17 +41,17 @@
 
 - (void) syncColor : (id) sender
 {
-    NSLog(@"selectedElement = %@",NSStringFromSelector(selectedElement));
+//    NSLog(@"selectedElement = %@",NSStringFromSelector(selectedElement));
     if ( [selectedView respondsToSelector:selectedElement] ) {
         NSColor* color = [selectedView performSelector:selectedElement];
         //if ( [color class]==NSClassFromString(@"NSColor") ) {
             [colorWell setColor:color];
-            NSLog(@"Preferences::syncColor set the color %@",color);
+//            NSLog(@"Preferences::syncColor set the color %@",color);
         //} else {
         //    NSLog(@"Preferences::syncColor DID NOT set the color selectedView = %@ color = %@",selectedView,color);
         //}
-    } else {
-        NSLog(@"Preferences::syncColor object %@ doesn't respond to selector %@",selectedView,NSStringFromSelector(selectedElement));
+//    } else {
+//        NSLog(@"Preferences::syncColor object %@ doesn't respond to selector %@",selectedView,NSStringFromSelector(selectedElement));
     }
 }
 
@@ -125,6 +125,15 @@
 - (void) awakeFromNib
 {
     NSLog(@"QuartzClockPreferences::awakeFromNib window = %@",[self window]);
+    [self setWindowView:clock];
+    [self setDockView:[clock dockView]];
+    [self backgroundSelected:self];
+    [self dockViewSelected:self];
+}
+
+- (void) setYourClock:(QuartzClockView*) aClock;
+{
+    clock = aClock;
 }
 
 - (BOOL) windowShouldClose:(id)sender
