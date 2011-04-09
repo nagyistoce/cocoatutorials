@@ -30,7 +30,7 @@
 - (void) applicationDidFinishLaunching : (NSNotification *) aNotification
 { 
 	NSLog(@"applicationDidFinishLaunching");
-    NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:1.0 alpha:0.0];
+    NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
 	[window setDelegate:self];
 	[window setLevel:NSFloatingWindowLevel];
     [window setOpaque:NO];
@@ -42,10 +42,14 @@
 - (IBAction) preferencesShow : (id) sender
 {
     NSLog(@"preferencesShow");
-    [preferences showWindow:sender];
     [preferences setWindowView:[window contentView]];
-    [preferences setIconView:[[window contentView]myIcon]];
-    [[preferences colorWell] setColor:[[preferences iconView] dockedBackground]];
+    [preferences setDockView:[[window contentView]dockView]];
+    [preferences gradientSelected:self];
+    [preferences dockViewSelected:self];
+    [[preferences colorWell] setColor:[[preferences dockView] backgroundColor]];
+    [preferences showWindow:sender];
+    [preferences gradientSelected:nil];
+    [preferences dockViewSelected:nil];
 }    
 
 - (BOOL) windowShouldClose : (id) sender

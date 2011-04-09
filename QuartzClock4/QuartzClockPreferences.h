@@ -25,20 +25,38 @@
 @interface QuartzClockPreferences : NSWindowController
     <NSWindowDelegate>
 {
-    IBOutlet NSColorWell* colorWell;
+//  Outlets
+    IBOutlet NSColorWell*   colorWell;
     
-    QuartzClockView* iconView;
-    QuartzClockView* windowView;
+//  Properties
+    SEL                     colorSelector;
+    SEL                     selectedElement;
+    QuartzClockView*        selectedView;
+    QuartzClockView*        dockView;
+    QuartzClockView*        windowView;
 @private
     
 }
 
-@property (assign) NSColorWell*     colorWell;
-@property (assign) QuartzClockView* iconView;
-@property (assign) QuartzClockView* windowView;
+// actions
+- (IBAction) changeColor:(id) sender; // from the color well
 
-- (IBAction) changeColor:(id) sender;
-- (IBAction) changeColorSelected:(id) sender;
+- (IBAction) backgroundSelected : (id) sender; // from the radio group
+- (IBAction) gradientSelected   : (id) sender;
+- (IBAction) handsSelected      : (id) sender;
+- (IBAction) rimSelected        : (id) sender;
+- (IBAction) ticksSelected      : (id) sender;
+
+- (IBAction) dockViewSelected   : (id) sender; // from the radio group
+- (IBAction) windowViewSelected : (id) sender;
+
+// methods
+- (void)     syncColor  : (id) sender;
+
+// properties getters/setters
+@property (assign) NSColorWell*     colorWell;
+@property (assign) QuartzClockView* dockView;
+@property (assign) QuartzClockView* windowView;
 
 @end
 

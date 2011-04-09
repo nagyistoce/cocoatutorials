@@ -25,12 +25,15 @@
 	
 	// properties
 	NSTimer*			timer;
-	QuartzClockView*	myIcon;
+	QuartzClockView*	dockView;
 	BOOL				isDocked;
-	BOOL				bCmdKey;
 	NSPoint				initialLocation;
     NSSize              initialSize;
-    NSColor*            dockedBackground;
+    NSColor*            backgroundColor;
+    NSColor*            gradientColor;
+    NSColor*            handsColor;
+    NSColor*            rimColor;
+    NSColor*            ticksColor;
 }
 
 // Class methods
@@ -44,17 +47,21 @@
 - (IBAction) borderToggle     : (id) sender;
 - (IBAction) faceToggle       : (id) sender;
 
-// property getter/setters
-@property           BOOL     isDocked;
-@property           NSPoint  initialLocation; // position of mouse at mouse down
-@property           NSSize   initialSize;     // size of window at mouse down
-@property (copy)    NSColor* dockedBackground;
-@property (assign)  QuartzClockView*	myIcon;
-
 // methods
 - (void) stopClockUpdates;
 - (void) startClockUpdates;
 - (void) update;
+
+// property getter/setters
+@property           BOOL                isDocked;
+@property           NSPoint             initialLocation; // position of mouse at mouse down
+@property           NSSize              initialSize;     // size of window at mouse down
+@property (assign)  QuartzClockView*	dockView;
+@property (retain)  NSColor*            backgroundColor;
+@property (retain)  NSColor*            gradientColor;
+@property (retain)  NSColor*            handsColor;
+@property (retain)  NSColor*            rimColor;
+@property (retain)  NSColor*            ticksColor;
 
 @end
 
