@@ -8,7 +8,7 @@
 //  (at your option) any later version.
 //
 //  QuartzClock is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  but WITHOUT ANY WARRANTY= [NSColor redColor]; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 // 
@@ -27,41 +27,64 @@
 @synthesize isDocked;
 @synthesize initialLocation;
 @synthesize initialSize;
-@synthesize dockedBackground;
-@synthesize myIcon;
+@synthesize dockView;
+@synthesize backgroundColor;
+@synthesize gradientColor;
+@synthesize handsColor;
+@synthesize rimColor;
+@synthesize ticksColor;
 
 - (void) dealloc 
 {
 	[self stopClockUpdates];
-	[myIcon release];
 	[super dealloc];
+}
+
+- (void) initColors
+{
+	isDocked        = NO ;
+    backgroundColor      = [NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:1.0];
+    gradientColor        = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:0.0 alpha:1.0];
+    handsColor           = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+    ticksColor           = [NSColor colorWithCalibratedRed:0.5 green:0.5 blue:0.5 alpha:1.0];
+    rimColor             = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+    NSLog(@"initColors %@",self);
 }
 
 - (id) init
 {
 	self = [super init];
-	isDocked = NO;
-    dockedBackground = [NSColor redColor];
-
+    [self initColors];
 	return self ;
 }
 
-- (id) initWithFrame : (NSRect) frame {
+- (id) initWithFrame : (NSRect) frame
+{
 	NSLog(@"QuartzClockView initWithFrame");
-    
     self = [super initWithFrame:frame];
-    if (self) {
-		isDocked = NO;
-    }
+    [self initColors];
     return self;
 }
+
+- (id) initInDock
+{
+	NSLog(@"QuartzClockView initInDock");
+    self = [super init];
+    [self initColors];
+    return self;
+}
+
 
 - (void) awakeFromNib
 {
 	NSLog(@"QuartzClockView awakeFromNib");
-    myIcon = [[QuartzClockView alloc]init] ;
-	[myIcon setIsDocked:YES] ;
-	[[NSApp dockTile] setContentView: myIcon];
+
+    dockView = [[QuartzClockView alloc]initInDock] ;
+	dockView.isDocked = YES ;
+    dockView.backgroundColor = [NSColor redColor];
+    dockView.handsColor = [NSColor yellowColor];
+	[[NSApp dockTile] setContentView: dockView];
+
     [[self window] setContentView:self];
 	[self startClockUpdates];
 }
@@ -80,7 +103,6 @@
     [self.window setStyleMask:[QuartzClockView borderToggle : self.window.styleMask]];
 }
 
-
 - (IBAction) faceToggle:(id)sender
 {
     self.isDocked = !self.isDocked;
@@ -88,6 +110,7 @@
         mi.state = self.window.styleMask== self.isDocked ?  NSOnState : NSOffState;
     }    
 }
+
 // http://iphone-dev-tips.alterplay.com/2010/03/analog-clock-using-quartz-core.html
 static double rad(double deg)
 {
@@ -121,7 +144,8 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     }
 }
 
-- (void) mouseDown : (NSEvent*) theEvent {    
+- (void) mouseDown : (NSEvent*) theEvent
+{    
     // Get the mouse location in window coordinates.
     self.initialLocation = [theEvent locationInWindow];
     self.initialSize     = self.window.frame.size;
@@ -135,7 +159,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
            , self.initialLocation.x,initialLocation.y
            );
 */
- }
+}
 
 - (void) mouseDragged : (NSEvent*) theEvent
 {
@@ -252,30 +276,39 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[rectPath fill];
 		
 		// fill a blue circle
-        [self.dockedBackground setFill];
+        [self.backgroundColor setFill];
 		[circlePath fill];
 		
 		// stroke a white circle
-		[[NSColor whiteColor]setStroke];
+		[rimColor setStroke];
 		[circlePath setLineWidth:margin/2];
 		[circlePath stroke];
 		
 		// prepare to draw the hands in white
-		CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);
+        float r = [handsColor redComponent];
+        float g = [handsColor greenComponent];
+        float b = [handsColor blueComponent];
+        float a = [handsColor alphaComponent];
+        
+		CGContextSetRGBStrokeColor(context, r, g, b, a);
 	} else {
 		// gradient background and circle
 		// [rectPath   fillGradientFrom:[NSColor blueColor] to:[NSColor blueColor/*greenColor*/] angle:0.0];
-		[circlePath fillGradientFrom:[NSColor redColor] to:[NSColor yellowColor] angle:0.0];
+		[circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
 		
 		// stroke a white circle with a shadow
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
-		[[NSColor whiteColor]setStroke];
+		[rimColor setStroke];
 		[circlePath setLineWidth:margin];
 		[circlePath stroke];
 		CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
 		
 		// prepare to draw the hands in black
-		CGContextSetRGBStrokeColor(context, 0.0, 0.0, 0.0, 1.0);
+        float r = [handsColor redComponent];
+        float g = [handsColor greenComponent];
+        float b = [handsColor blueComponent];
+        float a = [handsColor alphaComponent];
+		CGContextSetRGBStrokeColor(context, r, g, b, a);
 	}
 	
 	CGContextSetLineCap(context,kCGLineCapRound);
