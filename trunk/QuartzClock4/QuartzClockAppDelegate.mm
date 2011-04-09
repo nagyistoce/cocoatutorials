@@ -36,20 +36,16 @@
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     [window setBackgroundColor:background];
-     preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
 }
 
 - (IBAction) preferencesShow : (id) sender
 {
     NSLog(@"preferencesShow");
-    [preferences setWindowView:[window contentView]];
-    [preferences setDockView:[[window contentView]dockView]];
-    [preferences gradientSelected:self];
-    [preferences dockViewSelected:self];
-    [[preferences colorWell] setColor:[[preferences dockView] backgroundColor]];
+    if ( !preferences ) {
+         preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
+        [preferences setYourClock:[window contentView]];
+    }
     [preferences showWindow:sender];
-    [preferences gradientSelected:nil];
-    [preferences dockViewSelected:nil];
 }    
 
 - (BOOL) windowShouldClose : (id) sender
