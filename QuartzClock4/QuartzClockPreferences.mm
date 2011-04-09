@@ -41,44 +41,31 @@
 
 - (void) syncColor : (id) sender
 {
-//    NSLog(@"selectedElement = %@",NSStringFromSelector(selectedElement));
-    if ( [selectedView respondsToSelector:selectedElement] ) {
-        NSColor* color = [selectedView performSelector:selectedElement];
-        //if ( [color class]==NSClassFromString(@"NSColor") ) {
-            [colorWell setColor:color];
-//            NSLog(@"Preferences::syncColor set the color %@",color);
-        //} else {
-        //    NSLog(@"Preferences::syncColor DID NOT set the color selectedView = %@ color = %@",selectedView,color);
-        //}
-//    } else {
-//        NSLog(@"Preferences::syncColor object %@ doesn't respond to selector %@",selectedView,NSStringFromSelector(selectedElement));
+    if ( [clock respondsToSelector:selectedElement] ) {
+        NSColor* color = [clock performSelector:selectedElement];
+        [colorWell setColor:color];
     }
+    [clock update];
 }
 
 - (IBAction) changeColor : (id) sender
 {
     // NSLog(@"changeColor");
-    if ([selectedView respondsToSelector:colorSelector] ) {
-        [selectedView performSelector   :colorSelector withObject:[sender color]];
-        [selectedView   update];
-        [self syncColor:sender];
-    } else {
-        NSLog(@"object %@ does not respond to %@",selectedView,NSStringFromSelector(colorSelector));
-    }
+    NSColor* color = [colorWell color];
+    [clock performSelector:colorSelector withObject:color];
+    [self syncColor:sender];
 }
 
 - (IBAction) windowViewSelected:(id)sender
 {
-    NSLog(@"windowViewSelected = %@",windowView);
-    selectedView = windowView;
-    
+    clock.isDocked = NO;
     [self syncColor:sender];
 }
 
 - (IBAction) dockViewSelected:(id)sender
 {
     NSLog(@"dockViewSelected = %@",dockView);
-    selectedView = dockView;
+    clock.isDocked = YES;
     [self syncColor:sender];
 }
 
@@ -117,7 +104,7 @@
 - (IBAction) ticksSelected:(id)sender
 {
     NSLog(@"ticksSelected");
-//    colorSelector   = @selector(setTicksColor:);
+//  colorSelector   = @selector(setTicksColor:);
 //    selectedElement = @selector(ticksColor);
 //    [self syncColor:sender];
 }
@@ -125,15 +112,6 @@
 - (void) awakeFromNib
 {
     NSLog(@"QuartzClockPreferences::awakeFromNib window = %@",[self window]);
-    [self setWindowView:clock];
-    [self setDockView:[clock dockView]];
-    [self backgroundSelected:self];
-    [self dockViewSelected:self];
-}
-
-- (void) setYourClock:(QuartzClockView*) aClock;
-{
-    clock = aClock;
 }
 
 - (BOOL) windowShouldClose:(id)sender
@@ -150,8 +128,9 @@
 - (void) windowDidLoad
 {
     [super windowDidLoad];
-   
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+    [self backgroundSelected:self];
+    [self dockViewSelected:self];
 }
 
 @end

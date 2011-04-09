@@ -27,7 +27,6 @@
 @synthesize isDocked;
 @synthesize initialLocation;
 @synthesize initialSize;
-@synthesize dockView;
 @synthesize backgroundColor;
 @synthesize gradientColor;
 @synthesize handsColor;
@@ -42,7 +41,7 @@
 
 - (void) initColors
 {
-	isDocked        = NO ;
+	isDocked             = NO ;
     backgroundColor      = [NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:1.0];
     gradientColor        = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:0.0 alpha:1.0];
     handsColor           = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
@@ -71,21 +70,13 @@
 	NSLog(@"QuartzClockView initInDock");
     self = [super init];
     [self initColors];
+	isDocked = YES ;
     return self;
 }
-
 
 - (void) awakeFromNib
 {
 	NSLog(@"QuartzClockView awakeFromNib");
-
-    dockView = [[QuartzClockView alloc]initInDock] ;
-	dockView.isDocked = YES ;
-    dockView.backgroundColor = [NSColor redColor];
-    dockView.handsColor = [NSColor yellowColor];
-	[[NSApp dockTile] setContentView: dockView];
-
-    [[self window] setContentView:self];
 	[self startClockUpdates];
 }
 
@@ -149,7 +140,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     // Get the mouse location in window coordinates.
     self.initialLocation = [theEvent locationInWindow];
     self.initialSize     = self.window.frame.size;
-    
 /*
     NSLog (@"QuartzClockView::mouseDown"
            @" Window pos %4.0f,%4.0f,size = %4.0f,%4.0f"

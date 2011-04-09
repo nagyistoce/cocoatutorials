@@ -24,18 +24,28 @@
 
 @implementation QuartzClockAppDelegate
 
+@synthesize windowView;
 @synthesize window;
+@synthesize dockView;
 @synthesize preferences;
 
 - (void) applicationDidFinishLaunching : (NSNotification *) aNotification
 { 
 	NSLog(@"applicationDidFinishLaunching");
     NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
+    [window setBackgroundColor:background];
 	[window setDelegate:self];
 	[window setLevel:NSFloatingWindowLevel];
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
-    [window setBackgroundColor:background];
+    
+    dockView = [[QuartzClockView alloc]initInDock] ;
+	dockView.isDocked = YES ;
+    dockView.backgroundColor = [NSColor redColor];
+    dockView.handsColor = [NSColor yellowColor];
+	[[NSApp dockTile] setContentView: dockView];
+    
+//    [windowView setContentView:self];
 }
 
 - (IBAction) preferencesShow : (id) sender
@@ -43,7 +53,7 @@
     NSLog(@"preferencesShow");
     if ( !preferences ) {
          preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
-        [preferences setYourClock:[window contentView]];
+        // [preferences setClocks:windowView dockView:dockView];
     }
     [preferences showWindow:sender];
 }    

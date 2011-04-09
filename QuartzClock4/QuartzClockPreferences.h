@@ -26,16 +26,12 @@
     <NSWindowDelegate>
 {
 //  Outlets
-    IBOutlet NSColorWell*   colorWell;
+    IBOutlet NSColorWell*       colorWell;
+    IBOutlet QuartzClockView*   clock;
     
 //  Properties
-    SEL                     colorSelector;
-    SEL                     selectedElement;
-    QuartzClockView*        selectedView;
-    QuartzClockView*        dockView;
-    QuartzClockView*        windowView;
-    
-    QuartzClockView*        clock;
+    SEL                         colorSelector;
+    SEL                         selectedElement;
 @private
     
 }
@@ -53,8 +49,7 @@
 - (IBAction) windowViewSelected : (id) sender;
 
 // methods
-- (void)     syncColor    : (id) sender;
-- (void)     setYourClock : (QuartzClockView*) clock;
+- (void)     syncColor          : (id) sender;
 
 // properties getters/setters
 @property (assign) NSColorWell*     colorWell;

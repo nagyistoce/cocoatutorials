@@ -25,7 +25,6 @@
 	
 	// properties
 	NSTimer*			timer;
-	QuartzClockView*	dockView;
 	BOOL				isDocked;
 	NSPoint				initialLocation;
     NSSize              initialSize;
@@ -48,6 +47,7 @@
 - (IBAction) faceToggle       : (id) sender;
 
 // methods
+- (id)   initInDock;
 - (void) stopClockUpdates;
 - (void) startClockUpdates;
 - (void) update;
@@ -56,7 +56,6 @@
 @property           BOOL                isDocked;
 @property           NSPoint             initialLocation; // position of mouse at mouse down
 @property           NSSize              initialSize;     // size of window at mouse down
-@property (assign)  QuartzClockView*	dockView;
 @property (retain)  NSColor*            backgroundColor;
 @property (retain)  NSColor*            gradientColor;
 @property (retain)  NSColor*            handsColor;
