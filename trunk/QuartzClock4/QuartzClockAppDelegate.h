@@ -25,13 +25,20 @@
 @interface QuartzClockAppDelegate : NSObject
 	<NSWindowDelegate,NSApplicationDelegate>
 {
-    QuartzClockPreferences*  preferences;
-    NSWindow* window;
+//  Outlets
+    IBOutlet QuartzClockView*   windowView;
+    IBOutlet NSWindow*          window;
+
+//  Properties
+    QuartzClockPreferences*     preferences;
+    QuartzClockView*            dockView;
 }
 - (IBAction) preferencesShow  : (id) sender;
 
 @property (assign) QuartzClockPreferences*  preferences;
-@property (assign) IBOutlet NSWindow* window;
+@property (assign) QuartzClockView*         windowView;
+@property (assign) QuartzClockView*         dockView;
+@property (assign) NSWindow*                window;
 
 @end
 
