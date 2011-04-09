@@ -24,7 +24,6 @@
 @implementation QuartzClockPreferences
 @synthesize dockView;
 @synthesize windowView;
-@synthesize colorWell;
 
 - (id) initWithWindow : (NSWindow *) aWindow
 {
@@ -64,7 +63,6 @@
 
 - (IBAction) dockViewSelected:(id)sender
 {
-    NSLog(@"dockViewSelected = %@",dockView);
     clock.isDocked = YES;
     [self syncColor:sender];
 }
@@ -101,12 +99,12 @@
     [self syncColor:sender];
 }
 
-- (IBAction) ticksSelected:(id)sender
+- (IBAction) marksSelected:(id)sender
 {
-    NSLog(@"ticksSelected");
-//  colorSelector   = @selector(setTicksColor:);
-//    selectedElement = @selector(ticksColor);
-//    [self syncColor:sender];
+    NSLog(@"marksSelected");
+    colorSelector   = @selector(setMarksColor:);
+    selectedElement = @selector(marksColor);
+    [self syncColor:sender];
 }
 
 - (void) awakeFromNib

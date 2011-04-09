@@ -32,7 +32,7 @@
     NSColor*            gradientColor;
     NSColor*            handsColor;
     NSColor*            rimColor;
-    NSColor*            ticksColor;
+    NSColor*            _marksColor;
 }
 
 // Class methods
@@ -60,7 +60,7 @@
 @property (retain)  NSColor*            gradientColor;
 @property (retain)  NSColor*            handsColor;
 @property (retain)  NSColor*            rimColor;
-@property (retain)  NSColor*            ticksColor;
+@property (retain)  NSColor*            marksColor;
 
 @end
 
