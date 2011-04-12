@@ -156,18 +156,26 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 {
     if ( [NSEvent isCommandKeyDown]  ) {
         NSPoint newMouse = [theEvent locationInWindow];
+        NSSize  size     = [self bounds].size;
         NSPoint oldMouse = self.initialLocation;
         
-        CGFloat dx =  (newMouse.x - oldMouse.x)/2;
-        CGFloat dy =  (newMouse.y - oldMouse.y)/2;
+        // adjust relative to center of circle
+        int X = newMouse.x > size.width/2.0  ? 1 : -1;
+        int Y = newMouse.y > size.height/2.0 ? 1 : -1;
+
+        CGFloat dx = X * (newMouse.x - oldMouse.x) /2.0 ;
+        CGFloat dy = Y * (newMouse.y - oldMouse.y) /2.0 ;
+
         NSRect  newFrame = [self.window frame];
-        newFrame.origin.x -= dx;
-        newFrame.origin.y -= dy;
-        newFrame.size.width += dx*2;
+        newFrame.origin.x    -= dx;
+        newFrame.origin.y    -= dy;
+        newFrame.size.width  += dx*2;
         newFrame.size.height += dy*2;
 
-    //  if ( newFrame.size.width  > 1800 ) newFrame.size.width  = 1800;
-    //  if ( newFrame.size.height > 1200 ) newFrame.size.height = 1200;
+        if ( newFrame.size.width  > 3000 ) newFrame.size.width  = 3000;
+        if ( newFrame.size.height > 2000 ) newFrame.size.height = 2000;
+        if ( newFrame.size.width  <   10 ) newFrame.size.width  =   10;
+        if ( newFrame.size.height <   10 ) newFrame.size.height =   10;
         
         [self.window setFrame:newFrame display:YES];
          self.initialSize     = newFrame.size;
