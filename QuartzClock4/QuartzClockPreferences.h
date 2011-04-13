@@ -37,7 +37,7 @@
 }
 
 // actions
-- (IBAction) changeColor:(id) sender; // from the color well
+- (IBAction) changeColor        : (id) sender; // from the color well
 
 - (IBAction) backgroundSelected : (id) sender; // from the radio group
 - (IBAction) gradientSelected   : (id) sender;

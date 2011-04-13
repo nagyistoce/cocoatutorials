@@ -39,13 +39,14 @@
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     
-    dockView = [[QuartzClockView alloc]initInDock] ;
-	dockView.isDocked = YES ;
+    dockView                  = [[QuartzClockView alloc]initInDock] ;
+	dockView.isDocked        = YES ;
     dockView.backgroundColor = [NSColor redColor];
-    dockView.handsColor = [NSColor yellowColor];
+    dockView.gradientColor   = [NSColor redColor];
+    dockView.rimColor        = [NSColor yellowColor];
+    dockView.handsColor      = [NSColor yellowColor];
+    dockView.marksColor      = [NSColor blueColor];
 	[[NSApp dockTile] setContentView: dockView];
-    
-//    [windowView setContentView:self];
 }
 
 - (IBAction) preferencesShow : (id) sender
@@ -80,11 +81,12 @@ static int min(int x,int y) { return x < y ? x : y ; }
 - (NSSize) windowWillResize : (NSWindow*) sender
 					 toSize : (NSSize) frameSize
 {
-	//int x = min(frameSize.width,frameSize.height);
-	//if ( 500 < x && x < 550 ) x = 512 ;
-	//NSSize result = { x,x };
+    
+	int x = min(frameSize.width,frameSize.height);
+	if ( 500 < x && x < 550 ) x = 512 ;
+	NSSize result = { x,x };
 	
-	return frameSize;
+	return result ; // frameSize;
 }
 
 @end
