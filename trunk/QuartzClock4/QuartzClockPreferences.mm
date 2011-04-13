@@ -30,9 +30,6 @@
     self = [super initWithWindow:aWindow];
     if ( self ) {
         // Initialization code here.
-        // self.window = aWindow;
-        // self.window.delegate = self;
-        //[colorWell setDelegate:self];
     }
     
     return self;

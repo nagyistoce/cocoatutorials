@@ -22,17 +22,8 @@
 
 @interface QuartzClockView : NSView
 {
-	
 	// properties
 	NSTimer*			timer;
-	BOOL				isDocked;
-	NSPoint				initialLocation;
-    NSSize              initialSize;
-    NSColor*            backgroundColor;
-    NSColor*            gradientColor;
-    NSColor*            handsColor;
-    NSColor*            rimColor;
-    NSColor*            _marksColor;
 }
 
 // Class methods

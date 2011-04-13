@@ -254,20 +254,20 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 {
 	// NSLog(@"drawRect");
 	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	NSRect r = dirtyRect ; // [self bounds] ;
+	NSRect rect = dirtyRect ; // [self bounds] ;
 	
 	NSBezierPath* rectPath = [NSBezierPath bezierPath];
-	[rectPath appendBezierPathWithRect:r];
+	[rectPath appendBezierPathWithRect:rect];
 	
-	int margin = larger(lesser(r.size.width /(isDocked?10:20),10) ,4) ;
+	int margin = larger(lesser(rect.size.width /(isDocked?10:20),10) ,4) ;
 	
-	r.origin.x    += margin   ;
-	r.origin.y	  += margin   ;
-	r.size.width  -= margin*2 ;
-	r.size.height -= margin*2 ;
+	rect.origin.x     += margin   ;
+	rect.origin.y	  += margin   ;
+	rect.size.width  -= margin*2 ;
+	rect.size.height -= margin*2 ;
 	
 	NSBezierPath* circlePath = [NSBezierPath bezierPath];
-	[circlePath appendBezierPathWithOvalInRect:r];
+	[circlePath appendBezierPathWithOvalInRect:rect];
 	
 	if ( isDocked ) {
 		// zap the background
@@ -276,7 +276,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		
 		// fill a blue circle
         [self.backgroundColor setFill];
-		[circlePath fill];
+		[circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
 		
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
 		// stroke a white circle
@@ -284,13 +284,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[circlePath setLineWidth:margin/2];
 		[circlePath stroke];
 		
-		// prepare to draw the hands in white
-        float r = [handsColor redComponent];
-        float g = [handsColor greenComponent];
-        float b = [handsColor blueComponent];
-        float a = [handsColor alphaComponent];
-        
-		CGContextSetRGBStrokeColor(context, r, g, b, a);
 	} else {
 		// gradient background and circle
 		// [rectPath   fillGradientFrom:[NSColor blueColor] to:[NSColor blueColor/*greenColor*/] angle:0.0];
@@ -303,13 +296,14 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[circlePath stroke];
 		CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
 		
-		// prepare to draw the hands in black
-        float r = [handsColor redComponent];
-        float g = [handsColor greenComponent];
-        float b = [handsColor blueComponent];
-        float a = [handsColor alphaComponent];
-		CGContextSetRGBStrokeColor(context, r, g, b, a);
 	}
+    // prepare to draw the hands in white
+    float r = [handsColor redComponent];
+    float g = [handsColor greenComponent];
+    float b = [handsColor blueComponent];
+    float a = [handsColor alphaComponent];
+    
+    CGContextSetRGBStrokeColor(context, r, g, b, a);
 	
 	CGContextSetLineCap(context,kCGLineCapRound);
 	
