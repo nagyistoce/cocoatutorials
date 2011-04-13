@@ -261,33 +261,54 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	
 	int margin = larger(lesser(rect.size.width /(isDocked?10:20),10) ,4) ;
 	
-	rect.origin.x     += margin   ;
-	rect.origin.y	  += margin   ;
+	rect.origin.x     += margin  ;
+	rect.origin.y	  += margin  ;
 	rect.size.width  -= margin*2 ;
 	rect.size.height -= margin*2 ;
-	
-	NSBezierPath* circlePath = [NSBezierPath bezierPath];
-	[circlePath appendBezierPathWithOvalInRect:rect];
+    
+    // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaDrawingGuide/AdvancedDrawing/AdvancedDrawing.html
+    BOOL bRadial = YES ;
+    
+    NSBezierPath* circlePath = [NSBezierPath bezierPath];
+    [circlePath appendBezierPathWithOvalInRect:rect];
 	
 	if ( isDocked ) {
 		// zap the background
 		[[NSColor clearColor] set];
 		[rectPath fill];
 		
-		// fill a blue circle
-        [self.backgroundColor setFill];
-		[circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
-		
+        if ( bRadial ) { // radial gradient 
+            NSRect bounds = [self bounds];
+            NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
+                                                                  endingColor:gradientColor
+                                     ];
+            NSPoint zeroPoint   = NSMakePoint(0,0);
+            [aGradient drawInBezierPath:circlePath relativeCenterPosition:zeroPoint];
+        } else {
+            // fill a blue circle
+            [self.backgroundColor setFill];
+            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
+        }
+	
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
 		// stroke a white circle
 		[rimColor setStroke];
 		[circlePath setLineWidth:margin/2];
 		[circlePath stroke];
-		
 	} else {
-		// gradient background and circle
-		// [rectPath   fillGradientFrom:[NSColor blueColor] to:[NSColor blueColor/*greenColor*/] angle:0.0];
-		[circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
+        if ( bRadial ) { // radial gradient 
+            NSRect bounds = [self bounds];
+            NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
+                                                                  endingColor:gradientColor
+                                     ];
+            
+            NSPoint zeroPoint   = NSMakePoint(0,0);
+            [aGradient drawInBezierPath:circlePath relativeCenterPosition:zeroPoint];
+        } else {
+            // gradient background and circle
+            // [rectPath   fillGradientFrom:[NSColor blueColor] to:[NSColor blueColor/*greenColor*/] angle:0.0];
+            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
+        }
 		
 		// stroke a white circle with a shadow
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
@@ -295,7 +316,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[circlePath setLineWidth:margin];
 		[circlePath stroke];
 		CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
-		
 	}
     // prepare to draw the hands in white
     float r = [handsColor redComponent];

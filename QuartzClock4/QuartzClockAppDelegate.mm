@@ -32,14 +32,19 @@
 - (void) applicationDidFinishLaunching : (NSNotification *) aNotification
 { 
 	NSLog(@"applicationDidFinishLaunching");
-    NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
+
+    [window setRepresentedFilename:@"QuartzClock"];
+    [[window windowController] setShouldCascadeWindows:NO];      // Tell the controller to not cascade its windows.
+    [window setFrameAutosaveName:[window representedFilename]]; 
+
+     NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
     [window setBackgroundColor:background];
 	[window setDelegate:self];
 	[window setLevel:NSFloatingWindowLevel];
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     
-    dockView                  = [[QuartzClockView alloc]initInDock] ;
+    dockView                 = [[QuartzClockView alloc]initInDock] ;
 	dockView.isDocked        = YES ;
     dockView.backgroundColor = [NSColor redColor];
     dockView.gradientColor   = [NSColor redColor];
