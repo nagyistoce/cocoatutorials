@@ -28,6 +28,8 @@
 //  Outlets
     IBOutlet NSColorWell*       colorWell;
     IBOutlet QuartzClockView*   clock;
+    IBOutlet NSButton*          marks;
+    IBOutlet NSButton*          radialGradient;
     
 //  Properties
     SEL                         colorSelector;

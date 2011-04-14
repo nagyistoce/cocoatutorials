@@ -44,7 +44,6 @@
 - (void) update;
 
 // property getter/setters
-@property           BOOL                isDocked;
 @property           NSPoint             initialLocation; // position of mouse at mouse down
 @property           NSSize              initialSize;     // size of window at mouse down
 @property (retain)  NSColor*            backgroundColor;

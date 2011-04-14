@@ -21,6 +21,7 @@
 #import "QuartzClockAppDelegate.h"
 #import "QuartzClockView.h"
 #import "QuartzClockPreferences.h"
+#import "Extensions.h"
 
 @implementation QuartzClockAppDelegate
 
@@ -33,9 +34,11 @@
 { 
 	NSLog(@"applicationDidFinishLaunching");
 
-    [window setRepresentedFilename:@"QuartzClock"];
-    [[window windowController] setShouldCascadeWindows:NO];      // Tell the controller to not cascade its windows.
-    [window setFrameAutosaveName:[window representedFilename]]; 
+    // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/WinPanel/Tasks/SavingWindowPosition.html%23//apple_ref/doc/uid/20000229-BCIDIHBB
+    // calling setRepresentedFilename causes a horrible icon to appear in the title bar!
+    // [window setTitleWithRepresentedFilename:@"QuartzClock"];
+    // [[window windowController] setShouldCascadeWindows:NO];      // Tell the controller to not cascade its windows.
+    // [window setFrameAutosaveName:[window representedFilename]];
 
      NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
     [window setBackgroundColor:background];
@@ -45,9 +48,8 @@
 	[window setStyleMask:[QuartzClockView borderNone]];
     
     dockView                 = [[QuartzClockView alloc]initInDock] ;
-	dockView.isDocked        = YES ;
-    dockView.backgroundColor = [NSColor redColor];
-    dockView.gradientColor   = [NSColor redColor];
+    dockView.backgroundColor = [NSColor blueColor];
+    dockView.gradientColor   = [NSColor blueColor];
     dockView.rimColor        = [NSColor yellowColor];
     dockView.handsColor      = [NSColor yellowColor];
     dockView.marksColor      = [NSColor blueColor];
@@ -59,7 +61,6 @@
     NSLog(@"preferencesShow");
     if ( !preferences ) {
          preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
-        // [preferences setClocks:windowView dockView:dockView];
     }
     [preferences showWindow:sender];
 }    
@@ -86,12 +87,11 @@ static int min(int x,int y) { return x < y ? x : y ; }
 - (NSSize) windowWillResize : (NSWindow*) sender
 					 toSize : (NSSize) frameSize
 {
-    
-	int x = min(frameSize.width,frameSize.height);
-	if ( 500 < x && x < 550 ) x = 512 ;
-	NSSize result = { x,x };
-	
-	return result ; // frameSize;
+    BOOL bSquare = [NSEvent isCommandKeyDown] || [NSEvent isOptionKeyDown] ;
+    int  x       = min(frameSize.width,frameSize.height); 
+//  if ( 500 < x && x < 550 ) x = 512 ;
+	NSSize square = NSMakeSize(x,x) ;
+	return bSquare ? square : frameSize ;
 }
 
 @end

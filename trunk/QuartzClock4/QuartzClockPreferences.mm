@@ -54,13 +54,11 @@
 
 - (IBAction) windowViewSelected:(id)sender
 {
-    clock.isDocked = NO;
     [self syncColor:sender];
 }
 
 - (IBAction) dockViewSelected:(id)sender
 {
-    clock.isDocked = YES;
     [self syncColor:sender];
 }
 
