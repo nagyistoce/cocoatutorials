@@ -32,6 +32,8 @@
 @synthesize handsColor;
 @synthesize rimColor;
 @synthesize marksColor;
+@synthesize radialGradient;
+@synthesize ignoreMouse;
 
 - (void) dealloc 
 {
@@ -41,6 +43,7 @@
 
 - (void) initColors
 {
+    radialGradient       = NO;
     backgroundColor      = [NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:1.0];
     gradientColor        = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:0.0 alpha:1.0];
     handsColor           = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
@@ -87,16 +90,21 @@
     return now == [QuartzClockView borderNone] ? [QuartzClockView borderMask] : [QuartzClockView borderNone] ;
 }
 
-- (void) borderToggle : (id) sender
+- (IBAction) borderToggle : (id) sender
 {
     [self.window setStyleMask:[QuartzClockView borderToggle : self.window.styleMask]];
 }
 
-- (IBAction) faceToggle:(id)sender
+- (IBAction) showHide : (id) sender;
 {
-    //for ( NSMenuItem* mi in menuFindByTitle([NSApp mainMenu],@"Gradient") ) {
-    //    mi.state = self.window.styleMask== self.isDocked ?  NSOnState : NSOffState;
-    //}    
+    if ( self.window.isVisible  ) {
+        [self.window orderOut:sender] ;
+    } else {
+        [self.window orderFront:sender] ;
+    }
+    for ( NSMenuItem* mi in menuFindByTitle([NSApp mainMenu],@"Clock") ) {
+        mi.state = self.window.styleMask == self.window.isVisible ?  NSOffState : NSOnState;
+    }
 }
 
 // http://iphone-dev-tips.alterplay.com/2010/03/analog-clock-using-quartz-core.html
@@ -151,6 +159,8 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 
 - (void) mouseDragged : (NSEvent*) theEvent
 {
+    if ( self.ignoreMouse ) return ;
+
     if ( [NSEvent isCommandKeyDown]  ) {
         NSPoint newMouse = [theEvent locationInWindow];
         NSSize  size     = [self bounds].size;
@@ -277,19 +287,19 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	rect.size.height -= margin*2 ;
     
     // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaDrawingGuide/AdvancedDrawing/AdvancedDrawing.html
-    BOOL bRadial = YES ;
     NSBezierPath* circlePath = [NSBezierPath bezierPath];
     [circlePath appendBezierPathWithOvalInRect:rect];
     
+    NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
+                                                          endingColor:gradientColor
+                             ];
+    
+    // zap the background
+    [[NSColor clearColor] set];
+    [rectPath fill];
+
 	if ( small ) {
-		// zap the background
-		[[NSColor clearColor] set];
-		[rectPath fill];
-		
-        if ( bRadial ) { // radial gradient 
-            NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
-                                                                  endingColor:gradientColor
-                                     ];
+        if ( radialGradient ) { 
             NSPoint zeroPoint   = NSMakePoint(0,0);
             [aGradient drawInBezierPath:circlePath relativeCenterPosition:zeroPoint];
         } else {
@@ -299,16 +309,13 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         }
         
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
+
 		// stroke a white circle
 		[rimColor setStroke];
 		[circlePath setLineWidth:margin/2];
 		[circlePath stroke];
 	} else {
-        if ( bRadial ) { // radial gradient 
-            NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
-                                                                  endingColor:gradientColor
-                                     ];
-            
+        if ( radialGradient ) { 
             NSPoint zeroPoint   = NSMakePoint(0,0);
             [aGradient drawInBezierPath:circlePath relativeCenterPosition:zeroPoint];
         } else {
@@ -325,6 +332,21 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
 	}
 
+	// get the time
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+	NSDate* now = [NSDate date];
+	int h = [[cal components:NSHourCalendarUnit fromDate:now] hour];
+	int m = [[cal components:NSMinuteCalendarUnit fromDate:now] minute];
+	int s = [[cal components:NSSecondCalendarUnit fromDate:now] second];
+	[cal release];
+	
+	// calculate the angle of the hands
+    BOOL isAM = h<12;
+	double hAlpha = rad((isAM?h:h-12)*30 +(30*m/60) -90);
+	double mAlpha = rad(m*6 -90);
+	double sAlpha = rad(s*6 -90);
+	
+	// draw the lands
     // prepare to draw the hands in white
     float r = [handsColor redComponent];
     float g = [handsColor greenComponent];
@@ -333,22 +355,8 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     
     CGContextSetRGBStrokeColor(context, r, g, b, a);
 	CGContextSetLineCap(context,kCGLineCapRound);
-	
-	NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-	NSDate* now = [NSDate date];
-	int h = [[cal components:NSHourCalendarUnit fromDate:now] hour];
-	int m = [[cal components:NSMinuteCalendarUnit fromDate:now] minute];
-	int s = [[cal components:NSSecondCalendarUnit fromDate:now] second];
-	[cal release];
-	
-	BOOL isAM = h<12;
-	
-	double hAlpha = rad((isAM?h:h-12)*30 +(30*m/60) -90);
-	
-	double mAlpha = rad(m*6 -90);
-	double sAlpha = rad(s*6 -90);
-	
-	[self drawLineForContext:context width:8.0 angle:hAlpha radiusx:self.frame.size.width/2.0 - 18 radiusy:self.frame.size.height/2.0 - 18];
+
+    [self drawLineForContext:context width:8.0 angle:hAlpha radiusx:self.frame.size.width/2.0 - 18 radiusy:self.frame.size.height/2.0 - 18];
 	[self drawLineForContext:context width:5.0 angle:mAlpha radiusx:self.frame.size.width/2.0 - 14 radiusy:self.frame.size.height/2.0 - 14];
 	[self drawLineForContext:context width:2.0 angle:sAlpha radiusx:self.frame.size.width/2.0 - 12 radiusy:self.frame.size.height/2.0 - 12];
 }

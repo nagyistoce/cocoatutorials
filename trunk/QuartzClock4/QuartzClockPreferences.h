@@ -30,6 +30,7 @@
     IBOutlet QuartzClockView*   clock;
     IBOutlet NSButton*          marks;
     IBOutlet NSButton*          radialGradient;
+    IBOutlet NSButton*          onTop;
     
 //  Properties
     SEL                         colorSelector;

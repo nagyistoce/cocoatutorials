@@ -124,6 +124,7 @@
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     [self backgroundSelected:self];
     [self dockViewSelected:self];
+     clock.ignoreMouse = YES;
 }
 
 @end
