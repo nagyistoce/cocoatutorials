@@ -8,7 +8,7 @@
 //  (at your option) any later version.
 //
 //  QuartzClock is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY= [NSColor redColor]; without even the implied warranty of
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 // 
@@ -25,7 +25,6 @@
 
 @implementation QuartzClockView
 
-@synthesize isDocked;
 @synthesize initialLocation;
 @synthesize initialSize;
 @synthesize backgroundColor;
@@ -42,7 +41,6 @@
 
 - (void) initColors
 {
-	isDocked             = NO ;
     backgroundColor      = [NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:1.0];
     gradientColor        = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:0.0 alpha:1.0];
     handsColor           = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
@@ -71,7 +69,6 @@
 	NSLog(@"QuartzClockView initInDock");
     self = [super init];
     [self initColors];
-	isDocked = YES ;
     return self;
 }
 
@@ -97,10 +94,9 @@
 
 - (IBAction) faceToggle:(id)sender
 {
-    self.isDocked = !self.isDocked;
-    for ( NSMenuItem* mi in menuFindByTitle([NSApp mainMenu],@"Gradient") ) {
-        mi.state = self.window.styleMask== self.isDocked ?  NSOnState : NSOffState;
-    }    
+    //for ( NSMenuItem* mi in menuFindByTitle([NSApp mainMenu],@"Gradient") ) {
+    //    mi.state = self.window.styleMask== self.isDocked ?  NSOnState : NSOffState;
+    //}    
 }
 
 // http://iphone-dev-tips.alterplay.com/2010/03/analog-clock-using-quartz-core.html
@@ -134,6 +130,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     for ( NSMenuItem* mi in menuFindByTitle([NSApp mainMenu],@"Border") ) {
         mi.state = self.window.styleMask== [QuartzClockView borderNone] ?  NSOffState : NSOnState;
     }
+    // [self.window setTitleWithRepresentedFilename:@"now"] ;
 }
 
 - (void) mouseDown : (NSEvent*) theEvent
@@ -158,6 +155,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         NSPoint newMouse = [theEvent locationInWindow];
         NSSize  size     = [self bounds].size;
         NSPoint oldMouse = self.initialLocation;
+        BOOL    bSquare  = [NSEvent isOptionKeyDown];
         
         // adjust relative to center of circle
         int X = newMouse.x > size.width/2.0  ? 1 : -1;
@@ -171,6 +169,16 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         newFrame.origin.y    -= dy;
         newFrame.size.width  += dx*2;
         newFrame.size.height += dy*2;
+
+        if ( bSquare ) {
+            CGFloat s = lesseR(newFrame.size.width,newFrame.size.height);
+            dx = (s-newFrame.size.width ) /2.0;
+            dy = (s-newFrame.size.height) /2.0;
+            newFrame.origin.x    -= dx;
+            newFrame.origin.y    -= dy;
+            newFrame.size.width  += dx*2;
+            newFrame.size.height += dy*2;
+        }
 
         if ( newFrame.size.width  > 3000 ) newFrame.size.width  = 3000;
         if ( newFrame.size.height > 2000 ) newFrame.size.height = 2000;
@@ -259,7 +267,9 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	NSBezierPath* rectPath = [NSBezierPath bezierPath];
 	[rectPath appendBezierPathWithRect:rect];
 	
-	int margin = larger(lesser(rect.size.width /(isDocked?10:20),10) ,4) ;
+    CGFloat radius = lesseR(rect.size.width,rect.size.height)/2.0;
+	BOOL    small = radius < 80.0;
+	int     margin = larger(lesser(rect.size.width /(small?10:20),10) ,4) ;
 	
 	rect.origin.x     += margin  ;
 	rect.origin.y	  += margin  ;
@@ -268,17 +278,15 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     
     // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaDrawingGuide/AdvancedDrawing/AdvancedDrawing.html
     BOOL bRadial = YES ;
-    
     NSBezierPath* circlePath = [NSBezierPath bezierPath];
     [circlePath appendBezierPathWithOvalInRect:rect];
-	
-	if ( isDocked ) {
+    
+	if ( small ) {
 		// zap the background
 		[[NSColor clearColor] set];
 		[rectPath fill];
 		
         if ( bRadial ) { // radial gradient 
-            NSRect bounds = [self bounds];
             NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
                                                                   endingColor:gradientColor
                                      ];
@@ -289,7 +297,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
             [self.backgroundColor setFill];
             [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
         }
-	
+        
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
 		// stroke a white circle
 		[rimColor setStroke];
@@ -297,7 +305,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[circlePath stroke];
 	} else {
         if ( bRadial ) { // radial gradient 
-            NSRect bounds = [self bounds];
             NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
                                                                   endingColor:gradientColor
                                      ];
@@ -317,6 +324,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[circlePath stroke];
 		CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
 	}
+
     // prepare to draw the hands in white
     float r = [handsColor redComponent];
     float g = [handsColor greenComponent];
@@ -324,7 +332,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     float a = [handsColor alphaComponent];
     
     CGContextSetRGBStrokeColor(context, r, g, b, a);
-	
 	CGContextSetLineCap(context,kCGLineCapRound);
 	
 	NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -350,6 +357,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 {
 	[self setNeedsDisplay:YES];
 	[[NSApp dockTile] display];
+    [self setTitleNow:nil];
 	// NSLog(@"update");
 }
 
