@@ -35,7 +35,7 @@
 - (IBAction) saveAs           : (id) sender;
 - (IBAction) setTitleNow      : (id) sender;
 - (IBAction) borderToggle     : (id) sender;
-- (IBAction) faceToggle       : (id) sender;
+- (IBAction) showHide         : (id) sender;
 
 // methods
 - (id)   initInDock;
@@ -51,6 +51,8 @@
 @property (retain)  NSColor*            handsColor;
 @property (retain)  NSColor*            rimColor;
 @property (retain)  NSColor*            marksColor;
+@property           BOOL                radialGradient;
+@property           BOOL                ignoreMouse;
 
 @end
 
