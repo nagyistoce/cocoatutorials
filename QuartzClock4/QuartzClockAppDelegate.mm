@@ -50,8 +50,8 @@
     dockView                 = [[QuartzClockView alloc]initInDock] ;
     dockView.backgroundColor = [NSColor blueColor];
     dockView.gradientColor   = [NSColor blueColor];
-    dockView.rimColor        = [NSColor yellowColor];
-    dockView.handsColor      = [NSColor yellowColor];
+    dockView.rimColor        = [NSColor whiteColor];
+    dockView.handsColor      = [NSColor whiteColor];
     dockView.marksColor      = [NSColor blueColor];
 	[[NSApp dockTile] setContentView: dockView];
 }

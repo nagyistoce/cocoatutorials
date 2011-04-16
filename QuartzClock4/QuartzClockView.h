@@ -53,6 +53,7 @@
 @property (retain)  NSColor*            marksColor;
 @property           BOOL                radialGradient;
 @property           BOOL                ignoreMouse;
+@property           float               angle;
 
 @end
 
