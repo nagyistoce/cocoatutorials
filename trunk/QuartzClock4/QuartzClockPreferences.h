@@ -31,6 +31,7 @@
     IBOutlet NSButton*          marks;
     IBOutlet NSButton*          radialGradient;
     IBOutlet NSButton*          onTop;
+    IBOutlet NSSlider*          angle;
     
 //  Properties
     SEL                         colorSelector;

@@ -34,6 +34,7 @@
 @synthesize marksColor;
 @synthesize radialGradient;
 @synthesize ignoreMouse;
+@synthesize angle;
 
 - (void) dealloc 
 {
@@ -43,12 +44,13 @@
 
 - (void) initColors
 {
-    radialGradient       = NO;
-    backgroundColor      = [NSColor colorWithCalibratedRed:1.0 green:0.0 blue:0.0 alpha:1.0];
-    gradientColor        = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:0.0 alpha:1.0];
-    handsColor           = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.0 alpha:1.0];
-    [self setMarksColor:[NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0]];
-    rimColor             = [NSColor colorWithCalibratedRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+    radialGradient  = YES;
+    angle           = 0.0;
+    backgroundColor = [NSColor redColor];
+    gradientColor   = [NSColor yellowColor];
+    handsColor      = [NSColor blackColor];
+    marksColor      = [NSColor blackColor];
+    rimColor        = [NSColor whiteColor];
     NSLog(@"initColors %@",self);
 }
 
@@ -297,15 +299,21 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     // zap the background
     [[NSColor clearColor] set];
     [rectPath fill];
+    
+    // this isn't right - however it'll do for now
+    CGFloat p = (angle-45.0)/180.0;
+    CGFloat W = p ; // p*rect.size.width/28.0;
+    CGFloat H = p ; // p*rect.size.height/28.0;
+    
+    NSPoint centrePos   = NSMakePoint(W,H) ;// NSMakePoint(0,0);
 
 	if ( small ) {
         if ( radialGradient ) { 
-            NSPoint zeroPoint   = NSMakePoint(0,0);
-            [aGradient drawInBezierPath:circlePath relativeCenterPosition:zeroPoint];
+            [aGradient drawInBezierPath:circlePath relativeCenterPosition:centrePos];
         } else {
             // fill a blue circle
             [self.backgroundColor setFill];
-            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
+            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:angle];
         }
         
 		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
@@ -316,12 +324,11 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 		[circlePath stroke];
 	} else {
         if ( radialGradient ) { 
-            NSPoint zeroPoint   = NSMakePoint(0,0);
-            [aGradient drawInBezierPath:circlePath relativeCenterPosition:zeroPoint];
+            [aGradient drawInBezierPath:circlePath relativeCenterPosition:centrePos];
         } else {
             // gradient background and circle
             // [rectPath   fillGradientFrom:[NSColor blueColor] to:[NSColor blueColor/*greenColor*/] angle:0.0];
-            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:0.0];
+            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:angle];
         }
 		
 		// stroke a white circle with a shadow
@@ -348,10 +355,10 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	
 	// draw the lands
     // prepare to draw the hands in white
-    float r = [handsColor redComponent];
-    float g = [handsColor greenComponent];
-    float b = [handsColor blueComponent];
-    float a = [handsColor alphaComponent];
+    float r = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]redComponent];
+    float g = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]greenComponent];
+    float b = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]blueComponent];
+    float a = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]alphaComponent];
     
     CGContextSetRGBStrokeColor(context, r, g, b, a);
 	CGContextSetLineCap(context,kCGLineCapRound);

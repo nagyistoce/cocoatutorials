@@ -41,6 +41,8 @@
         NSColor* color = [clock performSelector:selectedElement];
         [colorWell setColor:color];
     }
+    [clock setAngle:[angle floatValue]];
+    [clock setRadialGradient : [radialGradient state]==NSOnState ];
     [clock update];
 }
 
@@ -105,6 +107,7 @@
 - (void) awakeFromNib
 {
     NSLog(@"QuartzClockPreferences::awakeFromNib window = %@",[self window]);
+    [clock setAngle:[angle floatValue]];
 }
 
 - (BOOL) windowShouldClose:(id)sender
