@@ -97,6 +97,12 @@
     [self.window setStyleMask:[QuartzClockView borderToggle : self.window.styleMask]];
 }
 
+- (IBAction) borderMustHaveFrame : (id) sender
+{
+    if ( self.window.styleMask != [QuartzClockView borderMask] )
+        [self borderToggle:sender];
+}
+          
 - (IBAction) showHide : (id) sender;
 {
     if ( self.window.isVisible  ) {
@@ -140,7 +146,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     for ( NSMenuItem* mi in menuFindByTitle([NSApp mainMenu],@"Border") ) {
         mi.state = self.window.styleMask== [QuartzClockView borderNone] ?  NSOffState : NSOnState;
     }
-    // [self.window setTitleWithRepresentedFilename:@"now"] ;
 }
 
 - (void) mouseDown : (NSEvent*) theEvent
@@ -148,21 +153,13 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     // Get the mouse location in window coordinates.
     self.initialLocation = [theEvent locationInWindow];
     self.initialSize     = self.window.frame.size;
-/*
-    NSLog (@"QuartzClockView::mouseDown"
-           @" Window pos %4.0f,%4.0f,size = %4.0f,%4.0f"
-           @" mouse = %4.0f,%4.0f"
-           , b.origin.x,b.origin.y
-           , b.size.width,b.size.height
-           , self.initialLocation.x,initialLocation.y
-           );
-*/
 }
 
 - (void) mouseDragged : (NSEvent*) theEvent
 {
     if ( self.ignoreMouse ) return ;
 
+    NSRect  newFrame = [self.window frame];
     if ( [NSEvent isCommandKeyDown]  ) {
         NSPoint newMouse = [theEvent locationInWindow];
         NSSize  size     = [self bounds].size;
@@ -176,7 +173,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         CGFloat dx = X * (newMouse.x - oldMouse.x) /2.0 ;
         CGFloat dy = Y * (newMouse.y - oldMouse.y) /2.0 ;
 
-        NSRect  newFrame = [self.window frame];
         newFrame.origin.x    -= dx;
         newFrame.origin.y    -= dy;
         newFrame.size.width  += dx*2;
@@ -219,9 +215,10 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     
         // Move the window to the new location
         [self.window setFrameOrigin:newOrigin];
+        newFrame.origin = newOrigin;
     }
+    [[NSUserDefaults standardUserDefaults] setObject:NSStringFromRect(newFrame) forKey:@"ClockPos"];
 }
-
 
 - (void) rightMouseDown : (NSEvent*) theEvent {    
     NSLog(@"QuartzClockView::rightMouseDown");
