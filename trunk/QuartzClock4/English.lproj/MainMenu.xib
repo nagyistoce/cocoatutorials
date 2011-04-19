@@ -1363,7 +1363,6 @@
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
 				<string key="NSMaxSize">{1e+13, 1e+13}</string>
-				<string key="NSFrameAutosaveName">QuartzClock</string>
 			</object>
 			<object class="NSCustomObject" id="976324537">
 				<string key="NSClassName">QuartzClockAppDelegate</string>

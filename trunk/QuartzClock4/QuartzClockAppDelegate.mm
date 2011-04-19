@@ -30,12 +30,19 @@
 @synthesize dockView;
 @synthesize preferences;
 
+//- (void) applicationWillTerminate:(NSNotification *)notification
+//{
+//    NSLog(@"windows borderMask = %lu otherNone = %lu",[QuartzClockView borderMask],[QuartzClockView borderNone]);
+//}
+
 - (void) applicationDidFinishLaunching : (NSNotification *) aNotification
 { 
 	NSLog(@"applicationDidFinishLaunching");
 
     // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/WinPanel/Tasks/SavingWindowPosition.html%23//apple_ref/doc/uid/20000229-BCIDIHBB
     // calling setRepresentedFilename causes a horrible icon to appear in the title bar!
+    // and it seems to cause the window to "shrink" (it's smaller ever time the app starts)
+    // this is probably something to do with changing the styleMask.
     // [window setTitleWithRepresentedFilename:@"QuartzClock"];
     // [[window windowController] setShouldCascadeWindows:NO];      // Tell the controller to not cascade its windows.
     // [window setFrameAutosaveName:[window representedFilename]];
@@ -47,6 +54,10 @@
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     
+    NSString* clockPos    = [[NSUserDefaults standardUserDefaults] objectForKey:@"ClockPos"];
+    NSRect    windowFrame = [clockPos length] ?  NSRectFromString(clockPos) : NSMakeRect(400,400,400,400);
+    [window setFrame:windowFrame display:YES];
+
     dockView                 = [[QuartzClockView alloc]initInDock] ;
     dockView.backgroundColor = [NSColor blueColor];
     dockView.gradientColor   = [NSColor blueColor];
