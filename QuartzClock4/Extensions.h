@@ -31,10 +31,6 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
 + (BOOL) isShiftKeyDown;
 @end
 
-// http://www.cocoadev.com/index.pl?GradientFill
-@interface NSBezierPath (GradientFill)
-- (void)fillGradientFrom : (NSColor*) inStartColor to : (NSColor*) inEndColor angle : (float)inAngle ;
-@end
 
 // That's all Folks!
 ////
