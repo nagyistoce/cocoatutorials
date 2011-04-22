@@ -44,10 +44,10 @@
 
 - (void) initColors
 {
-    radialGradient  = YES;
+    radialGradient  = NO;
     angle           = 0.0;
-    backgroundColor = [NSColor redColor];
-    gradientColor   = [NSColor yellowColor];
+    backgroundColor = [NSColor yellowColor];
+    gradientColor   = [NSColor redColor];
     handsColor      = [NSColor blackColor];
     marksColor      = [NSColor blackColor];
     rimColor        = [NSColor whiteColor];
@@ -277,7 +277,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	[rectPath appendBezierPathWithRect:rect];
 	
     CGFloat radius = lesseR(rect.size.width,rect.size.height)/2.0;
-	BOOL    small = radius < 80.0;
+	BOOL    small  = radius < 70.0;
 	int     margin = larger(lesser(rect.size.width /(small?10:20),10) ,4) ;
 	
 	rect.origin.x     += margin  ;
@@ -289,80 +289,70 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     NSBezierPath* circlePath = [NSBezierPath bezierPath];
     [circlePath appendBezierPathWithOvalInRect:rect];
     
-    NSGradient* aGradient = [[NSGradient alloc] initWithStartingColor:backgroundColor
-                                                          endingColor:gradientColor
-                             ];
+    NSGradient* aGradient = [[NSGradient alloc] 
+    initWithStartingColor : backgroundColor
+              endingColor : gradientColor
+    ];
     
     // zap the background
     [[NSColor clearColor] set];
     [rectPath fill];
     
-    // this isn't right - however it'll do for now
-    CGFloat p = (angle-45.0)/180.0;
-    CGFloat W = p ; // p*rect.size.width/28.0;
-    CGFloat H = p ; // p*rect.size.height/28.0;
+    CGFloat W  = rect.size.width/2.0;
+    CGFloat H  = rect.size.height/2.0;
+    NSPoint C  = NSMakePoint(rect.origin.x+W,rect.origin.y+H) ;
+    CGFloat A  = ((int)angle-90)%360;
+    CGFloat R  = A*lesseR(W,H)/360.0 + lesseR(W,H);
+    NSLog(@"R = %f",R);
+
+    // fill circle
+    CGContextSaveGState(context);
+    [circlePath setClip];
+    if ( radialGradient ) { 
+        [aGradient drawFromCenter:C radius:0 toCenter:C radius:R options:0xff]; 
+    } else {
+        [aGradient drawInRect:rect angle:angle+90.0];
+    }
+    CGContextRestoreGState(context);
+    CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
+
+    // stroke the rim (a circle)
+	[rimColor setStroke];
+    [circlePath setLineWidth:small?margin/2:margin];
+    [circlePath stroke];
     
-    NSPoint centrePos   = NSMakePoint(W,H) ;// NSMakePoint(0,0);
-
-	if ( small ) {
-        if ( radialGradient ) { 
-            [aGradient drawInBezierPath:circlePath relativeCenterPosition:centrePos];
-        } else {
-            // fill a blue circle
-            [self.backgroundColor setFill];
-            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:angle];
-        }
-        
-		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
-
-		// stroke a white circle
-		[rimColor setStroke];
-		[circlePath setLineWidth:margin/2];
-		[circlePath stroke];
-	} else {
-        if ( radialGradient ) { 
-            [aGradient drawInBezierPath:circlePath relativeCenterPosition:centrePos];
-        } else {
-            // gradient background and circle
-            // [rectPath   fillGradientFrom:[NSColor blueColor] to:[NSColor blueColor/*greenColor*/] angle:0.0];
-            [circlePath fillGradientFrom:backgroundColor to:gradientColor angle:angle];
-        }
-		
-		// stroke a white circle with a shadow
-		CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
-		[rimColor setStroke];
-		[circlePath setLineWidth:margin];
-		[circlePath stroke];
-		CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
-	}
-
 	// get the time
     NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 	NSDate* now = [NSDate date];
-	int h = [[cal components:NSHourCalendarUnit fromDate:now] hour];
+	int h = [[cal components:NSHourCalendarUnit fromDate:now] hour] %12 ;
 	int m = [[cal components:NSMinuteCalendarUnit fromDate:now] minute];
 	int s = [[cal components:NSSecondCalendarUnit fromDate:now] second];
 	[cal release];
 	
-	// calculate the angle of the hands
-    BOOL isAM = h<12;
-	double hAlpha = rad((isAM?h:h-12)*30 +(30*m/60) -90);
+	// calculate angle of the hands
+	double hAlpha = rad(h*30 +(30*m/60) -90);
 	double mAlpha = rad(m*6 -90);
 	double sAlpha = rad(s*6 -90);
 	
-	// draw the lands
-    // prepare to draw the hands in white
+	// color of the lands
     float r = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]redComponent];
     float g = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]greenComponent];
     float b = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]blueComponent];
     float a = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]alphaComponent];
     
+    CGContextSetShadow(context, CGSizeMake(6.0f, -6.0f), 0.0f);
     CGContextSetRGBStrokeColor(context, r, g, b, a);
 	CGContextSetLineCap(context,kCGLineCapRound);
+    
+    // width of hands
+    float hour   = small ? 5.0 : 10.0;
+    float minute = small ? 3.0 :  6.0;
+    float second = 2.0 ;
 
-    [self drawLineForContext:context width:8.0 angle:hAlpha radiusx:self.frame.size.width/2.0 - 18 radiusy:self.frame.size.height/2.0 - 18];
-	[self drawLineForContext:context width:5.0 angle:mAlpha radiusx:self.frame.size.width/2.0 - 14 radiusy:self.frame.size.height/2.0 - 14];
-	[self drawLineForContext:context width:2.0 angle:sAlpha radiusx:self.frame.size.width/2.0 - 12 radiusy:self.frame.size.height/2.0 - 12];
+    // draw the hands
+    [self drawLineForContext:context width:hour   angle:hAlpha radiusx:self.frame.size.width/2.0 - 18 radiusy:self.frame.size.height/2.0 - 18];
+	[self drawLineForContext:context width:minute angle:mAlpha radiusx:self.frame.size.width/2.0 - 14 radiusy:self.frame.size.height/2.0 - 14];
+	[self drawLineForContext:context width:second angle:sAlpha radiusx:self.frame.size.width/2.0 - 12 radiusy:self.frame.size.height/2.0 - 12];
 }
 
 - (void) update
