@@ -285,15 +285,6 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	rect.size.width  -= margin*2 ;
 	rect.size.height -= margin*2 ;
     
-    // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaDrawingGuide/AdvancedDrawing/AdvancedDrawing.html
-    NSBezierPath* circlePath = [NSBezierPath bezierPath];
-    [circlePath appendBezierPathWithOvalInRect:rect];
-    
-    NSGradient* aGradient = [[NSGradient alloc] 
-    initWithStartingColor : backgroundColor
-              endingColor : gradientColor
-    ];
-    
     // zap the background
     [[NSColor clearColor] set];
     [rectPath fill];
@@ -301,10 +292,17 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     CGFloat W  = rect.size.width/2.0;
     CGFloat H  = rect.size.height/2.0;
     NSPoint C  = NSMakePoint(rect.origin.x+W,rect.origin.y+H) ;
-    CGFloat A  = ((int)angle-90)%360;
+    CGFloat A  = ((int)angle)%360;
     CGFloat R  = A*lesseR(W,H)/360.0 + lesseR(W,H);
-    NSLog(@"R = %f",R);
 
+    // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaDrawingGuide/AdvancedDrawing/AdvancedDrawing.html
+    NSBezierPath* circlePath = [NSBezierPath bezierPath];
+    [circlePath appendBezierPathWithOvalInRect:rect];
+    
+    NSGradient* aGradient = [[NSGradient alloc] 
+                             initWithStartingColor : backgroundColor
+                             endingColor : gradientColor
+                             ];
     // fill circle
     CGContextSaveGState(context);
     [circlePath setClip];
@@ -314,9 +312,9 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         [aGradient drawInRect:rect angle:angle+90.0];
     }
     CGContextRestoreGState(context);
-    CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
 
-    // stroke the rim (a circle)
+    // stroke the rim
+    CGContextSetShadow(context, CGSizeMake(4.0f, -4.0f), 2.0f);
 	[rimColor setStroke];
     [circlePath setLineWidth:small?margin/2:margin];
     [circlePath stroke];
@@ -345,9 +343,9 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	CGContextSetLineCap(context,kCGLineCapRound);
     
     // width of hands
-    float hour   = small ? 5.0 : 10.0;
-    float minute = small ? 3.0 :  6.0;
-    float second = 2.0 ;
+    float hour   = 10; // small ? 8.0 : 10.0;
+    float minute =  6; // small ? 5.0 :  6.0;
+    float second =  3;
 
     // draw the hands
     [self drawLineForContext:context width:hour   angle:hAlpha radiusx:self.frame.size.width/2.0 - 18 radiusy:self.frame.size.height/2.0 - 18];
