@@ -1,5 +1,5 @@
 //
-//  QuartzClockAppDelegate.m
+//  QuartzClockAppDelegate.mm
 //  This file is part of QuartzClock
 // 
 //  QuartzClock is free software: you can redistribute it and/or modify
@@ -39,6 +39,7 @@
 { 
 	NSLog(@"applicationDidFinishLaunching");
 
+    //
     // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/WinPanel/Tasks/SavingWindowPosition.html%23//apple_ref/doc/uid/20000229-BCIDIHBB
     // calling setRepresentedFilename causes a horrible icon to appear in the title bar!
     // and it seems to cause the window to "shrink" (it's smaller ever time the app starts)
@@ -46,8 +47,14 @@
     // [window setTitleWithRepresentedFilename:@"QuartzClock"];
     // [[window windowController] setShouldCascadeWindows:NO];      // Tell the controller to not cascade its windows.
     // [window setFrameAutosaveName:[window representedFilename]];
+    //
+    // Reporting bugs on Apple RADAR is a waste of time
+    // Reason: Apple employ Apple Lovers to say "Not a bug"
+    // Worse:  Apple Lovers always defend Apple
+    //         Apple Lovers are the reason that Windows Users detest the Mac
+    //
 
-     NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
+    NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
     [window setBackgroundColor:background];
 	[window setDelegate:self];
 	[window setLevel:NSFloatingWindowLevel];

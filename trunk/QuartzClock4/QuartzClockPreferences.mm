@@ -54,7 +54,7 @@
     [self syncColor:sender];
 }
 
-- (IBAction) windowViewSelected:(id)sender
+- (IBAction) windowViewSelected : (id) sender
 {
     [self syncColor:sender];
 }
@@ -64,7 +64,7 @@
     [self syncColor:sender];
 }
 
-- (IBAction) backgroundSelected:(id)sender
+- (IBAction) backgroundSelected : (id) sender
 {
     NSLog(@"backgroundSelected");
     colorSelector   = @selector(setBackgroundColor:);
@@ -72,7 +72,7 @@
     [self syncColor:sender];
 }
 
-- (IBAction) gradientSelected:(id)sender
+- (IBAction) gradientSelected : (id) sender
 {
     NSLog(@"gradientSelected");
     colorSelector   = @selector(setGradientColor:);
@@ -80,7 +80,7 @@
     [self syncColor:sender];
 }
 
-- (IBAction) handsSelected:(id)sender
+- (IBAction) handsSelected : (id) sender
 {
     NSLog(@"handsSelected");
     colorSelector   = @selector(setHandsColor:);
@@ -88,7 +88,7 @@
     [self syncColor:sender];
 }
 
-- (IBAction) rimSelected:(id)sender
+- (IBAction) rimSelected : (id) sender
 {
     NSLog(@"rimSelected");
     colorSelector   = @selector(setRimColor:);
@@ -96,7 +96,7 @@
     [self syncColor:sender];
 }
 
-- (IBAction) marksSelected:(id)sender
+- (IBAction) marksSelected : (id) sender
 {
     NSLog(@"marksSelected");
     colorSelector   = @selector(setMarksColor:);
@@ -110,7 +110,7 @@
     [clock setAngle:[angle floatValue]];
 }
 
-- (BOOL) windowShouldClose:(id)sender
+- (BOOL) windowShouldClose : (id) sender
 {
     [[self window] orderOut:nil];
     return NO;

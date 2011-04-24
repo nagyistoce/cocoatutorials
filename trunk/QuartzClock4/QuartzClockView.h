@@ -32,10 +32,10 @@
 + (NSUInteger) borderToggle : (NSUInteger) now;
 
 // actions
-- (IBAction) saveAs           : (id) sender;
-- (IBAction) setTitleNow      : (id) sender;
-- (IBAction) borderToggle     : (id) sender;
-- (IBAction) showHide         : (id) sender;
+- (IBAction) saveAs       : (id) sender;
+- (IBAction) setTitleNow  : (id) sender;
+- (IBAction) borderToggle : (id) sender;
+- (IBAction) showHide     : (id) sender;
 
 // methods
 - (id)   initInDock;

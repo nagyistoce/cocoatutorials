@@ -20,7 +20,7 @@
 
 #import <Foundation/Foundation.h>
 
-NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* menus = nil );
+NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* menus = nil);
 
 // http://www.cocoadev.com/index.pl?TestForKeyDownOnLaunch
 

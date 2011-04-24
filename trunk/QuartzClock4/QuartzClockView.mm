@@ -47,11 +47,10 @@
     radialGradient  = NO;
     angle           = 0.0;
     backgroundColor = [NSColor yellowColor];
-    gradientColor   = [NSColor redColor];
-    handsColor      = [NSColor blackColor];
-    marksColor      = [NSColor blackColor];
-    rimColor        = [NSColor whiteColor];
-    NSLog(@"initColors %@",self);
+    gradientColor   = [NSColor    redColor];
+    handsColor      = [NSColor  blackColor];
+    marksColor      = [NSColor  blackColor];
+    rimColor        = [NSColor  whiteColor];
 }
 
 - (id) init
@@ -63,7 +62,6 @@
 
 - (id) initWithFrame : (NSRect) frame
 {
-	NSLog(@"QuartzClockView initWithFrame");
     self = [super initWithFrame:frame];
     [self initColors];
     return self;
@@ -71,7 +69,6 @@
 
 - (id) initInDock
 {
-	NSLog(@"QuartzClockView initInDock");
     self = [super init];
     [self initColors];
     return self;
@@ -79,7 +76,6 @@
 
 - (void) awakeFromNib
 {
-	NSLog(@"QuartzClockView awakeFromNib");
 	[self startClockUpdates];
 }
 
@@ -192,11 +188,8 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         if ( newFrame.size.height > 2000 ) newFrame.size.height = 2000;
         if ( newFrame.size.width  <   10 ) newFrame.size.width  =   10;
         if ( newFrame.size.height <   10 ) newFrame.size.height =   10;
-        
-        [self.window setFrame:newFrame display:YES];
-         self.initialSize     = newFrame.size;
-         self.initialLocation = newMouse;
-        
+        self.initialSize     = newFrame.size;
+        self.initialLocation = newMouse;
     } else {
         NSRect  screenVisibleFrame = [[NSScreen mainScreen] visibleFrame];
         NSRect  windowFrame = [self.window frame];
@@ -214,9 +207,11 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         }
     
         // Move the window to the new location
-        [self.window setFrameOrigin:newOrigin];
         newFrame.origin = newOrigin;
     }
+//  newFrame.size.width  = largeR(newFrame.size.width ,30);
+//  newFrame.size.height = largeR(newFrame.size.height,30);
+    [self.window setFrame:newFrame display:YES];
     [[NSUserDefaults standardUserDefaults] setObject:NSStringFromRect(newFrame) forKey:@"ClockPos"];
 }
 
@@ -361,13 +356,13 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	// NSLog(@"update");
 }
 
--(void) startClockUpdates
+- (void) startClockUpdates
 {
 	[self update];
 	timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(update) userInfo:nil repeats:YES];
 }
 
--(void) stopClockUpdates
+- (void) stopClockUpdates
 {
 	[timer invalidate];
 	timer = nil;
