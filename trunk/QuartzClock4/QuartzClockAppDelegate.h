@@ -33,7 +33,7 @@
     QuartzClockPreferences*     preferences;
     QuartzClockView*            dockView;
 }
-- (IBAction) preferencesShow  : (id) sender;
+- (IBAction) preferencesShow : (id) sender;
 
 @property (assign) QuartzClockPreferences*  preferences;
 @property (assign) QuartzClockView*         windowView;

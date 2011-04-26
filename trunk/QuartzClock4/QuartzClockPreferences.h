@@ -28,6 +28,8 @@
 //  Outlets
     IBOutlet NSColorWell*       colorWell;
     IBOutlet QuartzClockView*   clock;
+    IBOutlet NSButton*          applyButton;
+    IBOutlet NSButton*          cancelButton;
     IBOutlet NSButton*          marks;
     IBOutlet NSButton*          radialGradient;
     IBOutlet NSButton*          onTop;
@@ -36,6 +38,8 @@
 //  Properties
     SEL                         colorSelector;
     SEL                         selectedElement;
+    BOOL                        bDirty;
+    BOOL                        bDock;
 @private
     
 }
@@ -52,12 +56,17 @@
 - (IBAction) dockViewSelected   : (id) sender; // from the radio group
 - (IBAction) windowViewSelected : (id) sender;
 
+- (IBAction) apply              : (id) sender; // standalone buttons
+- (IBAction) cancel             : (id) sender;
+
 // methods
 - (void)     syncColor          : (id) sender;
 
-// properties getters/setters
-@property (assign) QuartzClockView* dockView;
-@property (assign) QuartzClockView* windowView;
+@property (assign) QuartzClockView* clock;
+
+// property getters/setters
+- (BOOL)    bDirty ;
+- (void) setBDirty : (BOOL) b ;
 
 @end
 

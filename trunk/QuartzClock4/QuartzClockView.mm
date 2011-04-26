@@ -23,6 +23,9 @@
 #import "QuartzClockAppDelegate.h"
 #import "Extensions.h"
 
+QuartzClockView* theWindowView;
+QuartzClockView* theDockView;
+
 @implementation QuartzClockView
 
 @synthesize initialLocation;
@@ -221,20 +224,20 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 
 - (BOOL) acceptsFirstResponder
 {
-    NSLog(@"QuartzClockView::acceptsFirstResponder");
+//  NSLog(@"QuartzClockView::acceptsFirstResponder");
     return YES;
 }
 
 - (BOOL) acceptsFirstMouse : (NSEvent*) theEvent
 {
-    NSLog(@"QuartzClockView::acceptsFirstMouse");
+//  NSLog(@"QuartzClockView::acceptsFirstMouse");
     return YES;
 }
 
 - (void) mouseMoved : (NSEvent*) theEvent
 {
-    static int count = 0 ;
-    NSLog(@"QuartzClockView::mouseMoved %d",count++);
+//    static int count = 0 ;
+//  NSLog(@"QuartzClockView::mouseMoved %d",count++);
 }
 
 - (void) drawLineForContext : (const CGContextRef&) context
@@ -265,18 +268,18 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 - (void) drawRect : (NSRect) dirtyRect
 {
 	// NSLog(@"drawRect");
-	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	NSRect rect = dirtyRect ; // [self bounds] ;
-	
+	CGContextRef  context  = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	NSRect        rect     = dirtyRect ; // [self bounds] ;
 	NSBezierPath* rectPath = [NSBezierPath bezierPath];
+
 	[rectPath appendBezierPathWithRect:rect];
 	
     CGFloat radius = lesseR(rect.size.width,rect.size.height)/2.0;
 	BOOL    small  = radius < 70.0;
 	int     margin = larger(lesser(rect.size.width /(small?10:20),10) ,4) ;
 	
-	rect.origin.x     += margin  ;
-	rect.origin.y	  += margin  ;
+	rect.origin.x    += margin   ;
+	rect.origin.y	 += margin   ;
 	rect.size.width  -= margin*2 ;
 	rect.size.height -= margin*2 ;
     
@@ -327,7 +330,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	double mAlpha = rad(m*6 -90);
 	double sAlpha = rad(s*6 -90);
 	
-	// color of the lands
+	// color of hands
     float r = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]redComponent];
     float g = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]greenComponent];
     float b = [[handsColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace]blueComponent];
@@ -342,7 +345,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     float minute =  6; // small ? 5.0 :  6.0;
     float second =  3;
 
-    // draw the hands
+    // draw hands
     [self drawLineForContext:context width:hour   angle:hAlpha radiusx:self.frame.size.width/2.0 - 18 radiusy:self.frame.size.height/2.0 - 18];
 	[self drawLineForContext:context width:minute angle:mAlpha radiusx:self.frame.size.width/2.0 - 14 radiusy:self.frame.size.height/2.0 - 14];
 	[self drawLineForContext:context width:second angle:sAlpha radiusx:self.frame.size.width/2.0 - 12 radiusy:self.frame.size.height/2.0 - 12];
@@ -368,10 +371,21 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 	timer = nil;
 }
 
-
 - (IBAction) saveAs : (id) sender
 {
 	NSLog(@"QuartzClockView::saveAs");
+}
+
+- (void) copyFrom : (QuartzClockView*) other
+{
+    self.backgroundColor    = other.backgroundColor;
+    self.gradientColor      = other.gradientColor;
+    self.handsColor         = other.handsColor;
+    self.rimColor           = other.rimColor;
+    self.marksColor         = other.marksColor;
+    self.radialGradient     = other.radialGradient;
+    self.ignoreMouse        = other.ignoreMouse;
+    self.angle              = other.angle;
 }
 
 @end

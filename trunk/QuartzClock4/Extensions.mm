@@ -29,9 +29,9 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
         for ( int i = 0 ; i < [menu numberOfItems] ; i++ )
         {
             NSMenuItem* mi = [menu itemAtIndex:i];
-            if ( [mi hasSubmenu] )
+            if ( [mi hasSubmenu] ) {
                 menus = menuFindByTitle([mi submenu],title,menus);
-            else if ( [[mi title]isEqual:title] ) {
+            } else if ( [[mi title]isEqual:title] ) {
                 [menus addObject:mi];
             }
         }
@@ -44,26 +44,25 @@ NSMutableArray* menuFindByTitle(NSMenu* menu,NSString* title,NSMutableArray* men
 
 + (BOOL) isControlKeyDown
 {
-    return (GetCurrentKeyModifiers() & controlKey) != 0;
+    return (GetCurrentKeyModifiers() & controlKey)?YES:NO;
 }
 
 + (BOOL) isOptionKeyDown
 {
-    return (GetCurrentKeyModifiers() & optionKey) != 0;
+    return (GetCurrentKeyModifiers() & optionKey)?YES:NO;
 }
 
 + (BOOL) isCommandKeyDown
 {
-    return (GetCurrentKeyModifiers() & cmdKey) != 0;
+    return (GetCurrentKeyModifiers() & cmdKey)?YES:NO;
 }
 
 + (BOOL) isShiftKeyDown
 {
-    return (GetCurrentKeyModifiers() & shiftKey) != 0;
+    return (GetCurrentKeyModifiers() & shiftKey)?YES:NO;
 }
 
 @end
-
 
 // That's all Folks!
 ////
