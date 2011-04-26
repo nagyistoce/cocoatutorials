@@ -37,7 +37,7 @@
 
 - (void) applicationDidFinishLaunching : (NSNotification *) aNotification
 { 
-	NSLog(@"applicationDidFinishLaunching");
+//	NSLog(@"applicationDidFinishLaunching");
 
     //
     // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/WinPanel/Tasks/SavingWindowPosition.html%23//apple_ref/doc/uid/20000229-BCIDIHBB
@@ -72,15 +72,23 @@
     dockView.handsColor      = [NSColor whiteColor];
     dockView.marksColor      = [NSColor blueColor];
 	[[NSApp dockTile] setContentView: dockView];
+    
+    theDockView     = dockView;
+    theWindowView   = windowView;
 }
 
 - (IBAction) preferencesShow : (id) sender
 {
-    NSLog(@"preferencesShow");
+//  NSLog(@"preferencesShow");
     if ( !preferences ) {
          preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
     }
     [preferences showWindow:sender];
+
+    [[preferences clock]copyFrom:theDockView];
+    //[[preferences windowView]copyFrom:windowView];
+    
+    //preferences.windowView.handsColor = dockView.backgroundColor;
 }    
 
 - (BOOL) windowShouldClose : (id) sender
@@ -92,7 +100,7 @@
 - (BOOL) applicationShouldHandleReopen : (NSApplication*) theApplication
                      hasVisibleWindows : (BOOL) flag
 {
-    NSLog(@"applicationShouldHandleReopen");
+//  NSLog(@"applicationShouldHandleReopen");
     if ([window isVisible ] )
         [window orderOut:nil];
     else

@@ -42,6 +42,7 @@
 - (void) stopClockUpdates;
 - (void) startClockUpdates;
 - (void) update;
+- (void) copyFrom : (QuartzClockView*) other;
 
 // property getter/setters
 @property           NSPoint             initialLocation; // position of mouse at mouse down
@@ -56,6 +57,9 @@
 @property           float               angle;
 
 @end
+
+extern QuartzClockView* theWindowView;
+extern QuartzClockView* theDockView;
 
 // That's all Folks!
 ////

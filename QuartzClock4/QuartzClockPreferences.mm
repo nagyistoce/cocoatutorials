@@ -22,14 +22,25 @@
 #import  "QuartzClockView.h"
 
 @implementation QuartzClockPreferences
-@synthesize dockView;
-@synthesize windowView;
+@synthesize     clock;
 
-- (id) initWithWindow : (NSWindow *) aWindow
+- (BOOL) bDirty
+{
+    return bDirty;
+}
+
+- (void) setBDirty : (BOOL) b
+{
+     bDirty = b;
+    [applyButton setEnabled:b];
+    [cancelButton setEnabled:b];
+}
+
+- (id) initWithWindow : (NSWindow*) aWindow
 {
     self = [super initWithWindow:aWindow];
     if ( self ) {
-        // Initialization code here.
+        bDirty = NO;
     }
     
     return self;
@@ -50,23 +61,59 @@
 {
     // NSLog(@"changeColor");
     NSColor* color = [colorWell color];
+    [self setBDirty:YES];
     [clock performSelector:colorSelector withObject:color];
     [self syncColor:sender];
 }
 
 - (IBAction) windowViewSelected : (id) sender
 {
+    if ( bDirty ) {
+        switch (NSRunAlertPanel(@"Unsaved changes",@"what do you want",@"Apply Changes",@"Cancel",@"Forget Changes")) {
+            case  0  : return ; break ; // cancel
+            case  1  : [theDockView copyFrom:clock]; ; break ; // apply
+            case -1 : break ; // forget
+        }
+    }
+
+    [self setBDirty:NO];
+    [clock copyFrom:theWindowView];
     [self syncColor:sender];
+    bDock = NO;
 }
 
-- (IBAction) dockViewSelected:(id)sender
+- (IBAction) dockViewSelected : (id) sender
 {
+    if ( bDirty ) {
+        switch (NSRunAlertPanel(@"Unsaved changes",@"what do you want",@"Apply Changes",@"Cancel",@"Forget Changes")) {
+            case  0  : return ; break ; // cancel
+            case  1  : [theWindowView copyFrom:clock]; ; break ; // apply
+            case -1 : break ; // forget
+        }
+    }
+    
+    bDirty = NO;
+    [clock copyFrom:theWindowView];
     [self syncColor:sender];
+    bDock = YES;
+}
+
+- (IBAction) apply : (id) sender
+{
+    QuartzClockView* target = bDock ? theDockView : theWindowView ;
+    [target copyFrom:clock];   
+    [self setBDirty:NO];
+}
+
+- (IBAction) cancel: (id) sender
+{
+    QuartzClockView* target = bDock ? theDockView : theWindowView ;
+    [clock copyFrom:target];   
+    [self setBDirty:NO];
 }
 
 - (IBAction) backgroundSelected : (id) sender
 {
-    NSLog(@"backgroundSelected");
     colorSelector   = @selector(setBackgroundColor:);
     selectedElement = @selector(backgroundColor);
     [self syncColor:sender];
@@ -74,7 +121,6 @@
 
 - (IBAction) gradientSelected : (id) sender
 {
-    NSLog(@"gradientSelected");
     colorSelector   = @selector(setGradientColor:);
     selectedElement = @selector(gradientColor);
     [self syncColor:sender];
@@ -82,7 +128,6 @@
 
 - (IBAction) handsSelected : (id) sender
 {
-    NSLog(@"handsSelected");
     colorSelector   = @selector(setHandsColor:);
     selectedElement = @selector(handsColor);
     [self syncColor:sender];
@@ -90,7 +135,6 @@
 
 - (IBAction) rimSelected : (id) sender
 {
-    NSLog(@"rimSelected");
     colorSelector   = @selector(setRimColor:);
     selectedElement = @selector(rimColor);
     [self syncColor:sender];
@@ -98,7 +142,6 @@
 
 - (IBAction) marksSelected : (id) sender
 {
-    NSLog(@"marksSelected");
     colorSelector   = @selector(setMarksColor:);
     selectedElement = @selector(marksColor);
     [self syncColor:sender];
@@ -106,7 +149,6 @@
 
 - (void) awakeFromNib
 {
-    NSLog(@"QuartzClockPreferences::awakeFromNib window = %@",[self window]);
     [clock setAngle:[angle floatValue]];
 }
 
