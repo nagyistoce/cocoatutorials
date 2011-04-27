@@ -66,37 +66,57 @@
     [self syncColor:sender];
 }
 
-- (IBAction) windowViewSelected : (id) sender
+- (void) cancelChanges:(id) sender; 
 {
+    [windowMatrix selectCell:sender];
+}
+
+// I don't like this, however it's only way I could get to work
+// I send a message to myself to fix radio buttons later!
+- (void) changeTheClock : (BOOL) bSetWindows
+{
+    id whichCell = bSetWindows ? dockCell    : windowCell    ;
+    id copyView  = bSetWindows ? theWindowView : theDockView ;
+
     if ( bDirty ) {
-        switch (NSRunAlertPanel(@"Unsaved changes",@"what do you want",@"Apply Changes",@"Cancel",@"Forget Changes")) {
-            case  0  : return ; break ; // cancel
-            case  1  : [theDockView copyFrom:clock]; ; break ; // apply
-            case -1 : break ; // forget
+        switch (NSRunAlertPanel(@"Unsaved changes",@"what do you want to do?",@"Apply Changes",@"Cancel",@"Forget Changes")) {
+            case  0  : // cancel
+                [self performSelector:@selector(cancelChanges:) withObject:whichCell afterDelay:0.0];
+                return ;
+            break ; 
+            case  1  : // apply
+                [copyView copyFrom:clock];
+            break ; 
+            // case -1  : break ; // forget
         }
     }
 
     [self setBDirty:NO];
-    [clock copyFrom:theWindowView];
-    [self syncColor:sender];
-    bDock = NO;
+    [clock copyFrom:copyView];
+    [self syncColor:self];
+    bDock = !bSetWindows;
 }
 
-- (IBAction) dockViewSelected : (id) sender
+- (void) dockSelected : (NSNotification*) aNote
 {
-    if ( bDirty ) {
-        switch (NSRunAlertPanel(@"Unsaved changes",@"what do you want",@"Apply Changes",@"Cancel",@"Forget Changes")) {
-            case  0  : return ; break ; // cancel
-            case  1  : [theWindowView copyFrom:clock]; ; break ; // apply
-            case -1 : break ; // forget
-        }
-    }
-    
-    bDirty = NO;
-    [clock copyFrom:theWindowView];
-    [self syncColor:sender];
-    bDock = YES;
+    [self changeTheClock:NO];
 }
+
+- (void) windowSelected : (NSNotification*) aNote
+{
+    [self changeTheClock:YES];
+}
+
+- (void) awakeFromNib
+{
+    [clock setAngle:[angle floatValue]];
+    [dockCell setTarget:self];
+    [dockCell setAction:@selector(dockSelected:)];
+    [windowCell setTarget:self];
+    [windowCell setAction:@selector(windowSelected:)];
+    // [windowMatrix can
+}
+
 
 - (IBAction) apply : (id) sender
 {
@@ -147,11 +167,6 @@
     [self syncColor:sender];
 }
 
-- (void) awakeFromNib
-{
-    [clock setAngle:[angle floatValue]];
-}
-
 - (BOOL) windowShouldClose : (id) sender
 {
     [[self window] orderOut:nil];
@@ -169,7 +184,6 @@
 
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     [self backgroundSelected:self];
-    [self dockViewSelected:self];
      clock.ignoreMouse = YES;
 }
 

@@ -35,6 +35,10 @@
     IBOutlet NSButton*          onTop;
     IBOutlet NSSlider*          angle;
     
+    IBOutlet NSMatrix*          windowMatrix;
+    IBOutlet NSButtonCell*      dockCell;
+    IBOutlet NSButtonCell*      windowCell;
+    
 //  Properties
     SEL                         colorSelector;
     SEL                         selectedElement;
@@ -52,9 +56,6 @@
 - (IBAction) handsSelected      : (id) sender;
 - (IBAction) rimSelected        : (id) sender;
 - (IBAction) marksSelected      : (id) sender;
-
-- (IBAction) dockViewSelected   : (id) sender; // from the radio group
-- (IBAction) windowViewSelected : (id) sender;
 
 - (IBAction) apply              : (id) sender; // standalone buttons
 - (IBAction) cancel             : (id) sender;
