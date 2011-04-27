@@ -386,6 +386,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     self.radialGradient     = other.radialGradient;
     self.ignoreMouse        = other.ignoreMouse;
     self.angle              = other.angle;
+    [self update];
 }
 
 @end
