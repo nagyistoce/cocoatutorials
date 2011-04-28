@@ -60,10 +60,14 @@
 - (IBAction) apply              : (id) sender; // standalone buttons
 - (IBAction) cancel             : (id) sender;
 
+- (IBAction) saveIcon           : (id) sender;
+
 // methods
 - (void)     syncColor          : (id) sender;
+- (void)     changeTheClock     : (BOOL) bWindow;
 
 @property (assign) QuartzClockView* clock;
+@property (assign) NSMatrix*        windowMatrix;
 
 // property getters/setters
 - (BOOL)    bDirty ;

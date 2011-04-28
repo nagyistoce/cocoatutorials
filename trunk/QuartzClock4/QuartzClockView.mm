@@ -22,6 +22,7 @@
 #import "QuartzClockView.h"
 #import "QuartzClockAppDelegate.h"
 #import "Extensions.h"
+#import "IconFamily.h"
 
 QuartzClockView* theWindowView;
 QuartzClockView* theDockView;
@@ -212,8 +213,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
         // Move the window to the new location
         newFrame.origin = newOrigin;
     }
-//  newFrame.size.width  = largeR(newFrame.size.width ,30);
-//  newFrame.size.height = largeR(newFrame.size.height,30);
+
     [self.window setFrame:newFrame display:YES];
     [[NSUserDefaults standardUserDefaults] setObject:NSStringFromRect(newFrame) forKey:@"ClockPos"];
 }
@@ -374,6 +374,46 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
 - (IBAction) saveAs : (id) sender
 {
 	NSLog(@"QuartzClockView::saveAs");
+#if 0   
+    // NSView* view = theWindowView ;
+/*
+    [view imageRepresentationType:
+    NSImage * i = [[NSImage alloc] initWithSize:[view frame].size];
+     
+    NSImage* i = [NSImage alloc]initWithData:[NSData * d = [i TIFFRepresentation];
+    [i lockFocus];
+    if ([view lockFocusIfCanDrawInContext:[NSGraphicsContext currentContext]]) {
+        [view displayRectIgnoringOpacity:[view frame] inContext:[NSGraphicsContext currentContext]];
+        [view unlockFocus];
+    }
+    [i unlockFocus];
+*/                                              
+    NSImage* screenshot = [[[NSImage alloc] initWithSize:NSMakeSize(512,512)]autorelease];
+    [screenshot setFlipped:YES];
+    [screenshot lockFocus];
+    NSGraphicsContext*  graphicsContext = [NSGraphicsContext currentContext];
+    CGContextRef        contextRef      = (CGContextRef) [graphicsContext graphicsPort];
+    NSSize      scale = NSMakeSize(512.0/self.frame.size.width,512.0/self.frame.size.height);
+    CGContextScaleCTM(contextRef, scale.width, scale.height);
+    [theWindowView drawRect: [self frame]];
+    [screenshot unlockFocus];
+    IconFamily* imageAsIcon = [[IconFamily alloc] initWithThumbnailsOfImage:screenshot];
+
+//  NSData * d = [screenshot TIFFRepresentation];
+//  [d writeToFile:@"/path/to/my/test.tiff" atomically:YES];
+    
+    NSSavePanel * sp = [NSSavePanel savePanel];
+    [sp setTitle:@"Save File"];
+    [sp setAllowedFileTypes:[NSArray arrayWithObject:@"icns"]];
+    [sp setAllowsOtherFileTypes:NO];
+    NSInteger returnCode = [sp runModal];
+    if (returnCode == NSFileHandlingPanelOKButton) {
+        NSURL * chosenURL = [sp URL];
+        [imageAsIcon writeToFile:[chosenURL path]];
+        [[NSWorkspace sharedWorkspace] openURL:chosenURL];
+    }
+#endif
+    
 }
 
 - (void) copyFrom : (QuartzClockView*) other
