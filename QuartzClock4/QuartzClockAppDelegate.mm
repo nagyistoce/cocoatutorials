@@ -84,11 +84,6 @@
          preferences = [[QuartzClockPreferences alloc]initWithWindowNibName:@"Preferences"];
     }
     [preferences showWindow:sender];
-
-    [[preferences clock]copyFrom:theDockView];
-    //[[preferences windowView]copyFrom:windowView];
-    
-    //preferences.windowView.handsColor = dockView.backgroundColor;
 }    
 
 - (BOOL) windowShouldClose : (id) sender

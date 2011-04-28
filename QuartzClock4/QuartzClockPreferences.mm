@@ -20,9 +20,11 @@
 
 #import  "QuartzClockPreferences.h"
 #import  "QuartzClockView.h"
+#import  "IconFamily.h"
 
 @implementation QuartzClockPreferences
 @synthesize     clock;
+@synthesize     windowMatrix;
 
 - (BOOL) bDirty
 {
@@ -114,9 +116,7 @@
     [dockCell setAction:@selector(dockSelected:)];
     [windowCell setTarget:self];
     [windowCell setAction:@selector(windowSelected:)];
-    // [windowMatrix can
 }
-
 
 - (IBAction) apply : (id) sender
 {
@@ -185,6 +185,41 @@
     // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     [self backgroundSelected:self];
      clock.ignoreMouse = YES;
+}
+
+- (IBAction) saveIcon : (id) sender
+{
+    // Take a snap of the clock into an NSImage (256 or 512) NSImage
+    const NSUInteger size  = 512;
+    NSRect           frame = NSMakeRect(0,0,size,size);
+    NSImage*         snap  = [[[NSImage alloc] initWithSize:frame.size]autorelease];
+
+    // Create a newClock to fill the snap frame (and copy its props from clock)
+    QuartzClockView* newClock = [[[QuartzClockView alloc]initWithFrame:frame]autorelease];
+    [newClock copyFrom:clock];
+    
+    // Draw the newClock into the snap
+    [snap setFlipped:YES];
+    [snap lockFocus];
+    [newClock drawRect: [newClock frame]];
+    [snap unlockFocus];
+    
+    // Convert to an Icon
+    IconFamily* snapIcon = [[IconFamily alloc] initWithThumbnailsOfImage:snap];
+    
+    // Run a save panel
+    NSSavePanel* save = [NSSavePanel savePanel];
+    [save setTitle:@"Save Icon"];
+    [save setAllowedFileTypes:[NSArray arrayWithObject:@"icns"]];
+    [save setAllowsOtherFileTypes:NO];
+    NSInteger returnCode = [save runModal];
+    
+    // Save the icon and open it with the finder
+    if (returnCode == NSFileHandlingPanelOKButton) {
+        NSURL * chosenURL = [save URL];
+        [snapIcon writeToFile:[chosenURL path]];
+        [[NSWorkspace sharedWorkspace] openURL:chosenURL];
+    }
 }
 
 @end
