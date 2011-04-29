@@ -424,7 +424,7 @@ static CGFloat  largeR(CGFloat a,CGFloat b) { return a > b ? a : b ; }
     self.rimColor           = other.rimColor;
     self.marksColor         = other.marksColor;
     self.radialGradient     = other.radialGradient;
-    self.ignoreMouse        = other.ignoreMouse;
+//  self.ignoreMouse        = other.ignoreMouse;
     self.angle              = other.angle;
     [self update];
 }
