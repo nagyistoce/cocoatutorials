@@ -69,10 +69,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				A125EFFA13691D3C00FAC975 /* NSString+CarbonFSRefCreation.m */,
-				A125EFFB13691D3C00FAC975 /* NSString+CarbonFSRefCreation.h */,
-				A125EFFC13691D3C00FAC975 /* IconFamily.m */,
-				A125EFFD13691D3C00FAC975 /* IconFamily.h */,
 				A17AB728134C3DEA00C1234B /* QuartzClockPreferences.h */,
 				A17AB729134C3DEA00C1234B /* QuartzClockPreferences.mm */,
 				256AC3D80F4B6AC300CF3369 /* QuartzClockAppDelegate.h */,
@@ -117,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
+				A13C0FA5136BE38B00119FA3 /* IconFamilyLibrary */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -153,6 +150,17 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A13C0FA5136BE38B00119FA3 /* IconFamilyLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				A125EFFA13691D3C00FAC975 /* NSString+CarbonFSRefCreation.m */,
+				A125EFFB13691D3C00FAC975 /* NSString+CarbonFSRefCreation.h */,
+				A125EFFC13691D3C00FAC975 /* IconFamily.m */,
+				A125EFFD13691D3C00FAC975 /* IconFamily.h */,
+			);
+			name = IconFamilyLibrary;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
