@@ -19,31 +19,31 @@ build.sh	       build (works on Mac and maybe on Linux)
 
 Programs
 --------
-age        Age of file
-args       echo the arguments to stdout
-bom        writes a bom marker in a file
-cet        pipes stdin to the editor (in ce.cpp, which I haven't provided!)
-char       convert decimal to char
-crfile     something to do with cr and lf (can't remember)
-crlink     reverses the order of the ln -s target link to a more natural order
-crpipe     can't remember
-detab      removed tabs from files
-dmpf       dumps in ascii
-farmer     reads from the internet
-fstat      gets a file stat information
-getenv     get the environment
-hello      test program
-hex        convert decimal to hex
-linky      test bed
-localtim   print time in locale
-lstat      something to do with stat
-nocr       removes cr from files
-norm       normalizes files (detabs and fixes line endings)
-pathname   convert relative path to abs path
-pong       variant of ping
-system     runs command via system()
-test       test 
-testc      another test
+age                Age of file
+args               echo the arguments to stdout
+bom                writes a bom marker in a file
+cet                pipes stdin to the editor (in ce.cpp, which I haven't provided!)
+char               convert decimal to char
+crfile             something to do with cr and lf (can't remember)
+crlink             reverses the order of the ln -s target link to a more natural order
+crpipe             can't remember
+detab              removed tabs from files
+dmpf               dumps in ascii
+farmer             reads from the internet
+fstat              gets a file stat information
+getenv             get the environment
+hello              test program
+hex                convert decimal to hex
+linky              test bed
+localtim           print time in locale
+lstat              something to do with stat
+nocr               removes cr from files
+norm               normalizes files (detabs and fixes line endings)
+pathname           convert relative path to abs path
+pong               variant of ping
+system             runs command via system()
+test               test 
+testc              another test
 timestamp          converts an integer time into a string
 wd                 print the name of the current directory (like wd on the Apollo)
 
@@ -52,8 +52,8 @@ Scripts
 
 build.sh           Builds the cpp code
 build_script.sh    Can't remember
-cm.sh
-combine.sh
+cm.sh              Wrapper for cmake
+combine.sh         
 diskuse.sh
 fixvmware.sh
 nobananas.sh       This gets rid of files that end in ~ (cleans up after Kate)
