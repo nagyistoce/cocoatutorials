@@ -1,1 +1,0 @@
-curl sftp://rmills:Largs12%40@localhost $* # --trace -

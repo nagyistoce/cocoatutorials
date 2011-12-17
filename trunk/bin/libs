@@ -1,5 +1,0 @@
-#!/bin/csh
-setenv DIRECTORY ${1}
-alias  finder 'find ${DIRECTORY} -name \!* -exec ls -altd {} \;'
-finder "*.a" ; finder "*.framework"
-

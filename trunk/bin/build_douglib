@@ -1,9 +1,0 @@
-%!/bin/sh
-cd /Scripting/gptech/scriptobjects/public/samplecode/douglib/build/xcode2
-# clean the targets
-xcodebuild -project douglib.xcodeproj -target douglib -configuration debug clean
-xcodebuild -project douglib.xcodeproj -target douglib -configuration release clean
-
-# now build
-xcodebuild -project douglib.xcodeproj -target douglib -configuration debug
-xcodebuild -project douglib.xcodeproj -target douglib -configuration release

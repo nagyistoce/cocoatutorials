@@ -1,9 +1,0 @@
-#!/bin/csh
-
-ls /U/home >& /dev/null
-if ( $status ) then
-	echo "/U isn't mounted.  Hang on."
-	osascript -e 'mount volume "smb://rmills:Largs12%40@ubuntu/ubuntu"'
-else
-	echo '/U is mounted'
-endif
