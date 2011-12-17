@@ -7,7 +7,7 @@ endif
 ls /I/etc >& /dev/null
 if ( $status ) then
 	echo "/I isn't mounted.  Hang on."
-	osascript -e 'mount volume "afp://rmills:Largs12%40@iMac/iMacHD"'
+	osascript -e 'mount volume "afp://rmills:Largs12%40@rmills-imac/iMacHD"'
 else
 	echo '/I is mounted'
 endif
