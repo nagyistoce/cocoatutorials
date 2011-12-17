@@ -36,7 +36,7 @@ const char* age(unsigned long delta)
 		unsigned long R  	 = T / t[i] ;
 		T 					-= R * t[i] ;
 		bool bEnd 		 	 = i == (lengthof(t) - 1) ;
-		if ( R || bEnd ) l	+= sprintf(result+l,"%d%c ",R,u[i]) ;
+		if ( R || bEnd ) l	+= sprintf(result+l,"%d%c ",(int)R,u[i]) ;
 	}
 	
 	return result ;

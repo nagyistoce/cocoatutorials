@@ -50,10 +50,10 @@ int main( int argc, const char* argv[] )
       	/* Output some of the statistics: */
       	printf( "Filename      : %s\n",filename) ;
       	printf( "Leaf          : %s\n",leafname(filename)) ;
-      	printf( "File size     : %ld\n", buf.st_size );
+      	printf( "File size     : %ud\n", (unsigned int)buf.st_size );
       	printf( "Drive         : %c:\n", buf.st_dev + 'A' );
       	printf( "Time modified : %s", ctime( &buf.st_mtime ) );
-	  	printf( "Age           : %d seconds\n",time(NULL) - buf.st_mtime) ;
+	  	printf( "Age           : %ud seconds\n",(unsigned int)(time(NULL) - buf.st_mtime)) ;
 	  
 
 	 	// what's the current date?

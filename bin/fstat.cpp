@@ -57,9 +57,9 @@ int main( int argc, const char* argv[] )
    			realpath(filename,pathname) ;
     	//	Output some of the statistics:
     	  	printf( "Filename      : %s\n",filename) ;
-    	  	printf( "Base          : %s\n",basename(filename)) ;
+    	  	printf( "Base          : %s\n",basename((char*)filename)) ;
     	  	printf( "Extension     : %s\n",ext(filename)) ;
-    	  	printf( "Directory     : %s\n",dirname(filename)) ;
+    	  	printf( "Directory     : %s\n",dirname((char*)filename)) ;
     	  	printf( "Realpath      : %s\n",pathname) ;
     	  	printf( "Realdirectory : %s\n",dirname(pathname)) ;
     	  	printf( "File size     : %lld\n", buf.st_size );

@@ -8,7 +8,7 @@
 
 int syntax()
 {
-	printf("syntax: timestamp <seconds>\n") ;
+	printf("syntax: timestamp <seconds>+\n") ;
 	return 1 ;
 }
 
@@ -19,9 +19,9 @@ int main(int argc,char* argv[])
 	int 	arg = 1 ;
 	while ( arg < argc )
 	{
-		long   time  = (long) atoi(argv[arg++]) ;
+		unsigned int time  = (long) atoi(argv[arg++]) ;
 		time_t clock = (clock_t) time           ;
-		printf("%d = %s",time,ctime(&clock))    ;
+		printf("%u = %s",time,ctime(&clock))    ;
 	}
 
 	return 0 ;
