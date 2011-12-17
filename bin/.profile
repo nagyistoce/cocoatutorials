@@ -169,9 +169,9 @@ function ce() {
 			export CE=vi
 		fi
 	else
-		export CE='kate --use "$@" 2>&1 > /dev/null &'
+		export CE='kate --use '
 	fi
-	$CE "$@"
+	$CE "$@" 2>&1 > /dev/null &
 }
 
 #
