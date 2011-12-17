@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+require 'tk'
+
+number = 1
+
+hello = TkRoot.new do
+  title "Hello World"
+  # the min size of window
+  minsize(400,400)
+end
+
+lbl = TkEntry.new() {
+	justify 'center'
+  	pack('padx'=>5, 'pady'=>5, 'side' => 'top')
+}
+lbl.value = number.to_s;
+
+TkButton.new() {
+  text "Add One"
+  command proc { number += 1 ; lbl.value = number.to_s }
+  pack('side'=>'right', 'padx'=>10, 'pady'=>10)
+}
+
+Tk.mainloop

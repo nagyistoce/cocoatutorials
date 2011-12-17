@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+#
+# use this to get p4 information for p4 fstat
+#
+# p4 fstat //gptech/scmain/sccore/public/include/ScCore.h | getp4 '... clientFile '
+#
+# example:
+# 1032 /doxygen> setenv SCCORE `p4 fstat //gptech/scmain/sccore/public/include/ScCore.h | getp4 '... clientFile '`
+# 1033 /doxygen> echo   $SCCORE
+# /Scripting/gptech/scmain/sccore/public/include/ScCore.h
+# 1034 /doxygen>
+#
+sub println
+{
+	print ( shift ) ;
+	print ( "\n") ;
+}
+
+my @lines = <STDIN>    ;
+my $clientFile = shift || '... clientFile ' ;
+
+foreach $line ( @lines ) {
+	chomp($line) ;                # remove line endings
+	
+	if ( $line =~ /$clientFile/ ) {
+		# print('magic = ' . $line . "\n" ) ;
+		# my @chunks = split(/ /g,$line)  ;  # split line into space separated chunks
+		                                   # what happens if there's a space in the path?
+		#print('length = ' . (scalar @chunks) . "\n" ) ;
+		#foreach $chunk ( @chunks ) {
+		#	print($chunk . "\n") ;
+		#}
+		# print($chunks[2]) ;
+		my $x = substr($line,length($clientFile)) ;
+		print( $x) ; 
+	}
+}

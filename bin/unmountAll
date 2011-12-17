@@ -1,0 +1,3 @@
+#!/bin/csh
+
+echo $PASSWORD | sudo -S umount /Volumes/*

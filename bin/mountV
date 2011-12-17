@@ -1,0 +1,13 @@
+#!/bin/csh
+
+ls /V/windows >& /dev/null
+if ( $status ) then
+	echo "/V isn't mounted.  Hang on."
+	osascript -e 'mount volume "smb://rmills:Largs12-@vista64/C"'
+#	osascript -e 'mount volume "smb://mills;rmills:Largs12-@laptop2/L"'
+else
+	echo '/V is mounted'
+endif
+
+
+# df -k | grep -e Volumes -e Filesystem

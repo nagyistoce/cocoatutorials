@@ -1,0 +1,4 @@
+#!/bin/csh
+
+exiftool '-DateTimeOriginal>FileModifyDate' $*
+

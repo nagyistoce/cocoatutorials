@@ -1,0 +1,5 @@
+#!/bin/sh
+
+open /Scripting/gptech/scripting/sandboxes/rmills/extendscript/public/libraries/macintosh/debug/shell.xSYM
+open /Scripting/gptech/scripting/sandboxes/rmills/extendscript/public/libraries/macintosh/debug/AdobeScCore.framework/Versions/A/AdobeScCore.xSYM
+open /Scripting/gptech/scripting/sandboxes/rmills/extendscript/public/libraries/macintosh/debug/AdobeExtendScript.framework/Versions/A/AdobeExtendScript.xSYM

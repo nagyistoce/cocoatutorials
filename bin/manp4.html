@@ -1,0 +1,3546 @@
+﻿<html>
+<head>
+<title>p4 - Perforce Help File</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Perforce Help File" />
+
+</head>
+
+<style type="text/css">
+
+pre,a,p,body {
+	font-family 	: "Courier New","Courier" ;
+	font-size 		: 10pt    	;
+	text-decoration : none 		;
+	line-height     : 10pt      ;
+}
+
+p,pre {
+	margin			: 10px		;
+	border			: 2px solid black;
+	padding			: 6px		;
+}
+
+p {
+	margin			: 0px       ; 
+	margin-left     : 10px      ;
+	line-height     : 11pt      ;
+	margin-bottom   : 11pt      ;
+}
+
+a {
+	color			:	blue 	;
+	font-weight		: 	bold	;
+}
+
+a:link    {  }
+a:visited {  }
+a:hover   { background-color:yellow; }
+
+a.x { color     : red ; }
+a.t { font-size : 8pt ; }
+
+body {
+	background-color: #FFCCFF		;
+}
+
+</style>
+
+<body><a name="top"></a>
+<pre><a name="help"></a>
+<b>% p4</b>
+	
+    Perforce -- the Fast Software Configuration Management System.
+
+    p4 is Perforce's client tool for the command line.  Try:
+
+        <a href="#h">p4 -h</a>		      basic help
+        <a href="#simple">p4 help simple</a>        list most common commands
+        <a href="#commands">p4 help commands</a>      list all commands
+        <a href="#commands">p4 help command</a>       help on a specific command
+
+        <a href="#charset">p4 help charset</a>       help on character set translation
+        <a href="#environment">p4 help environment</a>   list environment and registry variables
+        <a href="#filetypes">p4 help filetypes</a>     list supported file types
+        <a href="#jobview">p4 help jobview</a>       help on jobview syntax
+        <a href="#revisions">p4 help revisions</a>     help on specifying file revisions
+        <a href="#usage">p4 help usage</a>         generic command line arguments
+        <a href="#views">p4 help views</a>         help on view syntax
+
+    The full user manual is available at <a href="http://www.perforce.com/manual" target="_blank" class="x">http://www.perforce.com/manual</a>.
+<a href="#top" class="t">top of page</a></pre><hr><a name="commands"></a><pre>
+<b>% p4 help commands</b>
+<table><tr><td width="15%">&nbsp;</td><td width="70%""><p>
+<a href="#add">add<a> <a href="#admin">admin<a> <a href="#annotate">annotate<a> <a href="#branch">branch<a> <a href="#branches">branches<a> <a href="#change">change<a> <a href="#changes">changes<a> <a href="#changelist">changelist<a> <a href="#changelists">changelists<a> <a href="#client">client<a> <a href="#clients">clients<a> <a href="#counter">counter<a> <a href="#counters">counters<a> <a href="#delete">delete<a> <a href="#depot">depot<a> <a href="#depots">depots<a> <a href="#describe">describe<a> <a href="#diff">diff<a> <a href="#diff2">diff2<a> <a href="#dirs">dirs<a> <a href="#edit">edit<a> <a href="#filelog">filelog<a> <a href="#files">files<a> <a href="#fix">fix<a> <a href="#fixes">fixes<a> <a href="#flush">flush<a> <a href="#fstat">fstat<a> <a href="#group">group<a> <a href="#groups">groups<a> <a href="#have">have<a> <a href="#help">help<a> <a href="#info">info<a> <a href="#integrate">integrate<a> <a href="#integrated">integrated<a> <a href="#job">job<a> <a href="#jobs">jobs<a> <a href="#jobspec">jobspec<a> <a href="#label">label<a> <a href="#labels">labels<a> <a href="#labelsync">labelsync<a> <a href="#license">license<a> <a href="#lock">lock<a> <a href="#logger">logger<a> <a href="#login">login<a> <a href="#logout">logout<a> <a href="#monitor">monitor<a> <a href="#obliterate">obliterate<a> <a href="#opened">opened<a> <a href="#passwd">passwd<a> <a href="#print">print<a> <a href="#protect">protect<a> <a href="#protects">protects<a> <a href="#rename">rename<a> <a href="#reopen">reopen<a> <a href="#resolve">resolve<a> <a href="#resolved">resolved<a> <a href="#revert">revert<a> <a href="#review">review<a> <a href="#reviews">reviews<a> <a href="#set">set<a> <a href="#sizes">sizes<a> <a href="#submit">submit<a> <a href="#sync">sync<a> <a href="#tag">tag<a> <a href="#tickets">tickets<a> <a href="#triggers">triggers<a> <a href="#typemap">typemap<a> <a href="#unlock">unlock<a> <a href="#user">user<a> <a href="#users">users<a> <a href="#verify">verify<a> <a href="#workspace">workspace<a> <a href="#workspaces">workspaces<a> <a href="#where">where<a> 
+</p></td><td width="15%">&nbsp;</td></tr></table>	    
+	Perforce client commands:
+
+	<a href="#add">add</a>         Open a new file to add it to the depot
+	<a href="#admin">admin</a>       Perform administrative operations on the server
+	<a href="#annotate">annotate</a>    Print file lines along with their revisions
+	<a href="#branch">branch</a>      Create or edit a branch specification
+	<a href="#branches">branches</a>    Display list of branches
+	<a href="#change">change</a>      Create or edit a changelist description
+	<a href="#changes">changes</a>     Display list of pending and submitted changelists
+	<a href="#changelist">changelist</a>  Create or edit a changelist description
+	<a href="#changelists">changelists</a> Display list of pending and submitted changelists
+	<a href="#client">client</a>      Create or edit a client specification and its view
+	<a href="#clients">clients</a>     Display list of known clients
+	<a href="#counter">counter</a>     Display, set, or delete a counter
+	<a href="#counters">counters</a>    Display list of known counters
+	<a href="#delete">delete</a>      Open an existing file to delete it from the depot
+	<a href="#depot">depot</a>       Create or edit a depot specification
+	<a href="#depots">depots</a>      Display list of depots
+	<a href="#describe">describe</a>    Display a changelist description
+	<a href="#diff">diff</a>        Display diff of client file with depot file
+	<a href="#diff2">diff2</a>       Display diff of two depot files
+	<a href="#dirs">dirs</a>        List subdirectories of a given depot directory
+	<a href="#edit">edit</a>        Open an existing file for edit
+	<a href="#filelog">filelog</a>     List revision history of files
+	<a href="#files">files</a>       List files in the depot
+	<a href="#fix">fix</a>         Mark jobs as being fixed by named changelists
+	<a href="#fixes">fixes</a>       List what changelists fix what job
+	<a href="#flush">flush</a>       Fake a '<a href="#sync">p4 sync</a>' by not moving files
+	<a href="#fstat">fstat</a>       Dump file info
+	<a href="#group">group</a>       Change members of a user group
+	<a href="#groups">groups</a>      List groups (of users)
+	<a href="#have">have</a>        List revisions last synced
+	<a href="#help">help</a>        Print this help message
+	<a href="#info">info</a>        Print out client/server information
+	<a href="#integrate">integrate</a>   Schedule integration from one file to another
+	<a href="#integrated">integrated</a>  Show integrations that have been submitted
+	<a href="#job">job</a>         Create or edit a job (defect) specification
+	<a href="#jobs">jobs</a>        Display list of jobs
+	<a href="#jobspec">jobspec</a>     Edit the job template
+	<a href="#label">label</a>       Create or edit a label specification and its view
+	<a href="#labels">labels</a>      Display list of labels
+	<a href="#labelsync">labelsync</a>   Synchronize label with the current client contents
+	<a href="#license">license</a>     Update or display the license file
+	<a href="#lock">lock</a>        Lock an opened file against changelist submission
+	<a href="#logger">logger</a>      Report what jobs and changelists have changed
+	<a href="#login">login</a>       Login to Perforce by obtaining a session ticket
+	<a href="#logout">logout</a>      Logout of Perforce by removing or invalidating a ticket.
+	<a href="#monitor">monitor</a>     Display current running perforce process information
+	<a href="#obliterate">obliterate</a>  Remove files and their history from the depot
+	<a href="#opened">opened</a>      Display list of files opened for pending changelist
+	<a href="#passwd">passwd</a>      Set the user's password on the server (and Windows client)
+	<a href="#print">print</a>       Retrieve a depot file to the standard output
+	<a href="#protect">protect</a>     Modify protections in the server namespace
+	<a href="#protects">protects</a>    Display protections in place for a given user/path
+	<a href="#rename">rename</a>      Explains how to rename files
+	<a href="#reopen">reopen</a>      Change the type or changelist number of an opened file
+	<a href="#resolve">resolve</a>     Merge open files with other revisions or files
+	<a href="#resolved">resolved</a>    Show files that have been merged but not submitted
+	<a href="#revert">revert</a>      Discard changes from an opened file
+	<a href="#review">review</a>      List and track changelists (for the review daemon)
+	<a href="#reviews">reviews</a>     Show what users are subscribed to review files
+	<a href="#set">set</a>         Set variables in the registry (Windows only)
+	<a href="#sizes">sizes</a>       Display size information for files in the depot
+	<a href="#submit">submit</a>      Submit open files to the depot
+	<a href="#sync">sync</a>        Synchronize the client with its view of the depot
+	<a href="#tag">tag</a>         Tag files with a label
+	<a href="#tickets">tickets</a>     Display list of session tickets for this user
+	<a href="#triggers">triggers</a>    Modify list of pre-submit and form-validating triggers
+	<a href="#typemap">typemap</a>     Modify the file name-to-type mapping table
+	<a href="#unlock">unlock</a>      Release a locked file but leave it open
+	<a href="#user">user</a>        Create or edit a user specification
+	<a href="#users">users</a>       Display list of known users
+	<a href="#verify">verify</a>      Verify that the server archives are intact
+	<a href="#workspace">workspace</a>   Create or edit a client specification and its view
+	<a href="#workspaces">workspaces</a>  Display list of known clients
+	<a href="#where">where</a>       Show how file names map through the client view
+<a href="#top" class="t">top of page</a></pre><hr><a name="h"></a><pre>
+<b>% p4 help usage</b>
+
+Usage:
+
+    p4 [ options ] command [ arg ... ]
+    p4 set [-s -S service ] [var[=value]]
+
+    Options:
+	-h -?		print this message
+	-s		get/set variables for the perforce service
+	-S service	get/set variables for the named service
+	-v level	debug modes
+	-V		print client version
+	-x file		read named files as xargs
+	-G		format input/output as marshalled Python objects
+
+	-c client	set client name (default $P4CLIENT)
+	-C charset	set character set (default $P4CHARSET)
+	-d dir		set current directory for relative paths
+	-H host		set host name (default $P4HOST)
+	-L language	set message langauge (default $P4LANGUAGE)
+	-p port		set server port (default $P4PORT)
+	-P password	set user's password (default $P4PASSWD)
+	-u user		set user's username (default $P4USER)
+
+    Try '<a href="#help">p4 help</a>' for information on Perforce commands.
+    Try '<a href="#commands">p4 help commands</a>' for information on Perforce commands.
+<a href="#top" class="t">top of page</a></pre><hr><a name="simple"><pre>
+<b>% p4 help simple</b>
+    <b>Most common Perforce client commands:</b>
+
+	<a href="#client">client</a>     Create or edit a client specification and its view
+
+	<a href="#sync">sync</a>       Synchronize the client with its view of the depot
+
+	<a href="#add">add</a>        Open a new file to add it to the depot
+	<a href="#edit">edit</a>       Open an existing file for edit
+	<a href="#delete">delete</a>     Open an existing file to delete it from the depot
+
+	<a href="#resolve">resolve</a>    Merge open files with other revisions or files
+	<a href="#revert">revert</a>     Discard changes from an opened file
+	<a href="#submit">submit</a>     Submit open files to the depot
+<a href="#top" class="t">top of page</a></pre><hr><a name="d"></a><pre>
+<b>% p4d -h</b>
+	
+	Usage:
+
+	    p4d [ options ]
+	    p4d -j? [ -z ] [ args ... ]
+
+		The first form starts the Perforce server.
+		The second form performs checkpoint/journaling operations.
+
+	    Server options:
+		-d		run as a daemon (fork first, then run)
+		-f		run as single-threaded server
+		-i		run for inetd (socket on stdin/stdout)
+		-q		suppress startup messages
+		-s		run as an NT service (or invoke as p4s)
+		-xi		switch server database to Unicode mode and quit
+		-xu		run database upgrades and quit
+
+	    Checkpointing options:
+		-c cmd		lock tables, run command, and exit
+		-jc [ prefix ]	checkpoint, then save and truncate journal
+		-jd [ file ]	checkpoint without saving/truncating journal
+		-jj [ prefix ]	save and truncate journal
+		-jr file	restore incrementally from file
+		-z		gzip checkpoint/journals
+
+	    General Options:
+		-h -?		print this message
+		-V		print server version
+
+		-A auditlog	set audit log (default $P4AUDIT)
+		-J journal	set journal file (default $P4JOURNAL, 'journal')
+		-J off		turn off journalling
+		-L log		set error log (default $P4LOG, stderr)
+		-p port		set listen port (default $P4PORT, 1666)
+		-r root		set server root directory (default $P4ROOT)
+		-v level	debug modes (default $P4DEBUG)
+<a href="#top" class="t">top of page</a></pre><hr><a name="charset"></a><pre>
+<b>% p4 help charset</b>
+	
+	The Perforce clients and server have an optional mode of operation
+	where all metadata and some file content are stored in the server
+	in the UTF8 Unicode character set and are translated into another
+	character set on the client.
+
+	The environment variable P4CHARSET controls the client character
+	set.  Supported values are:
+
+		eucjp
+		iso8859-1
+		iso8859-5
+		iso8859-15
+		macosroman
+		shiftjis
+		koi8-r
+		utf8 		(UTF-8)
+		utf8-bom	(UTF-8 with Byte-Order-Mark)
+		utf16		(UTF-16 with client's byte ordering
+					 and Byte-OrderMark)
+		utf16-nobom	(UTF-16 client's byte ordering
+					 without Byte-Order-Mark)
+		utf16le		(UTF-16 with little endian byte ordering)
+		utf16le-bom	(UTF-16 with little endian Byte-Order-Mark)
+		utf16be		(UTF-16 with big endian byte ordering)
+		utf16be-bom	(UTF-16 with big endian Byte-Order-Mark)
+		utf32		(UTF-32 with client's byte ordering
+					 and Byte-OrderMark)
+		utf32-nobom	(UTF-32 client's byte ordering
+					 without Byte-Order-Mark)
+		utf32le		(UTF-32 with little endian byte ordering)
+		utf32le-bom	(UTF-32 with little endian Byte-Order-Mark)
+		utf32be		(UTF-32 with big endian byte ordering)
+		utf32be-bom	(UTF-32 with big endian Byte-Order-Mark)
+		cp1251		(Windows code page 1251)
+		winansi		(Windows code page 1252)
+
+	If (and only if) P4CHARSET is set for the client, the server
+	must also be operating in Unicode mode.  This mode is switched
+	on (and never off) by invoking 'p4d -xi' on the server.  This
+	operation verifies that all existing metadata is valid UTF8,
+	and then sets the protected counter 'unicode' to indicate Unicode
+	mode.
+
+	In Unicode mode, all non-file data (identifiers, descriptions,
+	etc) and the content of files of type 'unicode' are translated
+	between the P4CHARSET character set on the client and UTF8 in
+	the server.
+
+	P4CHARSET is supported by 2001.2 and later clients.
+
+	When P4CHARSET is set to one of the UTF-16 values, use of
+	the command line 'p4' will require setting P4COMMANDCHARSET
+	to a non-utf-16 value.  This allows P4CHARSET to control the
+	translation of file revision contents while using a command
+	line system which is not utf-16 based as most commands lines
+	are not utf-16 compatible.  All UTF-16 values will honor
+	a file's Byte-Order-Mark when a file is being read, but
+	when a file is being written the specified UTF-16 format
+	will be followed.
+<a href="#top" class="t">top of page</a></pre><hr><a name="environment"></a><pre>
+<b>% p4 help environment</b>
+	
+    Environment variables used by Perforce:
+
+	Variable    Defines                          For more information see
+	--------    -------                          ------------------------
+	P4AUDIT     name of server audit file        <a href="#d">p4d -h</a>
+	P4CHARSET   client's local character set     <a href="#charset">p4 help charset</a>
+	P4COMMANDCHARSET client's local character set for
+		    command line operations	     <a href="#charset">p4 help charset</a>
+	P4CLIENT    name of client workspace         <a href="#client">p4 help client</a>
+	                                             <a href="#usage">p4 help usage</a>
+	P4CONFIG    name of configuration file       <a href="http://www.perforce.com/perforce/doc.073/manuals/cmdref/index.html" target="_blank" class="x">Command Reference Manual</a>
+	P4DIFF      diff program to use on client    <a href="#diff">p4 help diff</a>
+	P4DIFFUNICODE diff program to use on client  <a href="#diff">p4 help diff</a>
+	P4EDITOR    editor invoked by p4 commands    <a href="#change">p4 help change</a>, etc
+	P4HOST      name of host computer            <a href="#client">p4 help client</a>
+	                                             <a href="#usage">p4 help usage</a>
+	P4JOURNAL   name of server journal file      <a href="#d">p4d -h</a>
+	P4LANGUAGE  language for text messages	     <a href="#usage">p4 help usage</a>
+	P4LOG       name of server log file          <a href="#d">p4d -h</a>
+	P4MERGE     merge program to use on client   <a href="#resolve">p4 help resolve</a>
+	P4MERGEUNICODE merge program to use on client <a href="#resolve">p4 help resolve</a>
+	P4PAGER     pager for 'p4 resolve' output    <a href="#resolve">p4 help resolve</a>
+	P4PASSWD    user password passed to server   <a href="#passwd">p4 help passwd</a>
+	P4PORT      port client connects to          <a href="#info">p4 help info</a>
+	            or server listens on             <a href="#d">p4d -h</a>
+	P4ROOT      server root directory            <a href="#d">p4d -h</a>
+	P4TARGET    target server for proxy          <a href="http://www.perforce.com/perforce/doc.073/manuals/cmdref/index.html" target="_blank" class="x">Command Reference Manual</a>
+	P4TICKETS   location of tickets file         <a href="http://www.perforce.com/perforce/doc.073/manuals/cmdref/index.html" target="_blank" class="x">Command Reference Manual</a>
+	P4USER      user name                        <a href="#usage">p4 help usage</a>
+	PWD         current working directory        <a href="#usage">p4 help usage</a>
+	TMP, TEMP   directory for temporary files    <a href="http://www.perforce.com/perforce/doc.073/manuals/cmdref/index.html" target="_blank" class="x">Command Reference Manual</a>
+
+    See '<a href="#set">p4 help set</a>' for details specific to Windows.  The syntax for
+    setting an environment variable depends on the OS/shell.  Note that many
+    shells allow the setting of shell variables separate from environment
+    variables - Perforce cannot see the shell variable, only the environment
+    variable.
+
+    If you are a typical user then the only variables of interest are
+    $P4CLIENT, $P4PORT and $P4PASSWD.
+<a href="#top" class="t">top of page</a></pre><hr><a name="filetypes"></a><pre>
+<b>% p4 help filetypes</b>
+	
+    File types supported by Perforce:
+
+	Perforce understands a variety of files, indicated by a file's
+	filetype, which determines how the file is handled on both the
+	client and the server.
+
+	A filetype can be given either alone as 'type' or with specific
+	modifiers 'type+mods'.  A partial filetype, used to modify other
+	filetypes, is just the modifiers '+mods'.
+
+	The following are the base filetypes:
+
+	    Type        Client Use           Server Storage
+	    ----        ----------           --------------
+	    text        newlines translated  deltas in RCS format
+	    binary      raw bytes            compressed binary
+	    symlink     symbolic link        deltas in RCS format
+	    apple       Mac resource + data  compressed AppleSingle
+	    resource    Mac resource fork    compressed binary
+	    unicode     newlines translated  deltas in RCS format
+	                                     stored as UTF-8
+	    utf16	newlines translated  deltas in RCS format
+	                client file UTF-16   stored as UTF-8
+			in client byte order unless BOM overrides
+			File is always written with a BOM
+			A BOM is needed for automatic type detection
+
+	The following are the modifiers:
+
+	    Modifier    Meaning
+	    --------    -------
+	    +m		always set modtime on client
+			(overrides client's nomodtime)
+	    +w          always writable on client
+	    +x          exec bit set on client
+
+	    +k		$Keyword$ expansion of Id, Header, Author
+			Date, DateTime, Change, File, Revision
+	    +ko         $Keyword$ expansion of Id, Header only
+	    +l		exclusive open: disallow multiple opens
+
+	    +C          server stores compressed file per revision
+	    +D          server stores deltas in RCS format
+	    +F          server stores full file per revision
+	    +S          server stores only single head revision
+	    +S<n>       server stores <n> number of revisions, where <n>
+	                is a number 1-10 or 16,32,64,128,256,512.
+
+	The following type aliases exist for backwards compatibility:
+
+	    Type        Is Base Type         Plus Modifiers
+	    --------    ------------         --------------
+	    ctext       text                 +C
+	    cxtext      text                 +Cx
+	    ktext       text                 +k
+	    kxtext      text                 +kx
+	    ltext       text                 +F
+	    tempobj     binary               +Sw
+	    ubinary     binary               +F
+	    uresource   resource             +F
+	    uxbinary    binary               +Fx
+	    xbinary     binary               +x
+	    xltext      text                 +Fx
+	    xtempobj    binary               +Swx
+	    xtext       text                 +x
+	    xunicode    unicode              +x
+	    xutf16	utf16                +x
+
+	'<a href="#add">p4 add</a>', '<a href="#edit">p4 edit</a>', and '<a href="#reopen">p4 reopen</a>' can take a '-t filetype'
+	to specify the filetype.  Without -t '<a href="#add">p4 add</a>' also looks for a
+	filetype using the name-to-type mapping table managed by '<a href="#typemap">p4 typemap</a>'.
+
+	For a default '<a href="#edit">p4 edit</a>' and '<a href="#reopen">p4 reopen</a>' reuse the current file
+	filetype, and '<a href="#add">p4 add</a>' senses the filetype by examining the
+	file's contents and execute permission bits.
+
+	If a filetype is given as a partial filetype, with '+mods' only,
+	then that filetype is combined with, rather than replaces, the
+	default.  Most modifiers are simply added to the default type,
+	but the storage modifiers +C, +D, and +F replace the storage
+	method.  It is not possible to remove a modifier with a partial
+	filetype, for example to remove +x if the file was sensed to be
+	executable.  For that, the whole filetype must be given.
+<a href="#top" class="t">top of page</a></pre><hr><a name="jobview"></a><pre>
+<b>% p4 help jobview</b>
+	
+    Perforce job views:
+
+	A job view is an expression that selects jobs according to word
+	and date matches.  Job views are used by the '<a href="#jobs">p4 jobs</a>' -e flag
+	to select which jobs to display.  Also, the '<a href="#user">p4 user</a>' form
+	contains a JobView field which selects which jobs are to be
+	presented during changelist creation for automatic closing upon
+	changelist submission.
+
+	'<a href="#job">p4 job</a>' indexes all whitespace-separated words, and then any
+	punctuation-separated words within those words.  So 'sub-par'
+	is entered into the index as 'sub', 'par', and 'sub-par'.  Case
+	is not considered. '<a href="#job">p4 job</a>' separately indexes all date fields
+	in a way that allows searching for a range of dates.
+
+	In its simplest form, a job view can contain a list of words,
+	separated by spaces, that must appear in a job for it to be
+	selected.  For a match to occur all words must appear somewhere
+	in the job, not including date fields:
+
+		JobView: GUI redrawing bug
+		p4 jobs -e 'GUI redrawing bug'
+
+	To select a particular field, the 'field=word' syntax may be used:
+
+		JobView: GUI redrawing status=open 
+
+	Logical operators & (and), | (or), ^ (not), and () (grouping)
+	may also be used; spaces remain a low-precedence 'and' operator:
+
+		JobView: redrawing (type=bug|type=sir) status=open
+
+	The ^ (not) operator cannot be used alone or with | (or), only
+	in conjuction with & (and) or space (and):
+
+		JobView: type=bug & ^status=closed
+
+	Comparative operators >, >=, <, <=, and = are permitted.  Because
+	they succeed if any word in the field matches, only the = operator
+	is useful against fields containing blocks of text:
+
+		JobView: priority<=b description=gui
+
+	Text searches may embed the wildcard *, which matches anything:
+
+		JobView: redraw* type=bug
+
+	To match operator characters, you can escape them with \.
+
+	Date fields may be searched using comparative operators.  Dates
+	are of the form yyyy/mm/dd or yyyy/mm/dd:hh:mm:ss.  If a specific
+	time is not given, the equality operators (=, <=, >=) match the
+	whole day:
+
+		JobView: reported_date>=1998/01/01 status=closed
+
+	Text field comparisons are done alphabetically. Date field 
+	comparisons are done chronologically.
+<a href="#top" class="t">top of page</a></pre><hr><a name="revisions"></a><pre>
+<b>% p4 help revisions</b>
+
+    Specifying file revisions and revision ranges:
+
+	Some file-related Perforce client commands can limit their actions
+	to specific file revisions.  A revision specification is tacked
+	onto the end of the filename, and is one of the following:
+
+	    #rev - A revision number.
+	    @change - A change number: the revision as of that change.
+	    @client - A client name: the revision on the client.
+	    @label - A label name: the revision in the label.
+	    @date - A date or date/time: the revision as of that time.
+		Either yyyy/mm/dd or yyyy/mm/dd:hh:mm:ss
+		Note that yyyy/mm/dd means yyyy/mm/dd:00:00:00,
+		so if you want to include all events on that day refer
+		to the next day.
+
+	#rev has special variants, to be used literally:
+
+	    #none - A nonexistent revision (also #0).
+	    #head - The current head revision.
+	    #have - The revision on the current client.
+
+	In all cases, if a file doesn't exist at the given revision number
+	it appears as if the file doesn't exist at all. Thus using a label
+	to refer to a file that isn't in the label is indistinguishable
+	from referring to file that doesn't exist at all.
+
+	If no revision specification is given, the default is usually #head.
+
+	A revision specification can be given without a filename. This
+	limits the command's action to the specified revision of all files
+	in the depot or in the client's workspace.  Thus #head refers to
+	the head revision of all files in the depot, and @label refers
+	to the revisions of all files in the named label.
+
+	Some commands can limit their actions to a range of revision numbers,
+	rather than just a single revision.  A revision range is two revision
+	specifications, separated by a comma (,).  If a single revision is
+	given where a revision range is expected, then the named revision
+	specifies the end of the range and the beginning is left at #1.
+	'<a href="#obliterate">p4 obliterate</a>' is an exception: a single revision means exactly
+	that revision.
+
+	If no revision number or range is given where a revision range is
+	expected, the default is all revisions.
+<a href="#top" class="t">top of page</a></pre><hr><a name="usage"></a><pre>
+<b>% p4 help usage</b>
+
+    Perforce client usage:
+
+    p4 [ options ] command [ arg ... ]
+    p4 -V
+
+	options:
+		-c client -C charset -d dir -H host -G -L language
+		-p port -P pass -s -Q charset -u user -x file
+
+	The -c flag specifies the client name, overriding the value of
+	$P4CLIENT in the environment and the default (the hostname).
+
+	The -C flag specifies the client's character set, overriding the
+	value of $P4CHARSET in the environment.  See '<a href="#charset">p4 help charset</a>'
+	for more information.
+
+	The -d flag specifies the current directory, overriding the value of
+	$PWD in the environment and the default (the current directory).
+
+	The -G flag causes all output (and batch input for form commands
+	with -i) to be formatted as marshalled Python dictionary objects.
+
+	The -H flag specifies the host name, overriding the value of
+	$P4HOST in the environment and the default (the hostname).
+
+	The -L flag specifies the language for text messages from the
+	server, overriding the value of $P4LANGUAGE in the environment.
+	Setting this only works if the administrator has loaded support
+	for non-English messages into the server database.
+
+	The -p flag specifies the server's listen address, overriding the
+	value of $P4PORT in the environment and the default (perforce:1666).
+
+	The -P flag specifies the password, overriding the value of
+	$P4PASSWD in the environment.
+
+	The -Q flag specifies the client's command character set,
+	overriding the value of $P4COMMANDCHARSET in the environment.
+	See '<a href="#charset">p4 help charset</a>' for more information.
+
+	The -s flag causes the p4 client program to prefix each line of
+	output with a tag (error, warning, info, text, exit) so as to make
+	it amenable to scripting.
+
+	The -u flag specifies the user name, overriding the value of
+	$P4USER, $USER, and $USERNAME in the environment.
+
+	The -x flag instructs p4 to read arguments, one per line, from the
+	named file.  If the file is named '-', then standard input is read.
+
+	The -V flag displays the version of the p4 client command and exits.
+<a href="#top" class="t">top of page</a></pre><hr><a name="views"></a><pre>
+<b>% p4 help views</b>
+	
+    Perforce views:
+
+	A Perforce view maps file names from the depot into the client
+	workspace (for a client view) or into another part of the depot
+	(for a branch view).
+
+	A view is one or more mappings, and each mapping is a pair of file
+	names on a line.  The left side always refers to the depot namespace;
+	the right side refers to the client or depot namespace.  Each name
+	is in Perforce syntax, meaning it begins with // and the client or
+	depot name, and is followed by the actual file name within the
+	client or depot.   Perforce syntax uses /'s as directory separators.
+	e.g.  //depot/dir/file.c
+
+	Mappings can contain wildcards, as long as the wildcards are matched
+	between the left and right sides.  The wildcards are:
+
+		*               matches any characters except /
+		...             matches any characters, including /
+		%%1 to %%9      like *, but used to reorder the path
+
+	If more than one mapping line refers to the same files, then the
+	later mapping line overrides the earlier one, excluding any files
+	from the earlier mapping.
+
+	A mapping line that begins with a + overlays the later mapping
+	on the earlier one: if files match both the earlier and later
+	mappings, then the file matching the later mapping is used.
+	Overlay mappings are only allowed on client views, and make it
+	possible to map multiple server directories to the same client
+	directory.
+
+	A mapping line that begins with a - specifically excludes those
+	files that match that mapping.
+<a href="#top" class="t">top of page</a></pre><hr><a name="add"></a><pre>
+<b>% p4 help add</b>
+	
+    add -- Open a new file to add it to the depot
+
+    p4 add [ -c changelist# ] [ -f -n ] [ -t filetype ] file ...
+
+	Open a new file for adding to the depot.  If the file exists
+	on the client it is read to determine if it is text or binary.
+	If it does not exist it is assumed to be text.  The file must
+	either not exist in the depot, or it must be deleted at the
+	current head revision.  Files may be deleted and re-added.
+
+	If the -c flag is given the open files are associated with the
+	specified pending changelist number; otherwise the open files are
+	associated with the default changelist.
+
+	If file is already open it is moved into the specified pending
+	changelist.  It is not permissible to reopen a file for add unless
+	it was already open for add.
+
+	If -t filetype is given, the file is added as that filetype.
+	Without -t '<a href="#add">p4 add</a>' looks for a filetype using the name-to-type
+	mapping table managed by '<a href="typemap">p4 typemap</a>'.  For a default '<a href="add">p4 add</a>'
+	senses the filetype by examining the file's contents and execute
+	permission bit.  If the filetype given by -t or in the typemap
+	table is a partial filetype, that partial filetype will modify
+	the filetype sensed by '<a href="add">p4 add</a>'.
+	See '<a href="#filetypes">p4 help filetypes</a>'.
+
+	If the -f flag is given then filenames that contain wildcards are
+	permitted.  Filenames added to the repository that contain these
+	special wildcard characters '@', '#', '%' or '*' will have those
+	characters formatted into ascii hexadecimal representation.  The
+	only way of referring to those files once added will be to use the
+	formatted version, the local filesystem name will not be recognized.
+
+	The -n flag displays what would be opened for add without actually
+	changing any files or metadata.
+<a href="#top" class="t">top of page</a></pre><hr><a name="admin"></a><pre>
+<b>% p4 help admin</b>
+
+    admin -- Perform administrative operations on the server
+
+    p4 admin checkpoint [ -z ] [ prefix ]
+    p4 admin dbstat [ -h ] { -a | dbtable... }
+    p4 admin journal [ -z ] [ prefix ]
+    p4 admin stop
+    p4 admin updatespecdepot [ -a | -s type ]
+
+	'p4 admin checkpoint' causes the server to take a checkpoint and
+	to copy the journal to a numbered journal file.  It is equivalent
+	to 'p4d -jc'.
+
+	'p4 admin journal' causes the server to save the journal to a
+	numbered journal file and then truncate it.  It is equivalent
+	to 'p4d -jj'.
+
+	The -z flag causes the checkpoint and saved journal to be saved in
+	compressed (gzip) format, with the '.gz' suffix on the file names.
+
+	If a prefix is specified, the files will be named prefix.ckp.n and
+	prefix.jnl.n respectively, where n is a sequence number. Without
+	prefix, the default filenames checkpoint.n and journal.n will be
+	used.
+
+	'p4 admin dbstat' outputs simple statistics for a database table.
+	The -h flag outputs a little histogram showing distances between
+	leaf pages,  for the purposes of anticipating disk seeks due to
+	sequential database scans.  The -a flag outputs stats for all tables.
+	Dbstat scans only the internal nodes pages of the file, not the leaf
+	or overflow pages, and thus only reads 1-5% of the file.  Still, it
+	locks out write access to the database table during its scan, and
+	should be used with care.
+
+	'p4 admin stop' stops the server, terminating any requests
+	currently running.  It first locks the database to ensure that
+	no updates are taking place, but otherwise is brutal as it does
+	not wait for users to finish what they are doing.
+	(For NT users, this will work whether you are running Perforce
+	as a server or a service.)
+
+	'p4 admin updatespecdepot' causes the server to archive forms
+	(client, depot, branch, label, typemap, group, user, job) into
+	the spec depot.  If the '-a' flag is used then all of the form
+	specification types are archived.  If the '-s' flag option is
+	used, then only the form type requested is archived.  Note only
+	forms that have not yet been archived will be created.
+<a href="#top" class="t">top of page</a></pre><hr><a name="annotate"></a><pre>
+<b>% p4 help annotate</b>
+
+    annotate -- Print file lines along with their revisions
+
+    p4 annotate [ -aciq -d<flag> ] file[revRange] ...
+
+	Prints all lines of the named files, indicating what revision
+	introduced each line into the file.
+
+	If the file argument has a revision, then only revisions up to that
+	revision are displayed.  If the file argument has a revision range,
+	then only revisions within that range are displayed.  See '<a href="#revisions">p4 help revisions</a>' for help specifying revisions.
+
+	The -a flag includes both deleted files and lines no longer present
+	at the head revision; in this case, both the starting and ending
+	revision for each line is indicated.
+
+	The -c flag tells annotate to output change numbers rather than
+	revision numbers with each line.
+
+	The -d<flag> changes the way whitespace is treated: -db (ignore
+	whitespace changes), -dw (ignore whitespace).
+
+	The -i flag follows branches.  If a file was created by branching
+	'<a href="#annotate">p4 annotate</a>' includes the revisions of the source file up to the
+	branch point, just as '<a href="#filelog">p4 filelog -i</a>' does.  If a file has history
+	prior to being created by branching (i.e. a file branched on top of
+	a deleted file), -i ignores those prior revisions and instead
+	follows the source.  -i implies -c.
+
+	The -q flag suppresses the one-line header for each file.
+<a href="#top" class="t">top of page</a></pre><hr><a name="branch"></a><pre>
+<b>% p4 help branch</b>
+	
+    branch -- Create or edit a branch specification and its view
+
+    p4 branch [ -f ] name
+    p4 branch -d [ -f ] name
+    p4 branch -o name
+    p4 branch -i [ -f ]
+
+	Create a new branch specification or edit an existing branch
+	specification. The specification form is put into a temporary
+	file and the editor (given by the environment variable $P4EDITOR)
+	is invoked.
+
+	The branch specification form contains the following fields:
+
+	Branch:      The branch name (read only.)
+
+	Owner:       The user who created this branch.  Can be changed.
+
+	Update:      The date specification was last modified.
+
+	Access:      The date of the last 'integrate' using this branch.
+
+	Description: A short description of the branch (optional).
+
+	Options:     Flags to change the branch behavior.   The defaults
+		     are marked with *.
+
+		locked   	Allows only the branch owner to change its
+		unlocked *	specification.  Prevents the branch from
+				being deleted.
+
+	View:        A mapping from the source files of the branch to the
+		     target files of the branch.  Both the left and right
+		     hand sides of the mappings refer to the depot namespace.
+		     See '<a href="#views">p4 help views</a>' for more on views.
+
+	New branches are created with a default view that maps all depot
+	files back into themselves.  This view must be changed before the
+	branch view is usable.
+
+	A branch definition is used only by the '<a href="#integrate">p4 integrate</a>' command.
+
+	The -d flag deletes the named branch.
+
+	The -o flag causes the named branch specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a branch specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -f flag can force the deletion of any branch; normally branches
+	can only be deleted by their owner.  -f also allows the last modified
+	date to be set.  The -f flag requires 'admin' access granted by
+	'<a href="#protect">p4 protect</a>'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="branches"></a><pre>
+<b>% p4 help branches</b>
+
+    branches -- Display list of defined branches
+
+    p4 branches [ -u user ] [ -m max ]
+
+	Reports the list of all branches currently known to the system.
+	Branches takes no arguments.
+
+	The -u user flag limits branches to those owned by the named user.
+
+	The -m max flag limits output to the first 'max' number of branches.
+<a href="#top" class="t">top of page</a></pre><hr><a name="change"></a><pre>
+<b>% p4 help change</b>
+
+    <b>change -- Create or edit a changelist description</b>
+    <b>changelist -- synonym for 'change'</b>
+
+    p4 change [ -s ] [ -f | -u ] [ changelist# ]
+    p4 change -d [ -f -s ] changelist#
+    p4 change -o [ -s ] [ changelist# ]
+    p4 change -i [ -s ] [ -f | -u ] 
+
+	'p4 change' creates and edits changelists and their descriptions.
+	With no argument, 'p4 change' creates a new changelist.  If a
+	changelist number is given, 'p4 change' edits an existing, pending
+	changelist.  In both cases the changelist specification is placed
+	into a form and the user's editor is invoked.
+
+	The -d flag discards a pending changelist, but only if it has no
+	opened files and no pending fixes associated with it.  Use 'p4
+	opened -a' to report on opened files and '<a href="#reopen">p4 reopen</a>' to move them
+	to another changelist.  Use '<a href="#fixes">p4 fixes -c changelist#</a>' to report on
+	pending fixes and '<a href="#fix">p4 fix -d -c changelist# jobs...</a>' to delete
+	pending fixes.  The changelist can only be deleted by the user and
+	client who created it, or by using the -f flag.
+
+	The -o flag causes the changelist specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a changelist specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -f flag can force the update or deletion of other users' pending
+	changelists.  -f can also force the deletion of submitted changelists
+	once they have been emptied of files via '<a href="#obliterate">p4 obliterate</a>'.  Normally,
+	submitted changelists are immutable.  The -f flag requires 'admin'
+	access granted by '<a href="#protect">p4 protect</a>'. The -f and -u flags are mutually
+	exclusive.
+
+	The -u flag can force the update of a submitted change by the owner
+	of the change. Only the Jobs and Description fields can be changed
+	using the -u flag. The -f and -u flags cannot be used in the same
+	change command.
+
+	The -s flag extends the list of jobs to include the fix status
+	for each job.  On new changelists, the fix status begins as the
+	special status 'ignore', which if left unchanged simply excludes
+	the job from those being fixed.  Otherwise, the fix status, like
+	that applied with '<a href="#fix">p4 fix -s</a>', becomes the job's status when
+	the changelist is committed.  Note that this option is not meant
+	for end-users.  It exists to support propagating information from
+	an external defect tracking system.
+<a href="#top" class="t">top of page</a></pre><hr><a name="changes"></a><pre>
+<b>% p4 help changes</b>
+
+    changes -- Display list of pending and submitted changelists
+    changelists -- synonym for 'changes'
+
+    p4 changes [ options ] [ file[revRange] ... ]
+
+	options: -i -t -l -L -c client -m max -s status -u user
+
+	Reports the list of all pending and submitted changelists currently
+	known to the system.
+
+	If files are specified, '<a href="#changes">p4 changes</a>' limits its report to
+	changelists that affect those files.  If the file specification
+	includes a revision range, '<a href="#changes">p4 changes</a>' limits its report to
+	submitted changelists that affect those particular revisions.
+	See '<a href="#revisions">p4 help revisions</a>' for help specify revisions.
+
+	The -i flag also includes any changelists integrated into the
+	specified files.
+
+	The -t flag displays the time as well as the date.
+
+	The -l flag produces long output with the full text of the changelist
+	descriptions.
+
+	The -L flag produces long output with the full text of the changelist
+	descriptions truncated to 250 characters.
+
+	The -c client flag limits changes to those on the named client.
+
+	The -m max flag limits changes to the 'max' most recent.
+
+	The -s status flag limits the output to pending or submitted
+	changelists.
+
+	The -u user flag limits changes to those owned by the named user.
+<a href="#top" class="t">top of page</a></pre><hr><a name="changelist"></a><pre>
+<b>% p4 help changelist</b>
+
+    change -- Create or edit a changelist description
+    changelist -- synonym for 'change'</b>
+
+    p4 change [ -s ] [ -f | -u ] [ changelist# ]
+    p4 change -d [ -f -s ] changelist#
+    p4 change -o [ -s ] [ changelist# ]
+    p4 change -i [ -s ] [ -f | -u ] 
+
+	'<a href="#change">p4 change</a>' creates and edits changelists and their descriptions.
+	With no argument, '<a href="#change">p4 change</a>' creates a new changelist.  If a
+	changelist number is given, 'p4 change' edits an existing, pending
+	changelist.  In both cases the changelist specification is placed
+	into a form and the user's editor is invoked.
+
+	The -d flag discards a pending changelist, but only if it has no
+	opened files and no pending fixes associated with it.  Use 'p4
+	opened -a' to report on opened files and 'p4 reopen' to move them
+	to another changelist.  Use 'p4 fixes -c changelist#' to report on
+	pending fixes and 'p4 fix -d -c changelist# jobs...' to delete
+	pending fixes.  The changelist can only be deleted by the user and
+	client who created it, or by using the -f flag.
+
+	The -o flag causes the changelist specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a changelist specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -f flag can force the update or deletion of other users' pending
+	changelists.  -f can also force the deletion of submitted changelists
+	once they have been emptied of files via 'p4 obliterate'.  Normally,
+	submitted changelists are immutable.  The -f flag requires 'admin'
+	access granted by 'p4 protect'. The -f and -u flags are mutually
+	exclusive.
+
+	The -u flag can force the update of a submitted change by the owner
+	of the change. Only the Jobs and Description fields can be changed
+	using the -u flag. The -f and -u flags cannot be used in the same
+	change command.
+
+	The -s flag extends the list of jobs to include the fix status
+	for each job.  On new changelists, the fix status begins as the
+	special status 'ignore', which if left unchanged simply excludes
+	the job from those being fixed.  Otherwise, the fix status, like
+	that applied with 'p4 fix -s', becomes the job's status when
+	the changelist is committed.  Note that this option is not meant
+	for end-users.  It exists to support propagating information from
+	an external defect tracking system.
+<a href="#top" class="t">top of page</a></pre><hr><a name="changelists"></a><pre>
+<b>% p4 help changelists</b>
+
+    changes -- Display list of pending and submitted changelists
+    changelists -- synonym for 'changes'
+
+    p4 changes [ options ] [ file[revRange] ... ]
+
+	options: -i -t -l -L -c client -m max -s status -u user
+
+	Reports the list of all pending and submitted changelists currently
+	known to the system.
+
+	If files are specified, 'p4 changes' limits its report to
+	changelists that affect those files.  If the file specification
+	includes a revision range, 'p4 changes' limits its report to
+	submitted changelists that affect those particular revisions.
+	See '<a href="#revisions">p4 help revisions</a>' for help specify revisions.
+
+	The -i flag also includes any changelists integrated into the
+	specified files.
+
+	The -t flag displays the time as well as the date.
+
+	The -l flag produces long output with the full text of the changelist
+	descriptions.
+
+	The -L flag produces long output with the full text of the changelist
+	descriptions truncated to 250 characters.
+
+	The -c client flag limits changes to those on the named client.
+
+	The -m max flag limits changes to the 'max' most recent.
+
+	The -s status flag limits the output to pending or submitted
+	changelists.
+
+	The -u user flag limits changes to those owned by the named user.
+<a href="#top" class="t">top of page</a></pre><hr><a name="client"></a><pre>
+<b>% p4 help client</b>
+
+    client -- Create or edit a client specification and its view
+    workspace -- synonym for 'client'
+
+    p4 client [ -f -t template ] [ name ]
+    p4 client -d [ -f ] name
+    p4 client -o [ -t template ] [ name ]
+    p4 client -i [ -f ]
+
+	With no argument 'p4 client' creates a new client view specification
+	or edits an existing client specification.  The client name is taken
+	from the environment variable $P4CLIENT if set, or else from the
+	current host name.  The specification form is put into a temporary
+	file and the editor (given by the environment variable $P4EDITOR)
+	is invoked.  If a name is given, the specification of the named
+	client is used.
+
+	The specification form contains the following fields:
+
+	Client:      The client name (read only.)
+
+	Host:        If set, restricts access to the named host.
+		     If unset, access is allowed from any host.
+
+	Owner:       The user who created this client.  Can be changed.
+
+	Update:      The date this specification was last modified.
+
+	Access:      The date this client was last used in any way.
+
+	Description: A short description of the client (optional).
+
+	Root:        The root directory of the client file workspace
+		     (given in local file system syntax), under which all
+		     client files will be placed.  If you change this, you
+		     must physically relocate any files as well.  The name
+		     "null" may be used to allow files to be mapped to
+		     multiple drives on Windows clients.
+
+	AltRoots:    Up to two optional alternate client workspace roots.
+		     The first of the main and alternate roots to match the
+		     client program's current working directory is used;
+		     if none matches the main root is used anyway.
+		     'p4 info' reports the applicable root.
+
+	Options:     Flags to change the client behavior.   The defaults
+		     are marked with *.
+
+		allwrite	Leaves all files writable on the client;
+		noallwrite *	else only checked out files are writable.
+
+		clobber		Allows 'p4 sync' to overwrite writable
+		noclobber *	files on the client.
+
+		compress 	Compresses data sent between the client
+		nocompress *	and server to speed up slow connections.
+
+		locked   	Allows only the client owner to use the
+		unlocked *	client or change its specification.
+				Prevents the client from being deleted.
+
+		modtime  	Causes 'p4 sync' to preserve file
+		nomodtime *	modification time from submitting client,
+				as with files with +m type modifier.
+				Otherwise modification time is left as
+				when the file was fetched.
+
+		rmdir		Makes 'p4 sync' attempt to delete a client
+		normdir *	directory when all files are removed.
+
+	SubmitOptions:  Flags to change submit behaviour.
+
+		submitunchanged           All open files are submitted
+		submitunchanged+reopen    (default).
+
+		revertunchanged           Files that have content or type
+		revertunchanged+reopen    changes are submitted. Unchanged
+		                          files are reverted.
+
+		leaveunchanged            Files that have content or type
+		leaveunchanged+reopen     changes are submitted. Unchanged
+		                          files are moved to the default
+		                          changelist.
+
+		              +reopen     appended to the submit option flag
+		                          will cause submitted files to be
+		                          reopened on the default changelist.
+
+	LineEnd:    Set line ending character(s) for client text files.
+
+		local		Use mode native to the client (default).
+		unix		linefeed: UNIX style.
+		mac		carriage return: Macintosh style.
+		win		carriage return-linefeed: Windows style.
+		share		hybrid: writes UNIX style but reads UNIX,
+					Mac or Windows style.
+
+	View:        A mapping from the files in the depot to files in the
+		     client workspace.  This is the mechanism by which you
+		     select what files you want on your client and where you
+		     want them to be.  The default view maps all depot files
+		     onto the client.  See '<a href="#views">p4 help views</a>' for view syntax.
+		     A new view takes effect on the next 'p4 sync'.
+
+	Note: changing the client root does not actually move the client
+	files; you must relocate them yourself.  Similarly, changing
+	the 'LineEnd' option does not actually update the client files;
+	you can refresh them with 'p4 sync -f'.
+
+	The -d flag causes the named client to be deleted, as long as it
+	has no opened files.  The -f forces the delete.
+
+	The -o flag causes the named client specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a client specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -t flag constructs the client's view by copying the named
+	template client's view, instead of using the existing view or
+	creating a new default view.  It also copies the client options
+	from the template client.
+
+	The -f flag can force the updating of locked clients; normally
+	locked clients can only be modified by their owner.  -f also allows
+	the last modified date to be set.  The -f flag requires 'admin'
+	access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="clients"></a><pre>
+<b>% p4 help clients</b>
+
+    clients -- Display list of clients
+    workspaces -- synonym for 'clients'
+
+    p4 clients [ -u user ] [ -m max ]
+
+	Reports the list of all clients currently known to the system.
+
+	The -u user flag limits clients to those owned by the named user.
+
+	The -m max flag limits output to the first 'max' number of clients.
+<a href="#top" class="t">top of page</a></pre><hr><a name="counter"></a><pre>
+<b>% p4 help counter</b>
+
+     counter -- Display, set, or delete a counter
+
+     p4 counter name
+     p4 counter [ -f ] name value
+     p4 counter [ -f ] -d name
+
+	The first form displays the value of the named counter.
+
+	The second form sets the counter to the given value.
+
+	The third form deletes the counter.  This usually has the same
+	effect as setting the counter to 0.
+
+	The -f flag sets or deletes counters used by Perforce, as listed
+	in '<a href="#counters">p4 help counters</a>'.  Moving the 'change' counter backwards can
+	have very bad results.
+
+	'p4 counter' requires 'review' access granted by 'p4 protect'.
+	The -f flag require 'super' access.
+<a href="#top" class="t">top of page</a></pre><hr><a name="counters"></a><pre>
+<b>% p4 help counters</b>
+
+    counters -- Display list of known counters
+
+    p4 counters
+
+	Reports the list of all counters in use by the server.  There are
+	seven counters the server uses directly:
+
+		change   the current change number
+		job      the current job number
+		journal  the current journal number
+		monitor  indicates the server has process monitoring enabled
+		unicode  indicates the server metadata is Unicode (UTF8)
+		upgrade  the server database upgrade level
+		security the server security level
+
+	Other counters can be created by the 'p4 counter' or 'p4 review'
+	commands.
+<a href="#top" class="t">top of page</a></pre><hr><a name="delete"></a><pre>
+<b>% p4 help delete</b>
+
+    delete -- Open an existing file to delete it from the depot
+
+    p4 delete [ -c changelist# ] [ -n ] file ...
+
+	Opens a file that currently exists in the depot for deletion.
+	If the file is present on the client it is removed.  If a pending
+	changelist number is given with the -c flag the opened file is
+	associated with that changelist, otherwise it is associated with
+	the 'default' pending changelist.
+
+	Files that are deleted generally do not appear on the have list.
+
+	The -n flag displays what would be opened for delete without actually
+	changing any files or metadata.
+<a href="#top" class="t">top of page</a></pre><hr><a name="depot"></a><pre>
+<b>% p4 help depot</b>
+
+    depot -- Create or edit a depot specification
+
+    p4 depot name
+    p4 depot -d name
+    p4 depot -o name
+    p4 depot -i
+
+	Create a new depot specification or edit an existing depot
+	specification. The specification form is put into a temporary
+	file and the editor (given by the environment variable $P4EDITOR)
+	is invoked.
+
+	The depot specification form contains the following fields:
+
+	Depot:       The name of the depot.  This cannot conflict with
+		     any branch, client, or label name.
+
+	Owner:       The user who created this depot.
+
+	Date:        The date this specification was last modified.
+
+	Description: A short description of the depot (optional).
+
+	Type:        'local', 'remote', or 'spec'.
+
+		     A 'local' depot (the default) is locally managed by
+		     the server and occupies space in the server's root
+		     directory.
+
+		     A 'remote' depot is a reference to files in another
+		     Perforce server.
+
+		     A 'spec' depot automatically archives all edited
+		     forms (branch, change, client, depot, group, job,
+		     jobspec, protect, triggers, typemap, and user) into
+		     special, read-only files.  The files are named
+		     //depotname/formtype/name[suffix].  Updates to jobs
+		     made by the 'p4 change', 'p4 fix', and 'p4 submit'
+		     commands are also saved, but not other automatic
+		     updates such as access times or opened files (for
+		     changes).  There can be only one 'spec' depot.
+
+	Address:     For remote depots, the $P4PORT (connection address)
+		     of the remote server.
+
+	Suffix:      For spec depots, the optional suffix (default '.p4s')
+		     for the generated paths.
+
+	Map:         Path translation information, in the form of a file
+		     pattern with a single ... in it.  For local depots,
+		     this path is relative to the server's root directory
+		     (e.g. depot/...).  For remote depots, this path refers
+		     to the remote server's namespace (e.g. //depot/...).
+
+	The -d flag deletes the named depot.  If any files exist in the
+	depot they must be removed first with 'p4 obliterate'.
+
+	The -o flag causes the named depot specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a depot specification to be read from the
+	standard input.  The user's editor is not invoked.
+<a href="#top" class="t">top of page</a></pre><hr><a name="depots"></a><pre>
+<b>% p4 help depots</b>
+
+    depots -- Display list of defined depots
+
+    p4 depots
+
+	Reports the list of all depots created via the depot command.
+	Depots takes no arguments.
+<a href="#top" class="t">top of page</a></pre><hr><a name="describe"></a><pre>
+<b>% p4 help describe</b>
+
+    describe -- Display a changelist description
+
+    p4 describe [ -d<flag> -s ] changelist#
+
+	Display a changelist description, including the changelist number,
+	user, client, date of submission, textual description, list
+	of affected files and diffs of files updated.  Pending changelists
+	are flagged as 'pending' and file diffs are not displayed.
+
+	The -d<flag> passes a flag to the built-in diff routine to modify
+	the output: -dn (RCS), -dc (context), -ds (summary), -du (unified),
+	-db (ignore whitespace changes), -dw (ignore whitespace).
+
+	The -s flag requests a shortened form of describe that doesn't
+	include the diffs of files updated.
+<a href="#top" class="t">top of page</a></pre><hr><a name="diff"></a><pre>
+<b>% p4 help diff</b>
+
+    diff -- Display diff of client file with depot file
+
+    p4 diff [ -d<flag> -f -m max -sa -sd -se -sl -sr -t ] [ file[rev] ... ]
+
+	Run diff (on the client) of a client file against the corresponding
+	revision in the depot. The file is only compared if the file is
+	opened for edit or the revision provided with the file argument is
+	not the same as the revision had by the client.  See '<a href="#revisions">p4 help revisions</a>' for help specifying revisions.
+
+	If no file argument is given, diff all open files.
+	This can be used to view pending changelists.
+
+	The -d<flag> passes a flag to the built-in diff routine to modify
+	the output: -dn (RCS), -dc (context), -ds (summary), -du (unified),
+	-db (ignore whitespace changes), -dw (ignore whitespace),
+	-dl (ignore line endings).
+
+	The -f flag forces a diff for every file, regardless of whether
+	they are opened or if the client has the named revision.
+	This can be used to verify the client contents.
+
+	The -m max flag limits output to the first 'max' number of files.
+
+	The -s flag reduces the output of diff to the names of files
+	satisfying one of the following criteria:
+
+		-sa     Opened files that are different from the revision
+			in the depot, or missing.
+
+		-sb     Opened for integrate files that have been resolved
+			but have been modified after being resolved.
+
+		-sd     Unopened files that are missing on the client.
+
+		-se     Unopened files that are different from the revision
+			in the depot.
+
+		-sl	Every unopened file, along with the status of
+			'same, 'diff', or 'missing' as compared to its
+			revision in the depot.
+
+		-sr     Opened files that are the same as the revision in the
+			depot.
+
+	The -t flag forces 'p4 diff' to diff even files with non-text
+	(binary) types.
+
+	If the environment variable $P4DIFF is set then the named program is
+	used rather than the implementation of diff included in the client.
+	The -d<flag>command can be used to pass arguments to the external
+	program.  The -s flag is only implemented internally.
+	The environment variable $P4DIFFUNICODE is used instead of $P4DIFF
+	if the file being diffed is of a unicode type and the character
+	set is passed as the first argument to that command.
+<a href="#top" class="t">top of page</a></pre><hr><a name="diff2"></a><pre>
+<b>% p4 help diff2</b>
+
+    diff2 -- Display diff of two depot files
+
+    p4 diff2 [ -d<flag> -q -t -u ] file1 file2
+    p4 diff2 [ -d<flag> -q -t -u ] -b branch [ [ file1 ] file2 ]
+
+	Run diff (on the server) of two files in the depot.  Both files
+	may optionally include a revision specification; the default is
+	to compare the head revision.  See '<a href="#revisions">p4 help revisions</a>' for help
+	specifying revisions.  Wildcards may be used, but they must
+	match between file1 and file2.  Note if using clients or labels
+	as file arguments they must be preceeded with a file path
+	e.g. //...@mylabel //...@yourlabel
+
+	Diff2 introduces each diff with a header line of the form
+
+		==== file1 (type1) - file2 (type2) ==== summary
+
+	file1 or file2 may be '<none>', meaning that only one of the
+	matched files actually exists at the given revision.   The
+	summary is one of: 'identical' - file contents are identical and
+	types are the same, 'types' - file contents are identical but
+	the types are different, and 'content' - file contents are
+	different.
+
+	The -b flag causes diff2 to use the branch view to specify the
+	pairs of files to compare.  If file arguments are also present, they
+	can further limit the files and specify the revisions for comparison.
+	Note that if only one file is given, it restricts the right-hand
+	side of the branch view.
+
+	The -d<flag> passes a flag to the built-in diff routine to modify
+	the output: -dn (RCS), -dc (context), -ds (summary), -du (unified),
+	-db (ignore whitespace changes), -dw (ignore whitespace).
+
+	The -q suppresses the display of the header lines of files whose
+	content and types are identical and suppresses the actual diff
+	for all files.
+
+	The -t flag forces 'p4 diff2' to diff even files with non-text
+	(binary) types.
+
+	The -u flag comes one step closer to patch-friendly output:  it
+	uses the GNU diff -u format and displays only files that differ.
+	The file names and dates are in Perforce syntax, but the output
+	seems digestible by the ubiquitous patch program.
+<a href="#top" class="t">top of page</a></pre><hr><a name="dirs"></a><pre>
+<b>% p4 help dirs</b>
+
+    dirs -- List subdirectories of a given depot directory
+
+    p4 dirs [ -C -D -H ] dir[revRange] ...
+
+	List any directories matching the file pattern dir.  Because of
+	implementation details, 'p4 dirs' does not allow the ... wildcard.
+	Use the * wildcard instead.
+
+	Perforce does not track directories per se, but instead considers
+	a path a directory if there are any undeleted files with that path
+	as a prefix.
+
+	If the dir argument includes a revision range, then only directories
+	with files of those revisions are listed.  Normally directories with
+	any files are listed.  See '<a href="#revisions">p4 help revisions</a>' for help specifying
+	revisions.
+
+	The -C flag limits the output to directories that are mapped on
+	the current client.
+
+	The -D includes directories with only deleted files.
+
+	The -H flag lists directories of files on the 'have' list.
+<a href="#top" class="t">top of page</a></pre><hr><a name="edit"></a><pre>
+<b>% p4 help edit</b>
+
+    edit -- Open an existing file for edit
+
+    p4 edit [ -c changelist# ] [ -n ] [ -t filetype ] file ...
+
+	Open an existing file for edit.  The server notes that the current
+	user on the current client has the file opened, and then changes
+	the file permission from read-only to read/write.
+
+	If -c changelist# is given, the file is put into the pending
+	changelist; the changelist must have been previously created by
+	'p4 change'.  Otherwise the file is opened in the 'default'
+	(unnumbered) changelist.
+
+	If -t filetype is given, the file is opened as that filetype.
+	Otherwise, the filetype of the previous revision is reused.
+	If the filetype given by -t is a partial filetype, that partial
+	filetype is combined with the previous revision's filetype.
+	See '<a href="#filetypes">p4 help filetypes</a>'.
+
+	The -n flag displays what would be opened for edit without actually
+	changing any files or metadata.
+<a href="#top" class="t">top of page</a></pre><hr><a name="filelog"></a><pre>
+<b>% p4 help filelog</b>
+
+    filelog -- List revision history of files
+
+    p4 filelog [ -h -i -l -L -t -m maxRevs ] file[rev] ...
+
+	List the revision history of the files named, working backwards
+	from the latest revision to the first.  If the file specification
+	includes a revision, the command limits its output to revisions at
+	or previous to the given revision
+
+	The -i flag causes inherited file history to be displayed as well.
+	That is, if a file was created by branching (using 'p4 integrate'),
+	filelog lists the revisions of the file's ancestors up to the branch
+	points that led to the specified revision.
+
+	The -h flag causes filelog to display file content history instead
+	of file name history.  The revisions that are listed include those
+	of other files that were branched or copied (using 'p4 integrate'
+	and 'p4 resolve -at') to the specified revision.  Revisions that
+	were replaced by copying or branching are not displayed, even if
+	they are in the history of the specified revision.
+
+	The -t flag displays the time as well as the date.
+
+	The -l flag produces long output with the full text of the
+	changelist descriptions.
+
+	The -L flag produces long output with the full text of the
+	changelist descriptions truncated to 250 characters.
+
+	The -m maxRevs displays at most 'maxRevs' revisions per file.
+<a href="#top" class="t">top of page</a></pre><hr><a name="files"></a><pre>
+<b>% p4 help files</b>
+
+    files -- List files in the depot
+
+    p4 files [ -a ] file[revRange] ...
+
+	List files named or matching wild card specification.  Display
+	shows depot file name, revision, file type, change action and
+	changelist number of the current head revision.  If client file
+	names are given as arguments the view mapping is used to list the
+	corresponding depot files.
+
+	If the file argument has a revision, then all files as of that
+	revision are listed.  If the file argument has a revision range,
+	then only files selected by that revision range are listed, and
+	the highest revision in the range is used for each file.  Normally,
+	the head revision is listed.  See '<a href="#revisions">p4 help revisions</a>' for help
+	specifying revisions.
+
+	The -a flag displays all revisions within the specific range, rather
+	than just the highest revision in the range.
+<a href="#top" class="t">top of page</a></pre><hr><a name="fix"></a><pre>
+<b>% p4 help fix</b>
+
+    fix -- Mark jobs as being fixed by a changelist number
+
+    p4 fix [ -d ] [ -s status ] -c changelist# jobName ...
+
+	'p4 fix' marks each named job as being fixed by the changelist
+	number given with -c.  The changelist may be either pending or,
+	submitted and the jobs may be still be opened or already closed
+	(fixed by another changelist).
+
+	If the changelist has already been submitted and the job is still
+	open then 'p4 fix' marks the job closed.  If the changelist has not
+	been submitted and the job is still open, the job will be marked
+	closed when the changelist is submitted.  If the job is already
+	closed, it is left alone.
+
+	The -d flag causes the specified fixes to be deleted.  This does not
+	otherwise affect the named changelist or jobs.
+
+	The -s uses the given status instead of the default 'closed'.  This
+	status is reported by 'p4 fixes' and also reflected in the job's
+	status (immediately if the changelist is committed; on submission
+	if the changelist is pending).
+<a href="#top" class="t">top of page</a></pre><hr><a name="fixes"></a><pre>
+<b>% p4 help fixes</b>
+
+    fixes -- List what changelists fix what jobs
+
+    p4 fixes [ -i -m max -c changelist# -j jobName ] [ file[revRange] ... ]
+
+	'p4 fixes' shows all jobs with fix records associated with them,
+	along with the changelist number of the fix.  Fix records are
+	created either directly with the 'p4 fix' command or via changelist
+	creation with the 'p4 change' and 'p4 submit' commands.
+
+	The 'p4 fixes' command shows fixes regardless of whether the
+	changelists are submitted or still pending.
+
+	By default, 'p4 fixes' lists all fixes.  This list can be limited
+	in any of three ways.  If -j jobName is given, only fixes for the
+	named job are listed.  If -c changelist# is given, only fixes from
+	the numbered changelist are listed.  If a file (pattern) is given,
+	only fixes for submitted changelists affecting that file (or set of
+	files) are listed.  The file pattern may include wildcards and/or a
+	revision number range.
+	See '<a href="#revisions">p4 help revisions</a>' for help specifying revisions.
+
+	The -i flag also includes any fixes made by changelists integrated
+	into the specified files.
+
+	The -m max flag limits output to the first 'max' number of job
+	fixes.
+<a href="#top" class="t">top of page</a></pre><hr><a name="flush"></a><pre>
+<b>% p4 help flush</b>
+
+    sync -- Synchronize the client with its view of the depot
+    flush -- synonym for 'sync -k'
+
+    p4 sync [ -f -n -k ] [ file[revRange] ... ]
+    p4 sync [ -n -p ] [ file[revRange] ... ]
+
+	Sync updates the client workspace to reflect its current view (if
+	it has changed) and the current contents of the depot (if it has
+	changed).  The client view is used to map client file names to
+	depot file names and vice versa.
+
+	Sync adds files that are in the client view but which have not been
+	retrieved before.  Sync deletes previously retrieved files which
+	are no longer in the client view or have been deleted from the
+	depot.  Sync updates files which are still in the client view and
+	which have been updated in the depot.
+
+	Normally, sync affects all files in the client workspace.  If file
+	arguments are given, sync limits its operation to those files.
+	The file arguments may contain wildcards.
+
+	If the file argument includes a revision specifier, then the given
+	revision is retrieved.  Normally, the head revision is retrieved.
+	See '<a href="#revisions">p4 help revisions</a>' for help specifying revisions.
+
+	If the file argument includes a revision range specification, then
+	only files selected by the revision range are updated, and the
+	highest revision in the range is used.
+
+	Normally, sync will not clobber files in the client workspace that
+	the user has made writable.  Setting the 'clobber' option in the
+	client spec disables this safety check.
+
+	The -f flag forces resynchronization even if the client already
+	has the file, and clobbers writable files.  This flag doesn't affect
+	open files.
+
+	The -n flag causes sync not to update the client workspace, but to
+	display what normally would be updated.
+
+	The -k flag bypasses the client file update.  It can be used to
+	make the server believe that a client workspace already has the
+	file.  Typically this flag is used to correct the Perforce server
+	when it is wrong about what files are on the client, use of this
+	option can confuse the server if you are wrong about the client's
+	contents.
+
+	The -p flag populates the client workspace, but does not update the
+	server to reflect those updates.  Any file that is already synced or
+	opened will be bypassed with a warning message.  This option is very
+	useful for build clients or when publishing content without the
+	requirement of saving the client workspace state.
+<a href="#top" class="t">top of page</a></pre><hr><a name="fstat"></a><pre>
+<b>% p4 help fstat</b>
+
+    fstat -- Dump file info
+
+    p4 fstat [ -m max ] [ -c | -e changelist# ] [ -Ox -Rx ] file[rev] ...
+
+	Fstat is intended for programmatic interfaces into Perforce.  It
+	dumps information about each file, with each item of information on
+	a separate line.  Fstat is best used within a Perforce API application
+	where the items can be accessed as variables, but its output is also
+	suitable for parsing from the client command output.
+
+	The fields that fstat displays are:
+
+		clientFile           -- local path (host or Perforce syntax)
+		depotFile            -- name in depot
+		path                 -- local path (host syntax)
+		isMapped             -- set if mapped client file is synced
+		headAction           -- action at head rev, if in depot
+		headChange           -- head rev changelist#, if in depot
+		headRev              -- head rev #, if in depot
+		headType             -- head rev type, if in depot
+		headTime             -- head rev changelist time, if in depot
+		headModTime	     -- head rev mod time, if in depot
+		haveRev              -- rev had on client, if on client
+		desc                 -- change description
+		digest               -- MD5 digest (fingerprint)
+		fileSize             -- file size
+		action               -- open action, if opened
+		type                 -- open type, if opened
+		actionOwner          -- user who opened file, if opened
+		change               -- open changelist#, if opened
+		resolved             -- resolved integration records
+		unresolved           -- unresolved integration records
+		otherOpen            -- set if someone else has it open
+		otherOpen#           -- list of user@client with file opened
+		otherLock            -- set if someone else has it locked
+		otherLock#           -- user@client with file locked
+		otherAction#         -- open action, if opened by someone else
+		otherChange#         -- changelist, if opened by someone else
+		ourLock              -- set if this user/client has it locked
+		resolveAction#       -- pending integration record action
+		resolveBaseFile#     -- pending integration base file
+		resolveBaseRev#      -- pending integration base rev
+		resolveFromFile#     -- pending integration from file
+		resolveStartFromRev# -- pending integration from start rev
+		resolveEndFromRev#   -- pending integration from end rev
+
+	The -m max flag limits output to the first 'max' number of files.
+
+	The -c changelist# flag instructs fstat to display only files
+	affected since the given changelist number.  This operation is
+	much faster than using a revision range on the affected files.
+
+	The -e changelist# flag instructs fstat to display only files
+	affected by the given changelist number.  When used with the -W
+	flag only pending changes will be considered, this is so that
+	files opened for add will also be included.  This option will
+	also display the change description.
+
+	The -O option generates ancilliary output:
+
+	        -Of     output all revisions for the given files (this
+			option suppresses other* and resolve* fields)
+
+	        -Ol     output a fileSize and digest field for each revision
+			(this may be expensive to compute)
+
+		-Op	output the local file path in both Perforce syntax
+			(//client/) as 'clientFile' and host form as 'path'
+
+	        -Or     output pending integration record information for
+	                files opened on the current client
+
+		-Os	exclude the local path output in host form
+
+	The -R option limits output to specific files:
+
+		-Rc	files mapped through the client view
+		-Rh	files synced to the client
+	        -Rn     files opened not at the head revision
+		-Ro	files opened
+	        -Rr     files opened that have been resolved
+	        -Ru     files opened that need resolving
+
+	For compatibility the following are also supported:
+	-C (-Rc) -H (-Rh) -W (-Ro) -P (-Op) -l (-Ol) -s (-Os).
+<a href="#top" class="t">top of page</a></pre><hr><a name="group"></a><pre>
+<b>% p4 help group</b>
+
+    group -- Change members of user group
+
+    p4 group [ -a ] name
+    p4 group -d [ -a ] name
+    p4 group -o name
+    p4 group -i [ -a ]
+
+	Create a new user group or add/delete members from an existing
+	group.  A group's members can be users and/or other groups
+	(subgroups). The group specification form is put into a temporary
+	file and the editor (given by the environment variable $P4EDITOR)
+	is invoked.
+
+	A group exists when it has any users or other groups in it, and
+	ceases to exist if all users and groups in it are removed.
+
+	Each group has MaxResults and MaxScanRows fields, which limit
+	the data size for operations that the users in that group can
+	perform.  For either field, 'unlimited' means no limit for that
+	group.  An individual user's limit is the highest of any group
+	with a limit to which he belongs, or unlimited if he belongs to
+	no group with a limit.  See '<a href="#maxresults">p4 help maxresults</a>' for more
+	information on MaxResults and MaxScanRows.
+
+	Each group also has a Timeout field which represents the time
+	(in seconds) of how long a 'p4 login' ticket remains valid. Note
+	a value of zero is equivalent to no timeout. See '<a href="#login">p4 help login</a>'
+	for more information.
+
+	The -d flag deletes all users and groups from the named group, thus
+	deleting the whole group.
+
+	The -o flag causes the named group specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a group specification to be read from the
+	standard input.  The user's editor is not invoked.  The new
+	group specification entirely replaces the previous.
+
+	The -a flag allows a user without 'super' access to modify the group
+	only if that user is an 'owner' of that group. Group owners
+	are specified in the 'Owners' field of the group spec.
+
+	All commands that require access granted by 'p4 protect' consider
+	a user's groups when calculating access levels.
+
+	'p4 group' requires 'super' access granted by 'p4 protect' unless
+	invoked with the '-a' flag by a qualified user.
+<a href="#top" class="t">top of page</a></pre><hr><a name="groups"></a><pre>
+<b>% p4 help groups</b>
+
+    groups -- List groups (of users)
+
+    p4 groups [ -m max ] [ [ [ -i ] user | group ] | [ -v [ group ] ] ]
+
+	Displays the list of all user groups defined in the system.
+	If a user argument is given, only groups containing that user
+	are displayed.  If a group argument is given, only groups
+	containing the named group are displayed.
+
+	The -i flag also displays groups that the user or group belongs
+	to indirectly via subgroups.
+
+	The -m max flag limits output to the first 'max' number of groups.
+
+	The -v flag displays the MaxResults, MaxScanRows, MaxLockTime, 
+	and Timeout values for the named group.
+<a href="#top" class="t">top of page</a></pre><hr><a name="have"></a><pre>
+<b>% p4 help have</b>
+
+    have -- List revisions last synced
+
+    p4 have [ file ... ]
+
+    List revisions of named files that were last synced from the depot.
+    If no file name is given list all files synced on this client.
+    The format is
+	depot-file#revision - client-file
+<a href="#top" class="t">top of page</a></pre><hr><a name="help"></a><pre>
+<b>% p4 help help</b>
+
+    help -- Print help message
+
+    p4 help [ command ... ]
+
+	Print a help message about command.  If no command name is given
+	print a general help message about Perforce and give a list
+	of available client commands.
+<a href="#top" class="t">top of page</a></pre><hr><a name="info"></a><pre>
+<b>% p4 help info</b>
+
+    info -- Print out client/server information
+
+    p4 info
+
+	Info dumps out what the server knows about the client (the user
+	name, the client name, the applicable client root, the client
+	current directory, and the client IP address) and some server
+	information (the server IP address, server root, date, version,
+	and license data).
+<a href="#top" class="t">top of page</a></pre><hr><a name="integrate"></a><pre>
+<b>% p4 help integrate</b>
+
+    integrate -- schedule integrations from one file to another
+
+    p4 integrate [ options ] fromFile[revRange] toFile
+    p4 integrate [ options ] -b branch [ toFile[revRange] ... ]
+    p4 integrate [ options ] -b branch -s fromFile[revRange] [ toFile ... ]
+
+	options: -c changelist# -d -D<flag> -f -h -i -o -n -r -t -v
+
+	'p4 integrate' stages change propagation from source files to
+	target files, opening the target files in the client workspace.
+	'p4 resolve' then merges content from the source files into the
+	opened target files, and 'p4 submit' commits the opened files to
+	the depot.  Integrations can be abandoned with 'p4 revert'.
+
+	When 'p4 integrate' opens a target file in the client workspace,
+	it chooses an appropriate action: 'branch' for new files, 
+	'integrate' when the source file has changed, and 'delete' when
+	the source file was deleted.  Open target files are left read-only
+	in the client workspace.  'p4 edit' can downgrade a 'branch' to an
+	'add' or an 'integrate' to an 'edit', making the file read-write.
+
+	'p4 integrate' maintains integration history between files.  This
+	eliminates duplicate integrations and minimizes file merges by
+	telling 'p4 resolve' what to use as the merge base: generally the
+	highest revision already integrated.  Integration history also
+	prevents integrating back a pure, integration-only change.  Such
+	a change is one that resulted from 'p4 resolve' without manually
+	editing the file.  The search for integration history will include
+	integrations indirectly through intermediate file branches
+	The commands 'p4 integrated' and 'p4 filelog' display integration
+	history.
+
+	A branch view may be given directly on the command line by stating
+	the source (from) and target (to) files, or indirectly by naming
+	a stored branch view with -b branch.  A stored branch view may have
+	many mappings, while a view on the command line can only have one.
+	If a stored branch view is given, the target files and source
+	files and revisions may be further limited on the command.
+
+	If no file specification is given then the entire branch view is
+	examined for needed integrations.  If a file specification is
+	given, the integration is limited to only those target files.
+	In both cases, the integration is also limited to those target
+	files that are also in the client view.
+
+	If no revision specification is given then all revisions of the
+	source file are considered for integration.  If a single revision
+	is given, then only revisions up to the given revision are included.
+	If a pair of revisions is given (separated by a comma (,)) then
+	only those revisions, inclusively, are integrated.  Note that the
+	revision specification concerns the fromFile, but is attached to
+	the toFile.  See '<a href="#revisions">p4 help revisions</a>' for help specifying revisions.
+
+	The -f flag forces integrate to act without regard for previous
+	integration history.  Normally, integrate skips any file revisions
+	already integrated.  Note: unless revRange is given as well, the -f
+	flag will force 'p4 resolve' perform merges without a common base.
+	To avoid this, use -f only to force integration of specific changes.
+
+	If -c changelist# is given, the files are opened in the numbered
+	pending changelist instead of the 'default' changelist.
+
+	The -d and -Dx flags enable integrations around deleted revisions.
+	Normally 'p4 integrate' avoids mixing outstanding edits with a
+	deleted file.  -d sets -Dt -Ds -Di.
+
+		-Dt     If the target file has been deleted and the source
+			file has changed, will re-branch the source file
+			on top of the target file.
+
+		-Ds     If the source file has been deleted and the target
+			file has changed, will delete the target file.
+
+		-Di	If the source file has been deleted and re-added,
+			will attempt to integrate all outstanding revisions
+			of the file, including those revisions prior to the
+			delete.  Normally 'p4 integrate' only considers
+			revisions since the last add.
+
+	The -h flag causes the target files to be left at the revision
+	currently on the client (the '#have' revision). Normally, target
+	files are automatically synced to the head revision by 'p4 integrate'.
+	[Note that prior to 2002.1 files were never automatically synced by
+	'p4 integrate'.]
+
+	The -i flag enables integration between files that have no
+	integration history.  Normally, 'p4 integrate' refuses to
+	integrate changes if there is no prior integration history between
+	the source and target, because it has no way of identifying the base
+	for its merges.  The -i flag forces baseless merges and tells
+	'p4 resolve' just to use the first, added revision as the base.
+
+	The -o flag displays the base file name and revision which will
+	be used in subsequent resolves if a resolve is needed.
+
+	The -n flag displays what integrations would be necessary but does
+	not schedule them.
+
+	The -r flag reverses the mappings in the branch view, with the
+	target files and source files exchanging place.  The -b branch flag
+	is required.
+
+	The -s fromFile[revRange] flag causes the branch view to work
+	bidirectionally, where the scope of the command is limited to
+	integrations whose 'from' files match fromFile[revRange].  If
+	any toFiles are given, the scope is further limited to integrations
+	whose 'to' files match them. When the -s fromFile[revRange] flag is
+	used, -r is ignored, as are any revisions on toFile.  [The -s flag
+	is not meant for end users.  It exists to support graphical client
+	programs.]
+
+	The -t flag makes the source file's filetype propagate to the target
+	file.  Normally, the target file retain its previous filetype.
+	Newly branched files always use the source file's filetype.  The
+	filetype can still be changed before 'p4 submit' with 'p4 reopen'.
+
+	The -v flag makes 'p4 integrate' work faster by not copying newly
+	branched files to the client.  In this case, the files can be
+	fetched with 'p4 sync' after they are submitted with 'submit'.
+	[Note that this was the default behavior for newly branched files
+	in release 97.2 and earlier.]
+
+	Note: the syntax 'p4 integrate -b branch toFile[revRange]' is
+	provided for backwards compatibility, but is confusing because
+	it mixes the target file with the source revisions.
+<a href="#top" class="t">top of page</a></pre><hr><a name="integrated"></a><pre>
+<b>% p4 help integrated</b>
+
+    integrated -- Show integrations that have been submitted
+
+    p4 integrated [ -r ] [ -b branch ] [ file ... ]
+
+	Integrated shows integrations that have already been submitted.
+	Use 'p4 resolve -n' to see unresolved integrations and 'p4 resolved'
+	to see resolved but unsubmitted integrations.
+
+	If the -b branch flag is given, only files integrated from the
+	source to target files in the branch view are shown.  Qualified
+	files are displayed even if they were integrated without using
+	the branch view itself.
+
+	The -r flag reverses the mappings in the branch view, with the
+	target files and source files exchanging place.  The -b branch flag
+	is required.
+<a href="#top" class="t">top of page</a></pre><hr><a name="job"></a><pre>
+<b>% p4 help job</b>
+
+    job -- Create or edit a job (defect) specification
+
+    p4 job [ -f ] [ jobName ]
+    p4 job -d jobName
+    p4 job -o [ jobName ]
+    p4 job -i [ -f ]
+
+	'p4 job' creates and edits job specifications using an ASCII form.
+	A job is a defect, enhancement, or other unit of intended work.
+	The 'p4 fix' command can associate changelists with jobs.
+
+	With no arguments, 'p4 job' creates a blank job specification form
+	and invokes the user's editor.  When the form is saved, a job name
+	of the form jobNNNNNN is created.  If a jobName is given on the
+	command line either that named job will be created or, if the job
+	already exists, the job can be modified.
+
+	As jobs are entered or updated, all fields are indexed for
+	searching by 'p4 jobs'.  Text fields are broken into individual
+	alphanumeric words (punctuation and whitespace are ignored) and
+	each word is entered, case folded, into the word index.  Date
+	fields are converted to an internal representation (seconds
+	since 1970/01/01 00:00:00) and entered into the date index.
+
+	The fields of a job are defined by the 'p4 jobspec' command.
+	There is a simple default jobspec that is used if no explicit
+	one has been defined.
+
+	The -d flag deletes the named job, but only if it has no
+	no pending or submitted fixes associated with it.
+
+	The -o flag causes the named job specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a job specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -f flag allows otherwise read-only fields to be set.  The -f
+	flag requires 'admin' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="jobs"></a><pre>
+<b>% p4 help jobs</b>
+
+    jobs -- Display list of jobs
+
+    p4 jobs [ -e jobview -i -l -m max -r ] [ file[revRange] ... ]
+    p4 jobs -R
+
+	Reports the list of all jobs currently known to the system.  If
+	a file (pattern) is given, only fixes for submitted changelists
+	affecting that file (or set of files) are listed.  The file pattern
+	may include wildcards and/or a revision number range.  See '<a href="#revisions">p4 help	revisions</a>' for help specifying revisions.
+
+	The -e jobview limits the output to jobs satisfying the expression
+	given as 'jobview'.  See '<a href="#jobview">p4 help jobview</a>' for a description of
+	jobview syntax.
+
+	The -i flag also includes any fixes made by changelists integrated
+	into the specified files.
+
+	The -l flag produces long output with the full text of the job
+	descriptions.
+
+	The -m max flag limits the output to the first 'max' jobs,
+	ordered by their job name.
+
+	The -r flag sorts the jobs in reverse order (by job name).
+
+	The -R flag rebuilds the jobs table and reindexes each job; this
+	is necessary after upgrading to 98.2.  'p4 jobs -R' requires
+	'super' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="jobspec"></a><pre>
+<b>% p4 help jobspec</b>
+
+    jobspec -- Edit the job template
+
+    p4 jobspec
+    p4 jobspec -o
+    p4 jobspec -i
+
+	Jobspec edits the template that specifies the format of jobs.
+	This format is used by 'p4 job' when jobs are entered or updated,
+	and by 'p4 jobs' and 'p4 describe' when jobs are displayed.
+
+	Jobspec brings up a form with the following fields:
+
+	   Fields:  A list of the fields maintained for each job, one
+		    line per field.  Each line has five words: code, name,
+		    data-type, len, and field-type.
+
+		    'code' is a unique integer identifier for storing
+			the data of the field.  Job codes must be between
+			101 and 199.
+
+		    'name' is the name of the field for the job.
+
+		    'data-type' indicates the format of the field:
+
+			word: a single word (any value)
+			date: a date/time field
+			select: one of a set of words
+			line: a one-liner
+			text: a block of text
+
+		    'len' is the recommended character length of a
+			display box for the field.  If 0, a text box is
+			assumed.
+
+		    'field-type' indicates how to handle the setting of
+			the field:
+
+			optional: no default, and not required to be present
+			default: default provided, still not required
+			required: default provided, value must be present
+			once: set once to the default and never changed
+			always: always set to the default when saving the
+				form, adding or deleting fixes with 'p4 fix'
+				or 'p4 changelist', or submitting a change
+				associated with the job with 'p4 submit'.
+
+	   Values:  A list of 'select' fields and the values those fields
+		    can have.  Each line has two words: the field name and
+		    the values list, with individual values separated by
+		    '/' (no spaces).
+
+	   Presets: A list of fields and their default values, for fields
+		    whose 'setting' flag is other than 'optional'.  Each
+		    line has two words: the field name and the default
+		    value.  If the value has spaces, it must be enclosed
+		    in double quotes.  The following special defaults are
+		    recognized:
+
+			$user: the user entering the job
+			$now: the current date
+			$blank: the words '<enter description here>'
+
+	   Comments: textual comments to be included at the top of each
+		    job specification, to help the user fill out the form.
+		    Each line must begin with the comment character '#'.
+
+	Certain field codes have special significance:
+
+	    code 101, required: the job name
+	    code 102, optional: the job status
+	    code 103, optional: the user who created the job
+	    code 104, optional: the date the job was created
+	    code 105, optional: the description
+
+	    If there is a job status field (102), 'p4 submit' and 'p4 fix'
+	    will set it to 'closed' for any jobs being fixed by the change.
+
+	    Fields 102-105 are used by 'p4 describe' and 'p4 jobs' to
+	    display a job summary.  Any missing fields simply will not
+	    appear in the summary line.
+
+	    If field 105 is present, it is assumed to be a description,
+	    which is used by 'p4 change' and 'p4 submit' to annotate the
+	    list of jobs to be fixed by the change being created.
+
+	When updating the jobspec after jobs have been entered, certain
+	limitations apply:
+
+	    Data is stored according to its code.  Fields can be renamed
+	    by keeping the same code. Removing a code can abandon the
+	    associated data stored for the code.
+
+	    Changing the definition of a code (e.g. from 'text' to 'word')
+	    can require users to bring jobs into the new format as they
+	    are edited.
+
+	The -o flag causes the job template to be written to the standard
+	output.  The user's editor is not invoked.
+
+	The -i flag causes a job template to be read from the standard
+	input.  The user's editor is not invoked.
+
+	'p4 jobspec' requires 'admin' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="label"></a><pre>
+<b>% p4 help label</b>
+
+    label -- Create or edit a label specification and its view
+
+    p4 label [ -f -t template ] name
+    p4 label -d [ -f ] name
+    p4 label -o [ -t template ] name
+    p4 label -i [ -f ]
+
+	Create a new label specification or edit an existing label
+	specification.  A name is required.  The specification form
+	is put into a temporary file and the editor (given by the
+	environment variable $P4EDITOR) is invoked.
+
+	The label specification form contains the following fields:
+
+	Label:       The label name (read only.)
+
+	Owner:       The user who created this label.  Can be changed.
+
+	Update:      The date this specification was last modified.
+
+	Access:      The date of the last 'labelsync' or use of '@label'
+		     on this label.
+
+	Description: A short description of the label (optional).
+
+	Options:     Flags to change the label behavior.
+
+		locked   	Allows only the label owner to change its
+				specification.  Prevents the label from
+				being deleted.  Prohibits 'p4 labelsync'.
+
+	Revision:    An optional revision specification for an automatic
+		     label.  Note that this field must be quoted if it
+		     contains the # (form comment) character.
+
+	View:        A mapping to select files from the depot.
+		     The default view selects all depot files.
+		     See '<a href="#views">p4 help views</a>', but note that only the
+		     left hand side of a mapping is used for labels.
+
+	A label is a shorthand for referring to a collection of revisions.
+	See '<a href="#revisions">p4 help revisions</a>' for information on using labels.  A label
+	is either automatic or static.  An automatic label refers to the
+	revisions given in the View: and Revision: fields.  A static label
+	refers to the revisions associated with the label by the 'p4 tag'
+	or 'p4 labelsync' commands.  A static label cannot have a Revision:
+	field.
+
+	Flag -d causes the named label to be deleted, as long as it is
+	not locked.  The -f flag forces the delete.
+
+	The -o flag causes the named label specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a label specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -t flag constructs the label's view by copying the named
+	template label's view, instead of using the existing view or
+	creating a new default view.  It also copies the label options
+	from the template label.
+
+	The -f flag can force the deletion of a label; normally locked
+	labels can only be deleted by their owner.  -f also allows the
+	last modified date to be set.  The -f flag requires 'admin' access
+	granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="labels"></a><pre>
+<b>% p4 help labels</b>
+
+    labels -- Display list of defined labels
+
+    p4 labels [ -u user ] [ -m max ] [ file[revrange] ]
+
+	Reports the list of all labels currently known to the system.
+
+	If files are specified, 'p4 labels' limits its report to labels
+	that contain those files.  Note that when a file specification
+	is given no automatic labels will be displayed.  If the file
+	specification includes a revision range, 'p4 labels' limits its
+	report to labels that contain those particular revisions.  See
+	'<a href="#revisions">p4 help revisions</a> for help specifying revisions.
+
+	The -u user flag limits labels to those owned by the named user.
+
+	The -m max flag limits output to the first 'max' number of labels.
+<a href="#top" class="t">top of page</a></pre><hr><a name="labelsync"></a><pre>
+<b>% p4 help labelsync</b>
+
+    labelsync -- Synchronize label with the current client contents
+
+    p4 labelsync [ -a -d -n ] -l label [ file[revRange] ... ]
+
+	Labelsync causes the named label to reflect the current contents
+	of the client.  It records the last revision of each file taken
+	onto the client.  The label's name can subsequently be used in
+	a revision specification as @label to refer to the revision of
+	a file as stored in the label.
+
+	Without a file argument, labelsync causes the label to reflect the
+	contents of the whole client, by adding, deleting, and updating the
+	label.  If a file is given, labelsync updates only that named file.
+
+	If the file argument includes a revision specification, then that
+	revision is used instead of the revision taken by the client.  If
+	the revision specified is a deleted revision, then the label will
+	include that deleted revision.  See '<a href="#revisions">p4 help revisions</a>' for help
+	specifying revisions.
+
+	If the file argument includes a revision range specification, then
+	only files selected by the revision range are updated, and the
+	highest revision in the range is used.
+
+	The -a flag causes labelsync to add the named file to the label;
+	no files will be deleted from the label.
+
+	The -d deletes the named file from the label, regardless of revision.
+
+	The -n flag lists how the label would be affected, but doesn't
+	actually update the label.
+
+	Only the owner of a label may run labelsync on that label.
+	A label that has its Options: set to 'locked' cannot be updated.
+<a href="#top" class="t">top of page</a></pre><hr><a name="license"></a><pre>
+<b>% p4 help license</b>
+
+    license -- Update or display the license file
+
+    p4 license -o
+    p4 license -i
+
+	Update the Perforce license file.  This command requires that
+	there is already a valid license file in the Perforce root
+	directory.  Typically this command lets an administrator add
+	extra licensed users to the Perforce server without having to
+	shutdown the server and manually copy the license file in place.
+
+	Most new license files obtained from Perforce can be installed
+	with this command, except for when the IPAddress has changed. In
+	that case the server will have to be stopped and restarted after
+	the new license file has been manually copied.
+
+	The -o flag causes the license file to be written to the standard
+	output.
+
+	The -i flag causes a new license file to be read from the standard
+	input.
+
+	This command requires 'super' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="lock"></a><pre>
+<b>% p4 help lock</b>
+
+    lock -- Lock an opened file against changelist submission
+
+    p4 lock [ -c changelist# ] [ file ... ]
+
+	The open files named are locked in the depot, preventing any
+	user other than the current user on the current client from
+	submitting changes to the files.  If a file is already locked
+	then the lock request is rejected.  If no file names are given
+	then lock all files currently open in the changelist number given
+	or in the 'default' changelist if no changelist number is given.
+<a href="#top" class="t">top of page</a></pre><hr><a name="logger"></a><pre>
+<b>% p4 help logger</b>
+
+    logger -- Report what jobs and changelists have changed
+
+    p4 logger [ -c sequence# ] [ -t counter ]
+
+	Dumps the event log, which notes updates to changes and jobs, for
+	use with defect tracking integration.  The event log is enabled
+	by setting the counter 'logger' (to 0) with 'p4 counter'.  Each
+	event has a sequence number.  The presence of an entry in the log
+	doesn't guarantee that the named entity has changed.
+
+	If a sequence# is given with -c, only events since that number are
+	listed.  If a counter is given with -t, only events since the 
+	number of that counter are listed.  If both are given, then the
+	counter is updated to the sequence number and nothing is output.
+	If the update brings the counter to the highest sequence number
+	in the log, the log is cleared.  This generally means that only
+	one user can really make use of this option.
+
+	'p4 logger' is not meant as an end-user command.  It exists to
+	support propagating information to an external defect tracking
+	system.
+
+	'p4 logger -c' requires 'review' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="login"></a><pre>
+<b>% p4 help login</b>
+
+    login -- Login to Perforce by obtaining a session ticket
+
+    p4 login [ -a -p ] [ user ]
+    p4 login [ -s ]
+
+	The login command allows a user to access Perforce until either
+	the session expires or the user issues a 'logout' command.
+
+	When a user "logs in" to Perforce they are prompted for the users
+	password, if they supply this correctly then they are issued with
+	a ticket.  The ticket issued will expire after the default timeout
+	value has been reached and is only good for the host machine that the
+	'login' command was executed from (see below for exception).
+
+	The ticket can be used anywhere that a password can be used.
+
+	e.g.
+
+	p4 -P <ticket value> changes -m1
+
+	The -a flag causes the server to issue a ticket which is valid on
+	all host machines.
+
+	The -p flag just displays the ticket rather than storing it on the
+	client machine.
+
+	The -s flag shows the status of the current ticket (if there is one).
+
+	Requesting a login of someone other than the current user requires
+	'super' access granted by 'p4 protect'.  In this case 'p4 login' does
+	not prompt for the users password.
+<a href="#top" class="t">top of page</a></pre><hr><a name="logout"></a><pre>
+<b>% p4 help logout</b>
+
+    logout -- Logout of Perforce by removing or invalidating a ticket.
+
+    p4 logout [-a]
+
+	The logout command will remove the ticket on the client, the user
+	will have to issue another 'p4 login' to continue use.
+
+	The -a flag causes the ticket on the server to be invalidated, this
+	will logout all users of that ticket from Perforce.
+<a href="#top" class="t">top of page</a></pre><hr><a name="monitor"></a><pre>
+<b>% p4 help monitor</b>
+
+    monitor -- Display Perforce process information
+
+    p4 monitor show [ -a -l -e ]
+    p4 monitor terminate [ id ]
+    p4 monitor clear [ id | all ]
+
+	Monitor is an admin utility that allows the user to see what current
+	p4 processes are running. Monitor tracks the Perforce processes in a
+	special table, this table is constantly being updated so there is a
+	potential minor performance impact. To make use of this command it
+	is required that 'monitoring' be enabled through the monitor counter.
+
+	'p4 monitor show' displays current process information; for each
+	process the process-id, status (Running/Terminate), owner, command
+	are listed per line of output.  The following flags require 'admin'
+	access:
+
+	    The -a flag includes the command args.
+
+	    The -e flag includes the command environment; for each process
+	    client application (if known), host address and client name are
+	    shown.
+
+	    The -l flag produces long output with the full username and full
+	    argument list.
+
+	'p4 monitor terminate [id]' marks the command specified by its 'id'
+	for termination. This command requires 'admin' access.
+
+	'p4 monitor clear [id|all]' removes the process record specified by
+	its 'id' from the monitor table. All of the records are removed if the
+	option 'all' is supplied instead of an 'id'. This may be required if
+	for some reason commands are ending prematurely. This command requires
+	'admin' access.
+<a href="#top" class="t">top of page</a></pre><hr><a name="obliterate"></a><pre>
+<b>% p4 help obliterate</b>
+
+    obliterate -- Remove files and their history from the depot
+
+    p4 obliterate [ -y ] file[revRange] ...
+
+	Obliterate removes files and their history from the server in a
+	way that they won't come back.  (See 'p4 delete' for the non-
+	destructive way to delete a file.)  It retrieves space used by those
+	files in the archive and then clears the files from all lists
+	maintained by the server.  Files in client workspaces are not
+	affected, except that Perforce will no longer recognize them
+	as being under its control.
+
+	Obliterate is aware of lazy copies made when 'p4 integrate' creates
+	a branch, and will not remove copies still in use.  Because of this,
+	obliterating files does not guarantee that the corresponding files in
+	the archive will be removed.
+
+	If the file argument has a revision, then only that revision is
+	obliterated.  If the file argument has a revision range, then only
+	the revisions in that range are obliterated.  See '<a href="#revisions">p4 help revisions</a>'
+	for help.
+
+	The -y flag instructs obliterate to do its work.  Otherwise, it
+	just displays what it would do.
+
+	'p4 obliterate' requires 'admin' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="opened"></a><pre>
+<b>% p4 help opened</b>
+
+    opened -- Display list of files opened for pending changelist
+
+    p4 opened [ -a -c changelist# -C client -m max ] [ file ... ]
+
+	Lists files currently opened in pending changelists, or indicates
+	for the specified files whether they are currently opened and/or
+	locked.  If no file names are given, all files open in the current
+	client workspace are listed.
+
+	The -a flag lists opened files in all clients.  Normally only files
+	opened by the current client are listed.
+
+	The -c changelist# flag restricts the list to files opened under
+	the given changelist#.  Normally files in any changelist (include the
+	'default') are listed.
+
+	The -C client flag restricts the list of files to those opened on
+	the named client.
+
+	The -m max flag limits output to the first 'max' number of files.
+<a href="#top" class="t">top of page</a></pre><hr><a name="passwd"></a><pre>
+<b>% p4 help passwd</b>
+
+    passwd -- Set the user's password on the server (and Windows client)
+
+    p4 passwd [ -O oldPassword -P newPassword ] [ user ]
+
+	'p4 passwd' sets the user's password on the server.
+
+	Once a password is set for a user on the server, then in order for
+	that user to invoke any Perforce client commands the same password
+	must be set on the client in the environment variable $P4PASSWD.
+	(On Windows, 'p4 passwd' sets this as well.)
+
+	'p4 passwd' prompts for both the old password and the new password
+	with character echoing turned off.  Setting the password to an
+	empty string deletes the password.
+
+	The -O flag provides the old password, avoiding prompting.
+
+	The -P flag provides the new password, avoiding prompting.
+
+	Setting the password of someone other than the current user
+	requires 'super' access granted by 'p4 protect'.  In this case
+	'p4 passwd' does not prompt for the old password.
+<a href="#top" class="t">top of page</a></pre><hr><a name="print"></a><pre>
+<b>% p4 help print</b>
+
+    print -- Retrieve a depot file to the standard output
+
+    p4 print [ -a -o localFile -q ] file[revRange] ...
+
+	Retrieve the contents of a depot file to the client's standard
+	output.  The client's have list is not affected.  If file is
+	specified as a client file name, the client view is used to
+	find the corresponding depot file.
+
+	If the file argument has a revision, then all files as of that
+	revision are printed.  If the file argument has a revision range,
+	then only files selected by that revision range are printed, and
+	the highest revision in the range is used for each file.  Normally,
+	the head revision is printed.  See '<a href="#revisions">p4 help revisions</a>' for help
+	specifying revisions.
+
+	The -a flag prints all revisions within the specific range, rather
+	than just the highest revision in the range.
+
+	The -o localFile flag redirects the output to the named file on
+	the client filesystem.  In this case, at most one file is written.
+
+	The -q flag suppresses the initial line that displays the file name
+	and revision.
+<a href="#top" class="t">top of page</a></pre><hr><a name="protect"></a><pre>
+<b>% p4 help protect</b>
+
+    protect -- Modify protections in the server namespace
+
+    p4 protect
+    p4 protect -o
+    p4 protect -i
+
+	'p4 protect' edits the protections table in a text form.
+
+	Each line contains a protection mode, a group/user indicator, the
+	group/user name, client host id and a depot file path pattern.
+	A user gets the highest privilege granted on any line.
+
+	Note: remote depot accesses are made using the pseudo-user 'remote';
+	access by other servers can be controlled by granting appropriate
+	permissions to the 'remote' user.
+
+	     Mode:   The permission being granted.  Each permission includes
+		     all the permissions above it, except for 'review'.
+
+		     list   - users can see names but not contents of files;
+			      users can see all non-file related metadata
+			      (clients, users, changelists, jobs, etc.)
+
+		     read   - users can sync, diff, and print files
+
+		     open   - users can open files (add, edit. delete,
+			      integrate)
+
+		     write  - users can submit open files
+
+		     admin  - permits those administrative commands and
+			      command options that don't affect the server's
+			      security.
+
+		     super  - access to all commands and command options.
+
+		     review - allows access to the 'p4 review' command;
+			      implies read access
+
+	     Group/User indicator: either 'group' or 'user'.
+
+	     Name:   A Perforce group or user name; may be wildcarded.
+
+	     Host:   The IP address of a client host; may be wildcarded.
+
+	     Path:   The part of the depot to which access is being granted
+	             or denied.  To deny access to a depot path, preface the
+	             path with a "-" character. These exclusionary mappings
+	             apply to all access levels, even if only one access
+	             level is supplied in the first field.
+
+	The -o flag causes the protection table to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes the protection table to be read from the
+	standard input.  The user's editor is not invoked.
+
+	Once protections are in place, 'p4 protect' requires 'super'
+	access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="protects"></a><pre>
+<b>% p4 help protects</b>
+
+    protects -- Display protections in place for a given user/path
+
+    p4 protects [ -a | -g group | -u user ] [ -h host -m ] [ file ... ]
+
+	'p4 protects' display the lines from the protections table that
+	apply to the current user.  The protections table is managed by
+	'p4 protect'.
+
+	If the -a flag is given, protection lines for all users are
+	displayed.  If the -g group flag or -u user flag is given,
+	protection lines for that group or user are displayed.
+
+	If the -h host flag is given, only those protection lines that apply
+	to the given host (IP address) are displayed.
+
+	If the -m flag is given, a single word summary of the maximum
+	access level is reported. Note that this does not take
+	exclusions into account.
+
+	If the file argument is given, only those protection lines that
+	apply to the named files are displayed.
+
+	The -a/-g/-u flags require 'super' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="rename"></a><pre>
+<b>% p4 help rename</b>
+
+    rename -- How to rename files
+
+    p4 integrate from to
+    p4 delete from
+    p4 submit
+
+	Perforce does not support a single 'rename' command, but files can
+	be renamed by branching one file into another and then deleting the
+	original file.
+
+	The 'from' and 'to' file arguments may include wildcards as long as
+	they are matched.
+
+	Integrating from files require read access to the files, but deleting
+	them requires write access.
+
+	For further information, see the help for the individual commands.
+<a href="#top" class="t">top of page</a></pre><hr><a name="reopen"></a><pre>
+<b>% p4 help reopen</b>
+
+    reopen -- Change the type or changelist number of an opened file
+
+    p4 reopen [ -c changelist# ] [ -t filetype ] file ...
+
+	Reopen takes an already opened file and reopens it for the current
+	user, optionally changing its changelist or filetype.
+
+	The changelist must have previously been created with 'p4 change'
+	or may be the 'default' changelist.
+
+	If -t filetype is given, the file is reopened as that filetype.
+	If the filetype given by -t is a partial filetype, that partial
+	filetype is combined with the current filetype.  See '<a href="#filetypes">p4 help filetypes</a>'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="resolve"></a><pre>
+<b>% p4 help resolve</b>
+
+    resolve -- Merge open files with other revisions or files
+
+    p4 resolve [ -af -am -as -at -ay -d<flag> -f -n -o -t -v ] [ file ... ]
+
+	'p4 resolve' merges the content of source files into target
+	files open in the client workspace, using an interactive dialog.
+	'p4 resolve' only handles merges scheduled implicitly by 'p4 sync'
+	or 'p4 submit' of a file opened at a revision other than the head
+	or explicitly by 'p4 integrate'.  Once scheduled, 'p4 resolve'
+	must perform the merges before the file can be committed with
+	'p4 submit'.
+
+	If no file is given, all files needing merging will be resolved.
+
+	The merge process is a classic 3-way merge, with the participating
+	files named (for better or for worse): 'yours' -- the target
+	file open in the client workspace; 'theirs' -- the source file
+	being merged from the depot; and 'base' -- the common ancestor,
+	actually the highest revision of the source file not already
+	merged into the target.
+
+	For each file, 'p4 resolve' places a merge candidate into a
+	temporary file in the client workspace and displays a summary line
+	with the total number of sections of text changed from the base:
+
+	  yours        change is only in your open revision
+	  theirs       change is only in the source revision
+	  both         same text added or changed in both
+	  conflicts    conflicting changes between the yours and theirs
+
+	If there are any conflicts, the merge candidate file will have
+	conflict markers bracketing the alternative texts.  You must
+	edit the file to resolve the conflicts and remove the markers.
+
+	'p4 resolve' distinguishes among four potential merge results:
+	entirely yours, entirely theirs, automated merge, or manually
+	edited merge.  All but the last result in a pure merge: one that
+	never needs integrating back to the source file.  'p4 resolve'
+	includes a suggested merge result in []'s on its prompt line.
+
+	After displaying the summary line, 'p4 resolve' prompts you for
+	an action:
+
+	  Accept:
+	     at              Keep only changes to their file.
+	     ay              Keep only changes to your file.
+	   * am              Keep merged file.
+	   * ae              Keep merged and edited file.
+	   * a               Keep autoselected file.
+
+	  Diff:
+	   * dt              See their changes alone.
+	   * dy              See your changes alone.
+	   * dm              See merged changes.
+	     d               Diff your file against merged file.
+
+	  Edit:
+	     et              Edit their file (read only).
+	     ey              Edit your file (read/write).
+	   * e               Edit merged file (read/write).
+
+	  Misc:
+	   * m               Run '$P4MERGE base theirs yours merged'.
+			     (Runs '$P4MERGEUNICODE charset base theirs
+					yours merged' if set and the file
+			      is a unicode file.)
+	     s               Skip this file.
+	     h               Print this help message.
+	     ^C              Quit the resolve operation.
+
+	Options marked (*) appear only for textual resolution.
+
+	The 'merge' option allows you to invoke your own integration and
+	conflict resolution utility (named in the $P4MERGE environment
+	variable).  This utility is expected to replace the existing
+	merged file with a new one.
+
+	The -am flag puts 'p4 resolve' into automatic mode: if there are
+	conflicts, the file is skipped; if there are no conflicts and
+	yours hasn't changed it accepts theirs; if theirs hasn't changed
+	it accepts yours; if both yours and theirs have changed it accepts
+	the merge.  Files that have no base for merging (e.g. binary files)
+	are always skipped.
+
+	The -af flag forces 'p4 resolve' in automatic mode to accept the
+	merged file even if there are conflicts.
+
+	The -as flag performs a 'safe' automatic resolve, accepting only
+	files that have either your changes or their changes, but not both.
+	Files with changes to both yours and theirs are skipped.
+
+	The -at and -ay flags perform an automatic resolve that skips the
+	merging.  Instead it automatically accepts their (-at) or your (-ay)
+	version of the file.  The -at flag should be used with care, as
+	it overwrites any changes made to the file in the client workspace.
+
+	The -d<flag> can be used to handle whitespace and line endings
+	when merging files.  The -db flag ignores whitespace changes,
+	the -dw flag ignores whitespace altogether, and the -dl flag ignores
+	line endings when merging files. The flags are also passed to the
+	diff options in the 'p4 resolve' dialog. Additional -d flags which
+	modify the diff output but do not modify merge behavior include
+	-dn (RCS), -dc (context), -ds (summary), and -du (unified). Note that
+	'p4 resolve' will use text from the client file where the files
+	differ only in whitespace.
+
+	The -f flag allows previously resolved files to be resolved again.
+	Normally, once files have been resolved then 'p4 resolve' won't
+	display them again.
+
+	The -n flag lists the merges which would be performed without
+	actually doing them.
+
+	The -o flag displays the base file name and revision which will
+	be used during the the merge.
+
+	The -t flag forces 'p4 resolve' to attempt a textual merge, even
+	for files with non-text (binary) types.
+
+	The -v flag causes 'p4 resolve' to put in markers for all changes,
+	not just those in conflict.  The markers must be edited out before
+	the merged file can be accepted.
+<a href="#top" class="t">top of page</a></pre><hr><a name="resolved"></a><pre>
+<b>% p4 help resolved</b>
+
+    resolved -- Show files that have been merged but not submitted
+
+    p4 resolved [ -o ] [ file ... ]
+
+	Resolved shows integrations that have already been resolved
+	but not yet submitted.  Use 'p4 resolve -n' to see unresolved
+	integrations and 'p4 integrated' to see already submitted
+	integrations.
+
+	The -o flag reports the revision used as the base during the
+	resolve.
+<a href="#top" class="t">top of page</a></pre><hr><a name="revert"></a><pre>
+<b>% p4 help revert</b>
+
+    revert -- Discard changes from an opened file
+
+    p4 revert [ -a -n -k -c changelist# ] file ...
+
+	Revert an open file back to the revision previously synced from
+	the depot, discarding any pending changelists or integrations that
+	have been made.  This command requires naming files explicitly.
+	After running revert the named files will no longer be locked
+	or open.
+
+	The -a flag tells 'p4 revert' to revert only those files which
+	are opened for edit or integrate and are unchanged or missing.
+	Files with pending integration records are left open.  With the
+	-a flag, the file arguments are optional.
+
+	The -n flag displays what files would be affected but does not
+	actually revert them.
+
+	The -k flag bypasses the client file refresh.  It can be used to
+	make the server believe the file is no longer open, but keeps
+	the file unchanged in the client workspace.
+
+	The -c flag limits 'p4 revert' to files opened under the given,
+	pending changelist.
+<a href="#top" class="t">top of page</a></pre><hr><a name="review"></a><pre>
+<b>% p4 help review</b>
+
+    review -- List and track changelists (for the review daemon)
+
+    p4 review [ -c changelist# ] [ -t counter ]
+
+	'p4 review' lists changelists that have not been reviewed before,
+	as tracked by the named counter.  If the counter is not given,
+	'p4 review' lists all changelists.  (If a changelist# and counter
+	are given, 'p4 review' sets the counter to that changelist# and
+	produces no output.  This functionality has been superceded by the
+	'p4 counter' command.)
+
+	'p4 review' is not meant as an end-user command.  It exists to
+	support an automated change review daemon.
+<a href="#top" class="t">top of page</a></pre><hr><a name="reviews"></a><pre>
+<b>% p4 help reviews</b>
+
+    reviews -- Show what users are subscribed to review files
+
+    p4 reviews [ -c changelist# ] [ file ... ]
+
+	'p4 reviews' lists all users who have subscribed to review the named
+	files, the files in the numbered changelist, or all files by default.
+	Users subscribe to review files via the 'p4 user' command.
+<a href="#top" class="t">top of page</a></pre><hr><a name="set"></a><pre>
+<b>% p4 help set</b>
+
+    set -- Set variables in the registry (Windows only)
+
+    p4 set [ -s -S service ] [ var=[value] ]
+
+	'p4 set' sets the registry variables used by Perforce on Windows
+	platforms.  Normally, the variable 'var' is set to 'value'.
+	If 'value' is missing, the variable 'var' is unset.  Without
+	any arguments at all, 'p4 set' list variable settings.
+
+	The -s flag causes 'p4 set' to set variables for the whole system
+	rather than for the user.  You must have NT administrator powers
+	to use this.
+
+	The -S service flag causes 'p4 set' to set variables for the named
+	service.  You must have NT administrator powers to use this.
+
+	Currently, registry variable entries may be overridden by environment
+	variables and (in some cases) flags on the command line.
+	See '<a href="#environment">p4 help environment</a>' for a list of environment/registry variables.
+<a href="#top" class="t">top of page</a></pre><hr><a name="sizes"></a><pre>
+<b>% p4 help sizes</b>
+
+    sizes -- Display size information for files in the depot
+
+    p4 sizes [ -a -s -b blocksize ] file[revRange] ...
+
+	List files named or matching wild card specification.  Display
+	shows depot file name, revision, file count and file size.  If
+	client file names are given as arguments the view mapping is used
+	to list the corresponding depot files.
+
+	The -a flag includes all revisions within the specific range, rather
+	than just the highest revision in the range.
+
+	The -b option lets the user supply the blocksize (in bytes).  When
+	this option is specified each accumulated filesize is rounded up
+	to the nearest blocksize.
+
+	The -s option calculates the sum of the filesizes for the supplied
+	file argument.
+<a href="#top" class="t">top of page</a></pre><hr><a name="submit"></a><pre>
+<b>% p4 help submit</b>
+
+    submit -- Submit open files to the depot
+
+    p4 submit [ -r -s -f option ]
+    p4 submit [ -r -s -f option ] files
+    p4 submit [ -r -f option ] -d description
+    p4 submit [ -r -f option ] -d description files
+    p4 submit [ -r -f option ] -c changelist#
+    p4 submit -i [ -r -s -f option ]
+
+	'p4 submit' commits a pending changelist and its files to the depot.
+
+	With no argument 'p4 submit' attempts to submit all files in the
+	'default' changelist.  Submit provides the user with a dialog
+	similar to 'p4 change' so the user can compose a changelist
+	description.  In this dialog the user is presented with the list
+	of files open in changelist 'default'.  Files may be deleted from
+	this list but they cannot be added.  (Use an open command (edit,
+	add, delete) to add additional files to a changelist.)
+
+	If a (single) file pattern is given, only those files in
+	the 'default' changelist that match the pattern will be submitted.
+
+	The -c flag submits the numbered pending changelist that has been
+	previously created with 'p4 change' or a failed 'p4 submit'.
+
+	The -d flag allows a description to be passed into submit rather
+	than using a numbered changelist or engaging in a change description
+	dialog. This option is useful when scripting but does not allow for
+	jobs to be added or the default changelist to be modified.
+
+	The -f flag allows a submit option to be passed into submit which
+	will override the one that is set in the client. See '<a href="#client">p4 help client</a>'
+	for valid submit options.
+
+	The -i flag causes a changelist specification (including files to be
+	submitted) to be read from the standard input.  The user's editor
+	is not invoked.
+
+	The -r flag allows submitted files to remain open (on the client's
+	default changelist) after the submit has completed.
+
+	The -s flag extends the list of jobs to include the fix status
+	for each job, which becomes the job's status when the changelist
+	is committed.  See '<a href="#change">p4 help change</a>' for more notes on this option.
+
+	Before committing a changelist submit locks all associated files not
+	already locked.  If any file cannot be locked, or if the submit
+	fails for any other reason the files are left open in a newly
+	created pending changelist.
+
+	Submit is guaranteed to be atomic.  Either all files will be
+	updated in the depot as a unit or none will be.
+<a href="#top" class="t">top of page</a></pre><hr><a name="sync"></a><pre>
+<b>% p4 help sync</b>
+
+    sync -- Synchronize the client with its view of the depot
+    flush -- synonym for 'sync -k'
+
+    p4 sync [ -f -n -k ] [ file[revRange] ... ]
+    p4 sync [ -n -p ] [ file[revRange] ... ]
+
+	Sync updates the client workspace to reflect its current view (if
+	it has changed) and the current contents of the depot (if it has
+	changed).  The client view is used to map client file names to
+	depot file names and vice versa.
+
+	Sync adds files that are in the client view but which have not been
+	retrieved before.  Sync deletes previously retrieved files which
+	are no longer in the client view or have been deleted from the
+	depot.  Sync updates files which are still in the client view and
+	which have been updated in the depot.
+
+	Normally, sync affects all files in the client workspace.  If file
+	arguments are given, sync limits its operation to those files.
+	The file arguments may contain wildcards.
+
+	If the file argument includes a revision specifier, then the given
+	revision is retrieved.  Normally, the head revision is retrieved.
+	See '<a href="#revisions">p4 help revisions</a>' for help specifying revisions.
+
+	If the file argument includes a revision range specification, then
+	only files selected by the revision range are updated, and the
+	highest revision in the range is used.
+
+	Normally, sync will not clobber files in the client workspace that
+	the user has made writable.  Setting the 'clobber' option in the
+	client spec disables this safety check.
+
+	The -f flag forces resynchronization even if the client already
+	has the file, and clobbers writable files.  This flag doesn't affect
+	open files.
+
+	The -n flag causes sync not to update the client workspace, but to
+	display what normally would be updated.
+
+	The -k flag bypasses the client file update.  It can be used to
+	make the server believe that a client workspace already has the
+	file.  Typically this flag is used to correct the Perforce server
+	when it is wrong about what files are on the client, use of this
+	option can confuse the server if you are wrong about the client's
+	contents.
+
+	The -p flag populates the client workspace, but does not update the
+	server to reflect those updates.  Any file that is already synced or
+	opened will be bypassed with a warning message.  This option is very
+	useful for build clients or when publishing content without the
+	requirement of saving the client workspace state.
+<a href="#top" class="t">top of page</a></pre><hr><a name="tag"></a><pre>
+<b>% p4 help tag</b>
+
+    tag -- Tag files with a label
+
+    p4 tag [ -d -n ] -l label file[revRange] ...
+
+	Tag associates the named label with the file revisions indicated
+	by the file argument.  Once file revisions are tagged with a
+	label, revision specifications of the form '@label' can be used
+	to refer to them.
+
+	If the file argument does not include a revision specification,
+	the head revisions will be tagged.  See '<a href="#revisions">p4 help revisions</a>'
+	for revision specification options.
+
+	If the file argument includes a revision range specification,
+	only the files with revisions in that range will be tagged.
+	Files with more than one revision in the range will be tagged
+	at the highest revision.
+
+	The -d deletes the association between the specified files and
+	the label, regardless of revision.
+
+	The -n flag lists the files that would be tagged, but doesn't
+	actually do anything.
+
+	Tag can be used with an existing label (see '<a href="#labels">p4 help labels</a>')
+	or with a new one.  An existing label may be used only by its
+	owner, but only if it is unlocked. (See '<a href="#label">p4 help label</a>').
+
+	To list the file revisions tagged with a label, use 'p4 files
+	@label'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="tickets"></a><pre>
+<b>% p4 help tickets</b>
+
+    tickets -- Display list of session tickets for this user
+
+    p4 tickets
+
+	'p4 tickets' lists all the tickets that have been granted
+	to the user by 'p4 login'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="triggers"></a><pre>
+<b>% p4 help triggers</b>
+
+    triggers -- Modify list of pre-submit and form-validating triggers
+
+    p4 triggers
+    p4 triggers -o
+    p4 triggers -i
+
+	'p4 triggers' edits the table of pre-submit, form-validating and
+	external-authentication triggers.
+
+	Triggers are administrator-defined commands that the server runs
+	to perform the following:
+
+	Validate changelist submissions.
+
+	    The server runs changelist triggers either before the
+	    file transfer, between file transfer and changelist commit,
+	    or after the commit.
+
+	Manipulate and validate forms.
+
+	    The server runs form-validating triggers either between
+	    generating and outputting the form, between inputting and
+	    parsing the form, between parsing and saving the form, or 
+	    when deleting the form.
+
+	Authenticate or change a user password.
+
+	    The server runs authentication triggers to either validate
+	    a user password during login or when setting a new password.
+
+	The trigger form has a single entry 'Triggers', followed by any
+	number of trigger lines.  Triggers are executed in the order listed
+	and if a trigger fails subsequent triggers are not run.  A trigger
+	succeeds if the executed command exits 0 and fails otherwise.
+	Normally the failure of a trigger prevents the operation from
+	completing, except for the commit triggers which run after the
+	operation is complete.
+
+	If the trigger command succeeds, its standard output is sent to the
+	client as an unadorned message.  If the command fails, its standard
+	output (not error output) is sent to the client as the text of a
+	trigger failure error message.
+
+	Each trigger line contains a trigger name, a trigger type, a depot
+	file path pattern or form type, and a command to run:
+
+	Name:   The name of the trigger.  A run of the same trigger
+		name on contiguous lines is treated as a single trigger,
+		so that multiple paths may be specified.  Only the
+		command of the first such trigger line is used.
+
+	Type:	When the trigger is to execute:
+
+		change-submit:
+		    Execute pre-submit trigger after changelist has been
+		    created and files locked but prior to file transfer.
+
+		change-content:
+		    Execute mid-submit trigger after file transfer but prior
+		    to commit.  Files can be accessed by the 'p4 diff2',
+		    'p4 files', 'p4 fstat', and 'p4 print' commands using
+		    the revision specification '@=change', where 'change' is
+		    the pending changelist number passed as %changelist%.
+
+		change-commit:
+		    Execute post-submit trigger after changelist commit.
+
+		fix-add:
+		    Execute fix trigger prior to adding a fix.  The special
+		    variable %jobs% is available for expansion and must be
+		    the last argument to the trigger as it expands to one
+		    argument for each job listed on the 'p4 fix' command.
+
+		fix-delete:
+		    Execute fix trigger prior to deleting a fix.  The special
+		    variable %jobs% is available for expansion and must be
+		    the last argument to the trigger as it expands to one
+		    argument for each job listed on the 'p4 fix -d' command.
+
+		form-out:
+		    Execute form trigger on generation of form.	 Trigger may
+		    modify form.
+
+		form-in:
+		    Execute form trigger on input of form before its contents
+		    are parsed and validated.  Trigger may modify form.
+
+		form-save:
+		    Execute form trigger prior to save of form	after its
+		    contents are parsed.
+
+		form-commit:
+		    Execute form trigger after it has been committed allowing
+		    access to automatically generated fields (jobname, dates
+		    etc).  It cannot modify the form.  This trigger for job
+		    forms is run by 'p4 job' as well as by 'p4 fix' (after
+		    the status is updated), 'p4 change' (if the job is added
+		    or deleted) and 'p4 submit' (if the job is associated with
+		    the change).  The 'form-commit' trigger has access to the
+		    new job name created with 'p4 job', while the 'form-in'
+		    and 'form-save' triggers are run before the job name is
+		    created.  The special variable %action% is available for
+		    expansion on the job 'form-commit' trigger command line.
+
+		form-delete:
+		    Execute form trigger prior to delete of form after its
+		    contents are parsed.
+
+		auth-check:
+		    Execute an authentication check trigger to verify a user's
+		    password against an external password manager during login
+		    or when setting a new password.
+
+		auth-set:
+		    Execute an authentication set trigger to send a new password
+		    to an external password manager.
+
+	Path:   For change triggers, a file pattern to match files in the
+		changelist.  This file pattern may be an exclusion mapping
+		(-pattern) to exclude files.  For form triggers, the name
+		of form (branch, client, etc).  For fix triggers (fix) is
+		required as the path value,  for authentication triggers
+		(auth) must be set.  Note that triggers on the 'p4 triggers'
+		command are ignored.
+
+	Command: The OS command to run for validation.  If the command
+		contains spaces, the whole command must be quoted.  The
+		The following variables are expanded in the command string:
+
+		    %client% -- the client issuing the command
+		    %clienthost% -- the hostname of the client
+		    %clientip% -- the IP address of the client
+		    %serverhost% -- the hostname of the server
+		    %serverip% -- the IP address of the server
+		    %serverport% -- the IP address:port of the server
+		    %serverroot% -- the value of the server's $P4ROOT
+		    %user% -- the user issuing the command
+
+		    %changelist% -- the changelist being submitted
+
+		    %formfile% -- path to temp file containing form
+		    %formname% -- the form's name (branch name, etc)
+		    %formtype% -- the type of form (branch, etc)
+
+		More information can be gathered about the changelist
+		being submitted by running 'p4 describe %changelist%'.
+
+	The -o flag causes the trigger table to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes the trigger table to be read from the
+	standard input.  The user's editor is not invoked.
+
+	'p4 triggers' requires 'super' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="typemap"></a><pre>
+<b>% p4 help typemap</b>
+
+    typemap -- Modify the file name-to-type mapping table
+
+    p4 typemap
+    p4 typemap -o
+    p4 typemap -i
+
+	'p4 typemap' edits a name-to-type mapping table for 'p4 add',
+	which consults the table to select a file's filetype based on
+	its name.
+
+	The typemap form has a single entry 'TypeMap', followed by any
+	number of typemap lines.  Each typemap line contains a filetype
+	and a depot file path pattern:
+
+	Filetype:   See '<a href="#filetypes">p4 help filetypes</a>' for a list of valid filetypes.
+
+	Path:       Names to be mapped to the filetype.  This is a file
+		    pattern and may be an exclusion mapping (-pattern)
+		    to exclude files.  Note to match all files anywhere
+		    in the depot hierarchy, the pattern must begin with
+		    //..., and to match any file with a given suffix you
+		    must either specify '//.../*.suffix' or '//....suffix'
+		    (four dots).
+
+	As with all mappings, later entries override earlier entries.
+	If no matching entry is found in the table, 'p4 add' senses the
+	file's filetype by examining the file's contents and execution
+	permission bits.
+
+	The -o flag causes the typemap table to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes the typemap table to be read from the
+	standard input.  The user's editor is not invoked.
+
+	'p4 typemap' requires 'admin' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="unlock"></a><pre>
+<b>% p4 help unlock</b>
+
+    unlock -- Release a locked file but leave it open
+
+    p4 unlock [ -c changelist# ] [ -f ] [ file ... ]
+
+	'p4 unlock' releases a lock on an open file in a pending changelist.
+	If the file is open in a specific pending changelist other than
+	'default', then the -c flag is required to specify the pending
+	changelist.  If no file name is given then all files in the
+	designated changelist are unlocked.
+
+	The -f flag can unlock any file; normally files can only be unlocked
+	by their owner.  The -f flag requires 'admin' access granted by
+	'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="user"></a><pre>
+<b>% p4 help user</b>
+
+    user -- Create or edit a user specification
+
+    p4 user [ -f ] [ name ]
+    p4 user -d [ -f ] name
+    p4 user -o [ name ]
+    p4 user -i [ -f ]
+
+	Create a new user specification or edit an existing user
+	specification. The specification form is put into a temporary
+	file and the editor (given by the environment variable $P4EDITOR)
+	is invoked.
+
+	Normally, a user specification is created automatically the
+	first time the user invokes any client command that can update
+	the depot.  The 'p4 user' command is generally used to edit the
+	user's reviewing subscription list for change review.
+
+	The user specification form contains the following fields:
+
+	User:        The user name (read only).
+
+	Email:       The user's email address (user@client default).
+
+	Update:      The date the specification was last modified (read only).
+
+	Access:      The date the user last issued a client command.
+
+	FullName:    The user's real name.
+
+	JobView:     Selects jobs to be presented at changelist creation.
+		     These are the jobs that can be closed automatically
+		     upon changelist submission.  See '<a href="#jobview">p4 help jobview</a>'
+		     for a description of jobview syntax.
+
+	Reviews:     The subscription list for change review.  You may
+		     use wildcards:
+			 ...            matches any characters including /
+			 *              matches any character except /
+		     There may be any number of review lines.
+
+	Password:    The user's password.  See also '<a href="#passwd">p4 help passwd</a>'.
+
+	The -d flag deletes the named user, but only if the user has no
+	opened files.
+
+	The -o flag causes the named user specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a user specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -f flag can force the creation, update or deletion of any
+	named user, or to change the last modified date.  By default,
+	users can only delete or modify their own user specifications.
+	The -f flag requires 'super' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="users"></a><pre>
+<b>% p4 help users</b>
+
+    users -- Display list of known users
+
+    p4 users [ user ... ] [ -m max ]
+
+	Reports the list of all users, or those users matching the argument,
+	currently known to the system.  The report includes the last time
+	each user accessed the system.
+
+	The -m max flag limits output to the first 'max' number of users.
+<a href="#top" class="t">top of page</a></pre><hr><a name="verify"></a><pre>
+<b>% p4 help verify</b>
+
+    verify -- Verify that the server archives are intact
+
+    p4 verify [ -m maxRevs -q -u -v ] file[revRange] ...
+
+	'p4 verify' reports for each revision of the named files the
+	revision specific information and an MD5 digest (fingerprint)
+	of the revision's contents.  See '<a href="#revisions">p4 help revisions</a>' for help
+	specifying revisions.
+
+	By default, 'p4 verify' computes and displays the digest of each
+	revision.  If a revision cannot be reproduced (e.g. if the file
+	is missing from the archive), the revision's output line ends with
+	MISSING!  If there is a saved digest, 'p4 verify' compares it with
+	the computed one.  If they differ the output line ends with BAD!
+
+	The -m max flag limits verify to 'max' revisions.
+
+	The -u flag causes 'p4 verify' to compute and save the digest
+	for each revision that has no saved digest.  Revisions already
+	with saved digests are skipped.
+
+	The -v flag forces 'p4 verify' to compute and save the digest
+	for each revision, even if it already has a saved digest.  This
+	can be used to update the saved digest if the archive was changed
+	deliberately.
+
+	The -q flag instructs 'p4 verify' to operate quietly.  The only
+	output would be errors from mismatched digests or errors due to
+	unreproducible revisions.
+
+	The following commands will compute digests for revisions without
+	saved digests and then verify the first and head revisions of all
+	files.  Verifying revision #1 is useful for text files because
+	of their reverse delta storage format: corruption of any revision
+	will be reflected in revision #1.
+
+		p4 verify -qu //...
+		p4 verify -q #1,#1
+		p4 verify -q #head,#head
+
+	Saved digests are also used by 'p4 diff' to avoid having to
+	compute them each time.
+
+	'p4 verify' requires 'admin' access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="workspace"></a><pre>
+<b>% p4 help workspace</b>
+
+    client -- Create or edit a client specification and its view</b>
+    workspace -- synonym for 'client'
+
+    p4 client [ -f -t template ] [ name ]
+    p4 client -d [ -f ] name
+    p4 client -o [ -t template ] [ name ]
+    p4 client -i [ -f ]
+
+	With no argument 'p4 client' creates a new client view specification
+	or edits an existing client specification.  The client name is taken
+	from the environment variable $P4CLIENT if set, or else from the
+	current host name.  The specification form is put into a temporary
+	file and the editor (given by the environment variable $P4EDITOR)
+	is invoked.  If a name is given, the specification of the named
+	client is used.
+
+	The specification form contains the following fields:
+
+	Client:      The client name (read only.)
+
+	Host:        If set, restricts access to the named host.
+		     If unset, access is allowed from any host.
+
+	Owner:       The user who created this client.  Can be changed.
+
+	Update:      The date this specification was last modified.
+
+	Access:      The date this client was last used in any way.
+
+	Description: A short description of the client (optional).
+
+	Root:        The root directory of the client file workspace
+		     (given in local file system syntax), under which all
+		     client files will be placed.  If you change this, you
+		     must physically relocate any files as well.  The name
+		     "null" may be used to allow files to be mapped to
+		     multiple drives on Windows clients.
+
+	AltRoots:    Up to two optional alternate client workspace roots.
+		     The first of the main and alternate roots to match the
+		     client program's current working directory is used;
+		     if none matches the main root is used anyway.
+		     'p4 info' reports the applicable root.
+
+	Options:     Flags to change the client behavior.   The defaults
+		     are marked with *.
+
+		allwrite	Leaves all files writable on the client;
+		noallwrite *	else only checked out files are writable.
+
+		clobber		Allows 'p4 sync' to overwrite writable
+		noclobber *	files on the client.
+
+		compress 	Compresses data sent between the client
+		nocompress *	and server to speed up slow connections.
+
+		locked   	Allows only the client owner to use the
+		unlocked *	client or change its specification.
+				Prevents the client from being deleted.
+
+		modtime  	Causes 'p4 sync' to preserve file
+		nomodtime *	modification time from submitting client,
+				as with files with +m type modifier.
+				Otherwise modification time is left as
+				when the file was fetched.
+
+		rmdir		Makes 'p4 sync' attempt to delete a client
+		normdir *	directory when all files are removed.
+
+	SubmitOptions:  Flags to change submit behaviour.
+
+		submitunchanged           All open files are submitted
+		submitunchanged+reopen    (default).
+
+		revertunchanged           Files that have content or type
+		revertunchanged+reopen    changes are submitted. Unchanged
+		                          files are reverted.
+
+		leaveunchanged            Files that have content or type
+		leaveunchanged+reopen     changes are submitted. Unchanged
+		                          files are moved to the default
+		                          changelist.
+
+		              +reopen     appended to the submit option flag
+		                          will cause submitted files to be
+		                          reopened on the default changelist.
+
+	LineEnd:    Set line ending character(s) for client text files.
+
+		local		Use mode native to the client (default).
+		unix		linefeed: UNIX style.
+		mac		carriage return: Macintosh style.
+		win		carriage return-linefeed: Windows style.
+		share		hybrid: writes UNIX style but reads UNIX,
+					Mac or Windows style.
+
+	View:        A mapping from the files in the depot to files in the
+		     client workspace.  This is the mechanism by which you
+		     select what files you want on your client and where you
+		     want them to be.  The default view maps all depot files
+		     onto the client.  See '<a href="#views">p4 help views</a>' for view syntax.
+		     A new view takes effect on the next 'p4 sync'.
+
+	Note: changing the client root does not actually move the client
+	files; you must relocate them yourself.  Similarly, changing
+	the 'LineEnd' option does not actually update the client files;
+	you can refresh them with 'p4 sync -f'.
+
+	The -d flag causes the named client to be deleted, as long as it
+	has no opened files.  The -f forces the delete.
+
+	The -o flag causes the named client specification to be written
+	to the standard output.  The user's editor is not invoked.
+
+	The -i flag causes a client specification to be read from the
+	standard input.  The user's editor is not invoked.
+
+	The -t flag constructs the client's view by copying the named
+	template client's view, instead of using the existing view or
+	creating a new default view.  It also copies the client options
+	from the template client.
+
+	The -f flag can force the updating of locked clients; normally
+	locked clients can only be modified by their owner.  -f also allows
+	the last modified date to be set.  The -f flag requires 'admin'
+	access granted by 'p4 protect'.
+<a href="#top" class="t">top of page</a></pre><hr><a name="workspaces"></a><pre>
+<b>% p4 help workspaces</b>
+
+    clients -- Display list of clients</b>
+    workspaces -- synonym for 'clients'
+
+    p4 clients [ -u user ] [ -m max ]
+
+	Reports the list of all clients currently known to the system.
+
+	The -u user flag limits clients to those owned by the named user.
+
+	The -m max flag limits output to the first 'max' number of clients.
+<a href="#top" class="t">top of page</a></pre><hr><a name="where"></a><pre>
+<b>% p4 help where</b>
+
+    where -- Show how file names map through the client view
+
+    p4 where [ file ... ]
+
+	Where shows how the named files map through the client view.
+	For each argument, three names are produced: the name in the
+	depot, the name on the client in Perforce syntax, and the name
+	on the client in local syntax.
+
+	If no file is given, the mapping for '...' (all files in the
+	current directory and below) is shown.
+
+	Note that '<a href="#where">p4 where</a>' does not determine where any real files are.
+	It only computes where they should be according to the client view.
+<a href="#top" class="t">top of page</a></pre><hr><a name="xxxxx"></a><!-- <pre><b></b></pre> -->
+<!--
+	<a href="#top" class="t">top of page</a></pre><hr><a name="xxxxx"></a><pre><b></b>
+	don't forget to update p4 commands (both the index and list)
+	<a href="#xxxxx">xxxxx</a>
+-->
+<p>
+This HTML file was made by Robin Mills<br>
+<a href="mailto:robin@clanmills.com">robin@clanmills.com</a><br>
+<a target="_blank" href="http://www.clanmills.com">http://www.clanmills.com</a><br>
+Comments, corrections, suggestions welcome.<br>
+Version: February 15, 2008<br>
+Server 2007.3/143793
+<br><br>
+Still to be done:<br>
+1. More cross referencing. (including environment strings)<br>
+2. Some testing and third-party feedback (any volunteers?)<br>
+<br>
+It would be really cool to have a script to generate this HTML file (from the output of the p4 command).  This would be quite a challenge - however it would make it easy to maintain this file with changes to Perforce.  Any volunteers? 
+</p>
+
+<p><b>COPYRIGHT AND LICENSE</b>
+<br><br>
+This document is copyright (C) 2001 Perforce Software, Inc.  All rights
+reserved.
+<br><br>
+Redistribution and use of this document in any form, with or without
+modification, is permitted provided that redistributions of this
+document retain the above copyright notice, this condition and the
+following disclaimer.
+<br><br>
+THIS DOCUMENT IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDERS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+DOCUMENT, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</p>
+
+</pre>
+</body>
+</html>
+
+

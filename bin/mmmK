@@ -1,0 +1,12 @@
+#!/bin/csh
+
+ls /K/windows >& /dev/null
+if ( $status ) then
+	echo "/K isn't mounted.  Hang on."
+	osascript -e 'mount volume "smb://robin:x@ali/K"'
+else
+	echo '/K is mounted'
+endif
+
+
+# df -k | grep -e Volumes -e Filesystem

@@ -1,0 +1,2 @@
+#!/bin/csh
+exiv2 -T *.jpg *.JPG *.jpeg *.JPEG

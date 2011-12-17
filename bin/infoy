@@ -1,0 +1,48 @@
+#!/bin/csh
+
+
+#
+# set up a temporary directory if necessary
+if ( ! -e ~/temp ) then
+	mkdir -f ~/temp
+endif
+
+
+#
+# kill the old txt and html files
+set f=~/temp/$argv[$#argv].txt
+set h=~/temp/$argv[$#argv].html
+rm -rf $f $h
+
+
+#
+# is there a file called ~/bin/man<manpage>.html
+set m=~/bin/man$argv[$#argv].html 
+
+if ( ! -e $m ) then
+	# write out a few blank lines (otherwise man2html gets a little confused!)
+	foreach i ( a b c d e f g h i j k l m )
+		echo >> $f
+	end
+	# get the man page
+	info $* >> $f
+	set s = $status
+
+	# if it failed, ask perldoc if he knows about it!
+	if ( $s ) then
+		perldoc $* >> $f
+		set s = $status
+	endif
+	
+	
+	#
+	# if we've found it, format and display
+	if ( ! $s ) then
+		man2html -compress < $f > $h && open $h
+	endif
+else
+	cp   $m $h
+	open $h
+endif
+
+

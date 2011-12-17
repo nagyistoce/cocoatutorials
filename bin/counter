@@ -1,0 +1,2 @@
+#!/bin/sh
+wc  /Scripting/gptech/scriptobjects/public/include/SoCClient.h /Scripting/gptech/scriptobjects/public/include/SoSharedLibDefs.h    /Scripting/gptech/scriptobjects/public/samplecode/dynamiclib/source/DynamicLib.c  /Scripting/gptech/scriptobjects/source/core/SoCClient.cpp /Scripting/gptech/scriptobjects/source/include/SoSharedLib.h

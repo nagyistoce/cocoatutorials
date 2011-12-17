@@ -1,0 +1,38 @@
+#!/bin/csh
+
+#
+# syntax check
+if ( ${#argv} != 2 ) then
+	echo useage: diffs file1 file2
+	exit 1 ;
+endif
+
+
+#
+# set up a temporary directory if necessary
+if ( ! -e ~/temp ) then
+	mkdir -f ~/temp
+endif
+
+
+#
+# invent temporary filenames
+set srt1=`basename $1`
+set srt2=`basename $2`
+
+set srt1=~/temp/${srt1}.srt
+set srt2=~/temp/${srt2}.srt
+
+# echo srt1 = $srt1
+# echo srt2 = $srt2
+
+#
+# sort and diff the files
+sort $1 > $srt1
+sort $2 > $srt2
+
+diff $srt1 $srt2
+
+#
+# remove the temporary files
+rm -rf $srt1 $srt2

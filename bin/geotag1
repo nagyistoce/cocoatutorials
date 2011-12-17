@@ -1,0 +1,5 @@
+#!/bin/bash
+rm -rf new
+mkdir new
+
+find . -name "*.jpg" -depth 1 -exec composite -gravity SouthEast -geometry +5+5 ~/bin/geotag1.png {} {} ";"

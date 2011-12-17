@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+use LWP::Simple;
+
+my $router   = '192.168.2.1' ;
+my $password = 'largs1263'   ;
+
+sub println
+{
+	my $x = shift ;
+	print $x ; print "\n" ;
+}
+
+sub httpget
+{
+	my $url = shift or die 'httpget <url>' ;
+    return get $url;
+}
+
+# my $login   = 
+                httpget("http://$router/login.cgi?page=login&logout=2&pws=$password");
+  my $clients = 
+                httpget("http://$router/lan_dhcp.html");
+# my $logout  =
+                httpget("http://$router/logout.cgi") ;
+
+my @lines = split(/\n/,$clients) ;
+foreach my $line ( @lines ) {
+    if ( $line =~ /94CAE4/ ) {
+        $line  =~ s/<\/tr><tr >//g  ;
+        $line  =~ s/<\/tr><tr>//g   ;
+        $line  =~ s/<\/td>/<\/td>\n/g ;
+        $line  =~ s/  / /g ;
+
+        my @newlines = split(/\n/,$line)  ;
+		my $count    = 0 ;
+        foreach my $str ( @newlines )   
+		{
+			if ( length($str) > 10 ) {
+				my @blobs = split(/>/,$str) ;
+				my @x = split(/</,$blobs[2]);
+				print($x[0]) ;
+				$count = ++$count % 3 ;
+				print($count?' ':"\n") ;
+			}
+		} 
+	}
+}
+
+ 

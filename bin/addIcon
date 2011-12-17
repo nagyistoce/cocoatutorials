@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+
+# print @ARGV . "\n" ;
+# print $ARGV . "\n" ;
+
+if ( $ARGV == 0 ) {
+	 print 'usage: addIcon <filename>+' . "\n" ;
+}
+
+foreach $arg ( @ARGV ) {
+	system ('sips --addIcon "' . $arg . '"' ) ;
+}

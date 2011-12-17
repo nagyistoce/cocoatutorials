@@ -1,0 +1,48 @@
+#!/bin/csh
+
+setenv COMMENT "this is a comment about something"
+
+perl << "SCRIPT"
+
+#
+# Read in the file
+#
+$change = $ENV{COMMENT} ;
+open(FILE,"<vomit.txt") ;
+my @lines ;
+while ( $line = <FILE> ) {
+  push @lines,$line ;
+}
+close FILE              ;
+ 
+# -----------------------
+# what's the local time?
+ 
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
+                                                localtime(time);
+ 
+$mon  += 1    ;
+$year += 1900 ;
+my $now = "$mon/$mday/$year $hour:$min:$sec" ;
+# print $now ;
+ 
+
+# ------------------------
+# update the file
+#
+open(FILE,">vomit.txt") ;
+print FILE  ;
+print FILE  ;
+print FILE "#-----------\n#Date " . $now . " " . $change . "\n#\n"    ;
+ 
+foreach $line ( @lines ) {
+  print FILE $line ;
+}
+ 
+close FILE ;
+# print @lines ;
+
+"SCRIPT"
+echo hello world
+
+

@@ -1,0 +1,7 @@
+#!/usr/bin/perl -w
+
+my $name = shift or die "job name\n" ;
+system('ps -aux | head -1') ;
+system('ps -aux | grep -i "' . ${name} .'"' . '| grep -v -e perl -e grep') ;
+
+

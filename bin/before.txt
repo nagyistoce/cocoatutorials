@@ -1,0 +1,264 @@
+... depotFile //depot/bin/args.cpp
+... clientFile /Users/rmills/bin/args.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1196789219
+... haveRev 1
+
+... depotFile //depot/bin/bom.cpp
+... clientFile /Users/rmills/bin/bom.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1193096785
+... haveRev 1
+
+... depotFile //depot/bin/cet.cpp
+... clientFile /Users/rmills/bin/cet.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1203203253
+... haveRev 1
+
+... depotFile //depot/bin/crfile.cpp
+... clientFile /Users/rmills/bin/crfile.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1163099979
+... haveRev 1
+
+... depotFile //depot/bin/crlink.cpp
+... clientFile /Users/rmills/bin/crlink.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1188445982
+... haveRev 1
+
+... depotFile //depot/bin/crpipe.cpp
+... clientFile /Users/rmills/bin/crpipe.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1188536094
+... haveRev 1
+
+... depotFile //depot/bin/detab.cpp
+... clientFile /Users/rmills/bin/detab.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1195230304
+... haveRev 1
+
+... depotFile //depot/bin/dmpf.cpp
+... clientFile /Users/rmills/bin/dmpf.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1193096827
+... haveRev 1
+
+... depotFile //depot/bin/fstat.cpp
+... clientFile /Users/rmills/bin/fstat.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1192471489
+... haveRev 1
+
+... depotFile //depot/bin/hell.cpp
+... clientFile /Users/rmills/bin/hell.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1119398081
+... haveRev 1
+
+... depotFile //depot/bin/hello.cpp
+... clientFile /Users/rmills/bin/hello.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1201736079
+... haveRev 1
+
+... depotFile //depot/bin/hex.cpp
+... clientFile /Users/rmills/bin/hex.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1192423545
+... haveRev 1
+
+... depotFile //depot/bin/iconizer.cpp
+... clientFile /Users/rmills/bin/iconizer.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1201927643
+... haveRev 1
+
+... depotFile //depot/bin/junk.cpp
+... clientFile /Users/rmills/bin/junk.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1189815875
+... haveRev 1
+
+... depotFile //depot/bin/linky.cpp
+... clientFile /Users/rmills/bin/linky.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1105989108
+... haveRev 1
+
+... depotFile //depot/bin/lstat.cpp
+... clientFile /Users/rmills/bin/lstat.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1180651780
+... haveRev 1
+
+... depotFile //depot/bin/nocr.cpp
+... clientFile /Users/rmills/bin/nocr.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1203376120
+... haveRev 1
+
+... depotFile //depot/bin/pathname.cpp
+... clientFile /Users/rmills/bin/pathname.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1189796940
+... haveRev 1
+
+... depotFile //depot/bin/rmshit.cpp
+... clientFile /Users/rmills/bin/rmshit.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1203623912
+... haveRev 1
+
+... depotFile //depot/bin/system.cpp
+... clientFile /Users/rmills/bin/system.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1195460901
+... haveRev 1
+
+... depotFile //depot/bin/timestamp.cpp
+... clientFile /Users/rmills/bin/timestamp.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1177455522
+... haveRev 1
+
+... depotFile //depot/bin/wd.cpp
+... clientFile /Users/rmills/bin/wd.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1162581320
+... haveRev 1
+
+... depotFile //depot/bin/x.cpp
+... clientFile /Users/rmills/bin/x.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1127836308
+... haveRev 1
+
+... depotFile //depot/bin/zargs.cpp
+... clientFile /Users/rmills/bin/zargs.cpp
+... isMapped 
+... headAction add
+... headType text
+... headTime 1203980630
+... headRev 1
+... headChange 1
+... headModTime 1196140375
+... haveRev 1
+

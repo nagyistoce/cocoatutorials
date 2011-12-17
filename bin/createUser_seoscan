@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# radr:10011512
+
+t=/tmp/mkseoscanUser.txt
+d=/Library/LaunchDaemons/com.apple.macbe.createUser_seoscan.plist';
+U=$U
+
+if [ ! -e $U ]; then
+	echo "creating user seoscan"                       > $t
+	dscl . -create $U                                 >> $t
+
+	dscl . -create $U UserShell /bin/bash             >> $t
+	dscl . -create $U RealName "SEO Scanning User"    >> $t
+	dscl . -create $U UniqueID 4433                   >> $t
+	dscl . -create $U PrimaryGroupID 20               >> $t
+	dscl . -create $U NFSHomeDirectory $U             >> $t
+	dscl . -passwd $U ""                              >> $t
+	createhomedir -c -u seoscan                       >> $t
+	mkdir $U/.ssh                                     >> $t
+	echo "from=\"scanmaster.apple.com\" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDksG+I73a3p2Mdz2ib5L1/CM1E19/aEs4OS4RWEx5zBbUmAgexs8dVeGwm98EkDXGmw4S7QuhSvzBVWSsuaL07kIQerWdoRuhTCmhXqZ2EGH5QbXsNpD/bTxxiH9KoVdof5VZpVY2Ro/oEDb9LxB473+ucMKS6mM3ZJbDvL4nHGB09YCSTjZgMLZfsgfRUrx+/h2Ua92Dv+46MAb/BeAxoAMhz3Bz7TJh3dvvmTI/hLiPNS9rbCtEtYeIunW4pfkddKerQ7VTWPixq2hyOPg3OKMsSfBrMk89Aw91zSzbYADy845IPEXj79ZyTy57j2S33dbA4GMVht0zEAKTjurbl blysik@Bruces-MacBook-Air.local" > "$U/.ssh/authorized_keys"     
+	
+else 
+	echo "user seoscan already exists"               > $t
+fi
+
+# extra argument? delete launch daemon which called script (and delete script)
+if [ $# -gt 1 ]; then
+	# get absolute path of script
+	dir=`cd $0; pwd`
+	b=`basename $0`
+	this="$dir/$b"
+	
+	rm -rf $d
+	rm -rf "$this"
+fi	
+
+# That's all Folks!
+##

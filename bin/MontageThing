@@ -1,0 +1,4 @@
+  montage -label '%t\n%wx%h' -size 512x512 '~/Pictures/2007/Clambake/Ma*.jpg' \
+          -geometry +5+5 -tile 5x  -frame 5  -shadow  photo_index.html
+          
+          
