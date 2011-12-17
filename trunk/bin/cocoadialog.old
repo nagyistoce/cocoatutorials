@@ -1,0 +1,6 @@
+#!/bin/bash
+
+/Applications/CocoaDialog.app/Contents/MacOS/CocoaDialog "$@"
+
+# That's all Folks!
+##

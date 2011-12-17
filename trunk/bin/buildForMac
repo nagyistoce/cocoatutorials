@@ -1,0 +1,44 @@
+#!/bin/bash
+
+LIB=./src/.libs/libexiv2.6.dylib
+APP=./src/.libs/exiv2
+
+props() {
+	ls    -alt  $*
+	lipo  -info $*
+	otool -L    $*
+	echo ----------------------
+}
+
+build() {
+	make clean
+	./configure CFLAGS="$arch" CXXFLAGS="$arch" CPPFLAGS="$arch" LDFLAGS="$arch -L${PWD}/xmpsdk/src" OBJCFLAGS="$arch" OBJCXXFLAGS="$arch"
+	env         CFLAGS="$arch" CXXFLAGS="$arch" CPPFLAGS="$arch" LDFLAGS="$arch -L${PWD}/xmpsdk/src" OBJCFLAGS="$arch" OBJCXXFLAGS="$arch" make
+	props $APP
+	props $LIB
+}
+
+for arch in '-arch i386' '-arch x86_64' '-arch ppc';do
+	if [ "$arch"   = "-arch i386"   ]; then
+		build
+		cp                 $APP        app.i386
+		cp                 $LIB        lib.i386
+	elif [ "$arch" = "-arch x86_64" ]; then
+		build
+		cp                 $APP        app.x86_64
+		cp                 $LIB        lib.x86_64
+	elif [ "$arch" = "X-arch ppc" ]; then
+		build
+		cp                 $APP        app.ppc
+		cp                 $LIB        lib.ppc
+	else
+		scp powerbook:$PWD/$APP        app.ppc
+		scp powerbook:$PWD/$LIB        lib.ppc
+	fi
+done
+
+lipo -arch i386 lib.i386 -arch x86_64 lib.x86_64 -arch ppc lib.ppc -create -output libexiv2.6.dylib
+lipo -arch i386 app.i386 -arch x86_64 app.x86_64 -arch ppc app.ppc -create -output exiv2 
+
+props libexiv2.6.dylib
+props exiv2

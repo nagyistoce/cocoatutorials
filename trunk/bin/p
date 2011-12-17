@@ -1,0 +1,10 @@
+#!/bin/csh
+
+setenv INPUT_FILE_PATH    ~/bin/ExtendScript.plc
+setenv TARGET_BUILD_DIR   /Volumes/MacintoshHD/OWL/Scripting/gptech/extendscript/public/libraries/ppc/debug
+setenv FULL_PRODUCT_NAME  AdobeExtendScript.framework
+setenv PRODUCT_NAME       AdobeExtendScript
+
+/usr/bin/python /Volumes/MacintoshHD/OWL/Scripting/gptech/extendscript/build/xcode2/PList.py \
+   -I /Volumes/MacintoshHD/OWL/Scripting/gptech/extendscript/public/include   \
+   -I /Volumes/MacintoshHD/OWL/Scripting/gptech/sccore/public/include 

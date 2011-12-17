@@ -1,0 +1,9 @@
+#! /bin/bash
+OUT=robin.dmg
+test -f $OUT && rm $OUT 
+./create-dmg \
+         --window-size 500 300 \
+         --background /Users/rmills/stani2/phatch/setup/apple/installer/backgroundPKG.png \
+         --icon-size 96 --volname "Hyper Foo" --icon "Applications" 380 205  \
+         --icon "Eclipse OS X Repackager" 110 205        \
+         $OUT  /Users/rmills/Projects/cocoatutorials/QuartzClock

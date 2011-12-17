@@ -1,0 +1,145 @@
+#!/usr/bin/perl
+
+# ---------------------------------------------------------------
+# declarations
+
+# libraries
+use Image::ExifTool ;
+
+# forward
+sub pdate           ; 
+sub println         ;
+sub parseTime       ;
+
+# ---------------------------------------------------------------
+# program
+
+# my $time = "2006:05:04" ;
+# (my $y, my $m, my $d) = parseTime ($time) ;
+# printf("time %s = %d %d %d\n",$time,$y,$m,$d) ;
+# exit ;
+
+
+my    	$pattern 	= shift || 0 ;
+my 		$count     	= 0 ;
+if ( $pattern ) {
+	println("pattern = " . $pattern) ;
+
+	my @filenames = glob($pattern) ;
+	foreach my $filename (@filenames)
+	{
+		if ( -e $filename && !-d $filename ) {
+			pdate($filename) ;
+			$count ++ ;
+		}
+	}
+} else {
+	println("pattern = all jpg and jpeg files") ;
+
+	my @filenames = glob("*") ;
+	foreach my $filename (@filenames)
+	{
+		if ( -e $filename && !-d $filename ) {
+			my $m 	 = 0 ;
+			$m 		|= $filename =~ /jpg$/i ;
+			$m 		|= $filename =~ /jpeg$/i ;
+			if ( $m ) {
+				pdate($filename) ;
+				$count ++ ;
+			}
+		}
+	}
+}
+
+println("No files found!") if ( !$count ) ;
+ 
+
+# ---------------------------------------------------------------
+# little functions
+sub println { print shift ; print "\n" ; }
+
+
+sub parseTime
+{
+	my $time = shift ;
+	my $dot  ;
+
+	for ( my $i = 0 ; $i < length($time) ; $i++ ) {
+  		my $c = substr($time,$i,1) ;
+  		$dot = "\\." if $c eq "." ;
+  		$dot = "\\:" if $c eq ":" ;
+  		$i = length($time) if $dot ;
+	}
+	my $a ; my $b ; my $c ;
+	($a,$b,$c) =  split(/${dot}/,$time) ;
+	
+	return (scalar($a),scalar($b),scalar($c)) ;
+}	
+
+
+
+
+# ---------------------------------------------------------------
+# sub pdate filename - do the business
+# ---------------------------------------------------------------
+sub pdate
+{
+	my $filename = shift ;
+	print("filename = " . $filename) ;
+	my  $exifTool = new Image::ExifTool;
+   		$exifTool->Options(Unknown => 1);
+
+	my $info = $exifTool->ImageInfo($filename);
+	my $group = '';
+	my $tag;
+
+	foreach $tag ($exifTool->GetFoundTags('Group0'))
+	{
+		$group = $exifTool->GetGroup($tag);
+		
+		#	if ($group ne $exifTool->GetGroup($tag))
+		#		$group = $exifTool->GetGroup($tag);
+		#		print "---- $group ----\n";
+		#	}
+			
+		if ( $group ne 'MakerNotes' )
+		{
+			my $val = $info->{$tag};
+			if (ref $val eq 'SCALAR')
+			{
+				if ($$val =~ /^Binary data/)
+				{
+					$val = "($$val)";
+				} else {
+					my $len = length($$val);
+					$val = "(Binary data $len bytes)";
+				}
+			}
+			my $desc = $exifTool->GetDescription($tag) ;
+			#		printf("%-32s : %s\n", $desc, $val);
+				
+			if ( $desc eq "Date/Time Original" )
+			{
+				printf(" Date/Time Original = %s ",$val) ;
+				
+           		my @dates = split /\s+/, $val;  # $dates[0] = 'date'
+                                     			# $dates[1] = 'time'
+                                     			
+				(my $year, my $mon, my $day) = parseTime ($dates[0]) ;
+				(my $hour, my $min, my $sec) = parseTime ($dates[1]) ;
+				
+				# printf("date and time = %s %s = %d/%d/%d %d-%d-%d\n",$dates[0],$dates[1],$mon,$day,$year,$hour,$min,$sec) ;
+
+				my $command = sprintf("touch -t %d%02d%02d%02d%02d.%02d \"%s\"",$year,$mon,$day,$hour,$min,$sec,$filename) ;
+				system($command) ;
+#				printf(" command = %s ",$command) ;
+                              			
+			}
+		} # $group
+	} # for $tag
+	println("") ;
+}
+
+
+   
+

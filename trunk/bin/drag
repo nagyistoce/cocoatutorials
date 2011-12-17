@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+
+my $cmd = 'exec ~/bin/Drag.app/Contents/MacOS/Drag' ;
+
+for ( my $i = 0 ; $i < scalar @ARGV ; $i++ )
+{
+	$cmd = $cmd . ' "' . $ARGV[$i] . '"' ;
+}
+# $cmd .= "&"         ;
+
+print ($cmd . "\n" ) ;
+system($cmd)         ;
+

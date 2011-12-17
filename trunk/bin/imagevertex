@@ -1,0 +1,34 @@
+#!/bin/csh
+
+set dir = $1 ;
+
+echo argument = $1
+echo dir = $dir
+
+# if ( -d $dir ) then
+
+	set images = images
+	if ( -e $images ) then
+		rm -rf $images
+	endif
+	
+	mkdir $images
+	cp    $dir/* $images
+	pushd $images
+	ls -alt
+
+	sips --resampleHeightWidthMax 500 * > /dev/null
+	
+	pdates
+	lst -rx
+	sips * --addIcon > /dev/null
+	popd
+	
+	echo your images are in `pathname $images`
+
+# else
+
+#	echo syntax imagevertex directory
+
+# endif
+

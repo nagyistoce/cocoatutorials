@@ -1,0 +1,10 @@
+#!/bin/bash
+for p in `ls $*`; do
+	echo $p
+	t=/tmp/`basename $p`
+	cp "$p" "$t"
+	sips --resampleHeight 400 "$t"
+	open "$t"
+	
+	# display -resize 600 $p &
+done

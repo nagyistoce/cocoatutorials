@@ -1,0 +1,3 @@
+#!/bin/csh
+# read from the garmin to file
+gpsbabel -w -t -r -i garmin -f usb: -o gpx -F - $*

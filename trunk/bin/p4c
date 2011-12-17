@@ -1,0 +1,10 @@
+#!/bin/csh
+
+set x=`p4 change -o | grep //| wc -l`
+echo changes = $x
+if ( $x != 0 ) then
+	p4 change -o | grep //
+else
+	echo NO CHANGES
+endif
+

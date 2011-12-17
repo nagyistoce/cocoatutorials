@@ -1,0 +1,4 @@
+#!/bin/csh
+
+osascript -e 'mount volume "ftp://heather:this-tle@ftp.heatherandthistle.org"'
+df -k | grep -e Volumes -e Filesystem

@@ -1,0 +1,4 @@
+#!/bin/csh
+
+edit --separate-windows /Volumes/MacintoshHD/Tiger/gptech/scripting/xcode/post_build_script.so
+

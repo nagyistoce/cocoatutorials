@@ -1,0 +1,112 @@
+#!/bin/bash
+
+##
+# parse command line
+argc=${#*}
+if [ $argc != 1 ]; then
+	echo syntax: mksaver name
+	exit 1
+fi
+# remove remains from before
+if [ -e "$saver" ]; then
+	rm -rf "$saver"
+fi
+# make sure we have some images!
+count=$((`ls -1 * | wc -l | cut -b1-9`))
+if [ $((count)) -lt 2 ]; then
+	echo "no images"
+	exit 1
+fi
+
+##
+# set up the variables
+name="$1"
+saver="/tmp/$name.slideSaver/"
+contents="${saver}Contents/"
+resources="${contents}Resources/"
+info="${contents}Info.plist"
+version="${contents}version.plist"
+
+##
+# create the directory structure
+rm      -rf "$saver"
+mkdir       "$saver"
+mkdir       "$contents"
+mkdir       "$resources"
+
+##
+# copy in the photos
+declare -i count=0
+for file in `ls *` ; do
+	declare -i size=`imageprops "$file"`
+	if [ $size -gt 500 ]; then
+		cp "$file" "$resources"
+		count=$((count+1))
+		echo YES $file $size
+	else
+		echo NOP $file $size
+	fi
+done
+if [ $count -eq 0 ]; then
+	echo "no images"
+	exit 1
+fi
+
+##
+# populate the info file
+cat - > "$info" << HERE
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleGetInfoString</key>
+	<string>$name screen saver module</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.clanmills.screensaver.$name</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$name</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.1</string>
+  </dict>
+</plist>
+HERE
+
+##
+# populate the version file (straight copy)
+cat - > "$version" << HERE
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+	<key>BuildVersion</key>
+	<string>162</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1</string>
+	<key>CFBundleVersion</key>
+	<string>1.1</string>
+	<key>ProductBuildVersion</key>
+	<string>8C9</string>
+	<key>ProjectName</key>
+	<string>SlideShows</string>
+	<key>SourceVersion</key>
+	<string>90000</string>
+  </dict>
+</plist>
+HERE
+
+##
+# install it
+open "$saver"
+
+# That's all Folks!
+## 

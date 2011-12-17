@@ -1,0 +1,73 @@
+' http://www.assa.org.au/edm.html
+sub EasterDate (d, m, y)
+
+' EASTER DATE CALCULATION FOR YEARS 1583 TO 4099
+
+' y is a 4 digit year 1583 to 4099
+' d returns the day of the month of Easter
+' m returns the month of Easter
+
+' Easter Sunday is the Sunday following the Paschal Full Moon
+' (PFM) date for the year
+
+' This algorithm is an arithmetic interpretation of the 3 step
+' Easter Dating Method developed by Ron Mallen 1985, as a vast
+' improvement on the method described in the Common Prayer Book
+
+' Because this algorithm is a direct translation of the
+' official tables, it can be easily proved to be 100% correct
+
+' This algorithm derives values by sequential inter-dependent
+' calculations, so ... DO NOT MODIFY THE ORDER OF CALCULATIONS!
+
+' The \ operator may be unfamiliar - it means integer division
+' for example, 30 \ 7 = 4 (the remainder is ignored)
+
+' All variables are integer data types
+
+' It's free!  Please do not modify code or comments!
+' ==========================================================
+
+   Dim FirstDig, Remain19, temp    'intermediate results
+   Dim tA, tB, tC, tD, tE          'table A to E results
+
+   FirstDig = y \ 100              'first 2 digits of year
+   Remain19 = y Mod 19             'remainder of year / 19
+
+' calculate PFM date
+   temp = (FirstDig - 15) \ 2 + 202 - 11 * Remain19
+    
+   Select Case FirstDig
+      Case 21, 24, 25, 27 To 32, 34, 35, 38
+         temp = temp - 1
+      Case 33, 36, 37, 39, 40
+         temp = temp - 2
+   End Select
+   temp = temp Mod 30
+
+   tA = temp + 21
+   If temp = 29 Then tA = tA - 1
+   If (temp = 28 And Remain19 > 10) Then tA = tA - 1
+
+'find the next Sunday
+   tB = (tA - 19) Mod 7
+    
+   tC = (40 - FirstDig) Mod 4
+   If tC = 3 Then tC = tC + 1
+   If tC > 1 Then tC = tC + 1
+        
+   temp = y Mod 100
+   tD = (temp + temp \ 4) Mod 7
+    
+   tE = ((20 - tB - tC - tD) Mod 7) + 1
+   d = tA + tE
+
+'return the date
+   If d > 31 Then
+      d = d - 31
+      m = 4
+   Else
+      m = 3
+   End If
+
+End Sub

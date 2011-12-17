@@ -1,0 +1,20 @@
+#!/bin/bash
+
+sudo time $(\
+find home         -name "*" -type f;\
+find net          -name "*" -type f;\
+find Applications -name "*" -type f;\
+find Developer    -name "*" -type f;\
+find System       -name "*" -type f;\
+find sbin         -name "*" -type f;\
+find Users        -name "*" -type f;\
+find sw           -name "*" -type f;\
+find temp         -name "*" -type f;\
+find tmp          -name "*" -type f;\
+find usr          -name "*" -type f;\
+find Library      -name "*" -type f;\
+find opt          -name "*" -type f;\
+) | wc
+
+# That's all Folks
+##

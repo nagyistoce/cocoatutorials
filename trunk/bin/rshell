@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /Scripting/gptech/extendscript/public/libraries/macintosh/ppc/release
+shell-framework

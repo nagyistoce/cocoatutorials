@@ -1,0 +1,122 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		A1598A940D3B7E8B00DFD16E /* GetPreprocessorValues */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A1598A970D3B7ECF00DFD16E /* Build configuration list for PBXAggregateTarget "GetPreprocessorValues" */;
+			buildPhases = (
+				A1598A930D3B7E8B00DFD16E /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = GetPreprocessorValues;
+			productName = GetPreprocessorValues;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXGroup section */
+		A1C663240C8C7F7300EAA264 = {
+			isa = PBXGroup;
+			children = (
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		A1C663260C8C7F7300EAA264 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A1C663270C8C7F7300EAA264 /* Build configuration list for PBXProject "hello" */;
+			hasScannedForEncodings = 0;
+			mainGroup = A1C663240C8C7F7300EAA264;
+			projectDirPath = "";
+			targets = (
+				A1598A940D3B7E8B00DFD16E /* GetPreprocessorValues */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A1598A930D3B7E8B00DFD16E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/csh;
+			shellScript = "touch ~/temp/empty.cpp ; gcc -E -dM ~/temp/empty.cpp";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1598A980D3B7ECF00DFD16E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = GetPreprocessorValues;
+			};
+			name = Debug;
+		};
+		A1598A990D3B7ECF00DFD16E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				PRODUCT_NAME = GetPreprocessorValues;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A1C663280C8C7F7300EAA264 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		A1C663290C8C7F7300EAA264 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1598A970D3B7ECF00DFD16E /* Build configuration list for PBXAggregateTarget "GetPreprocessorValues" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1598A980D3B7ECF00DFD16E /* Debug */,
+				A1598A990D3B7ECF00DFD16E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1C663270C8C7F7300EAA264 /* Build configuration list for PBXProject "hello" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1C663280C8C7F7300EAA264 /* Debug */,
+				A1C663290C8C7F7300EAA264 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1C663260C8C7F7300EAA264 /* Project object */;
+}

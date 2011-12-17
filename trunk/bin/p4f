@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+# filter p4 output
+# Example p4 fstat *.cpp | p4f
+
+my $line ;
+while ( $line = <STDIN> ) {
+	if ( $line =~ /(\.\.\.\ )(\w+Time\ )(\d+)/ ) {
+		print($1,$2) ;
+		system("timestamp $3") ;
+	} else {
+		print($line) ;
+	}
+}
+

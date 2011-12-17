@@ -1,0 +1,7 @@
+#!/bin/sh
+shift 4
+#args "$0" "$1" "$2" "$3"
+left=`echo "$1"|cut -f 1 -d "	"`
+
+#echo left = "$left"
+/usr/bin/opendiff "$left" "$2" -ancestor "$3" -merge "$left"

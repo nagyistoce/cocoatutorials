@@ -1,0 +1,32 @@
+#!/bin/bash
+
+syntaxError() {
+	echo "usage: sun [--help] [month]"
+	exit 1
+}
+
+if [ $# -eq 999 ]; then
+	syntaxError
+fi
+
+# get the month
+if [ $# -gt 0 ]; then
+	opt=$1
+	shift
+	if [ $opt == --help ]; then
+		syntaxError
+	fi;
+	m=$opt
+else 
+	m=`(date "+DATE: %m" | cut -d' ' -f2)` 
+fi
+
+# determine the result	
+for d in `seq 1 31` ;do
+	sunrise=`(curl --silent http://www.earthtools.org/sun/37.3/-121.9/$d/$m/-8/0 | grep sunrise | cut -d">" -f2 | cut -d"<" -f 1)`
+	sunset=`(curl --silent http://www.earthtools.org/sun/37.3/-121.9/$d/$m/-8/0  | grep sunset  | cut -d">" -f2 | cut -d"<" -f 1)`
+	echo $d $sunrise $sunset
+done
+
+# That's all Folks!!
+##
