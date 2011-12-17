@@ -1,0 +1,16 @@
+#!/bin/csh
+animate -help
+compare -help
+composite -help
+conjure -help
+convert -help
+display  -help
+identify -help
+import   -help
+mogrify  -help
+montage  -help
+stream   -help
+
+
+
+

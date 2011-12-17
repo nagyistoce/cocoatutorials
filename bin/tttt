@@ -1,0 +1,14 @@
+#!/bin/csh
+
+set me = `pathname ${0}`
+set it = ${0} 
+
+echo me = $me
+echo it = $it
+
+
+perl ~/bin/perlcd ${me}
+
+
+echo goodnight!
+

@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+
+my @lines = <STDIN> ;
+while ( my $line = pop @lines) {
+	print $line ;
+}

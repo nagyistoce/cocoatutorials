@@ -1,0 +1,22 @@
+#!/bin/csh
+#set    echo=0
+set    classpath = `setenv | grep CLASSPATH`
+if ( "$classpath" != "" ) then
+  setenv CLASSPATH ".:${CLASSPATH}"
+else
+  setenv CLASSPATH "."
+endif
+#echo   classpath = ${CLASSPATH}
+
+set argc=$#argv
+
+if ( $argc == 3 ) then
+  java   TcpTunnelGui ${1} ${2} ${3} & 
+else if ( $argc == 0 ) then
+  java   TcpTunnelGui 9000 localhost 80 &
+else
+  echo Syntax: run  from-port host to-port
+  echo Example run
+  echo Example run 9000 localhost 80
+  echo WARNING: you have to use a port \> 1024 to do the listening or you\'ll get \'permission denied\'
+endif

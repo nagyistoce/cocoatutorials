@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ifconfig | egrep -e ^[a-z]*[0-9]: -e 'inet '

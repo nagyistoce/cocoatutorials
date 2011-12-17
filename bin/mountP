@@ -1,0 +1,16 @@
+#!/bin/csh
+
+if ( ! -e /P ) then
+	ln -s /Volumes/P /RobinsPowerbookHD
+endif
+
+ls /P/etc >& /dev/null
+if ( $status ) then
+	echo "/P isn't mounted.  Hang on."
+	osascript -e 'mount volume "afp://rmills:Largs12%40@powerbook/PowerbookHD"'
+else
+	echo '/P is mounted'
+endif
+
+
+# df -k | grep -e Volumes -e Filesystem

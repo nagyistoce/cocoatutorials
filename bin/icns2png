@@ -1,0 +1,2 @@
+#!/bin/bash
+sips --out "$2" -s format png "$1" # && open "$2"

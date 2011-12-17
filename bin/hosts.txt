@@ -1,0 +1,43 @@
+##
+# Host Database
+#
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+127.0.0.1	localhost
+255.255.255.255	broadcasthost
+::1             localhost 
+fe80::1%lo0	localhost
+
+192.168.2.1   belkin
+192.168.1.1   modem
+
+192.168.2.101 laptop
+
+192.168.2.102 powerbook
+192.168.2.102 pstriders
+127.0.0.1     pclanmills
+127.0.0.1     pclanmillsold
+127.0.0.1     pclanmillsnew
+192.168.2.102 pheather
+
+192.168.2.103 home
+192.168.2.104 ali
+192.168.2.105 iclanmills
+192.168.2.105 heather
+192.168.2.105 iheather
+192.168.2.105 imac
+192.168.2.108 netbook
+
+192.168.2.106 macxp
+192.168.2.110 ubuntu
+192.168.2.111 windows
+
+# Novariant machines
+192.168.117.20  buildserver
+192.168.118.47  laptop
+192.168.118.40  desktop
+192.168.116.124 ce
+192.168.118.25  viperpro
+192.168.117.24  r2d2
+

@@ -1,0 +1,43 @@
+#!/usr/bin/perl -W
+use strict;
+use File::Basename;
+
+
+
+sub println
+{
+	my $x = shift ;
+	print $x . "\n" ;
+}
+
+sub error
+{
+	println(shift) ;
+	exit 1 ;	
+}
+
+
+#
+# get the arguments
+#
+my $argc 	= scalar @ARGV ;
+error("syntax: xcopy.pl <file|directory>") if $argc != 1    ;
+
+my $from 	= $ARGV[0] ;
+error("argument: $from does not exist")     if ( ! -e $from)  ;
+
+#
+# remove trailing /'s
+#
+$from    	=~ s#/+$##g ;
+
+
+#
+# do the copy
+#
+my $to  	= basename($from) ;
+my $cmd 	= "ditto \"$from\" \"$to\"" ;
+println($cmd) ;
+system ($cmd) ;
+
+

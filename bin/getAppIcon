@@ -1,0 +1,43 @@
+#!/bin/bash
+
+##
+# parse command line
+argc=${#*}
+if [ $argc != 2 ]; then
+	echo syntax: getAppIcon appPath pngPath
+	exit 1
+fi
+
+##
+# set up some variables
+png="$2"
+app="$1"
+plist="$app/Contents/Info.plist"
+resources="$app/Contents/Resources"
+
+##
+# check for sanity
+if [ ! -e $app ]; then
+	echo "app $app does not exist"
+	exit 2
+fi
+
+##
+# read the apps Info.plist file
+icon=`/usr/libexec/PlistBuddy -c "Print CFBundleIconFile" "$plist"`
+if [ $? != 0 ]; then
+	echo cannot read "$plist"
+	exit 3
+fi
+
+##
+# some apps (Adobe Reader.app) have the .icns in the plist (although they shouldn't)
+icon="$resources/$icon"
+if [ ! -e "$icon" ]; then
+	icon="$icon.icns"
+fi
+
+sips --out "$png" -s format png "$icon" && open "$png"
+
+# That's all Folks!
+##

@@ -1,0 +1,31 @@
+#!/bin/bash
+## 
+
+## Create icons for the given image files using `sips` then revert
+## mtime and atime to what was done before the modification.
+## ...obviously this is a lame hack to get around `sips` limitations.
+
+## Requires BSD `sips`
+if [ ! -e "`which sips`" ] ; then
+	echo "This script requires the BSD tool 'sips'."
+	exit 1 ;
+fi
+
+## Require at least one command line argument
+if [ $# -lt 1 ] ; then
+	echo "This script creates thumbnails for the given image files." ;
+	echo "Usage: $0 <filename>" ; 
+	exit 0 ;
+fi
+
+## Work the magic
+for X in "$@" ; do
+	if [ ! -e "${X}" ] ;
+		then echo "File ${X} does not exist" ;
+	else
+		touch -r "${X}" /tmp/$UID.thumbnail-reference.tmp
+		sips -i "${X}" ;
+		touch -r /tmp/$UID.thumbnail-reference.tmp "${X}" ;
+	fi
+done
+
