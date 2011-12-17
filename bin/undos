@@ -1,5 +1,0 @@
-#!/bin/csh
-
-find . -name "*" -type d -exec chmod -R 0755 {} ";"
-find . -name "*" -type f -exec chmod -R 0666 {} ";"
-

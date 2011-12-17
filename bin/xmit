@@ -1,6 +1,0 @@
-#!/bin/csh
-
-# ftpput ftp.stevenscreekstriders.org /var/www/html/$1 $1 stevenscre 5tr1d3r6
-# ftpput ftp.clanmills.com /www/$1 $1 clanmill Largs12@
-
-

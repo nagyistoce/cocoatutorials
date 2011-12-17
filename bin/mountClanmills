@@ -1,4 +1,0 @@
-#!/bin/csh
-
-osascript -e 'mount volume "ftp://ftp.clanmills.com/"'
-df -k | grep -e Volumes -e Filesystem

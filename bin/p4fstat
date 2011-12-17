@@ -1,3 +1,0 @@
-#!/bin/csh
-
-p4 fstat $* | p4f

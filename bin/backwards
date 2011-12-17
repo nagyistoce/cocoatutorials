@@ -1,8 +1,0 @@
-#!/usr/bin/perl
-
-my @lines = <STDIN> ;
-foreach $line ( @lines ) {
-#	$line = chomp($line) ;
-	$line = reverse($line) ;
-	print($line) ;
-}

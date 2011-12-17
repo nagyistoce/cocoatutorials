@@ -1,6 +1,0 @@
-#!/bin/bash
-
-pbpaste | perl -e 'my $v=0 ; my $i ; while ($i=<STDIN>) { $v+=$i } ; print $v."\n"; '
-
-# That's all Folks!
-##

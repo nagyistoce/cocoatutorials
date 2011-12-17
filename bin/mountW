@@ -1,9 +1,0 @@
-#!/bin/csh
-
-ls /W/Photos >& /dev/null
-if ( $status ) then
-	echo "/W isn't mounted.  Hang on."
-	osascript -e 'mount volume "smb://robin:x@ali/W"'
-else
-	echo '/W is mounted'
-endif
