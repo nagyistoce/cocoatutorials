@@ -62,22 +62,23 @@ test.sh
 Anonymous (mostly Perl, I think)
 --------------------------------
 
-ascii
-belkin
-calc
-cocoaDialog
-ftpsync
-hosty
-ip
-many
-mkcollage
-phototree          Recursive tree searcher
+ascii              Print an ascii table
+belkin             Display information from belkin router
+calc               Arithmetic
+cocoaDialog        Simple UI tools for Alerts and stuff
+ftpsync            Recursive ftp sync
+  phototree        Recursive tree searcher
+hosty              Convert name <-> IPv4 address
+ip                 Displays ip information
+many               Display man pages in the browser
+mkcollage          Convert Picasa collage to a web page
+  readcollage      Used by mkcollage
 plines             Print lines in a file
 prename            Rename image files
-reverse
-ptime              printhe time
-readcollage
-renamed
+reverse            Can't remember
+ptime              print the time
+ptimes             Modify file time to photo time (for jpgs)
+renamed            Can't remember
 man2html           Convert man pages to HTML
 pathy              Pretty print $PATH (or any environment string)
 renamer            Rename files en-mass
