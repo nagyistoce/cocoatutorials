@@ -57,7 +57,9 @@
     NSColor* background = [NSColor colorWithDeviceRed:0.0 green:0.0 blue:0.0 alpha:0.0];
     [window setBackgroundColor:background];
 	[window setDelegate:self];
-	[window setLevel:NSFloatingWindowLevel];
+	[window setLevel:NSNormalWindowLevel]; // nothing special
+//	[window setLevel:NSFloatingWindowLevel]; // above other apps
+//  [window setLevel:NSScreenSaverWindowLevel]; // above the dock and everything
     [window setOpaque:NO];
 	[window setStyleMask:[QuartzClockView borderNone]];
     

@@ -24,6 +24,16 @@
 {
 	// properties
 	NSTimer*			timer;
+    NSPoint             initialLocation; // position of mouse at mouse down
+    NSSize              initialSize;     // size of window at mouse down
+    NSColor*            backgroundColor;
+    NSColor*            gradientColor;
+    NSColor*            handsColor;
+    NSColor*            rimColor;
+    NSColor*            marksColor;
+    BOOL                radialGradient;
+    BOOL                ignoreMouse;
+    float               angle;
 }
 
 // Class methods
