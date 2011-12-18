@@ -1,11 +1,13 @@
 #!/bin/bash
 
-if [ $# -ne 1 ];then
-	echo pingz servername
+if [ $# -lt 1 ];then
+	echo pingz servername [command...]
+        echo example: pingz rmills-imac ssh \\\$ping
 	exit 1
 fi
 
-ping="$@"
+ping="$1"
+shift
 st=1
 while [ $st -ne 0 ]; do
 	ping -c 1 $ping 2>&1 > /dev/null
@@ -15,6 +17,10 @@ while [ $st -ne 0 ]; do
 		sleep 1	
 	fi
 	ping -c 1 $ping | egrep -e bytes # -e loss
+	if [ $# -gt 0 ];then
+		echo $ `eval "$@"`
+		eval "$@"
+	fi
 done
 
 # That's all Folks!
