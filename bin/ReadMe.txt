@@ -1,11 +1,11 @@
 ReadMe.txt
+
 ----------
 
 This is a collection of scripts and stuff that I've collected
 over the years.  Use at your own risk.
 
-I'll probably get round to documenting some of this stuff
-(or maybe I won't!)
+I am working to improve the documentation (and the code)
 
 Robin Mills
 robin@clanmills.com
@@ -15,7 +15,7 @@ http://clanmills.com
 | No promises or guarantees - use at your risk |
 +----------------------------------------------+
 
-build.sh	       build (works on Mac and maybe on Linux)
+build.sh       build (works on Mac and maybe on Linux)
 
 Programs
 --------
@@ -27,7 +27,7 @@ char               convert decimal to char
 crfile             something to do with cr and lf (can't remember)
 crlink             reverses the order of the ln -s target link to a more natural order
 crpipe             can't remember
-detab              removed tabs from files
+detab              converts files to html
 dmpf               dumps in ascii
 farmer             reads from the internet
 fstat              gets a file stat information
@@ -53,11 +53,11 @@ Scripts
 build.sh           Builds the cpp code
 build_script.sh    Can't remember
 cm.sh              Wrapper for cmake
-combine.sh         
-diskuse.sh
-fixvmware.sh
+combine.sh         Can't remember 
+diskuse.sh         Can't remember
+fixvmware.sh       Can't remember
 nobananas.sh       This gets rid of files that end in ~ (cleans up after Kate)
-test.sh
+test.sh            Can't remember
 
 Anonymous (mostly Perl, I think)
 --------------------------------
@@ -70,10 +70,12 @@ ftpsync            Recursive ftp sync
   phototree        Recursive tree searcher
 hosty              Convert name <-> IPv4 address
 ip                 Displays ip information
-many               Display man pages in the browser
+many               Display man pages in the browser (uses csh)
 mkcollage          Convert Picasa collage to a web page
   readcollage      Used by mkcollage
 plines             Print lines in a file
+pings              Ping one or more servers
+pingz              Wait for a server to respond then run command
 prename            Rename image files
 reverse            prints lines from a file on stdout in reverse order
 ptime              print the time
@@ -82,18 +84,18 @@ man2html           Convert man pages to HTML
 pathy              Pretty print $PATH (or any environment string)
 renamer            Rename files en-mass
 tree               Recursive tree utility
-tttt               Can't remember
+tttt               test bed
 wheres             A bit like which
 
 
 Python Scripts
 --------------
-cmLib.py		   Python library
-depends.py		   Recursive library dependancy grapher
-gps.py             Read GPX and update JPGs
+cmLib.py           Python library
+depends.py         Recursive library dependancy grapher
+gps.py             Read GPX and update JPGs (needs pyexiv2)
 sun.py             Read sunrise/set times from the web
 surd.py            Used by gps.py
-threes.py          Something to do with bracketed images
+threes.py          Process bracked images into threes
 webby.py           Creates web pages for clanmills.com
 
 doug.py            Probably junk (I'll cleanup one day)
@@ -101,7 +103,7 @@ dougweekly.py
 g.py           
 gp2.py
 gpxxx.py
-halfToner.py    
+halfToner.py
 mktable.py
 myScript.py
 readPDF.py
@@ -119,7 +121,6 @@ mailem.pl
 mailx.pl
 svnnorm.pl
 test.pl
-
 
 Other Stuff (mostly junk probably)
 ----------------------------------
