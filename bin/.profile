@@ -68,7 +68,7 @@ export RUBYOPT=rubygems
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
 export L="-exec ls -dalt {} ;"
 export X="-exec rm -rf {} ;"
-export C="-exec edit {} ;"
+export C="-exec $CE {} ;"
 export I="-exec lipo -info {} ;"
 export O="-exec otool -L {} ;"
 export Z="-exec open {} ;"
@@ -159,27 +159,30 @@ hidden() {
 }
 
 
-function ce() {
-	if [ `uname` == 'Darwin' ]; then
-		export CE=`which bbedit`
-		if [ -z "$CE" ]; then
-			export CE=`which edit`
-		fi
-		if [ ! -z "$CE" ]; then
-			$CE "$@"
-		fi		
-	else # probably linux, could be cygwin
-		export CE=`which kate`
-		if [ ! -z "$CE" ]; then
-			export CE="${CE} --use"
-			$CE "$@" 2> /dev/null > /dev/null &
-		fi		
-	fi
-	# catch all - use good old vi!
+# set CE = editor of choice
+if [ `uname` == 'Darwin' ]; then
+	export CE=`which bbedit`
 	if [ -z "$CE" ]; then
-		export CE=vi
+		export CE=`which edit`
+	fi
+else # probably linux, could be cygwin
+	export CE=`which kate`
+	if [ ! -z "$CE" ]; then
+		export CE="kate --use"
+	fi		
+fi
+# catch all - use good old vi!
+if [ -z "$CE" ]; then
+	export CE=vi
+	$CE "$@"
+fi			
+
+ce() {
+	if [ $CE == "kate --use" ]; then
+		kate --use "$@" 2>/dev/null >/dev/null &
+	else
 		$CE "$@"
-	fi			
+	fi
 }
 
 #
