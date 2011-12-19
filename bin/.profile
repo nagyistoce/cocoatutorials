@@ -161,18 +161,18 @@ hidden() {
 
 function ce() {
 	if [ `uname` == 'Darwin' ]; then
-		export CE=`which bbedit1`
+		export CE=`which bbedit`
 		if [ -z "$CE" ]; then
-			CE=`which edit1`
+			export CE=`which edit`
 		fi
 		if [ ! -z "$CE" ]; then
 			$CE "$@"
 		fi		
 	else # probably linux, could be cygwin
-		export ce=`which kate`
+		export CE=`which kate`
 		if [ ! -z "$CE" ]; then
-			export CE="kate --use"
-			$CE "$@" 2>&1 > /dev/null
+			export CE="${CE} --use"
+			$CE "$@" 2> /dev/null > /dev/null &
 		fi		
 	fi
 	# catch all - use good old vi!
