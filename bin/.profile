@@ -161,12 +161,12 @@ hidden() {
 
 # set CE = editor of choice
 if [ `uname` == 'Darwin' ]; then
-	export CE=`which bbedit`
+	export CE=`which bbedit 2>/dev/null`
 	if [ -z "$CE" ]; then
-		export CE=`which edit`
+		export CE=`which edit 2>/dev/null`
 	fi
 else # probably linux, could be cygwin
-	export CE=`which kate`
+	export CE=`which kate 2>/dev/null`
 	if [ ! -z "$CE" ]; then
 		export CE="kate --use"
 	fi		
@@ -174,7 +174,6 @@ fi
 # catch all - use good old vi!
 if [ -z "$CE" ]; then
 	export CE=vi
-	$CE "$@"
 fi			
 
 ce() {
