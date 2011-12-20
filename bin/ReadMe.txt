@@ -70,7 +70,7 @@ ftpsync            Recursive ftp sync
   phototree        Recursive tree searcher
 hosty              Convert name <-> IPv4 address
 ip                 Displays ip information
-many               Display man pages in the browser (uses csh)
+many               Display man pages in the browser
 mkcollage          Convert Picasa collage to a web page
   readcollage      Used by mkcollage
 plines             Print lines in a file
@@ -85,7 +85,7 @@ pathy              Pretty print $PATH (or any environment string)
 renamer            Rename files en-mass
 tree               Recursive tree utility
 tttt               test bed
-wheres             A bit like which
+wheres             A lot like which which
 
 
 Python Scripts

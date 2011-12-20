@@ -1,54 +1,66 @@
-#!/bin/csh
+#!/bin/bash
 
-
+##
 #
+syntax()
+{
+	echo 'usage:' $0 \[options\] man-page
+	echo 'eg:   ' $0 printf
+	echo '      ' $0 3 printf
+}
+if [ $# -eq 0 ]; then syntax ; exit ; fi
+
+##
 # set up a temporary directory if necessary
-if ( ! -e ~/temp ) then
+if [ ! -e ~/temp ]; then
 	mkdir -f ~/temp
-endif
+fi
 
-
-#
+##
 # kill the old txt and html files
-set f=~/temp/$argv[$#argv].txt
-set h=~/temp/$argv[$#argv].html
+page=${!#}
+cached=''
+for i in $* ; do cached=${cached}$i ; done
+
+f=~/temp/$cached.txt
+h=~/temp/$cached.html
 rm -rf $f $h
 
-
-#
+##
 # is there a file called ~/bin/man<manpage>.html
-set m=~/bin/man$argv[$#argv].html 
+m=~/bin/man$page.html 
 
-if ( ! -e $m ) then
+if [ ! -e $m ]; then
 	# write out a few blank lines (otherwise man2html gets a little confused!)
-	foreach i ( a b c d e f g h i j k l m )
+	for i in a b c d e f g h i j k l m ;do
 		echo >> $f
-	end
+	done
 	# get the man page
 	man $* >> $f
-	set s = $status
+	s=$?
 
 	# if it failed, ask perldoc if he knows about it!
-	if ( $s ) then
+	if [ $s != 0 ]; then
 		perldoc $* >> $f
-		set s = $status
-	endif
+		s=$?
+	fi
 	
 	# if it failed, ask pydoc if he knows about it!
-	if ( $s ) then
+	if [ $s -ne 0 ]; then 
 		pydoc $* >> $f
-		set s = $status
-	endif
+		s=$?
+	fi
 	
 	
 	#
 	# if we've found it, format and display
-	if ( ! $s ) then
+	if [ $s -eq 0 ]; then
 		man2html -compress < $f > $h && open $h
-	endif
+	fi
 else
 	cp   $m $h
 	open $h
-endif
+fi
 
-
+# That's all Folks
+##
