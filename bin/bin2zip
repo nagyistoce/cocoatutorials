@@ -1,0 +1,22 @@
+#!/bin/bash
+
+syntax()
+{
+	echo 'usage:  ' $0 pathname
+	exit 1
+}
+if [ $# -ne 1 ]; then syntax ;fi
+
+bas=`dirname $0`
+tmp="/tmp/bin2zip"
+zip="$@"
+
+if [ -e "$tmp" ]; then 	rm -rf "$tmp" ; fi
+if [ -e "$zip" ]; then 	rm -rf "$zip" ; fi
+
+svn export "$bas" "$tmp"
+7z  a   "$zip" "$tmp"  2> /dev/null | tail -1
+ls -alt "$zip"
+
+# That's all Folks!
+##

@@ -37,6 +37,7 @@ hex                convert decimal to hex
 linky              test bed
 localtim           print time in locale
 lstat              something to do with stat
+bin2zip            create a zip file from the bin
 nocr               removes cr from files
 norm               normalizes files (detabs and fixes line endings)
 pathname           convert relative path to abs path
