@@ -17,17 +17,24 @@ if [ ! -e ~/temp ]; then
 fi
 
 ##
+# test ~/temp is a directory
+if [ ! -d ~/temp ]; then
+	echo "no directory ~/temp exists"
+	exit 1
+fi
+
+##
 # kill the old txt and html files
 page=${!#}
 cached=''
-for i in $* ; do cached=${cached}$i ; done
+for i in $@ ; do cached=${cached}$i ; done
 
 f=~/temp/$cached.txt
 h=~/temp/$cached.html
 rm -rf $f $h
 
 ##
-# is there a file called ~/bin/man<manpage>.html
+# is there a file called ~/bin/man<page>.html
 m=~/bin/man$page.html 
 
 if [ ! -e $m ]; then
