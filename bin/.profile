@@ -78,6 +78,15 @@ export G="-exec grep"
 export __="{} ;"
 
 ##
+# servers
+export B=bocksbeutel
+export S
+S[0]=bocksbeutel
+S[1]=housecat
+S[2]=tenth
+S[3]=demi
+
+##
 
 
 ##
