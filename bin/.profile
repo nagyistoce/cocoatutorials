@@ -1,12 +1,19 @@
 ##
 # shell variables
 
-export HOST=`(hostname|cut -d. -f 1)`
-declare -x PS1='\! ${HOST} ${PWD} \$ '
+# If id command returns zero, you’ve root access.
+if [ "$USER" == "root" ]; then                # $(id -u) -eq 0 ];
+	# you are root, set yellow color prompt
+	# http://news.softpedia.com/news/How-to-Customize-the-Shell-Prompt-40033.shtml
+  	PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\] "
+else # normal
+  	PS1="[\! \\u@\\h:\\w] $ "
+fi
 
-# export PS1="\! $PWD $ "
-# PS1='\! $PWD> '
-#
+export HOST=`(hostname|cut -d. -f 1)`
+if [ "$USER" != "root" ]; then
+	declare -x PS1='\! ${HOST} ${PWD} \$ '
+fi
 
 ##
 # increase the number of open files
@@ -23,7 +30,6 @@ declare -x PS1='\! ${HOST} ${PWD} \$ '
 # max user processes              (-u) 709
 # virtual memory          (kbytes, -v) unlimited
 # 517 /Users/rmills/clanmills $ 
-
 ulimit -n 1024
 
 ##
@@ -87,18 +93,11 @@ S[2]=tenth
 S[3]=demi
 
 ##
-
-
-##
 # Install image magick
 # http://mirror1.smudge-it.co.uk/imagemagick/www/binary-releases.html#macosx
 # export MAGICK_HOME="/Users/rmills/gnu/ImageMagick"
 # export PATH="$MAGICK_HOME:$PATH"
 # export DYLD_LIBRARY_PATH="$MAGICK_HOME/lib:$DYLD_LIBRARY_PATH"
-
-
-
-
 
 ##
 # functions
@@ -110,8 +109,6 @@ dirXX() {
 	fi
 	ls -altF "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
 }
-
-# alias dir="ls -dltF"
 
 dir() { # it's impossible to like bash - the syntax is pure shit
 	list='ls -dlthpF'
@@ -133,8 +130,8 @@ history() {
 }
 
 free() {
-  df -m .
-  # df -k . | tail -1 | cut -f4 -d ' '
+  	df -m .
+# 	df -k . | tail -1 | cut -f4 -d ' '
 }
 
 dirs() {
@@ -168,7 +165,6 @@ diron() {
 hidden() {
 	ls -altpF $1 | grep " \."
 }
-
 
 ##
 # set CE = editor of choice
@@ -248,7 +244,4 @@ export PATH=$M2:$PATH
 # MacPorts Installer addition on 2011-12-06_at_12:29:07: adding an appropriate PATH variable for use with MacPorts.
 export PATH=$PATH:/opt/local/bin:/opt/local/sbin
 # Finished adapting your PATH environment variable for use with MacPorts.
-
-# That's all Folks
-##
 
