@@ -66,7 +66,7 @@ export RUBYOPT=rubygems
 # export ARCHFLAGS="-arch x86_64" # "-arch i386 -arch ppc"
 # export CFLAGS="$ARCHFLAGS"      # "-arch i386 -arch ppc"
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
-export L="-exec ls -dalt {} ;"
+export L="-exec ls -daltF {} ;"
 export X="-exec rm -rf {} ;"
 export C="-exec $CE {} ;"
 export I="-exec lipo -info {} ;"
@@ -108,13 +108,13 @@ dirXX() {
 	   echo usage: dir directory
 	   return
 	fi
-	ls -alt "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+	ls -altF "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
 }
 
-# alias dir="ls -dlt"
+# alias dir="ls -dltF"
 
 dir() { # it's impossible to like bash - the syntax is pure shit
-	list='ls -dlthp'
+	list='ls -dlthpF'
 	if [ ${#*} -eq 0 ]; then
 		$list *
 	elif [ ${#*} -eq 1 ]; then
@@ -138,33 +138,33 @@ free() {
 }
 
 dirs() {
-	ls -ltp $1 | grep "^d"
+	ls -ltpF $1 | grep "^d"
 }
 
 links() {
-	ls -altp $1 | grep "^l"
+	ls -altpF $1 | grep "^l"
 }
 
 files() {
-	ls -altp $1 | grep "^-"
+	ls -altpF $1 | grep "^-"
 }
 
 socks() {
-	ls -altp $1 | grep "^s"
+	ls -altpF $1 | grep "^s"
 }
 
 diros() {
-	ls -ltG $* | sort --key=5 --numeric-sort
-#	ls -ltGp $* | tigersort +4 -n
+	ls -ltGF $* | sort --key=5 --numeric-sort
+#	ls -ltGFp $* | tigersort +4 -n
 }
 
 diron() {
-	ls -ltG $* | sort --key=9 --ignore-case
+	ls -ltGF $* | sort --key=9 --ignore-case
 #	ls -ltGp $* | tigersort +8 -i
 }
 
 hidden() {
-	ls -altp $1 | grep " \."
+	ls -altpF $1 | grep " \."
 }
 
 
@@ -201,7 +201,7 @@ ce() {
 alias rename=mv
 alias move=mv
 alias del='sudo rm -rf'
-alias dirod='ls -altGr'
+alias dirod='ls -altGFr'
 alias xcopy='ditto'
 alias finder='find . -depth -name'
 alias shellx=open
@@ -227,6 +227,14 @@ alias robin='cd ~/Projects/cocoatutorials/robin'
 ##
 # keep QtCreator happy
 mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
+
+##
+# apache-maven (and itext support)
+# http://maven.apache.org/download.html
+export M2_HOME=/usr/local/apache-maven/apache-maven-3.0.3
+export M2=$M2_HOME/bin
+export PATH=$M2:$PATH
+# export MAVEN_OPTS="-Xms256m -Xmx512m"
 
 # That's all Folks!
 ##
