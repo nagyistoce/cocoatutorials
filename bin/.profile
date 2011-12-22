@@ -52,6 +52,8 @@ export P4USER=rmills
 export P4PORT=home:1666
 export P4CLIENT=imac
 
+export TUTS_PASSWORD=nN7Gz3dp3hP8
+
 export PINGS="bocksbeutel tenth demi housecat"
 
 # used by cpan
@@ -130,7 +132,7 @@ history() {
 }
 
 free() {
-  	df -m .
+  	df -h .
 # 	df -k . | tail -1 | cut -f4 -d ' '
 }
 
