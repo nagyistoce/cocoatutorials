@@ -143,6 +143,8 @@ dirs() {
 
 links() {
 	ls -altpF $1 | grep "^l"
+	# 
+	# for x in `(ls -F|grep @)`; do echo "${x::${#x}-1}" ; done
 }
 
 files() {
