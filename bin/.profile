@@ -52,7 +52,6 @@ export P4USER=rmills
 export P4PORT=home:1666
 export P4CLIENT=imac
 
-// nN7Gz3dp3hP8
 export PINGS="bocksbeutel tenth demi housecat"
 
 # used by cpan
