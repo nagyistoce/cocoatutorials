@@ -8,7 +8,7 @@ syntax()
 if [ $# -ne 1 ]; then syntax ;fi
 
 bas=`dirname $0`
-tmp="/tmp/bin2zip"
+tmp="/tmp/bin"
 zip="$@"
 
 if [ -e "$tmp" ]; then 	rm -rf "$tmp" ; fi

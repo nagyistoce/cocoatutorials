@@ -168,6 +168,7 @@ hidden() {
 }
 
 
+##
 # set CE = editor of choice
 if [ `uname` == 'Darwin' ]; then
 	export CE=`which bbedit 2>/dev/null`
@@ -175,7 +176,7 @@ if [ `uname` == 'Darwin' ]; then
 		export CE=`which edit 2>/dev/null`
 	fi
 else # probably linux, could be cygwin
-	export CE=`which kate 2>/dev/null`
+	export CE=`which kate`
 	if [ ! -z "$CE" ]; then
 		export CE="kate --use"
 	fi		
@@ -186,14 +187,12 @@ if [ -z "$CE" ]; then
 fi			
 
 ce() {
-	if [ $CE == "kate --use" ]; then
+	if [ "$CE" == "kate --use" ]; then
 		kate --use "$@" 2>/dev/null >/dev/null &
 	else
-		$CE "$@"
+		"$CE" "$@"
 	fi
 }
-
-#
 
 ##
 # aliases
