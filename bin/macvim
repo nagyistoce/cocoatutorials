@@ -1,0 +1,16 @@
+#!/bin/bash
+
+macvim=/Applications/MacVim.app
+if [ `uname` == 'Darwin' ]; then
+	if [ -d $macvim ]; then
+		open $macvim
+        mvim "$@"
+	else
+		echo "install from http://code.google.com/p/macvim/"
+	fi 
+else
+	echo you need to be on a mac for this one buster!
+fi
+
+# That's all Folks!
+##
