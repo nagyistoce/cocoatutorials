@@ -15,11 +15,12 @@ while [ $st -ne 0 ]; do
 	if [ $st -ne 0 ]; then
 		echo $ping is DEAD
 		sleep 1	
-	fi
-	ping -c 1 $ping | egrep -e bytes # -e loss
-	if [ $# -gt 0 ];then
-		echo $ `eval "$@"`
-		eval "$@"
+	else
+		ping -c 1 $ping | egrep -e bytes # -e loss
+		if [ $# -gt 0 ];then
+			echo $ `eval "$@"`
+			eval "$@"
+		fi
 	fi
 done
 

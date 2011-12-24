@@ -21,11 +21,14 @@ else
 	m=`(date "+DATE: %m" | cut -d' ' -f2)` 
 fi
 
-# determine the result	
-for d in `seq 1 31` ;do
-	sunrise=`(curl --silent http://www.earthtools.org/sun/37.3/-121.9/$d/$m/-8/0 | grep sunrise | cut -d">" -f2 | cut -d"<" -f 1)`
-	sunset=`(curl --silent http://www.earthtools.org/sun/37.3/-121.9/$d/$m/-8/0  | grep sunset  | cut -d">" -f2 | cut -d"<" -f 1)`
-	echo $d $sunrise $sunset
+# determine the result
+tmp=/tmp/sunrise.xml
+echo Day '' -sunrise- -sunset-	
+for d in `seq 1 31` ; do
+	curl --silent http://www.earthtools.org/sun/37.3/-121.9/$d/$m/-8/0 > $tmp
+	sunrise=`grep sunrise $tmp | cut -d">" -f2 | cut -d"<" -f 1`
+	sunset=`grep  sunset  $tmp | cut -d">" -f2 | cut -d"<" -f 1`
+	echo '' `printf "%02d" $d` '' $sunrise '' $sunset
 done
 
 # That's all Folks!!

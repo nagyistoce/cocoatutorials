@@ -12,7 +12,8 @@ fi
 
 export HOST=`(hostname|cut -d. -f 1)`
 if [ "$USER" != "root" ]; then
-	declare -x PS1='\! ${HOST} ${PWD} \$ '
+	declare -x PS1='\! ${HOST} ${PWD} \\\\w \$ '
+  	PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
 fi
 
 ##

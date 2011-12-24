@@ -1,16 +1,17 @@
-#!/bin/csh
+#!/bin/bash
 
-if ( ! -e /I ) then
-	ln -s /Volumes/I /iMac
-endif
+drive=iMacHD
+if [ ! -e /$drive ]; then
+	ln -s /Volumes/$drive /$drive
+fi
 
-ls /I/etc >& /dev/null
-if ( $status ) then
-	echo "/I isn't mounted.  Hang on."
-	osascript -e 'mount volume "afp://rmills:Largs12%40@rmills-imac/iMacHD"'
+ls "/$drive/etc" >& /dev/null
+if [ $? -ne 0 ]; then
+	echo "/$drive isn't mounted.  Hang on."
+	osascript -e "mount volume \"afp://rmills-imac/$drive\""
 else
-	echo '/I is mounted'
-endif
+	echo "/$drive is mounted"
+fi
 
-
-# df -k | grep -e Volumes -e Filesystem
+# That's all Folks!
+##

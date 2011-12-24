@@ -1,0 +1,38 @@
+#!/bin/sh
+# http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
+syntax()
+{
+    echo "usage  : $0 in-path sed-pattern [out-path]" 
+    echo "example: $0 foo.html \"s/<h2.*</h2>/No title here/g\""
+    exit 1
+}
+if [ "$#" -lt 2 ]; then syntax ; fi
+
+# set outputfile and tmp
+inpath="$1"
+if [ ! -e "$inpath" ]; then echo "$inpath does not exist" ; exit 1; fi
+outputfile="$3"
+if [ -z "$3" ]; then
+    outputfile="$1"
+fi
+tmp=/tmp/mlsed
+
+sed -n '
+    # if the first line copy the pattern to the hold buffer
+    1h
+    # if not the first line then append the pattern to the hold buffer
+    1!H
+    # if the last line then ...
+    $ {
+        # copy from the hold to the pattern buffer
+        g
+        # do the search and replace
+        '"$2"'
+        # print
+        p
+    }
+' $1 > $tmp
+cp $tmp $outputfile
+
+# That's all Folks
+##
