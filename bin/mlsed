@@ -4,6 +4,7 @@ syntax()
 {
     echo "usage  : $0 in-path sed-pattern [out-path]" 
     echo "example: $0 foo.html \"s/<h2.*</h2>/No title here/g\""
+    echo "workflow: grep -rl '<h2' * | while read i; do $0 \$i \"s/<h2.*</h2>/No title here/g\" \$i.tmp; done;"
     exit 1
 }
 if [ "$#" -lt 2 ]; then syntax ; fi

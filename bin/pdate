@@ -1,4 +1,7 @@
-#!/bin/csh
+#!/bin/bash
 
-exiftool '-DateTimeOriginal>FileModifyDate' $*
+# exiftool '-DateTimeOriginal>FileModifyDate' $*
+exiv2 -pt ~/R.jpg | grep Date
 
+# That's all Folks
+##

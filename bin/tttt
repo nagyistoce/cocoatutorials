@@ -1,14 +1,12 @@
-#!/bin/csh
+#!/bin/bash
 
-set me = `pathname ${0}`
-set it = ${0} 
+me="`pathname ${0}`"
+it="${0}" 
 
 echo me = $me
 echo it = $it
-
-
-perl ~/bin/perlcd ${me}
-
-
+perl ~/bin/perlcd "${me}"
 echo goodnight!
 
+# That's all Folks!
+##

@@ -1,3 +1,6 @@
-#!/bin/csh
-# read from the garmin to file
-gpsbabel -w -t -r -i garmin -f usb: -o gpx -F - $*
+#!/bin/bash
+# read from the garmin to stdout
+gpsbabel -w -t -r -i garmin -f usb: -o gpx -F - "$@"
+
+# That's all Folks
+##

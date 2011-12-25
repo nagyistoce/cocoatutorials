@@ -3,7 +3,7 @@
 macvim=/Applications/MacVim.app
 if [ `uname` == 'Darwin' ]; then
 	if [ -d $macvim ]; then
-		open $macvim
+		# open $macvim
         mvim "$@"
 	else
 		echo "install from http://code.google.com/p/macvim/"

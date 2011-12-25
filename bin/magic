@@ -1,16 +1,17 @@
-#!/bin/csh
-animate -help
-compare -help
+#!/bin/bash
+# get the help files for ImageMagick
+
+animate   -help
+compare   -help
 composite -help
-conjure -help
-convert -help
-display  -help
-identify -help
-import   -help
-mogrify  -help
-montage  -help
-stream   -help
+conjure   -help
+convert   -help
+display   -help
+identify  -help
+import    -help
+mogrify   -help
+montage   -help
+stream    -help
 
-
-
-
+# That's all Folks!
+##

@@ -1,5 +1,11 @@
-#!/bin/csh
+#!/bin/bash
+
+##
+# set the permissions when you've copied over from Windows
+##
 
 find . -name "*" -type d -exec chmod -R 0755 {} ";"
 find . -name "*" -type f -exec chmod -R 0666 {} ";"
 
+# That's all Folks!
+##
