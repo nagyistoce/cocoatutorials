@@ -27,41 +27,48 @@ fi
 setPrint()
 {
 	mode=$print
+	opt="_pop_"
 }
 
 setEditor()
 {
 	mode=$editor
+	opt="_pop_"
 }
 
 setHtml()
 {
 	mode=$html
+	opt="_pop_"
 }
 
 opt=$1
 case $opt in
 	-p)
-	setPrint ; shift
+	setPrint
 	;;
 	--print)
-	setPrint ; shift
+	setPrint
 	;;
 
 	-h)
-	setHtml ; shift
+	setHtml
 	  ;;
 	--html)
-	setHtml ; shift
+	setHtml
 	;;
 
 	-e)
-	setEditor ; shift
+	setEditor
 	;;
 	--editor)
-	setEditor ; shift
+	setEditor
 	;;
 esac
+
+if [ "$opt" == "_pop_" ]; then
+	shift
+fi
 
 temp=~/temp
 ##
@@ -154,6 +161,7 @@ elif [ $mode == $html ]; then
 	fi
 elif [ $mode == $editor ]; then
 	man "$*" | col -bx > $temp/$page.txt
+	args view $temp/$page.txt
 	view $temp/$page.txt
 else
 	echo "*** don't understand mode = " $mode

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exiv2 -T *.jpg *.JPG *.jpeg *.JPEG
+exiv2 -T *.jpg *.JPG *.jpeg *.JPEG 2>/dev/null
 
 # That's all Folks
 ##
