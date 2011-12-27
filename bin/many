@@ -4,69 +4,159 @@
 #
 syntax()
 {
-	echo 'usage:' $0 \[options\] man-page
-	echo 'eg:   ' $0 printf
+	echo 'usage:' $0 \[{-p\|--print}\|{-h\|--html}\|{-e\|--editor}\] \[man-options\] man-page 
+	echo 'eg:   ' $0 printf        
 	echo '      ' $0 3 printf
+	echo '      ' $0 --html gcc
 }
 if [ $# -eq 0 ]; then syntax ; exit ; fi
 
 ##
+# parse command-line
+# http://wiki.bash-hackers.org/howto/getopts_tutorial#description
+page="${@: -1}"
+print=1
+html=2
+editor=3
+mode=$html
+
+if [ `uname` == Linux ]; then
+	mode=$editor
+fi
+
+setPrint()
+{
+	mode=$print
+}
+
+setEditor()
+{
+	mode=$editor
+}
+
+setHtml()
+{
+	mode=$html
+}
+
+opt=$1
+case $opt in
+	-p)
+	setPrint ; shift
+	;;
+	--print)
+	setPrint ; shift
+	;;
+
+	-h)
+	setHtml ; shift
+	  ;;
+	--html)
+	setHtml ; shift
+	;;
+
+	-e)
+	setEditor ; shift
+	;;
+	--editor)
+	setEditor ; shift
+	;;
+esac
+
+temp=~/temp
+##
 # set up a temporary directory if necessary
-if [ ! -e ~/temp ]; then
-	mkdir -f ~/temp
+if [ ! -e $temp ]; then
+	mkdir -f $temp
 fi
 
 ##
-# test ~/temp is a directory
-if [ ! -d ~/temp ]; then
-	echo "no directory ~/temp exists"
+# test $temp is a directory
+if [ ! -d $temp ]; then
+	echo "no directory $temp exists"
 	exit 1
 fi
 
-##
-# kill the old txt and html files
-page=${!#}
-cached=''
-for i in $@ ; do cached=${cached}$i ; done
+if [ $mode == $print ]; then
+	ps="$temp/$page.ps"
+	pdf="$temp/$page.pdf"
 
-f=~/temp/$cached.txt
-h=~/temp/$cached.html
-rm -rf $f $h
+	man "$@" 2>&1 > /dev/null
+	status=$?
+	if [ $status -eq 0 ]; then
+		if [ ! -e $ps ]; then
+			man -t "$@" > $ps
+			status=$?
+		fi
+	fi
+	
+	# if OK, got postscript, no pdf and not empty
+	if [ $status -eq 0 ]; then
+		if [ -e $ps ]; then
+			if [ -z $pdf ]; then
+				rm -rf $pdf
+			fi
+	  		if [ ! -e $pdf ]; then
+				pstopdf $ps -o $pdf
+			fi
+		fi
+		if [ -e $pdf ]; then
+			open $pdf
+		fi
+	fi
+	exit $status
 
-##
-# is there a file called ~/bin/man<page>.html
-m=~/bin/man$page.html 
+elif [ $mode == $html ]; then
 
-if [ ! -e $m ]; then
-	# write out a few blank lines (otherwise man2html gets a little confused!)
-	for i in a b c d e f g h i j k l m ;do
-		echo >> $f
-	done
-	# get the man page
-	man $* >> $f
-	s=$?
+	##
+	# kill the old txt and html files
+	page=${!#}
+	cached=''
+	for i in $@ ; do cached=${cached}$i ; done
+	
+	f=$temp/$cached.txt
+	h=$temp/$cached.html
+	rm -rf $f $h
 
-	# if it failed, ask perldoc if he knows about it!
-	if [ $s != 0 ]; then
-		perldoc $* >> $f
+	##
+	# is there a file called ~/bin/man<page>.html
+	m=~/bin/man$page.html 
+	
+	if [ ! -e $m ]; then
+		# write out a few blank lines (otherwise man2html gets a little confused!)
+		for i in a b c d e f g h i j k l m ;do
+			echo >> $f
+		done
+		# get the man page
+		man $* >> $f
 		s=$?
-	fi
 	
-	# if it failed, ask pydoc if he knows about it!
-	if [ $s -ne 0 ]; then 
-		pydoc $* >> $f
-		s=$?
+		# if it failed, ask perldoc if he knows about it!
+		if [ $s != 0 ]; then
+			perldoc $* >> $f
+			s=$?
+		fi
+		
+		# if it failed, ask pydoc if he knows about it!
+		if [ $s -ne 0 ]; then 
+			pydoc $* >> $f
+			s=$?
+		fi
+		
+		#
+		# if we've found it, format and display
+		if [ $s -eq 0 ]; then
+			man2html -compress < $f > $h && open $h
+		fi
+	else
+		cp   $m $h
+		open $h
 	fi
-	
-	
-	#
-	# if we've found it, format and display
-	if [ $s -eq 0 ]; then
-		man2html -compress < $f > $h && open $h
-	fi
+elif [ $mode == $editor ]; then
+	man "$*" | col -bx > $temp/$page.txt
+	view $temp/$page.txt
 else
-	cp   $m $h
-	open $h
+	echo "*** don't understand mode = " $mode
 fi
 
 # That's all Folks

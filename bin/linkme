@@ -1,0 +1,26 @@
+#!/bin/bash
+
+syntax()
+{
+	echo usage $0 target-name
+	exit 1
+}
+if [ $# -ne 1 ]; then syntax ; fi
+
+target="$@"
+tmp=/tmp/linkme
+find . -name "$target" -type f | egrep -v -e Interme > $tmp
+count=`cat $tmp | wc -l`
+
+if [ $count -eq 1 ]; then 
+	if [ -L  "$target" ]; then
+		unlink  "$target"
+	fi
+	ln -s "`cat $tmp`" "$target" 
+else
+	echo could not find a unique file for "$target"
+	cat $tmp
+fi
+
+# That's all Folks!
+##
