@@ -1,32 +1,107 @@
-#!/bin/csh
-set echo
+#!/bin/bash
 
-rm -rf Embossed.jpg
-convert -background transparent -fill black -stroke white -strokewidth 20 -font /Library/Fonts/ChalkboardBold.ttf -pointsize 100 "label:Elegant Bridal Wear © 2007" text.png
-# convert -monochrome text.png watermark.png
-# cp        text.png             watermark.png
-# convert   -emboss 10 text.png watermark.png
+syntaxError() {
+	echo  usage: $0 '[{--help|-?}|--set  value|{--verbose|-v}]+ inpath outpath'
+	echo 'set: { gravity | font | size | label | opacity | rotate }'
+	exit 1
+}
+if [ $# -eq 0 ]; then syntaxError ; fi
 
-# convert -size 2560x256 -colors 256 gradient:black-white map.png
-# convert -size 2260x256 xc:white base.png
-# convert base.png +noise Impulse -normalize -map map.png noise.png
-# composite -dissolve 50% map.png text.png miff:- | composite -compose CopyOpacity text.png - watermark.png
+bomb() {
+	echo "$1 requires an argument" 1>&2	
+	exit 1
+}
 
+emboss=/tmp/emboss.png
+watermark=/tmp/watermark.png
+text=/tmp/text.png
 
-composite -dissolve 100    -gravity south watermark.png Input.jpg -resize 400 Embossed.jpg
-# composite -compose bumpmap -gravity south watermark.png Input.jpg -resize 400 Embossed.jpg
-open Embossed.jpg
+##
+# set up the defaults
+f="Arial"
+l="clanmills.com © 2012"
+g=south
+s=400
+o=50
+r=0
+files=()
 
-if ( -e someloadofoldcrap ) then
-	convert -size 256x256 xc:white base.png
-	composite -gravity center scan.png base.png mark1.png
-	convert -monochrome mark1.png mark2.png
-	convert -transparent white mark2.png mark3.png
-	convert -size 256x256 -colors 256 gradient:black-white map.png
-	convert -size 256x256 xc:white base.png
-	convert base.png +noise Impulse -normalize -map map.png noise.png
-	composite -dissolve 100% noise.png mark3.png miff:- | composite -compose CopyOpacity mark3.png - watermark.png
-	convert watermark.png -normalize watermark.png
-	composite -dissolve 15 -tile watermark.png Input.jpg Embossed.jpg
-endif
+# http://mywiki.wooledge.org/BashFAQ/035
+while [ $# -gt 0 ]; do
+    case "$1" in
+      -h|--help|-\?) syntaxError; exit 0 ;;
+      -v|--verbose)  v=1; shift ;;
+      -g|--gravity)  if [ $# -gt 1 ]; then g=$2; shift 2 ; else bomb $1 ; fi ;;
+      -f|--font)     if [ $# -gt 1 ]; then f=$2; shift 2 ; else bomb $1 ; fi ;;
+      -l|--label)    if [ $# -gt 1 ]; then l=$2; shift 2 ; else bomb $1 ; fi ;;
+      -s|--size)     if [ $# -gt 1 ]; then s=$2; shift 2 ; else bomb $1 ; fi ;;
+      -o|--opacity)  if [ $# -gt 1 ]; then o=$2; shift 2 ; else bomb $1 ; fi ;;
+      -r|--rotate)   if [ $# -gt 1 ]; then r=$2; shift 2 ; else bomb $1 ; fi ;;
+      --)            shift; break;;
+      -*)            echo "invalid option: $1" 1>&2; syntaxError; exit 1;;
+      *)             files+=("$1") ; shift ;;
+    esac
+done
 
+if [ ${#files[@]} -ne 2 ]; then
+	echo "*** wrong number of inputs (${#files[@]}) ***"
+	syntaxError
+fi
+input="${files[0]}"
+output="${files[1]}"
+
+if [ "$v" != 0 ]; then
+	echo "$0 -g $g -f $f ${files[@]}"
+fi
+
+if [ ! -e "$input" ]; then
+	echo "*** $input does not exist ***"
+	exit 1
+fi
+
+if [[ -e "$output" && ("$(ls -i "$output"|cut -d' ' -f 1)" == "$(ls -i "$input"|cut -d' ' -f 1)") ]]; then
+	echo '*** input and output are the same file ***'
+	exit 1
+fi
+
+F="/Library/Fonts/$f.ttf"
+if [ ! -e "$F" ]; then
+	echo "font $f does not exist"
+	exit 1
+fi
+f="$F"
+
+rm -rf    "$output"
+if [ "$l" != "" ]; then
+	convert   -background transparent -fill black -stroke white -strokewidth 2 -font "$f" -pointsize 100 -rotate "$r" "label:$l" "$text"
+	convert   -emboss 10 "$text" "$watermark"
+	composite -dissolve "$o"  -gravity "$g" "$watermark" "$input" -resize "$s" "$output"
+else
+	convert   "$input" -resize "%s" -rotate "$r" "$output"
+fi
+open      "$output"
+
+# That's all Folks!
+##
+
+##
+#   this is old stuff and I can't remember what it does!
+#   convert -monochrome text.png watermark.png
+#   cp      text.png             watermark.png
+#   convert -size 2560x256 -colors 256 gradient:black-white map.png
+#   convert -size 2260x256 xc:white base.png
+#   convert base.png +noise Impulse -normalize -map map.png noise.png
+#   composite -dissolve 50% map.png text.png miff:- | composite -compose CopyOpacity text.png - watermark.png
+#   composite -compose bumpmap -gravity south watermark.png Input.jpg -resize 400 Embossed.jpg
+#  	convert -size 256x256 xc:white base.png
+#  	composite -gravity center scan.png base.png mark1.png
+#  	convert -monochrome mark1.png mark2.png
+#  	convert -transparent white mark2.png mark3.png
+#  	convert -size 256x256 -colors 256 gradient:black-white map.png
+#  	convert -size 256x256 xc:white base.png
+#  	convert base.png +noise Impulse -normalize -map map.png noise.png
+#  	composite -dissolve 100% noise.png mark3.png miff:- | composite -compose CopyOpacity mark3.png - watermark.png
+#  	convert watermark.png -normalize watermark.png
+#  	composite -dissolve 15 -tile watermark.png Input.jpg Embossed.jpg
+#  
+##
