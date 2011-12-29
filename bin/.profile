@@ -1,20 +1,21 @@
 ##
 # shell variables
 
+export HOST=`(hostname|cut -d. -f 1)`
 # If id command returns zero, you’ve root access.
 if [ "$USER" == "root" ]; then                # $(id -u) -eq 0 ];
 	# you are root, set yellow color prompt
 	# http://news.softpedia.com/news/How-to-Customize-the-Shell-Prompt-40033.shtml
   	PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\] "
-else # normal
-  	PS1="[\! \\u@\\h:\\w] $ "
 fi
 
-export HOST=`(hostname|cut -d. -f 1)`
-if [ "$USER" != "root" ]; then
-	declare -x PS1='\! ${HOST} ${PWD} \\\\w \$ '
-  	PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
+export PS1='\! $(tput setaf 3)\u@\h:\w$(tput sgr0) $ '
+if [ "$USER" == "root" ]; then
+#  	PS1="\\[\! $(tput setaf 2)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
+  	PS1='\! $(tput setaf 2)\u@\h:\w$(tput sgr0) # '
 fi
+# http://wiki.bash-hackers.org/scripting/debuggingtips
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 
 ##
 # increase the number of open files
@@ -111,7 +112,7 @@ dirXX() {
 	ls -altF "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
 }
 
-dir() { # it's impossible to like bash - the syntax is pure shit
+dir() {
 	list='ls -dlthpF'
 	if [ ${#*} -eq 0 ]; then
 		$list *
@@ -206,7 +207,6 @@ alias shellx=open
 alias start=open
 
 # hieroglyphics
-alias .='ls -alt'
 alias ..='cd ..'
 alias ...=sudo
 alias ~='cd ~'

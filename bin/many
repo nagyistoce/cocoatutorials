@@ -4,7 +4,7 @@
 #
 syntax()
 {
-	echo 'usage:' $0 \[{-p\|--print}\|{-h\|--html}\|{-e\|--editor}\] \[man-options\] man-page 
+	echo 'usage:' $0 '[---print|--html}|--editor|--viewer] [man-options] man-page'
 	echo 'eg:   ' $0 printf        
 	echo '      ' $0 3 printf
 	echo '      ' $0 --html gcc
@@ -18,55 +18,29 @@ page="${@: -1}"
 print=1
 html=2
 editor=3
+viewer=4
+pop="_pop_"
 mode=$html
 
 if [ `uname` == Linux ]; then
-	mode=$editor
+	mode=$viewer
 fi
 
-setPrint()
+setMode()
 {
-	mode=$print
-	opt="_pop_"
-}
-
-setEditor()
-{
-	mode=$editor
-	opt="_pop_"
-}
-
-setHtml()
-{
-	mode=$html
-	opt="_pop_"
+	echo setMode arg = $1
+	mode=$1
+	opt="$pop"
 }
 
 opt=$1
 case $opt in
-	-p)
-	setPrint
-	;;
-	--print)
-	setPrint
-	;;
-
-	-h)
-	setHtml
-	  ;;
-	--html)
-	setHtml
-	;;
-
-	-e)
-	setEditor
-	;;
-	--editor)
-	setEditor
-	;;
+	-p|--print)  		setMode $print  ;;
+	-h|--html)   		setMode $html   ;;
+	-e|--editor) 		setMode $editor ;;
+	-v|--viewer|--view)	setMode $viewer ;;
 esac
-
-if [ "$opt" == "_pop_" ]; then
+if [ "$opt" == "$pop" ]; then
 	shift
 fi
 
@@ -104,7 +78,11 @@ if [ $mode == $print ]; then
 				rm -rf $pdf
 			fi
 	  		if [ ! -e $pdf ]; then
-				pstopdf $ps -o $pdf
+	  			if [ $(uname) == 'Linux' ]; then
+					gs "-sDEVICE=pdfwrite" "-sOutputFile=$pdf" "$ps" 2>&1 > /dev/null
+	  			else
+					pstopdf $ps -o $pdf
+				fi
 			fi
 		fi
 		if [ -e $pdf ]; then
@@ -159,10 +137,14 @@ elif [ $mode == $html ]; then
 		cp   $m $h
 		open $h
 	fi
-elif [ $mode == $editor ]; then
+elif [[ ($mode == $editor) || ($mode == $viewer) ]]; then
 	man "$*" | col -bx > $temp/$page.txt
-	args view $temp/$page.txt
-	view $temp/$page.txt
+	if [ -z "$CE" ]; then mode=$viewer ; fi
+	if [ $mode == $viewer ]; then
+		view "$temp/$page.txt"
+	else
+		"$CE" "$temp/$page.txt"
+	fi
 else
 	echo "*** don't understand mode = " $mode
 fi

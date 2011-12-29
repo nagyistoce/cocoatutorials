@@ -1,6 +1,10 @@
 #!/bin/bash
+shopt -s nocaseglob
 
-exiv2 -T *.jpg *.JPG *.jpeg *.JPEG 2>/dev/null
+images=(*.jpg) ; if [ "$images" != "*.jpg"  ]; then exiv2 -T "${images[@]}" ;fi
+images=(*.jpeg); if [ "$images" != "*.jpeg" ]; then exiv2 -T "${images[@]}" ;fi
+
+# exiv2 -T *.jpg *.jpeg 2>/dev/null
 
 # That's all Folks
 ##
