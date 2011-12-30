@@ -57,7 +57,7 @@ if [ "$m" == "*" ]; then m1=1 ; m2=12 ; else m1="$m"; m2=$m    ; fi
 # adjust for days, months, leap years and day-light saving
 if [  $y -lt 100 ]; then let y=$((y+2000)) ; fi
 if [ "$(( y==((y/4)*4) ))" -ne 0 ]; then T=29; else T=28; fi
-if [ "$f"                  -lt 1 ]; then f=1            ;fi
+if [ "$f"                  -lt 1 ]; then f=1            ; fi
 
 case "$m" in
 	# 1|3|5|7|8|10|12) ;;
