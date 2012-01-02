@@ -71,6 +71,8 @@ export GPGKEY=CF1649DA
 export PHOTOS=/Users/rmills/Documents/Dropbox/Photos
 export RUBYOPT=rubygems
 
+if [ "$HOST" == "rmills-mbp" ]; then PHOTOS=/Volumes/Data/rmills/Dropbox/Photos ; fi
+
 # export ARCHFLAGS="-arch x86_64" # "-arch i386 -arch ppc"
 # export CFLAGS="$ARCHFLAGS"      # "-arch i386 -arch ppc"
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
@@ -80,8 +82,8 @@ export C="-exec $CE {} ;"
 export I="-exec lipo -info {} ;"
 export O="-exec otool -L {} ;"
 export Z="-exec open {} ;"
-export P="/Users/rmills/Documents/Dropbox/Photos/"
-export Q="/Users/rmills/Documents/NotDropbox/Photos/"
+export P="$PHOTOS"
+export Q="$PHOTOS/../../NotDropbox/Photos/"
 export G="-exec grep"
 export __="{} ;"
 

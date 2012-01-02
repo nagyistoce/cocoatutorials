@@ -21,6 +21,7 @@ make -B lstat
 make -B nocr
 make -B norm
 make -B pathname
+make -B pipe
 make -B pong
 make -B system
 make -B test

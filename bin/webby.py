@@ -68,7 +68,7 @@ upgif        = 'up.gif'
 nextgif      = 'next.gif'
 photogif     = 'robinali.gif'
 email        = 'webmaster@clanmills.com'
-copyright    = '1996-2011 Robin Mills'
+copyright    = '1996-2012 Robin Mills'
 prev         = default + ext
 lightbox     = 'lightbox'
 download     = '2.35mb'
@@ -687,6 +687,7 @@ def webby(argv):
 		prev  = []
 		next  = []
 		titles= []
+		captions = []
 		prior   = default
 		for k in sorted(filedict.keys(),cmpDate):
 			pathname   = k
@@ -908,6 +909,7 @@ def webby(argv):
 			pname           = os.path.splitext(filename)[0]
 
 			subs['pname' ]  = pname
+			captions.append(caption)
 			if caption:
 				print "caption = ", caption
 				subs['pname']=caption
@@ -970,9 +972,28 @@ def webby(argv):
 		##
 
 		photos += "];\n"
+
+		# build the captions string
+		Captions='[';
+		for caption in captions:
+			if not caption:
+				caption='None'
+			Captions+= "'" + cgi.escape(caption) + "',\n"
+		Captions+= ']\n'
+		# print '--------------------------'
+		# print Captions
+		# print '--------------------------'
+		
+		try:
+			story=open(os.path.join(photoDir,'story.txt')).read()
+		except:
+			story=''
+			
 		# print 'length = ' ,len(thumbs)
 
+		subs['story'     ] = story
 		subs['photos'    ] = photos
+		subs['captions'  ] = Captions
 		subs['thumbs'    ] = thumbs
 		subs['thumbsdiv' ] = thumbsdiv
 		subs['download'  ] = mb(treesize(os.path.join(webDir,imagesDir)))

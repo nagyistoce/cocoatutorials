@@ -41,6 +41,7 @@ bin2zip            create a zip file from the bin
 nocr               removes cr from files
 norm               normalizes files (detabs and fixes line endings)
 pathname           convert relative path to abs path
+pipe               buffer stdin to a file (use tee filename > /dev/null instead)
 pong               variant of ping
 system             runs command via system()
 test               test 
