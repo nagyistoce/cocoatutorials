@@ -18,14 +18,16 @@ sub syntax
 # Description of program at end of file
 ###############################
 
-sub fixup; # forward
+sub fixup   ; # forward declarations
+sub println ;
+sub error   ;
+sub atoi    ;
 
 # Get the command line arguments
 #
 my $name = shift or syntax() ;
 my $w = shift or 0 ;
-$w = 550 if !$w    ;
-
+   $w = 550 if !$w ;
 
 # Find the photo and collage data
 #
@@ -63,18 +65,11 @@ println("H = " . $H) ;
 
 # exit(1);
 
-#my $shtml = getShtml ;
-#my $head  = getHead  ;
-#my $tail  = getTail  ;
-
-
-
 # get the page templates
 #
 $shtml = fixup(getShtml());
 $head  = fixup(getHead()) ;
 $tail  = fixup(getTail()) ;
-
 
 # write out the shtml
 #
@@ -109,45 +104,19 @@ println("url = $url") ;
 #
 system(fixup("open http://localhost/Homepages/__YEAR__/${name}.shtml")) ;
 
-
-###############################
-# utilities
-sub println 
-{
-	my $x = shift ;
-	print $x . "\n" ;
-}
-
-sub error
-{
-	$x = shift	;
-	println($x) ;
-	exit(1)		;
-}
-
-sub atoi
-{
-	my $t;
-	foreach my $d (split(//, shift())) {
-		$t = $t * 10 + $d;
-	}
-	return $t;
-}
-
 ###############################
 # page templates
 sub getShtml
 {
 return <<ENDOFFILE;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML><HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<meta http-equiv="Content-Language" content="en-us">
-
-<LINK REL="stylesheet" TYPE="text/css" HREF="/page.css">
+<html><head>
+<meta http-equiv="content-type" content="text/html"; charset="utf-8">
+<meta http-equiv="content-language" content="en-us">
+<link rel="stylesheet" type="text/css" href="/page.css">
 <link rel="alternate" type="application/rss+xml" title="clanmills rss feed" href="http://www.clanmills.com/1.xml">
-<TITLE>Mills Family Website</TITLE></HEAD>
-<BODY>
+<title>mills family website</title></head>
+<body>
 
 <!--#include virtual="/menu.inc" -->
 <!--#include virtual="/Homepages/__YEAR__/$name.inc" -->
@@ -167,14 +136,14 @@ return <<ENDOFFILE;
       <td  width="50%">
         <h1>Mills Family<br>WebSite</h1>
         <h4>__DATE__</h4>
-        <TABLE class="Content">
+        <table class="Content">
           <tr>
             <td valign=bottom><a href="/Homepages/2009/0330.shtml"><img class="button" src="/prev.gif"></a><br></td>
             <td valign=bottom><a href="/defaults.shtml"><img class="button" src="/up.gif"></a><br></td>
             <td valign=bottom><a href="/default-2004-01.shtml"><img class="button" src="/next.gif"></a><br></td>
             <td valign=bottom><a href="/default.shtml"><img class="button" src="/home.gif"></a><br></td>
           </tr>
-        </TABLE>
+        </table>
       </td>
       <td width="50%">
 
@@ -218,6 +187,30 @@ return <<ENDOFFILE;
 ENDOFFILE
 }
 
+###############################
+# utilities
+sub println 
+{
+	my $x = shift ;
+	print $x . "\n" ;
+}
+
+sub error
+{
+	$x = shift	;
+	println($x) ;
+	exit(1)		;
+}
+
+sub atoi
+{
+	my $t;
+	foreach my $d (split(//, shift())) {
+		$t = $t * 10 + $d;
+	}
+	return $t;
+}
+
 sub fixup
 {
 	my $s=shift;
@@ -236,7 +229,7 @@ sub fixup
     
     my $date = "$smon $mday, $year";
     
-	
+	# http://sunsite.ualberta.ca/Documentation/Misc/perl-5.6.1/pod/perllol.html
 	my @P  = ( ['__YEAR__',"$year"]
 	         , ['__DATE__',"$date"]
 	         , ['__DAY__' ,"$wday"]
