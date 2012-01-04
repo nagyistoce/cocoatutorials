@@ -1,4 +1,4 @@
-package Collage; # use package to declare a module
+package Collage;
 
 # use strict;
 # use warnings;
@@ -52,17 +52,14 @@ sub read # ($filename,$W,$H)
 	$parser->parse(*FOO);
 	close(FOO);
 	
-	my $path  =  $file . '.inc';
-	open (OUTPUT, ">$path");
+	# output result
+	my @result;
+	push(@result,"<img class=\"home\" src=\"${file}.jpg\" width=\"$W\" usemap=\"#${file}\">") ;
+	push(@result,"<map id=\"$file\" name=\"$file\">") ;
+	foreach $line (reverse(@map)) { push(@result,$line) } ;
+	push(@result,"</map>") ;
 	
-	# output the map
-	#
-	println("<img class=\"home\" src=\"${file}.jpg\" usemap=\"#${file}\">") ;
-	println("<map id=\"$file\" name=\"$file\">") ;
-	foreach $line (reverse(@map)) { println($line) } ;
-	println("</map>") ;
-	
-	close(OUTPUT);
+	return @result;
 }
 
 
@@ -113,7 +110,7 @@ sub poly
 	push(@map,"<area shape=\"poly\" coords = \"$x1,$y1,$x2,$y2,$x3,$y3,$x4,$y4,$x1,$y1\" href= \"$p\"/>") ;
 }
 
-###############################
+##
 # process an start-of-element event
 sub sh
 {
@@ -131,7 +128,7 @@ sub sh
 	$src = $el eq 'src' ? 1 : 0 ;
 }
 
-###############################
+##
 # process a char (string) event
 sub ch
 {
@@ -142,7 +139,7 @@ sub ch
 	}
 }
 
-###############################
+##
 # process an end-of-element event
 sub eh {
 	my ($expat, $el) = @_;
@@ -152,19 +149,19 @@ sub eh {
 	}
 }
 
-###############################
+##
 # utilities
 sub println 
 {
 	my $x = shift ;
-	print OUTPUT $x . "\n" ;
+	print $x . "\n" ;
 }
 
 sub error
 {
 	my $x = shift	;
 	println($x) ;
-	return(1)		;
+	exit(1)		;
 }
 
 sub atoi
@@ -175,6 +172,87 @@ sub atoi
 	}
 	return $t;
 }
+
+#############################################
+# page templates
+
+##
+# page template
+sub getShtml
+{
+return <<ENDOFFILE;
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html"; charset="utf-8">
+<meta http-equiv="content-language" content="en-us">
+<link rel="stylesheet" type="text/css" href="/page.css">
+<link rel="alternate" type="application/rss+xml" title="clanmills rss feed" href="http://www.clanmills.com/1.xml">
+<title>Mills Family Website</title></head>
+<body>
+
+<!--#include virtual="/menu.inc" -->
+<!--#include virtual="/Homepages/__YEAR__/__NAME__.inc" -->
+
+</body></html>
+ENDOFFILE
+}
+
+##
+# page template
+sub getHead
+{
+return <<ENDOFFILE;
+<div id = "Content">
+<div class=boxshadow><div class=boxmain style="width:__WIDTH__px;">
+  <table width="__WIDTH__"><tr><td width="50%">
+    <h1>Mills Family<br>WebSite</h1>
+    <h4>__DATE__</h4>
+    <table class="Content">
+      <tr>
+       <td valign=bottom><a href="/Homepages/2009/0330.shtml"><img class="button" src="/prev.gif"></a><br></td>
+       <td valign=bottom><a href="/defaults.shtml"><img class="button" src="/up.gif"></a><br></td>
+       <td valign=bottom><a href="/default-2004-01.shtml"><img class="button" src="/next.gif"></a><br></td>
+       <td valign=bottom><a href="/default.shtml"><img class="button" src="/home.gif"></a><br></td>
+      </tr>
+    </table>
+    </td><td width="50%" align="right">
+      <table><tr>
+          <td><img src="/3dflagsdotcom_usa_2fawm.gif" style="border:none;"><img src="/lionflag.gif" style="border:none;"><img src="/scotflag.gif" style="border:none;"></td>
+      </tr><tr>
+        <td><table><tr><td style="color:yellow">Current<br>Weather<br>San Jose<br>California</td><td align="center">
+			<a href="http://www.wunderground.com/US/CA/San_Jose.html?bannertypeclick=miniTarget2">
+			<img src="http://banners.wunderground.com/weathersticker/miniTarget2_both/language/www/US/CA/San_Jose.gif" border=0
+			alt="Click for San Jose, California Forecast" height=50 width=150></a>
+	  </td></tr></table>
+    </td></tr></table>
+  </td></tr></table>
+ENDOFFILE
+}
+
+##
+# page template
+sub getTail
+{
+return <<ENDOFFILE;
+<hr>
+<table><tr><td width="__WIDth__">
+    <p align="center"><a href="/">Home</a> <a>.........</a>
+    <a href="/about.shtml">About</a></p>
+    <p align="center">Page design &copy; 1996-__YEAR__ Robin Mills / <a
+    href="mailto:webmaster@clanmills.com">webmaster@clanmills.com</a>
+    </p>
+    <p align="center">Page created: __DAY__ __DATE__</p>
+    </p>
+</td><td width="__width__">
+<p align="right"><img src="/robinali.gif" align="middle" width=120 border=2 border=0></p>
+</td></tr></table>
+
+</div>
+ENDOFFILE
+}
+#
+#############################################
+
 
 ##
 # always last

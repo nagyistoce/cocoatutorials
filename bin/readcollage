@@ -3,14 +3,19 @@
 # use strict;
 # use warnings;
 
+use File::Basename;
+
 # our module
 use lib "$ENV{PWD}/";
 use lib "$ENV{HOME}/bin/";
 use Collage;
 
+sub syntax; # forward
+
 sub syntax
 {
-	error("usage: readcollage <collage.cxf> Width Height") ;
+	print ERROUT "usage: readcollage <collage.cxf> Width Height\n" ;
+	# exit(1);
 }
 
 # the main program
@@ -19,7 +24,16 @@ my $filename = shift or syntax() ;
 my $W		 = shift or syntax() ;
 my $H		 = shift or syntax() ;
 
-exit Collage::read($filename,$W,$H);
+# perl at its most powerful and horrible
+#
+my($file, $dirs, $ext) = fileparse($filename,qr/\.[^.]*/);
+my @lines              = Collage::read($filename,$W,$H);
+
+open(FILE,">${file}.inc");
+foreach $line (@lines) {
+	print FILE $line . "\n" ; 
+}
+close(FILE);
 
 # That's all Folks
 ##

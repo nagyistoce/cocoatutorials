@@ -3,224 +3,36 @@
 # use strict;
 # use warnings;
 
+##
 # public modules
 use XML::Parser::Expat;
 use File::Basename;
 use Math::Trig;
 use Cwd;
 
+##
 # our module
 use lib "$ENV{PWD}/";
 use lib "$ENV{HOME}/bin";
 use Collage;
 
-###############################
-# syntax
+##
+# globals
+my $name ;
+my $w    ;
+my $W    ;
+my $H    ;
+
+#############################################
+##
+# functions and forward declarations
 sub syntax
 {
-	error("usage: mkcollage name [w]") ;
-}
-# Description of program at end of file
-###############################
-
-sub fixup   ; # forward declarations
-sub println ;
-sub error   ;
-sub atoi    ;
-
-# Get the command line arguments
-#
-my $name = shift or syntax() ;
-my $w = shift or 0 ;
-   $w = 550 if !$w ;
-
-# Find the photo and collage data
-#
-my $home    = $ENV{"HOME"} ;
-my $path    = "${home}/Pictures/Picasa/Collages/${name}" ;
-my $photo   = $path . ".jpg" ;
-my $collage = $path . ".cxf" ;
-error("picture does not exist $photo"  ) if ( ! -e $photo     ) ;
-error("collage does not exist $collage") if ( ! -e $collage   ) ;
-
-# copy and resample the image
-#
-system('cp "' . $photo . '" .') ;
-$photo = $name  . ".jpg"        ;
-system("sips --resampleWidth $w " . '"' . $photo . '"') ;
-
-# get the image properties
-#
-#my $image = Image::Magick->new;
-#   $image->Read($photo);
-   
-#my $W  = $image->Get( 'columns' ); 
-#my $H  = $image->Get( 'rows' );
-my $H = "sips -g pixelHeight $photo | cut -d\':\' -f2";
-my $W = "sips -g pixelWidth  $photo | cut -d\':\' -f2";
-   
-println("W = " . $W) ;
-println("H = " . $H) ;
-
-my @lines = qx($W 2>&1); $W = int($lines[1]);
-my @lines = qx($H 2>&1); $H = int($lines[1]);
-
-println("W = " . $W) ;
-println("H = " . $H) ;
-
-# exit(1);
-
-# get the page templates
-#
-$shtml = fixup(getShtml());
-$head  = fixup(getHead()) ;
-$tail  = fixup(getTail()) ;
-
-# write out the shtml
-#
-open (SHTML,"> ${name}.shtml") ;
-print SHTML $shtml             ;
-close(SHTML)                   ;
-
-# and write the .inc with the map itself
-#
-print ("readcollage $collage $W $H > \"${name}.inc\"" . "\n") ;
-#system("readcollage $collage $W $H > \"${name}.inc\"") ;
-
-# print("going to read\n");
-Collage::read($collage,$W,$H);
-# print("and back\n");
-
-open FILE, "<${name}.inc" or die $!;
-my @lines = <FILE>;
-#
-open (HEAD,"> ${name}.inc")   ;
-print HEAD $head ;
-foreach (@lines) {
-	print HEAD fixup($_) ; 
-}
-close(HEAD)                   ;
-open (TAIL,">> ${name}.inc")  ;
-print TAIL $tail              ;
-close(TAIL)                   ;
-
-
-# and show it
-#
-my $url = getcwd ;
-println("url = $url") ;
-
-#
-#
-system(fixup("open http://localhost/Homepages/__YEAR__/${name}.shtml")) ;
-
-###############################
-# page templates
-sub getShtml
-{
-return <<ENDOFFILE;
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
-<meta http-equiv="content-type" content="text/html"; charset="utf-8">
-<meta http-equiv="content-language" content="en-us">
-<link rel="stylesheet" type="text/css" href="/page.css">
-<link rel="alternate" type="application/rss+xml" title="clanmills rss feed" href="http://www.clanmills.com/1.xml">
-<title>mills family website</title></head>
-<body>
-
-<!--#include virtual="/menu.inc" -->
-<!--#include virtual="/Homepages/__YEAR__/$name.inc" -->
-
-</body></html>
-ENDOFFILE
+	Collage::error("usage: mkcollage name [w]") ;
 }
 
-sub getHead
-{
-return <<ENDOFFILE;
-<div id = "Content">
-<div class=boxshadow><div class=boxmain style="width:550px;">
-
-  <table  width="550">
-    <tr>
-      <td  width="50%">
-        <h1>Mills Family<br>WebSite</h1>
-        <h4>__DATE__</h4>
-        <table class="Content">
-          <tr>
-            <td valign=bottom><a href="/Homepages/2009/0330.shtml"><img class="button" src="/prev.gif"></a><br></td>
-            <td valign=bottom><a href="/defaults.shtml"><img class="button" src="/up.gif"></a><br></td>
-            <td valign=bottom><a href="/default-2004-01.shtml"><img class="button" src="/next.gif"></a><br></td>
-            <td valign=bottom><a href="/default.shtml"><img class="button" src="/home.gif"></a><br></td>
-          </tr>
-        </table>
-      </td>
-      <td width="50%">
-
-      <table>
-        <tr>
-          <td><img src="/3dflagsdotcom_usa_2fawm.gif" style="border:none;"><img src="/lionflag.gif" style="border:none;"><img src="/scotflag.gif" style="border:none;"></td>
-        </tr>
-
-        <tr>
-          <td><table><tr><td style="color:yellow">Current<br>Weather<br>San Jose<br>California</td><td align="center">
-			<a href="http://www.wunderground.com/US/CA/San_Jose.html?bannertypeclick=miniTarget2">
-			<img src="http://banners.wunderground.com/weathersticker/miniTarget2_both/language/www/US/CA/San_Jose.gif" border=0
-			alt="Click for San Jose, California Forecast" height=50 width=150></a>
-			</td></tr></table>
-          </td>
-        </tr>
-       </table>
-     </td>
-    </tr>
-  </table>
-ENDOFFILE
-}
-
-sub getTail
-{
-return <<ENDOFFILE;
-<hr>
-<table><tr><td width="400">
-    <p align="center"><a href="/">Home</a> <a>.........</a>
-    <a href="/about.shtml">About</a></p>
-    <p align="center">Page design &copy; 1996-__YEAR__ Robin Mills / <a
-    href="mailto:webmaster@clanmills.com">webmaster@clanmills.com</a>
-    </p>
-    <p align="center">Page created: __DAY__ __DATE__</p>
-    </p>
-</td><td width="150">
-<p align="right"><img src="/robinali.gif" align="middle" width=120 border=2 border=0></p>
-</td></tr></table>
-
-</div>
-ENDOFFILE
-}
-
-###############################
-# utilities
-sub println 
-{
-	my $x = shift ;
-	print $x . "\n" ;
-}
-
-sub error
-{
-	$x = shift	;
-	println($x) ;
-	exit(1)		;
-}
-
-sub atoi
-{
-	my $t;
-	foreach my $d (split(//, shift())) {
-		$t = $t * 10 + $d;
-	}
-	return $t;
-}
-
+##
+# fixup: template -> instance conversion
 sub fixup
 {
 	my $s=shift;
@@ -239,13 +51,20 @@ sub fixup
     
     my $date = "$smon $mday, $year";
     
+    my $width = 150;
+    my $WIDth = $W - $width;
+    
 	# http://sunsite.ualberta.ca/Documentation/Misc/perl-5.6.1/pod/perllol.html
-	my @P  = ( ['__YEAR__',"$year"]
-	         , ['__DATE__',"$date"]
-	         , ['__DAY__' ,"$wday"]
-	         , ['/2012/NewYearsDay'    , '/2011/Christmas/NewYearsDay'] # New Year 2011 correction
-	         , ['AppleOffice/IMG_3502' , 'Apple']                       # New Year 2011 correction
-	         , ["$ENV{PHOTOS}/"        , '/']
+	my @P  = ( ['__YEAR__' 				,"$year" ]
+	         , ['__DATE__' 				,"$date" ]
+	         , ['__DAY__'  				,"$wday" ]
+	         , ['__WIDTH__'				,"$W"    ]
+	         , ['__WIDth__'				,"$WIDth"]
+	         , ['__width__'				,"$width"]
+	         , ['__NAME__'              ,"$name" ]
+	         , ['/2012/NewYearsDay'    	, '/2011/Christmas/NewYearsDay'] # New Year 2011 correction
+	         , ['AppleOffice/IMG_3502' 	, 'Apple']                       # New Year 2011 correction
+	         , ["$ENV{PHOTOS}/"        	, '/'    ]
 	         );
 	for my $i (0 .. $#P) {
 		my $p=$P[$i][0];
@@ -262,6 +81,78 @@ sub fixup
 
 	return $s;
 }
+#
+#############################################
+
+#############################################
+# main program
+
+##
+# Get the command line arguments
+$name = shift or syntax() ;
+$w = shift or 0 ;
+$w = 550 if !$w ;
+
+##
+# Find the photo and collage data
+my $home    = $ENV{"HOME"} ;
+my $path    = "${home}/Pictures/Picasa/Collages/${name}" ;
+my $photo   = $path . ".jpg" ;
+my $collage = $path . ".cxf" ;
+
+Collage::error("picture does not exist $photo"  ) if ( ! -e $photo     ) ;
+Collage::error("collage does not exist $collage") if ( ! -e $collage   ) ;
+
+##
+# copy and resample the image
+system('cp "' . $photo . '" .') ;
+$photo = $name  . ".jpg"        ;
+system("sips --resampleWidth $w " . '"' . $photo . '"') ;
+
+##
+# get the image properties
+# my $image = Image::Magick->new;
+#    $image->Read($photo);
+   
+#$W  = $image->Get( 'columns' ); 
+#$H  = $image->Get( 'rows' );
+$H = "sips -g pixelHeight $photo | cut -d\':\' -f2";
+$W = "sips -g pixelWidth  $photo | cut -d\':\' -f2";
+   
+Collage::println("W = " . $W) ;
+Collage::println("H = " . $H) ;
+
+my @lines = qx($W 2>&1); $W = int($lines[1]);
+my @lines = qx($H 2>&1); $H = int($lines[1]);
+
+Collage::println("W = " . $W) ;
+Collage::println("H = " . $H) ;
+
+# exit(1);
+
+##
+# write the result to file
+open (FILE,"> ${name}.shtml")         ;
+print FILE fixup(Collage::getShtml()) ;
+close(FILE)                           ;
+
+Collage::println("readcollage $collage $W $H > \"${name}.inc\"") ;
+my @lines = Collage::read($collage,$W,$H);
+open (FILE,"> ${name}.inc")           ;
+print FILE fixup(Collage::getHead())  ;
+foreach (@lines) {
+	print FILE fixup($_)."\n"         ; 
+}
+print FILE fixup(Collage::getTail())  ;
+close(FILE)                           ;
+
+##
+# and show it
+my      $url = fixup("http://localhost/Homepages/__YEAR__/${name}.shtml");
+Collage::println("url = $url"  ) ;
+system("open \"$url\"") ;
+#
+#############################################
 
 # That's all Folks!
 ##
