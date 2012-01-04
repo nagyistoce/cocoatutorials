@@ -3,12 +3,17 @@
 # use strict;
 # use warnings;
 
+# public modules
 use XML::Parser::Expat;
 use File::Basename;
 use Math::Trig;
-# use Image::Magick;
 use Cwd;
-    
+
+# our module
+use lib "$ENV{PWD}/";
+use lib "$ENV{HOME}/bin";
+use Collage;
+
 ###############################
 # syntax
 sub syntax
@@ -80,7 +85,12 @@ close(SHTML)                   ;
 # and write the .inc with the map itself
 #
 print ("readcollage $collage $W $H > \"${name}.inc\"" . "\n") ;
-system("readcollage $collage $W $H > \"${name}.inc\"") ;
+#system("readcollage $collage $W $H > \"${name}.inc\"") ;
+
+# print("going to read\n");
+Collage::read($collage,$W,$H);
+# print("and back\n");
+
 open FILE, "<${name}.inc" or die $!;
 my @lines = <FILE>;
 #
@@ -217,9 +227,9 @@ sub fixup
 	
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime time ;
     
-    @WDays  = ( "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday") ;
-    @Months = ( "January", "February", "March", "April", "May", "June"
-              , "July", "August", "September", "October", "November", "December"
+    @WDays  = ( "Sunday" , "Monday"  , "Tuesday"  , "Wednesday", "Thursday", "Friday" , "Saturday") ;
+    @Months = ( "January", "February", "March"    , "April"    , "May"     , "June"
+              , "July"   , "August"  , "September", "October"  , "November", "December"
               ) ;
     
     $smon  = $Months[$mon] ;
@@ -241,42 +251,15 @@ sub fixup
 		my $p=$P[$i][0];
 		my $q=$P[$i][1];
 		# http://www.perlmonks.org/?node_id=98357
+		my $S = $s;
 		$s   =~ s#\Q$p\E#$q#g;
+		
+		# 	print "sub '$p' -> '$q'\n";
+		# 	print "$S\n";
+		# 	print "$s\n";
+		# 	print "--------------------\n";
 	}
 
-# printf("Time = %02d:%02d:%02d Date = %s %02d.%s.%04d = %02d-%02d-%04d = %04d-%02d-%02d\n"
-#        ,$hour,$min,$sec              # time in 24 hr clock
-#        ,$wday,$mday,$smon,$year      # UK format
-#        ,$mon,$mday,$year             # US format
-#        ,$year,$mon,$mday             # international format
-#        ) ;
-	
-# 	$s    =~ s/\__YEAR__\E/$year/g;
-# 	$s    =~ s/\__DATE__\E/$date/g;
-# 	$s    =~ s/\__DAY__\E/$wday/g;
-# 	$s    =~ s/\__DAY__\E/$wday/g;
-#   This is corrective code to handle christmas 2011.  Remove later
-# 	my $p = '/Volumes/Data/rmills/Dropbox/Photos/2012/NewYearsDay';
-# 	my $q = '/Volumes/Data/rmills/Dropbox/Photos/2011/Christmas/NewYearsDay';
-# 	$s    =~ s#$p#$q#g;
-# 
-# 	my $p = '/Volumes/Data/rmills/Dropbox/Photos/2011/';
-# 	my $q = '/2011/';
-# 	$s    =~ s#$p#$q#g;
-# 	
-# 	my $p = 'AppleOffice/IMG_3502';
-# 	my $q = 'Apple';
-# 	$s    =~ s#$p#$q#g;
-# 
-#   leave this code
-# 	my $p = "/Volumes/Data/rmills/Dropbox/Photos/$year/";
-# 	my $q = "/$year/";
-# 	$s    =~ s#$p#$q#g;
-
-# 	print "-------------------------\n";
-# 	print $s;
-# 	print "-------------------------\n";
-	
 	return $s;
 }
 

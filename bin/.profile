@@ -68,10 +68,20 @@ export PERLPATH=/Users/rmills/gnu/ImageMagick
 export PYTHONPATH="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:$PYTHONPATH"  
 export REMOTEHOST=clanmills.homedns.org
 export GPGKEY=CF1649DA
-export PHOTOS=/Users/rmills/Documents/Dropbox/Photos
 export RUBYOPT=rubygems
 
-if [ "$HOST" == "rmills-mbp" ]; then PHOTOS=/Volumes/Data/rmills/Dropbox/Photos ; fi
+##
+# deal with the photos
+export PHOTOS="$HOME/Documents/Dropbox/Photos"
+export QHOTOS="$PHOTOS/../../NotDropbox/Photos"
+DropboxPhotos=/Volumes/Data/rmills/Dropbox/Photos
+NotDropboxPhotos=/Volumes/Data/rmills/NotDropbox/Photos
+if [ -e "$DropboxPhotos" ]; then 
+	export PHOTOS="$DropboxPhotos"
+fi
+if [ -e "$NotDropboxPhotos" ]; then 
+	export QHOTOS="$NotDropboxPhotos"
+fi
 
 # export ARCHFLAGS="-arch x86_64" # "-arch i386 -arch ppc"
 # export CFLAGS="$ARCHFLAGS"      # "-arch i386 -arch ppc"
@@ -83,7 +93,7 @@ export I="-exec lipo -info {} ;"
 export O="-exec otool -L {} ;"
 export Z="-exec open {} ;"
 export P="$PHOTOS"
-export Q="$PHOTOS/../../NotDropbox/Photos/"
+export Q="$QHOTOS"
 export G="-exec grep"
 export __="{} ;"
 
@@ -222,6 +232,7 @@ alias collages='cd ~/Pictures/Picasa/Collages'
 alias tuts='cd ~/Projects/cocoatutorials'
 alias QtSee='cd ~/Projects/cocoatutorials/QtSee'
 alias robin='cd ~/Projects/cocoatutorials/robin'
+alias homepages='cd ~/clanmills/Homepages/2012'
 #
 
 ##
