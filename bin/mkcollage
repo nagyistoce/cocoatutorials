@@ -90,8 +90,8 @@ sub fixup
 ##
 # Get the command line arguments
 $name = shift or syntax() ;
-$w = shift or 0 ;
-$w = 550 if !$w ;
+$w    = shift or 0 ;
+$w    = 550 if !$w ;
 
 ##
 # Find the photo and collage data
@@ -131,7 +131,7 @@ Collage::println("H = " . $H) ;
 # exit(1);
 
 ##
-# write the result to file
+# write the files
 open (FILE,"> ${name}.shtml")         ;
 print FILE fixup(Collage::getShtml()) ;
 close(FILE)                           ;
@@ -140,17 +140,18 @@ Collage::println("readcollage $collage $W $H > \"${name}.inc\"") ;
 my @lines = Collage::read($collage,$W,$H);
 open (FILE,"> ${name}.inc")           ;
 print FILE fixup(Collage::getHead())  ;
-foreach (@lines) {
-	print FILE fixup($_)."\n"         ; 
+foreach my $line (@lines) {
+	print FILE fixup($line) . "\n"    ; 
 }
 print FILE fixup(Collage::getTail())  ;
 close(FILE)                           ;
 
 ##
 # and show it
-my      $url = fixup("http://localhost/Homepages/__YEAR__/${name}.shtml");
-Collage::println("url = $url"  ) ;
-system("open \"$url\"") ;
+my $url = fixup("http://localhost/Homepages/__YEAR__/${name}.shtml");
+Collage::println("open \"$url\"") ;
+system          ("open \"$url\"") ;
+
 #
 #############################################
 

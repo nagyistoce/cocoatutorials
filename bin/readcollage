@@ -5,20 +5,22 @@
 
 use File::Basename;
 
+##
 # our module
 use lib "$ENV{PWD}/";
 use lib "$ENV{HOME}/bin/";
 use Collage;
 
-sub syntax; # forward
-
+##
+# functions and globals
 sub syntax
 {
 	print ERROUT "usage: readcollage <collage.cxf> Width Height\n" ;
-	# exit(1);
+	exit(1);
 }
 
-# the main program
+#############################################
+# main program
 #
 my $filename = shift or syntax() ;
 my $W		 = shift or syntax() ;

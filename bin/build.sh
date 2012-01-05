@@ -24,7 +24,6 @@ make -B pathname
 make -B pipe
 make -B pong
 make -B system
-make -B test
 make -B testc
 make -B timestamp
 make -B wd

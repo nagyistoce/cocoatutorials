@@ -10,6 +10,7 @@ if [ "$USER" == "root" ]; then                # $(id -u) -eq 0 ];
 fi
 
 export PS1='\! $(tput setaf 3)\u@\h:\w$(tput sgr0) $ '
+export PS1='\! \u@\h:\w $ '
 if [ "$USER" == "root" ]; then
 #  	PS1="\\[\! $(tput setaf 2)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
   	PS1='\! $(tput setaf 2)\u@\h:\w$(tput sgr0) # '
