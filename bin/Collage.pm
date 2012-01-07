@@ -133,6 +133,8 @@ sub ch
 	my ($expat, $el, %atts) = @_;
 	if ( $src ) {
 		$p = $el ;
+		$p =~ s#\\#/#g;           # DOS to UNIX / conversion
+		$p =~ s#\$.*/Photos/#/#g; # $My Documents $Pictures .... /Photos/ -> /
 		$src = 0 ;
 	}
 }
