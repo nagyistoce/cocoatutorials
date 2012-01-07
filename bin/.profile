@@ -183,12 +183,14 @@ hidden() {
 
 ##
 # set CE = editor of choice
-if [ `uname` == 'Darwin' ]; then
+if [ `uname` == 'Darwin' ]; then                # Mac
 	export CE=`which bbedit 2>/dev/null`
 	if [ -z "$CE" ]; then
 		export CE=`which edit 2>/dev/null`
 	fi
-else # probably linux, could be cygwin
+elif [ `uname -o` == 'Cygwin ]                  # Cygwin
+	CE='/cygdrive/c/Users/rmills/com/ce.exe'
+else                                            # probably linux
 	export CE=`which kate`
 	if [ ! -z "$CE" ]; then
 		export CE="kate --use"
