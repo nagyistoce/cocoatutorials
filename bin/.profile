@@ -188,7 +188,7 @@ if [ `uname` == 'Darwin' ]; then                # Mac
 	if [ -z "$CE" ]; then
 		export CE=`which edit 2>/dev/null`
 	fi
-elif [ `uname -o` == 'Cygwin ]                  # Cygwin
+elif [ `uname -o` == 'Cygwin' ]; then            # Cygwin
 	CE='/cygdrive/c/Users/rmills/com/ce.exe'
 else                                            # probably linux
 	export CE=`which kate`
