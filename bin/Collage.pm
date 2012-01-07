@@ -27,11 +27,9 @@ my $filename;
 	
 sub read # ($filename,$W,$H)
 {
-	# the main program
-	#
-	$filename = shift or syntax() ;
-	$W		 = shift or syntax() ;
-	$H		 = shift or syntax() ;
+	$filename = shift or die "syntax error" ;
+	$W		  = shift or die "syntax error" ;
+	$H		  = shift or die "syntax error" ;
 
 	# perl at its most powerful and horrible
 	#

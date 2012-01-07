@@ -8,15 +8,15 @@
         <key>ProgramArguments</key> 
         <array> 
                 <string>/usr/bin/nice</string>
-                <string>/usr/sbin/setSystemSetup</string> 
+                <string>/usr/sbin/setSystemSleep</string> 
                 <string>-setsleep</string> 
                 <string>0</string> 
-                <string>deleteafter</string> 
+                <string>com.apple.macbe.setSystemSleep.plist</string> 
         </array> 
         <key>RunAtLoad</key> 
         <true/>
         <key>ServiceDescription</key>
-        <string>systemsetup -sleep 0</string>
+        <string>systemsetup -setsleep 0</string>
         <key>StandardErrorPath</key>
         <string>/var/log/com.apple.macbe.setSystemSleep.log</string>
         <key>StandardOutPath</key>

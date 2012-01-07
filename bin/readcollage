@@ -36,6 +36,10 @@ foreach $line (@lines) {
 	print FILE $line . "\n" ; 
 }
 close(FILE);
+exit(0) ;
+#
+#############################################
 
-# That's all Folks
+1;
+# That's all Folks!
 ##

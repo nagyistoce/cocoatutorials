@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+
+use strict;
+
+# strip off the first argument (since it's the mnt point), and add it back
+# as the first argument to the script
+
+if($#ARGV < 1) {
+    print STDERR "Usage: $0 <mountpoint> [-s] <script> [args...]\n";
+    print STDERR "\n<mountpoint> will be reordered as the first argument to <script>\n";
+    print STDERR "\nIf -s is provided, <mountpoint> is not made the first argument, but\n";
+    print STDERR   "all occurrences of TARGET are replaced in the args list\n";
+    exit(1);
+}
+my $mount = shift @ARGV;
+
+if($ARGV[0] eq "-s") {
+    shift @ARGV;
+    for(my $i=0; $i <= $#ARGV; $i++) {
+	$ARGV[$i] =~ s/TARGET/$mount/g;
+    }
+    
+} else {
+    splice(@ARGV, 1, 0, $mount);
+}
+
+
+print "Executing: @ARGV\n";
+exec(@ARGV) || die("Couldn't exec $ARGV[0]: $!");

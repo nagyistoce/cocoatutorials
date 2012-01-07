@@ -8,6 +8,7 @@
 use XML::Parser::Expat;
 use File::Basename;
 use Math::Trig;
+use Imager;
 use Cwd;
 
 ##
@@ -18,10 +19,9 @@ use Collage;
 
 ##
 # globals
-my $name ;
-my $w    ;
-my $W    ;
-my $H    ;
+my $name ; # name of collage
+my $w    ; # width of collage (on the web page)
+my $h    ; # height of collage (on the web page)
 
 #############################################
 ##
@@ -52,13 +52,13 @@ sub fixup
     my $date = "$smon $mday, $year";
     
     my $width = 150;
-    my $WIDth = $W - $width;
+    my $WIDth = $w - $width;
     
 	# http://sunsite.ualberta.ca/Documentation/Misc/perl-5.6.1/pod/perllol.html
 	my @P  = ( ['__YEAR__' 				,"$year" ]
 	         , ['__DATE__' 				,"$date" ]
 	         , ['__DAY__'  				,"$wday" ]
-	         , ['__WIDTH__'				,"$W"    ]
+	         , ['__WIDTH__'				,"$w"    ]
 	         , ['__WIDth__'				,"$WIDth"]
 	         , ['__width__'				,"$width"]
 	         , ['__NAME__'              ,"$name" ]
@@ -104,56 +104,60 @@ Collage::error("picture does not exist $photo"  ) if ( ! -e $photo     ) ;
 Collage::error("collage does not exist $collage") if ( ! -e $collage   ) ;
 
 ##
-# copy and resample the image
-system('cp "' . $photo . '" .') ;
-$photo = $name  . ".jpg"        ;
-system("sips --resampleWidth $w " . '"' . $photo . '"') ;
+# open and resample the image
+my $image = Imager->new(file=>$photo) or die "Cannot load $photo: ", $image->errstr;
+my $W =   $image->getwidth;
+my $H =   $image->getheight;
+   
+my $s = $w / $W ;
+Collage::println("W = " . $W) ;
+Collage::println("H = " . $H) ;
+Collage::println("s = " . $s) ;
+
+# Create smaller version
+# documented in Imager::Transformations
+# Autostretch individual channels
+my $thumb = $image->scale(scalefactor=>$s);
+   $thumb->filter(type=>'autolevels');
+   
+my $thumbname = $name . '.jpg';
+$thumb->write(file=>$thumbname) or die $thumb->errstr;
+
+$w = $thumb->getwidth;
+$h = $thumb->getheight;
+Collage::println("w = " . $w) ;
+Collage::println("h = " . $h) ;
 
 ##
-# get the image properties
-# my $image = Image::Magick->new;
-#    $image->Read($photo);
-   
-#$W  = $image->Get( 'columns' ); 
-#$H  = $image->Get( 'rows' );
-$H = "sips -g pixelHeight $photo | cut -d\':\' -f2";
-$W = "sips -g pixelWidth  $photo | cut -d\':\' -f2";
-   
-Collage::println("W = " . $W) ;
-Collage::println("H = " . $H) ;
-
-my @lines = qx($W 2>&1); $W = int($lines[1]);
-my @lines = qx($H 2>&1); $H = int($lines[1]);
-
-Collage::println("W = " . $W) ;
-Collage::println("H = " . $H) ;
-
-# exit(1);
+# get the imagemap
+Collage::println("readcollage $collage $w $h \"" . $file . '"') ;
+my  @lines = Collage::read($collage,$w,$h);
 
 ##
 # write the files
-open (FILE,"> ${name}.shtml")         ;
-print FILE fixup(Collage::getShtml()) ;
-close(FILE)                           ;
+my   $html = $name . ".shtml";
+open (HTML,"> $html") ;
+print HTML fixup(Collage::getShtml()) ;
+close(HTML) ;
 
-Collage::println("readcollage $collage $W $H > \"${name}.inc\"") ;
-my @lines = Collage::read($collage,$W,$H);
-open (FILE,"> ${name}.inc")           ;
+my   $file  = $name . ".inc"  ;
+open (FILE,"> $file") ;
 print FILE fixup(Collage::getHead())  ;
 foreach my $line (@lines) {
-	print FILE fixup($line) . "\n"    ; 
+	print FILE fixup($line) . "\n" ; 
 }
 print FILE fixup(Collage::getTail())  ;
-close(FILE)                           ;
+close(FILE) ;
 
 ##
 # and show it
-my $url = fixup("http://localhost/Homepages/__YEAR__/${name}.shtml");
+my $url = fixup("http://localhost/Homepages/__YEAR__/$html");
 Collage::println("open \"$url\"") ;
 system          ("open \"$url\"") ;
 
 #
 #############################################
 
+1;
 # That's all Folks!
 ##

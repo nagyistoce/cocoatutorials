@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/usr/sbin/systemsetup -getsleep
+sudo /usr/sbin/systemsetup -getsleep
 ls -alt /Library/LaunchDaemons/ | grep macbe
 ls -alt /usr/sbin               | grep 'setSys'
 

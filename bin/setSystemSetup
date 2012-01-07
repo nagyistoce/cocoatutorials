@@ -8,8 +8,8 @@ use Foundation;
 
 ##
 #  globals
-my $debug = scalar(@ARGV) == 2 ; 
-my $daemon      = '/Library/LaunchDaemons/com.apple.macbe.setSystemSleep.plist';
+my $debug  = scalar(@ARGV) == 2 ; 
+my $daemon = "/Library/LaunchDaemons/" . ($debug ? "" : $ARGV[2] ) ;
 
 ##
 # subs
@@ -24,10 +24,10 @@ sub println
 sub cleanUp() {
     println("Cleaning up");
     if ( !$debug ) {
+    	println("deleting $daemon");
     	unlink $daemon || warn "could not unlink $daemon";
+    	println("deleting $0");
     	unlink $0      || warn "could not unlink $0";
-    } else {
-    	println("Would have removed $daemon and $0"); 
     }
 }
 
@@ -38,11 +38,12 @@ if ( scalar(@ARGV) >= 2 ) {
 	my $argument = $ARGV[1] ;
 	
 	println("script $0");
-	println("command = '$command'");
-	println("argument = '$argument'");
+	println("command = $command");
+	println("argument = $argument");
 	println("debug = $debug");
+	println("daemon = $daemon");
 
-	my $K = "/usr/sbin/systemsetup '$command' '$argument'";
+	my $K = "/usr/sbin/systemsetup $command $argument";
 	println("K = $K");
 	
 	my $error   = system($K);
@@ -50,12 +51,12 @@ if ( scalar(@ARGV) >= 2 ) {
 
 	cleanUp() if (!$error) ;
 } else {
-	println('usage: setSystemSetup <command> <parameter> <do-not-debug>')
+	println("usage: setSystemSetup <command> <parameter> [daemon-to-delete]");
 }
 
 ################################################################################
 # always
 exit 0;
 
-# That's all Folks!
+# That is all Folks!
 ##
