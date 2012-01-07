@@ -23,7 +23,7 @@ pop="_pop_"
 mode=$html
 
 if [ `uname` == Linux ]; then
-	mode=$viewer
+	mode=$editor
 fi
 
 setMode()
@@ -142,7 +142,7 @@ elif [[ ($mode == $editor) || ($mode == $viewer) ]]; then
 	if [ $mode == $viewer ]; then
 		view "$temp/$page.txt"
 	else
-		"$CE" "$temp/$page.txt"
+		ce "$temp/$page.txt"
 	fi
 else
 	echo "*** don't understand mode = " $mode

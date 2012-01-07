@@ -201,14 +201,6 @@ if [ -z "$CE" ]; then
 	export CE=vi
 fi			
 
-ce() {
-	if [ "$CE" == "kate --use" ]; then
-		kate --use "$@" 2>/dev/null >/dev/null &
-	else
-		"$CE" "$@"
-	fi
-}
-
 ##
 # aliases
 # dos like things
