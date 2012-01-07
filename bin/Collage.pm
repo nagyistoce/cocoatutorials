@@ -228,6 +228,7 @@ return <<ENDOFFILE;
 	  </td></tr></table>
     </td></tr></table>
   </td></tr></table>
+<table><tr><td class="story_head">__TITLE__<br>  
 ENDOFFILE
 }
 
@@ -236,6 +237,7 @@ ENDOFFILE
 sub getTail
 {
 return <<ENDOFFILE;
+</td></tr></table>
 <hr>
 <table><tr><td width="__WIDth__">
     <p align="center"><a href="/">Home</a> <a>.........</a>

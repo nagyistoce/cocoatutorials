@@ -219,6 +219,8 @@ alias ...=sudo
 alias ~='cd ~'
 
 # favorite directories
+year=$(date "+%Y")
+alias homepages="cd ~/clanmills/Homepages/$year"
 alias photos="cd ~/Pictures/Photos/2008"
 alias heather='cd ~/heather/httpdocs'
 alias clanmills.com='ssh clanmil1@clanmills.com'
@@ -227,7 +229,6 @@ alias collages='cd ~/Pictures/Picasa/Collages'
 alias tuts='cd ~/Projects/cocoatutorials'
 alias QtSee='cd ~/Projects/cocoatutorials/QtSee'
 alias robin='cd ~/Projects/cocoatutorials/robin'
-alias homepages='cd ~/clanmills/Homepages/2012'
 #
 
 ##
