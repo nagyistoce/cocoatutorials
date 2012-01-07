@@ -74,11 +74,6 @@ sub fixup
 		# http://www.perlmonks.org/?node_id=98357
 		my $S = $s;
 		$s   =~ s#\Q$p\E#$q#g;
-		
-		# 	print "sub '$p' -> '$q'\n";
-		# 	print "$S\n";
-		# 	print "$s\n";
-		# 	print "--------------------\n";
 	}
 
 	return $s;
@@ -95,9 +90,9 @@ $name = shift or syntax() ;
 $w    = shift or 0 ;
 $w    = 550 if !$w ;
 $title= $name;
-$title=~ s/([A-Z])/ $1/g;  #convert Route66Sign to Route66 Sign
-$title=~ s/([0-9]+)/ $1/g; #convert Route66 Sign to Route 66 Sign
-print "title = '$title' \n"; 
+$title=~ s/([A-Z])/ $1/g;  # convert Route66Sign to Route66 Sign
+$title=~ s/([0-9]+)/ $1/g; # convert Route66 Sign to Route 66 Sign
+$title=~ s/^ *//g;         # remove leading blanks
 
 ##
 # Find the photo and collage data
@@ -106,8 +101,9 @@ my $path    = "${home}/Pictures/Picasa/Collages/${name}" ;
 my $photo   = $path . ".jpg" ;
 my $collage = $path . ".cxf" ;
 
-Collage::error("picture does not exist $photo"  ) if ( ! -e $photo     ) ;
-Collage::error("collage does not exist $collage") if ( ! -e $collage   ) ;
+##
+# ask the collage module to say "OK"
+Collage::OK($collage);
 
 ##
 # open and resample the image
@@ -126,13 +122,15 @@ Collage::println("s = " . $s) ;
 my $thumb = $image->scale(scalefactor=>$s);
    $thumb->filter(type=>'autolevels');
    
-my $thumbname = $name . '.jpg';
-$thumb->write(file=>$thumbname) or die $thumb->errstr;
-
 $w = $thumb->getwidth;
 $h = $thumb->getheight;
 Collage::println("w = " . $w) ;
 Collage::println("h = " . $h) ;
+
+##
+# save thumnail
+my $thumbname = $name . '.jpg';
+$thumb->write(file=>$thumbname) or die $thumb->errstr;
 
 ##
 # get the imagemap
@@ -150,7 +148,7 @@ my   $file  = $name . ".inc"  ;
 open (FILE,"> $file") ;
 print FILE fixup(Collage::getHead())  ;
 foreach my $line (@lines) {
-	print FILE fixup($line) . "\n" ; 
+	print FILE fixup($line) . "\n";
 }
 print FILE fixup(Collage::getTail())  ;
 close(FILE) ;

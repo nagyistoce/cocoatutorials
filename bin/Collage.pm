@@ -6,6 +6,8 @@ package Collage;
 use XML::Parser::Expat;
 use File::Basename;
 use Math::Trig;
+use Cwd;
+use Cwd 'abs_path';
 
 ##
 # forward declarations
@@ -24,42 +26,6 @@ my $pi = 4.0*atan(1.0)	; # simple simon
 my $W ;
 my $H ;
 my $filename;
-	
-sub read # ($filename,$W,$H)
-{
-	$filename = shift or die "syntax error" ;
-	$W		  = shift or die "syntax error" ;
-	$H		  = shift or die "syntax error" ;
-
-	# perl at its most powerful and horrible
-	#
-	my($file, $dirs, $ext) = fileparse($filename,qr/\.[^.]*/);
-	
-	$W = atoi($W) ;
-	$H = atoi($H) ;
-	return 1 if $W == 0 || $H == 0 ;
-	
-	# open and parse the CXF file
-	#
-	$ext = '.cxf' ;
-	$filename .= $ext if ( ! -e $filename && -e $filename . $ext ) ;
-	# print("opening the file $filename \n");
-	open(FOO, $filename) or error("Couldn't open file $filename") ; 
-	$parser = new XML::Parser::Expat;
-	$parser->setHandlers('Start' => \&sh,'End' => \&eh,'Char'  => \&ch) ;
-	$parser->parse(*FOO);
-	close(FOO);
-	
-	# output result
-	my @result;
-	push(@result,"<img class=\"home\" src=\"${file}.jpg\" width=\"$W\" usemap=\"#${file}\">") ;
-	push(@result,"<map id=\"$file\" name=\"$file\">") ;
-	foreach $line (reverse(@map)) { push(@result,$line) } ;
-	push(@result,"</map>") ;
-	
-	return @result;
-}
-
 
 ###############################
 # push a <poly> into the map
@@ -175,6 +141,76 @@ sub atoi
 	return $t;
 }
 
+sub OK # ($filename)
+{
+	my $filename = shift;
+	my($file, $dirs, $ext) = fileparse($filename,qr/\.[^.]*/);
+	
+    my $pwd = abs_path(getcwd);
+    if ( $pwd eq abs_path($dirs) ) {
+    	die("do not run in the directory with the collages");
+    }
+
+	# open and parse the CXF file
+	#
+	$cxf       = $dirs . $file . '.cxf' ;
+	$jpg       = $dirs . $file . '.jpg' ;
+	die ("$cxf does not exist") if ! -e $cxf;
+	die ("$jpg does not exist") if ! -e $jpg;
+}
+	
+sub read # ($filename,$W,$H)
+{
+	$filename = shift or die "syntax error" ;
+	$W		  = shift or die "syntax error" ;
+	$H		  = shift or die "syntax error" ;
+	
+	OK($filename);
+	
+	# perl at its most powerful and horrible
+	#
+	my($file, $dirs, $ext) = fileparse($filename,qr/\.[^.]*/);
+	
+	$W = atoi($W) ;
+	$H = atoi($H) ;
+	return 1 if $W == 0 || $H == 0 ;
+	
+	# open and parse the CXF file
+	#
+	my $cxfpath = $dirs . $file . '.cxf';
+	open(CXF, $cxfpath) or error("Couldn't open file $cxfpath") ; 
+	$parser = new XML::Parser::Expat;
+	$parser->setHandlers('Start' => \&sh,'End' => \&eh,'Char'  => \&ch) ;
+	$parser->parse(*CXF);
+	close(CXF);
+	
+	# output result
+	my   @result;
+	push(@result,"<map id=\"$file\" name=\"$file\">") ;
+	foreach $line (reverse(@map)) {
+		push(@result,$line);
+	}
+	push(@result,"</map>") ;
+
+	push(@result,'<table><tr><td class="story_head">__TITLE__<br>');  
+	push(@result,"<img class=\"home\" src=\"${file}.jpg\" width=\"$W\" usemap=\"#${file}\">") ;
+	
+	##
+	# copy the story (if it exists)
+	my $story  = $dirs . $file . ".txt";
+	if ( -e $story ) {
+		open(STORY,$story); 
+		push(@result,'</td></tr><tr><td>');
+		foreach $line (<STORY>) { 
+			push(@result,$line);
+		} ;
+		close(STORY);
+	}
+
+	push(@result,'</td></tr></table>');
+	return @result;
+}
+
 #############################################
 # page templates
 
@@ -228,7 +264,6 @@ return <<ENDOFFILE;
 	  </td></tr></table>
     </td></tr></table>
   </td></tr></table>
-<table><tr><td class="story_head">__TITLE__<br>  
 ENDOFFILE
 }
 
@@ -237,7 +272,6 @@ ENDOFFILE
 sub getTail
 {
 return <<ENDOFFILE;
-</td></tr></table>
 <hr>
 <table><tr><td width="__WIDth__">
     <p align="center"><a href="/">Home</a> <a>.........</a>
