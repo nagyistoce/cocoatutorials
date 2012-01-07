@@ -99,6 +99,10 @@ sub poly
 	my $x4 = int $x1 + $H * $h * sin($t) ;
 	my $y4 = int $y1 + $H * $h * cos($t) ;
 	
+	$p =~ s#\\#/#g;                     # DOS to UNIX / conversion
+	$p =~ s#My\ Pictures#Pictures#g;    # Picasa Windows 
+	$p =~ s#My\ Documents#Documents#g;  # 
+	$p =~ s#\$.*/Photos/#/#g;           # $My Documents $Pictures .... /Photos/ -> /
 	$p =~ s#\$Pictures/Photos##g ;
 	$p =~ s#jpg$#shtml#g		 ;
 	$p =~ s#bmp$#shtml#g		 ;
@@ -133,8 +137,6 @@ sub ch
 	my ($expat, $el, %atts) = @_;
 	if ( $src ) {
 		$p = $el ;
-		$p =~ s#\\#/#g;           # DOS to UNIX / conversion
-		$p =~ s#\$.*/Photos/#/#g; # $My Documents $Pictures .... /Photos/ -> /
 		$src = 0 ;
 	}
 }

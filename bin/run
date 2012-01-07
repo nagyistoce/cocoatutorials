@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $(uname) == 'Darwin' ]; then
+	open "$@"
+elif [ $(uname) == 'Linux' ]; then
+	xdg-open "$@" 2> /dev/null > /dev/null
+elif [ $(uname -o) == 'Cygwin' ]; then
+	/cygdrive/c/Windows/system32/cmd.exe /c "start $@"
+else
+	$@
+fi
+
+# That's all folks
+##

@@ -152,8 +152,8 @@ close(FILE) ;
 ##
 # and show it
 my $url = fixup("http://localhost/Homepages/__YEAR__/$html");
-Collage::println("open \"$url\"") ;
-system          ("open \"$url\"") ;
+Collage::println("run \"$url\"") ;
+system          ("run \"$url\"") ;
 
 #
 #############################################
