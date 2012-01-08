@@ -11,11 +11,18 @@ use Cwd 'abs_path';
 
 ##
 # forward declarations
-sub read;
-sub println;
-sub eh;
-sub error;
+sub OK; # ($filename)
+sub read; # ($filename,$W,$H)
 sub atoi;
+sub ch;
+sub eh;
+sub sh;
+sub println; 
+sub error;
+sub getHead;
+sub getShtml;
+sub getTail;
+sub poly;
 
 ##
 # global variables
@@ -127,7 +134,7 @@ sub println
 
 sub error
 {
-	my $x = shift	;
+	my $x = shift;
 	println($x) ;
 	exit(1)		;
 }
@@ -177,8 +184,8 @@ sub read # ($filename,$W,$H)
 	
 	# open and parse the CXF file
 	#
-	my $cxfpath = $dirs . $file . '.cxf';
-	open(CXF, $cxfpath) or error("Couldn't open file $cxfpath") ; 
+	my  $cxf = $dirs . $file . '.cxf';
+	open(CXF, $cxf) or error("Couldn't open file $cxf") ; 
 	$parser = new XML::Parser::Expat;
 	$parser->setHandlers('Start' => \&sh,'End' => \&eh,'Char'  => \&ch) ;
 	$parser->parse(*CXF);
@@ -201,7 +208,8 @@ sub read # ($filename,$W,$H)
 	if ( -e $story ) {
 		open(STORY,$story); 
 		push(@result,'</td></tr><tr><td>');
-		foreach $line (<STORY>) { 
+		foreach $line (<STORY>) {
+			chomp($line); 
 			push(@result,$line);
 		} ;
 		close(STORY);

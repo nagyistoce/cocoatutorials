@@ -12,8 +12,7 @@ use Imager;
 use Cwd;
 
 ##
-# our module
-use lib "$ENV{PWD}/";
+# our module (load from same directory as script)
 use lib "$ENV{HOME}/bin";
 use Collage;
 
@@ -29,7 +28,8 @@ my $h    ; # height of collage (on the web page)
 # functions and forward declarations
 sub syntax
 {
-	Collage::error("usage: mkcollage name [w]") ;
+	Collage::error("usage: $0 name [Collage|--title str|--width int|--help ]+") ;
+	exit(1);
 }
 
 ##
@@ -78,6 +78,17 @@ sub fixup
 
 	return $s;
 }
+
+sub am # arg,long,short
+{
+	my $arg    = shift ;
+	my $long   = shift ;
+	my $short  = shift ;
+	my $result = (($arg eq $long) || ($arg eq $short))?1:0;
+#	Collage::println("compare $arg $short $long --> result = $result");
+	return $result ;
+}
+
 #
 #############################################
 
@@ -86,13 +97,28 @@ sub fixup
 
 ##
 # Get the command line arguments
-$name = shift or syntax() ;
-$w    = shift or 0 ;
+for (my $arg = 0 ; $arg < scalar(@ARGV) ; $arg++ ) {
+	my $a = $ARGV[$arg];
+	if ( am($a,'--title','-t') ) {
+		Collage::println('in --title');
+		syntax() if ++$arg >= scalar(@ARGV);
+		$title = $ARGV[$arg] ;
+	} elsif ( am($a,'--width','-w') ) {
+		syntax() if ++$arg >= scalar(@ARGV);
+		$w     = Collage::atoi($ARGV[$arg]) ;
+	} elsif ( am($ARGV[$arg],'--help' ,'-h') ) {
+		syntax() ;
+	} else {
+		$name = $ARGV[$arg];
+		$title= $name;
+		$title=~ s/([A-Z])/ $1/g;  # convert Route66Sign to Route66 Sign
+		$title=~ s/([0-9]+)/ $1/g; # convert Route66 Sign to Route 66 Sign
+		$title=~ s/^ *//g;         # remove leading blanks
+	}
+}
+
+syntax() if ! $name;
 $w    = 550 if !$w ;
-$title= $name;
-$title=~ s/([A-Z])/ $1/g;  # convert Route66Sign to Route66 Sign
-$title=~ s/([0-9]+)/ $1/g; # convert Route66 Sign to Route 66 Sign
-$title=~ s/^ *//g;         # remove leading blanks
 
 ##
 # Find the photo and collage data
@@ -143,6 +169,7 @@ my   $html = $name . ".shtml";
 open (HTML,"> $html") ;
 print HTML fixup(Collage::getShtml()) ;
 close(HTML) ;
+
 
 my   $file  = $name . ".inc"  ;
 open (FILE,"> $file") ;
