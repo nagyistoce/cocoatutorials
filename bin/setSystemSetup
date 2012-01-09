@@ -8,8 +8,8 @@ use Foundation;
 
 ##
 #  globals
-my $debug  = scalar(@ARGV) == 2 ; 
-my $daemon = "/Library/LaunchDaemons/" . ($debug ? "" : $ARGV[2] ) ;
+my $cleanup = scalar(@ARGV) > 2 ; 
+my $daemon  = $cleanup ? $ARGV[2] : '' ;
 
 ##
 # subs
@@ -23,7 +23,7 @@ sub println
 
 sub cleanUp() {
     println("Cleaning up");
-    if ( !$debug ) {
+    if ( $cleanup ) {
     	println("deleting $daemon");
     	unlink $daemon || warn "could not unlink $daemon";
     	println("deleting $0");
@@ -40,8 +40,8 @@ if ( scalar(@ARGV) >= 2 ) {
 	println("script $0");
 	println("command = $command");
 	println("argument = $argument");
-	println("debug = $debug");
-	println("daemon = $daemon");
+	println("cleanup  = $cleanup");
+	println("daemon   = $daemon");
 
 	my $K = "/usr/sbin/systemsetup $command $argument";
 	println("K = $K");

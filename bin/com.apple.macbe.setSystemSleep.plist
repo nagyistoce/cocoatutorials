@@ -11,7 +11,7 @@
                 <string>/usr/sbin/setSystemSleep</string> 
                 <string>-setsleep</string> 
                 <string>0</string> 
-                <string>com.apple.macbe.setSystemSleep.plist</string> 
+                <string>/Library/LaunchDaemons/com.apple.macbe.setSystemSleep.plist</string> 
         </array> 
         <key>RunAtLoad</key> 
         <true/>
