@@ -3,6 +3,50 @@
 # use strict;
 # use warnings;
 
+# http://juerd.nl/site.plp/perlpodtut
+
+=head1 NAME
+
+mkcollage - create html from a collage
+
+=head1 SYNOPSIS
+
+name [ collage-name | --title str | --width int | --help | --[no]verbose | --[no]run ]+
+
+=head1 DESCRIPTION
+
+program creates a web page from a collage
+
+=head2 Methods
+
+=over 12
+
+=item C<new>
+
+Returns a new My::Module object.
+
+=item C<as_string>
+
+Returns a stringified representation of
+the object. This is mainly for debugging
+purposes.
+
+=back
+
+=head1 LICENSE
+
+This is released under the Artistic License. See L<perlartistic>.
+
+=head1 AUTHOR
+
+Robin Mills  - L<http://clanmills.com/>
+
+=head1 SEE ALSO
+
+L<perlpod>, L<perlpodspec>
+
+=cut
+
 ##
 # public modules
 use XML::Parser::Expat;
@@ -10,9 +54,10 @@ use File::Basename;
 use Math::Trig;
 use Imager;
 use Cwd;
+use Getopt::Long qw/:config auto_help/;
 
 ##
-# our module (load from same directory as script)
+# our module (load from ~/bin)
 use lib "$ENV{HOME}/bin";
 use Collage;
 
@@ -22,15 +67,6 @@ my $name ; # name of collage
 my $title; # title of collage (initially the name)
 my $w    ; # width of collage (on the web page)
 my $h    ; # height of collage (on the web page)
-
-#############################################
-##
-# functions and forward declarations
-sub syntax
-{
-	Collage::error("usage: $0 name [Collage|--title str|--width int|--help ]+") ;
-	exit(1);
-}
 
 ##
 # fixup: template -> instance conversion
@@ -79,14 +115,9 @@ sub fixup
 	return $s;
 }
 
-sub am # arg,long,short
+sub println
 {
-	my $arg    = shift ;
-	my $long   = shift ;
-	my $short  = shift ;
-	my $result = (($arg eq $long) || ($arg eq $short))?1:0;
-#	Collage::println("compare $arg $short $long --> result = $result");
-	return $result ;
+	Collage::println(@_);
 }
 
 #
@@ -95,30 +126,40 @@ sub am # arg,long,short
 #############################################
 # main program
 
-##
-# Get the command line arguments
-for (my $arg = 0 ; $arg < scalar(@ARGV) ; $arg++ ) {
-	my $a = $ARGV[$arg];
-	if ( am($a,'--title','-t') ) {
-		Collage::println('in --title');
-		syntax() if ++$arg >= scalar(@ARGV);
-		$title = $ARGV[$arg] ;
-	} elsif ( am($a,'--width','-w') ) {
-		syntax() if ++$arg >= scalar(@ARGV);
-		$w     = Collage::atoi($ARGV[$arg]) ;
-	} elsif ( am($ARGV[$arg],'--help' ,'-h') ) {
-		syntax() ;
-	} else {
-		$name = $ARGV[$arg];
-		$title= $name;
-		$title=~ s/([A-Z])/ $1/g;  # convert Route66Sign to Route66 Sign
-		$title=~ s/([0-9]+)/ $1/g; # convert Route66 Sign to Route 66 Sign
-		$title=~ s/^ *//g;         # remove leading blanks
-	}
+my $title   = '' ;
+my $width   = 550;
+my $force   = 0  ;
+my $verbose = 0  ;
+my $run     = 1  ;
+
+my $options = GetOptions(
+	"width=i"  => \$width,      # numeric
+	"title=s"  => \$title,      # string
+	"force"    => \$force,  	# flag
+	"verbose!" => \$verbose,    # flag
+	"run!"     => \$run,	    # flag
+);
+
+die "no collage-name given" if !scalar(@ARGV);
+die "too many collages"     if  scalar(@ARGV)>1;
+$name = $ARGV[0];
+
+if ( $title eq '' ) {
+	$title= $name;
+	$title=~ s/([A-Z])/ $1/g;  # convert Route66Sign to Route66 Sign
+	$title=~ s/([0-9]+)/ $1/g; # convert Route66 Sign to Route 66 Sign
+	$title=~ s/^ *//g;         # remove leading blanks
 }
 
-syntax() if ! $name;
-$w    = 550 if !$w ;
+if ( $verbose ) {
+	println("name    = $name"   );
+	println("title   = $title"  );
+	println("force   = $force"  );
+	println("verbose = $verbose");
+	println("width   = $width"  );
+	println("run     = $run"    );
+}
+$w = $width;
 
 ##
 # Find the photo and collage data
@@ -129,18 +170,15 @@ my $collage = $path . ".cxf" ;
 
 ##
 # ask the collage module to say "OK"
-Collage::OK($collage);
+Collage::OK($collage,$force);
 
 ##
 # open and resample the image
 my $image = Imager->new(file=>$photo) or die "Cannot load $photo: ", $image->errstr;
-my $W =   $image->getwidth;
-my $H =   $image->getheight;
+my $W     =   $image->getwidth;
+my $H     =   $image->getheight;
    
 my $s = $w / $W ;
-Collage::println("W = " . $W) ;
-Collage::println("H = " . $H) ;
-Collage::println("s = " . $s) ;
 
 # Create smaller version
 # documented in Imager::Transformations
@@ -150,8 +188,13 @@ my $thumb = $image->scale(scalefactor=>$s);
    
 $w = $thumb->getwidth;
 $h = $thumb->getheight;
-Collage::println("w = " . $w) ;
-Collage::println("h = " . $h) ;
+if ( $verbose ) {
+	println("W = " . $W) ;
+	println("H = " . $H) ;
+	println("s = " . $s) ;
+	println("w = " . $w) ;
+	println("h = " . $h) ;
+}
 
 ##
 # save thumnail
@@ -160,7 +203,7 @@ $thumb->write(file=>$thumbname) or die $thumb->errstr;
 
 ##
 # get the imagemap
-Collage::println("readcollage $collage $w $h \"" . $file . '"') ;
+println("readcollage $collage $w $h \"" . $file . '"') if $verbose;
 my  @lines = Collage::read($collage,$w,$h);
 
 ##
@@ -182,13 +225,18 @@ close(FILE) ;
 
 ##
 # and show it
-my $url = fixup("http://localhost/Homepages/__YEAR__/$html");
-Collage::println("run \"$url\"") ;
-system          ("run \"$url\"") ;
+if ( $run ) {
+	my $url = fixup("http://localhost/Homepages/__YEAR__/$html");
+	println("run \"$url\"") if $verbose;
+	system          ("run \"$url\"") if $run;
+}
+
+println("--norun specified") if $verbose && !$run ;
 
 #
 #############################################
 
+##
 1;
 # That's all Folks!
 ##

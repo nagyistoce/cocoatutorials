@@ -26,7 +26,13 @@ sub poly;
 
 ##
 # global variables
-my $x,$y,$w,$h,$t,$p,$s ; # position and photo name
+my $x;
+my $y;
+my $w;
+my $h;
+my $t;
+my $p;
+my $s; # position and photo name
 my $src = 0				; # boolean - are we in <src>....</src>?
 my @map					;
 my $pi = 4.0*atan(1.0)	; # simple simon
@@ -148,18 +154,23 @@ sub atoi
 	return $t;
 }
 
-sub OK # ($filename)
+sub OK # ($filename,$force)
 {
 	my $filename = shift;
+	my $force    = shift;
+	
 	my($file, $dirs, $ext) = fileparse($filename,qr/\.[^.]*/);
 	
-    my $pwd = abs_path(getcwd);
-    if ( $pwd eq abs_path($dirs) ) {
-    	die("do not run in the directory with the collages");
-    }
+	##
+	# Test for illegal current directory
+	my $pwd = abs_path(getcwd);
+	die("do not run in the directory with the collages") if $pwd eq abs_path($dirs) ;
+	$force |= $pwd =~ m/Homepages/;
+	die ("you are not in Homepages") if ! $force;
 
-	# open and parse the CXF file
-	#
+
+	##
+	# Test for cxf and jpg file exist
 	$cxf       = $dirs . $file . '.cxf' ;
 	$jpg       = $dirs . $file . '.jpg' ;
 	die ("$cxf does not exist") if ! -e $cxf;
@@ -285,7 +296,7 @@ return <<ENDOFFILE;
     <p align="center"><a href="/">Home</a> <a>.........</a>
     <a href="/about.shtml">About</a></p>
     <p align="center">Page design &copy; 1996-__YEAR__ Robin Mills / <a
-    href="mailto:webmaster@clanmills.com">webmaster@clanmills.com</a>
+    href="mailto:webmaster\@clanmills.com">webmaster\@clanmills.com</a>
     </p>
     <p align="center">Page created: __DAY__ __DATE__</p>
     </p>
@@ -298,6 +309,48 @@ ENDOFFILE
 }
 #
 #############################################
+
+# http://juerd.nl/site.plp/perlpodtut
+
+=head1 NAME
+
+Collage - A module for processing .cxf files
+
+=head1 SYNOPSIS
+
+    use Collage
+    Collage.read(path-to-cxf,width,height);
+
+=head1 DESCRIPTION
+
+This module processes .cxf files
+
+=head2 Methods
+
+println
+read
+
+=over 12
+
+=item C<new>
+
+=item C<as_string>
+
+=back
+
+=head1 LICENSE
+
+This is released under the Artistic License. See L<perlartistic>.
+
+=head1 AUTHOR
+
+Robin Mills robin@clanmills.com - L<http://clanmills.com/>
+
+=head1 SEE ALSO
+
+L<perlpod>, L<perlpodspec>
+
+=cut
 
 
 ##
