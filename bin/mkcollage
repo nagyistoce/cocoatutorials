@@ -58,7 +58,7 @@ use Getopt::Long qw/:config auto_help/;
 
 ##
 # our module (load from ~/bin)
-use lib "$ENV{HOME}/bin";
+# use lib "$ENV{HOME}/bin";
 use Collage;
 
 ##
