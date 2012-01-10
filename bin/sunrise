@@ -7,7 +7,7 @@ syntaxError() {
 }
 
 bomb() {
-	echo "$1 requires an argument" 1>&2	
+	echo "*** $1 requires an argument ***" 1>&2	
 	exit 1
 }
 
@@ -53,7 +53,7 @@ if [ $# -ne 0 ]; then
 	shift
 fi
 if [ $# -ne 0 ]; then
-	echo "unrecognized arguments"
+	echo "*** unrecognized arguments ***"
 	exit 1
 fi
 
@@ -73,7 +73,7 @@ if [ "$c" != "" ]; then
 		z=99 
 	else
 		if [ $count -eq 0 ]; then
-			echo "*** city $c not found"
+			echo "*** city $c not found ***"
 		elif [ "$count" -ne "1" ]; then
 			echo "*** too many cities ***"
 			grep "$c" "$cities"
@@ -131,15 +131,20 @@ for m in $(seq $m1 $m2); do
 	for d in $(seq $f $t) ; do
 		if [ $(( c+=1 )) == 1 ]; then echo 'Date      -sunrise- -sunset-' ;fi
 		curl --silent http://www.earthtools.org/sun/$a/$o/$d/$m/$z/$x > $tmp
+		if [ $? != 0 ]; then
+			echo '*** unable to use curl - are you on the internet? ***'
+			exit 1
+		fi
 		sunrise=$(grep sunrise $tmp | cut -d">" -f2 | cut -d"<" -f 1)
 		sunset=$(grep  sunset  $tmp | cut -d">" -f2 | cut -d"<" -f 1)
 		printf "%04d-%02d-%02d %s %s\n" $y $m $d $sunrise $sunset
 	done
 done
 
-# That's all Folks!!
+# That's all Folks!! (data follows script)
 ##
-wc -l 2> /dev/null > /dev/null << EOF
+
+wc -l 2>&1 >> /dev/null << EOF
 // http://www.realestate3d.com/gps/latlong.htm
 ID     LAT    LON     Location
 
@@ -1519,4 +1524,6 @@ Wyoming
 [WRL]  43.97  107.97  Worland,WY
 [P60]  44.55  110.42  Yellowstone,WY
 
-EOF 
+EOF
+
+ 

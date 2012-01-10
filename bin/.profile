@@ -238,9 +238,9 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 ##
 # apache-maven (and itext support)
 # http://maven.apache.org/download.html
-export M2_HOME=/usr/local/apache-maven/apache-maven-3.0.3
-export M2=$M2_HOME/bin
-export PATH=$M2:$PATH
+# export M2_HOME=/usr/local/apache-maven/apache-maven-3.0.3
+# export M2=$M2_HOME/bin
+# export PATH=$M2:$PATH
 # export MAVEN_OPTS="-Xms256m -Xmx512m"
 
 # That's all Folks!
