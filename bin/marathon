@@ -1,0 +1,123 @@
+#!/usr/bin/perl
+
+use Getopt::Long;
+
+##
+# forward declarations
+sub println    ;
+sub tf         ;
+sub getSeconds ;
+
+##
+# defaults
+my $fade    =  0  ;
+my $dist    = 26.2;
+my $help    =    0;
+my $goal    = ''  ;
+my $pace    = ''  ;
+my $verbose = 0   ;
+
+sub syntaxError
+{
+	println("usage    : $0 [ --goal value | --pace value | --fade value | --dist value | --help | --verbose ]+ -- ...");
+	println("defaults : $0   --goal $goal   --fade $fade   --dist $dist");
+	exit(1);
+}
+syntaxError if scalar(@ARGV)==0;
+
+##
+# parse the command line
+my $result = GetOptions
+( "fade=f"   => \$fade     # float
+, "dist=f"   => \$dist
+, "pace=s"   => \$pace
+, "goal=s"   => \$goal     # string
+, "verbose"  => \$verbose  # flag
+, "help"     => \$help
+);
+syntaxError() if !$result || $help || scalar(@ARGV) || (!$pace && !$goal) || ($pace && $goal) ;
+                               
+$pace = getSeconds($pace) if $pace;
+$goal = tf($dist * $pace) if !$goal; 
+my $F       =  1.0 + ($fade/100.0);
+my $d       =  int($dist);
+
+if ( $verbose ) {
+	println("fade  = $fade");
+	println("dist  = $dist");
+	println("goal  = $goal");
+	println("pace  = $pace");
+}
+
+my $seconds=getSeconds($goal);
+
+# println	( "goal = $goal " 
+# 		. " seconds = " . getSeconds($goal)
+# 		. " T = "       . tf(getSeconds($goal))
+# 		);
+		
+my $D   = int($dist) ;
+my $aim = getSeconds($goal) / $dist ;
+
+my  $t=0;
+my  $f=1;
+my  $p=1;
+for ( my $i = 0 ; $i <= $D ; $i++ )  {
+	$p = $dist - $D if $i == $D;
+	$t += $f*$p ;
+	$f *= $F;
+}
+$aim *= $dist/$t; # scale to get the base pace
+
+my $f = 1; # factor
+my $d = 0; # distance run
+my $t = 0; # time to date
+my $p = 1; # proportion of mile
+for ( $i = 0 ; $i <= $D ; $i++ )  {
+	$p = $dist - $D if $i == $D;
+	$d   += $p;
+	my $T = int($f*$aim*$p);
+	$t   += $T;
+	printf("%4.1f %03d %s %s\n",$d,$T,tf($T),tf($t) );
+	$f *= $F;
+}
+
+sub println { for ( my $i = 0 ; $i < scalar(@_) ; $i++) {print($_[$i]);} print("\n"); }
+
+sub tf
+{
+	my $T   = shift;
+	my $hr  = int($T/3600) ;
+	   $T  -= $hr * 3600;
+	   
+	my $min = int($T/60);
+	my $sec = int($T - 60*$min);
+	return sprintf("%d:%02d:%02d",$hr,$min,$sec);
+}
+
+sub getSeconds
+{
+	my $time = shift;
+	my $hours   = 0;
+	my $seconds = 0;
+	my $minutes = 0;
+	
+	if ( $time =~ /(\d+):(\d+):(\d+)/) {    # match hh:mm:ss format
+		$hours   = int($1);
+		$minutes = int($2);
+		$seconds = int($3);
+    } elsif ( $time =~ /(\d+):(\d+)/) {    # match hh:mm:ss format
+		$minutes = int($1);
+		$seconds = int($2);
+    } 
+    
+	my $result = $hours*3600 + $minutes*60 + $seconds;
+	if ( !$result ) {
+		println("*** do not understand the time $time ***");
+    	exit(1);
+    }
+	return $result;	
+}
+
+# That's all Folks!
+##

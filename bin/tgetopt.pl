@@ -7,16 +7,15 @@ use Collage;
 
 use Getopt::Long qw/:config auto_help/;
 
-my $file   = "file.dat";
+my @files  ;
 my $length = 24;
 my $verbose= 0;
-$result = GetOptions (	"length=i" => \$length,    	# numeric
-   				   		"file=s"   => \$file,      	# string
-					   	"verbose"  => \$verbose  	# flag
+$result = GetOptions (	"length=i"  => \$length,    	# numeric
+   				   		"file=s"    => \@files,      	# string
+					   	"verbose"   => \$verbose,  	# flag
 );
                                
 Collage::println("length  = $length");
-Collage::println("file    = $file");
 Collage::println("verbose = $verbose");
 Collage::println("result  = $result");
 
@@ -24,6 +23,10 @@ my $arg;
 
 for $arg (@ARGV) {
 	Collage::println("arg = $arg");
+}
+
+for my $file (@files) {
+	Collage::println("file = $file");
 }
 
 
