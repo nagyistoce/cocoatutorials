@@ -1,9 +1,9 @@
 #!/bin/bash
 
-drive="Software Assemblies"
+drive="images"
 user="robin_mills"
-server="cm-distribution.apple.com"
-dir="AssembliesByCountry"
+server="builds.apple.com"
+dir="CDs/Zin"
 
 if [ ! -e "/$drive" ]; then
 	ln -s "/Volumes/$drive" "/$drive"
