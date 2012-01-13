@@ -46,15 +46,17 @@ else
 	BIN=${HOME}/bin
 fi
 
+applebin=''
 if [ `uname` == Darwin ]; then
 	export PLATFORM=macosx
+	applebin="$HOME/applebin:"
 elif [ `uname -o` == Cygwin ]; then
 	export PLATFORM=cygwin
 else
 	export PLATFORM=linux
 fi
 
-export PATH=".:${BIN}:$BIN/$PLATFORM:/usr/local/cbl/bin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
+export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin/usr/local/cbl/bin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
