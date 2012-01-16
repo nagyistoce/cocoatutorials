@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# != 2 ]; then
+	echo "usage: $0 link-name link-target-object"
+	exit 1
+fi
+
+ln -s "$2" "$1"
+
+# That's all Folks!
+##

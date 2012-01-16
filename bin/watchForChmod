@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $# != 1 ]; then
+	echo usage watchForChmod file-path
+	exit 1;
+fi
+
+f="$1"
+q=$( /usr/bin/stat -f "%p" "$f" )
+p="$q"
+echo ----------------------
+echo $p $q
+echo ----------------------
+while [ "$p" == "$q" ]; do
+    p=$( /usr/bin/stat -f "%p" "$f" )
+done
+
+echo done
+echo $p $q
+
+
+# That's all Folks!
+##
+

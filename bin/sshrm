@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function syntax() {
-	echo useage: $0 '[server-name]+'
+	echo useage: "$0" '[server-name]+'
 }
 
 if [ $# -eq 0 ]; then
@@ -11,17 +11,17 @@ fi
 
 t=/tmp/known_hosts
 s=~/.ssh/known_hosts
-cp  $s $t
+cp  "$s" "$t"
 for machine in $@ ; do
-	grep "^$machine" $s 2>&1 > /dev/null
+	grep "^$machine" "$s" 2>&1 > /dev/null
 	if [ $? -eq 0 ]; then
-		echo $machine REMOVED from $s
-		sed /^$machine/d $s > $t
+		echo "$machine" REMOVED from "$s"
+		sed /^$machine/d "$s" > "$t"
 	else
-		echo $machine is not in $s
+		echo $machine is not in "$s"
 	fi
 done
-cp $t $s
+cp "$t" "$s"
 
 # That's all Folks!
 ##
