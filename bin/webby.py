@@ -48,6 +48,7 @@ import datetime
 import cgi
 import string
 import glob
+import re
 from PIL import Image
 
 import cmLib
@@ -575,8 +576,28 @@ def objMerge(a,b):
 
 ##
 #
-def webby(argv):
-	"""webby - main program of course"""
+def	readStory(filename):
+	result=''
+	igs=set()
+	try:
+		pat=re.compile(r".ignore[ \t]+(.*)")
+		f = open(filename)
+		lines = f.readlines()
+		for line in lines:
+			if re.match(pat,line):
+				for ig in re.match(pat,line).groups()[0].split():
+					igs.add(ig)
+			else:
+				result += line
+	except:
+		result=''
+	return result,igs
+
+
+##
+#
+def main(argv):
+	"""main - main program of course"""
 
 	argc     = len(argv)
 	if argc < 2:
@@ -681,8 +702,24 @@ def webby(argv):
 		print 'Found in %d files, visited %d' % (fcount, vcount)
 
 		##
+		# read story and set of patterns to ignore
+		story,ignore=readStory(os.path.join(photoDir,'story.txt'))
+
+		nIgnored=0
+		for k in sorted(filedict.keys(),cmpDate):
+			pathname = k
+			filename = filedict[k][0]
+			bIgnore  = False
+			for ig in ignore:
+				if not bIgnore and re.search(ig,filename): 
+					bIgnore = True 
+			if bIgnore:
+				nIgnored+=1
+			filedict[k].append(bIgnore)
+
+		##
 		# figure out the prev/next pages
-		pages   = len(filedict.keys())
+		pages = len(filedict.keys()) - nIgnored
 		page  = 0
 		prev  = []
 		next  = []
@@ -693,6 +730,10 @@ def webby(argv):
 			pathname   = k
 			filename   = filedict[k][0]
 			timestring = filedict[k][1]
+			bIgnore    = filedict[k][5]
+			if bIgnore:
+				continue
+				
 			pname      = os.path.splitext(filename)[0]
 
 			titles.append(pname)
@@ -705,6 +746,7 @@ def webby(argv):
 			if page == pages:
 				next.append(default)
 		##
+		page=0
 
 		##
 		# write the pages one at a time
@@ -715,122 +757,14 @@ def webby(argv):
 		thumbs = ""
 		thumbsdiv = ""
 
+		##
+		# alts (used by K2).  alternative titles for photos
+		# TODO: add this capability to story.txt
 		alt = {};
 		alt['001'] = 'Traffic in Hanoi'
-		alt['002'] = 'Hotel Metropole' 
-		alt['003'] = 'Kitchens, scooters and Ruth' 
-		alt['004'] = 'Skinny Houses' 
-		alt['005'] = 'Landmark 72' 
-		alt['006'] = 'Manor Apartments' 
-		alt['007'] = 'An orphan' 
-		alt['008'] = 'The Temple' 
-		alt['009'] = 'Mike and Ruth in Villages' 
-
-		alt['010'] = 'Tony and Ruth' 
-		alt['011'] = 'Lunch with the Huyens' 
-		alt['012'] = 'Boy on water buffalo' 
-		alt['013'] = 'Mountain Lady with Cell Phone' 
-		alt['014'] = 'Ruth en route to Sapa' 
-		alt['015'] = 'Sapa Viagra' 
-		alt['016'] = 'Family Business' 
-		alt['017'] = 'Children of Sapa' 
-		alt['018'] = 'Streets of Sapa' 
-		alt['019'] = 'Ruth and Ladies of Ta Phin' 
-
-		alt['020'] = 'Mountain Saleswoman' 
-		alt['021'] = 'Destination Ta Van and Lao Chai' 
-		alt['022'] = 'The Ladies of Ta Van' 
-		alt['023'] = 'Lao Chai' 
-		alt['024'] = 'Lao Chai' 
-		alt['025'] = 'Sorting Corn' 
-		alt['026'] = 'Inside the Kitchen of Bun Cha Dac Kim' 
-		alt['026'] = 'Outside the Kitchen of Bun Cha Dac Kim' 
-		alt['028'] = 'Bun Cha' 
-		alt['029'] = 'Tony and le thung' 
-
-		alt['030'] = 'Skinny House' 
-		alt['031'] = 'Traditional House' 
-		alt['032'] = 'Calligrapher' 
-		alt['033'] = 'Mausoleum' 
-		alt['034'] = 'Guard and Tony' 
-		alt['035'] = 'Cyclo Driver' 
-		alt['036'] = 'Mix of Traffic' 
-
-		alt['201'] = 'Junk in Ha Long Bay' 
-		alt['202'] = 'You want it?' 
-		alt['203'] = 'You got it!' 
-		alt['204'] = 'Enjoying wooden boat with Fran' 
-		alt['205'] = 'La Residence' 
-		alt['206'] = 'Guide Long and Ruth' 
-		alt['207'] = 'Chook with spring rolls' 
-		alt['208'] = 'Flower Sweets' 
-		alt['209'] = '\'Orange\' Group' 
-
-		alt['210'] = 'Empororer\'s Clothes' 
-		alt['211'] = 'Buffalo and Boy' 
-		alt['212'] = 'En route to Da Nang' 
-		alt['213'] = 'Top of Hai Van Pass' 
-		alt['214'] = 'Da Nang on Horizon' 
-		alt['215'] = 'Exquisite (life size)' 
-		alt['216'] = 'Ruth goes Champa' 
-		alt['217'] = 'Sculptures' 
-		alt['218'] = 'Laughing Buddha' 
-		alt['219'] = 'River at Night' 
-		alt['220'] = 'Floating Candles' 
-
-		alt['301'] = 'The Lay Day' 
-		alt['302'] = 'Ruth and Vodka Martini' 
-		alt['303'] = 'Tony and Vodka Martini' 
-		alt['306'] = 'In Saigon' 
-		alt['307'] = 'Saigon Amble' 
-		alt['308'] = 'Gate of Reunification Palace' 
-		alt['309'] = 'The Tank Today' 
-		alt['310'] = 'The Tank in 1975' 
-		alt['312'] = 'Cyclo Ride' 
-		alt['313'] = 'Gathering Storm' 
-		alt['314'] = 'Beverley' 
-		alt['315'] = 'Underground Hospital' 
-		alt['316'] = 'Side Closing Trap' 
-
-		alt['401'] = 'Ship on Mekong' 
-		alt['402'] = 'Day cabin on ship' 
-		alt['403'] = 'Launch ready to depart' 
-		alt['404'] = 'To market, to market ...' 
-		alt['405'] = 'Supervisor' 
-		alt['406'] = 'Puffing rice' 
-		alt['407'] = 'Cutting the sweets' 
-		alt['408'] = 'In the market' 
-		alt['409'] = 'In the market' 
-		alt['410'] = 'In the market' 
-		alt['411'] = 'In the market' 
-		alt['412'] = 'In the market' 
-		alt['413'] = 'In the market' 
-
-		alt['501'] = 'Lady and bricks' 
-		alt['502'] = 'Fresh mouse' 
-		alt['503'] = 'In the market' 
-		alt['504'] = 'In the market' 
-		alt['505'] = 'War Memorial' 
-		alt['506'] = 'Lovers House' 
-		alt['507'] = 'Matworks' 
-		alt['508'] = 'Village on Stilts' 
-		alt['509'] = 'Village People' 
-		alt['510'] = 'Village People' 
-		alt['511'] = 'Proprietor and snapper' 
-		alt['512'] = 'Our guide Thoai' 
-		alt['513'] = 'Goats in cages' 
-		alt['514'] = 'Delighted children' 
-
-		alt['701'] = 'Street scenes - Kampong Chhnang' 
-		alt['702'] = 'Street scenes - Kampong Chhnang' 
-		alt['703'] = 'Street scenes - Kampong Chhnang' 
-		alt['704'] = 'band aid.. band aid??' 
 		alt['705'] = 'Sunday on the river' 
-
-
 		alts=alt
 
-		page = 0
 		for k in sorted(filedict.keys(),cmpDate):
 			pathname   = k
 			filename   = filedict[k][0]
@@ -838,6 +772,10 @@ def webby(argv):
 			timestamp  = filedict[k][2]
 			image      = filedict[k][3]
 			aspect     = filedict[k][4]
+			bIgnore    = filedict[k][5]
+			
+			if bIgnore:
+				continue		
 
 			unknown    = 1000
 
@@ -984,11 +922,6 @@ def webby(argv):
 		# print Captions
 		# print '--------------------------'
 		
-		try:
-			story=open(os.path.join(photoDir,'story.txt')).read()
-		except:
-			story=''
-			
 		# print 'length = ' ,len(thumbs)
 
 		subs['story'     ] = story
@@ -1027,8 +960,7 @@ def webby(argv):
 # 
 ##
 
-
 ##
 #
 if __name__ == '__main__':
-	webby(sys.argv)
+	main(sys.argv)

@@ -49,7 +49,7 @@ fi
 applebin=''
 if [ `uname` == Darwin ]; then
 	export PLATFORM=macosx
-	applebin="$HOME/applebin:"
+	applebin="$HOME/robin_mills_bin:"
 elif [ `uname -o` == Cygwin ]; then
 	export PLATFORM=cygwin
 else

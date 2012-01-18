@@ -1,12 +1,16 @@
 #!/bin/bash
 
 if [ $# -lt 1 ];then
-	echo pingz servername [command...]
-        echo example: pingz rmills-imac ssh \\\$ping
+	echo usage  : $0 servername [command...]
+    echo example: $0 remote-name username@ssh remote-name
 	exit 1
 fi
 
 ping="$1"
+which sshrm
+if [ $? -eq 0 ]; then
+	sshrm "$ping"
+fi
 shift
 st=1
 while [ $st -ne 0 ]; do
