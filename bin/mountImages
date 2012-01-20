@@ -1,12 +1,12 @@
 #!/bin/bash
 
 drive="images"
-user="robin_mills"
+user="$AUSER"
 server="builds.apple.com"
 dir="CDs/Zin"
 
-if [ ! -e "/$drive" ]; then
-	ln -s "/Volumes/$drive" "/$drive"
+if [[ ! -d "/$drive" || ! -e "/$drive" ]]; then
+	ln -s "/Volumes/$drive" "/$drive" 2>&1 >/dev/null
 fi
 
 ls "/$drive/$dir" >& /dev/null

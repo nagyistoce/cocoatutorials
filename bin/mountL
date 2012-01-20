@@ -3,9 +3,7 @@
 ls /L/windows >& /dev/null
 if ( $status ) then
 	echo "/L isn't mounted.  Hang on."
-#	osascript -e 'mount volume "smb://adobenet;rmills:Largs12-@laptop/L"'
 	osascript -e 'mount volume "smb://rmills-laptop;rmills:Largs12%40@rmills-laptop/C"'
-#	osascript -e 'mount volume "smb://rmills-laptop/C"'
 else
 	echo '/L is mounted'
 endif

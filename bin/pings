@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ $# -eq 0  && ! -z $PINGS ]];then
+	echo using environment string "\"PINGS=$PINGS\""
+fi
+
 if [ $# -ne 0 ];then
 	PINGS="$@"
 fi

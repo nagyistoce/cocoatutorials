@@ -1,0 +1,113 @@
+#!/usr/bin/env python
+
+# http://toys.jacobian.org/presentations/2005/appscript/generate-site-map.txt
+
+import urllib
+import urlparse
+from sets import Set
+
+import appscript
+import BeautifulSoup    # http://www.crummy.com/software/BeautifulSoup/
+
+def get_links(uri):
+    """
+    Gather all the hyperlinks from a given URI.
+
+    This is actually not trivial; there's the <base> element to deal with, as
+    well as the interesting problem of resolving relative URIs.  This function
+    implaments this resolution as defined at
+    http://www.w3.org/TR/REC-html40/struct/links.html#h-12.4.1.
+
+    The returned list has had all duplicates stripped out, and each URI has had
+    the query information and the fragment stripped out as well (so that two
+    links to /search/ with different query strings are seen as the same link).
+    """
+    doc = BeautifulSoup.BeautifulSoup()
+    doc.feed(urllib.urlopen(uri).read())
+    
+    # Locate the base URI
+    if doc.first('base'):
+        base = doc.first('base').get('href', uri)
+    else:
+        base = uri
+        
+    # Build the list of links.
+    links = Set()
+    for link in doc.fetch('a'):
+        href = link.get('href', '')
+        if href:
+            # Calculate the absolute URI, stripping off 
+            href = urlparse.urljoin(base, href)
+            scheme, netloc, path, params, query = urlparse.urlsplit(href)
+            href = urlparse.urlunparse((scheme, netloc, path, '', '', ''))
+            if href not in links:
+                links.add(href)
+                yield href
+    
+def get_link_map(uri):
+    """
+    Crawl a site starting from the given URI and return a list of (to, from)
+    tuples.  
+    
+    Sites that begin with the TLD of the starting URI are considered
+    to be internal (i.e. are recursively crawled), while all other links
+    are considered to be external, and not reported.
+    """
+    seen = Set()
+    links = Set()
+    todo = Set([uri])
+    tld = urlparse.urlsplit(uri)[1]
+    while todo:
+        u = todo.pop()
+        if u in seen:
+            continue
+        for link in get_links(u):
+            if link not in links:
+                if tld == urlparse.urlsplit(link)[1]:
+                    todo.add(link)
+                    links.add((u, link))
+                    yield (u, link)
+        seen.add(u)
+    
+def build_site_map(uri):
+    """
+    Build a graphical site map using OmniGraffle.
+    """
+    og = appscript.app('OmniGraffle Professional 5')
+    og.make(new=appscript.k.document)
+    doc = og.windows.first.get()
+    elements = {}
+    for (fromlink, tolink) in get_link_map(uri):
+        if not elements.has_key(fromlink):
+            elements[fromlink] = create_node(doc, fromlink)
+        if not elements.has_key(tolink):
+            elements[tolink] = create_node(doc, tolink)
+        connect_nodes(og, elements[fromlink], elements[tolink])
+        
+    # Layout the graphics
+    doc.document.pages.first.layout_info.type.set(appscript.k.vertical_hierarchy)
+    doc.document.links_visible.set(True)
+    og.layout(doc.document.pages.first)
+        
+def create_node(document, link):
+    k = appscript.k
+    properties = {
+        k.url: link,
+        k.text: urlparse.urlsplit(link)[2],
+        k.autosizing: k.full,
+        k.draws_shadow: False,
+        k.magnets: ((0, -1), (0, 1), (1, 0), (-1, 0)),
+    }
+    return document.make(new=appscript.k.shape, at=document.graphics.start, with_properties=properties)                                    
+
+def connect_nodes(app, n1, n2):
+    k = appscript.k
+    properties = {
+        k.line_type : k.curved,
+    }
+    app.connect(n1, to=n2, with_properties=properties)
+
+if __name__ == '__main__':
+    import sys
+    build_site_map(sys.argv[1])
+    

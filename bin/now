@@ -1,3 +1,11 @@
 #!/bin/bash
-python -c "import time; print time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime())" | pbcopy && pbpaste
 
+c="import time; import string; print string.lower(time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime()))"
+if [ `uname` == Darwin ]; then
+	python -c "$c" | pbcopy && pbpaste
+else
+	python -c  | pbcopy && pbpaste
+fi
+
+# That's all Folks!
+##
