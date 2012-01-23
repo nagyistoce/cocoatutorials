@@ -1,51 +1,9 @@
 #!/usr/bin/perl
 
+my $VERSION='0.1';
+
 # use strict;
 # use warnings;
-
-# http://juerd.nl/site.plp/perlpodtut
-
-=head1 NAME
-
-mkcollage - create html from a collage
-
-=head1 SYNOPSIS
-
-name [ collage-name | --title str | --width int | --help | --[no]verbose | --[no]run ]+
-
-=head1 DESCRIPTION
-
-program creates a web page from a collage
-
-=head2 Methods
-
-=over 12
-
-=item C<new>
-
-Returns a new My::Module object.
-
-=item C<as_string>
-
-Returns a stringified representation of
-the object. This is mainly for debugging
-purposes.
-
-=back
-
-=head1 LICENSE
-
-This is released under the Artistic License. See L<perlartistic>.
-
-=head1 AUTHOR
-
-Robin Mills  - L<http://clanmills.com/>
-
-=head1 SEE ALSO
-
-L<perlpod>, L<perlpodspec>
-
-=cut
 
 ##
 # public modules
@@ -54,7 +12,9 @@ use File::Basename;
 use Math::Trig;
 use Imager;
 use Cwd;
-use Getopt::Long qw/:config auto_help/;
+use Pod::Usage;
+use Getopt::Long qw/:config auto_help auto_version bundling/;
+# Getopt::Long::Configure ("bundling");
 
 ##
 # our module (load from ~/bin)
@@ -126,22 +86,37 @@ sub println
 #############################################
 # main program
 
+##
+# parse command line options
 my $title   = '' ;
 my $width   = 550;
-my $force   = 0  ;
-my $verbose = 0  ;
-my $run     = 1  ;
+my $force   =   0;
+my $verbose =   0;
+my $version =   0;
+my $run     =   1;
+my $quality =  90;
+my $help    =   0;
 
 my $options = GetOptions(
-	"width=i"  => \$width,      # numeric
-	"title=s"  => \$title,      # string
-	"force"    => \$force,  	# flag
-	"verbose!" => \$verbose,    # flag
-	"run!"     => \$run,	    # flag
+	"help|?"    => \$help,       # numeric
+	"width=i"   => \$width,      # numeric
+	"quality=i" => \$quality,    # numeric
+	"title=s"   => \$title,      # string
+	"force"     => \$force,  	 # flag
+	"verbose!"  => \$verbose,    # flag
+	"version!"  => \$version,    # flag
+	"run!"      => \$run,	     # flag
 );
+
+if ( $version ) {
+	Collage::println(basename($0) . ' ' . $VERSION);
+	exit(1);
+}
 
 die "no collage-name given" if !scalar(@ARGV);
 die "too many collages"     if  scalar(@ARGV)>1;
+pod2usage(1) if $help;
+
 $name = $ARGV[0];
 
 if ( $title eq '' ) {
@@ -158,6 +133,7 @@ if ( $verbose ) {
 	println("verbose = $verbose");
 	println("width   = $width"  );
 	println("run     = $run"    );
+	println("quality = $quality");
 }
 $w = $width;
 
@@ -199,7 +175,7 @@ if ( $verbose ) {
 ##
 # save thumnail
 my $thumbname = $name . '.jpg';
-$thumb->write(file=>$thumbname) or die $thumb->errstr;
+$thumb->write(file=>$thumbname,jpegquality => $quality) or die $thumb->errstr;
 
 ##
 # get the imagemap
@@ -240,3 +216,51 @@ println("--norun specified") if $verbose && !$run ;
 1;
 # That's all Folks!
 ##
+
+__END__
+
+# http://juerd.nl/site.plp/perlpodtut
+
+=head1 NAME
+
+mkcollage - create html from a collage
+
+=head1 SYNOPSIS
+
+mkcollage [ collage-name | --OPT value | --FLAG ]+
+OPT : --title str | --width int | --quality 95
+FLAG: help | version | [no]verbose | [no]run  
+
+=head1 DESCRIPTION
+
+program creates a web page from a collage
+
+=head2 Methods
+
+=over 12
+
+=item C<new>
+
+Returns a new My::Module object.
+
+=item C<as_string>
+
+Returns a stringified representation of
+the object. This is mainly for debugging
+purposes.
+
+=back
+
+=head1 LICENSE
+
+This is released under the Artistic License. See L<perlartistic>.
+
+=head1 AUTHOR
+
+Robin Mills  - L<http://clanmills.com/>
+
+=head1 SEE ALSO
+
+L<perlpod>, L<perlpodspec>
+
+=cut

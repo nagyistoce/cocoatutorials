@@ -1,5 +1,5 @@
 ##
-# shell variables
+# prompt and bash magic
 
 export HOST=`(hostname|cut -d. -f 1)`
 # If id command returns zero, you’ve root access.
@@ -15,10 +15,10 @@ if [ "$USER" == "root" ]; then
 #  	PS1="\\[\! $(tput setaf 2)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
   	PS1='\! $(tput setaf 2)\u@\h:\w$(tput sgr0) # '
 fi
+
 # http://wiki.bash-hackers.org/scripting/debuggingtips
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 
-##
 # increase the number of open files
 # 516 /Users/rmills/clanmills $ ulimit -a
 # core file size          (blocks, -c) 0
@@ -37,9 +37,6 @@ ulimit -n 1024
 
 ##
 # environment strings
-# export DYLD_LIBRARY_PATH=/opt/local/lib/
-#
-
 if [ -e /tmp/robin/bin ]; then
 	BIN=/tmp/robin/bin
 else
@@ -63,13 +60,18 @@ export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/sha
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
 export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+# export DYLD_LIBRARY_PATH=/opt/local/lib/
   
+## 
+# SCM support
 export P4USER=rmills
 export P4PORT=home:1666
 export P4CLIENT=imac
 
 export PINGS="bocksbeutel tenth demi housecat"
 
+## 
+# scripting support
 # used by cpan
 export "FTP_PASSIVE=1"
   
@@ -80,12 +82,17 @@ export VERSIONER_PERL_PREFER_32_BIT=no
 export VERSIONER_PYTHON_PREFER_32_BIT=no
 export PERLPATH=/Users/rmills/gnu/ImageMagick
 export PYTHONPATH="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:$PYTHONPATH"  
-export REMOTEHOST=clanmills.homedns.org
-export GPGKEY=CF1649DA
 export RUBYOPT=rubygems
+export PERL5LIB="$PERL5LIB:${BIN}"
 
 ##
-# deal with the photos
+# clanmills support
+export REMOTEHOST=clanmills.homedns.org
+export GPGKEY=CF1649DA
+
+
+##
+# photos
 export PHOTOS="$HOME/Documents/Dropbox/Photos"
 export QHOTOS="$PHOTOS/../../NotDropbox/Photos"
 DropboxPhotos=/Volumes/Data/rmills/Dropbox/Photos
@@ -97,6 +104,8 @@ if [ -e "$NotDropboxPhotos" ]; then
 	export QHOTOS="$NotDropboxPhotos"
 fi
 
+##
+# finder helpers
 # export ARCHFLAGS="-arch x86_64" # "-arch i386 -arch ppc"
 # export CFLAGS="$ARCHFLAGS"      # "-arch i386 -arch ppc"
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
@@ -272,6 +281,8 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 # That's all Folks!
 ##
 
+##
+# One last thing:
 ##
 # Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2011-12-06_at_12:29:07
 ##

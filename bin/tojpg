@@ -1,2 +1,22 @@
 #!/bin/sh
-renamer JPG jpg "*"
+
+##
+# change the extension
+renamer JPG jpg "*.JPG"
+
+##
+# get "raw" files (raw = straight from the camera)
+IFS=$'\n'
+FILES="$(ls [A-Z]*_[0-9]*.jpg)"
+
+##
+# rename them in lower case, one at a time
+for F in $FILES ; do
+	f="$(echo "$F"|perl -e 'print lc <>;')"
+	if [ "$f" != "$F" ]; then
+		mv "$F" "$f"
+	fi
+done
+
+# That's all Folks!
+##

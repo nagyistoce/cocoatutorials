@@ -78,7 +78,7 @@ title        = 'define from command arguments'
 author       = 'Robin'
 cols         = 3
 cwd          = os.getcwd()
-now          = datetime.datetime.now().ctime()
+now          = string.lower(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S%Z')) # ctime()
 width        = 750
 capDir       = 0
 
@@ -699,7 +699,6 @@ def main(argv):
 		subs['title'] = title
 
 		searcher(photoDir,myData)
-		print 'Found in %d files, visited %d' % (fcount, vcount)
 
 		##
 		# read story and set of patterns to ignore
@@ -716,6 +715,8 @@ def main(argv):
 			if bIgnore:
 				nIgnored+=1
 			filedict[k].append(bIgnore)
+
+		print 'Visited %d files, found %d ignored %d' % (vcount, fcount,nIgnored)
 
 		##
 		# figure out the prev/next pages
@@ -864,7 +865,7 @@ def main(argv):
 			subs['next'  ]  = next[page]
 			subs['page'  ]  = str(page+1)
 			subs['map'   ]  = ''
-			subs['ptime' ]  = timestamp.ctime()
+			subs['ptime' ]  = string.lower(timestamp.strftime('%Y-%m-%d %H:%M:%S%Z'))#ctime()
 			subs['width' ]  = width
 			subs['width2']  = width-200
 			subs['rotate']  = rotate
