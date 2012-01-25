@@ -1,0 +1,45 @@
+to() {
+	# I don't while I can find a simple way to copy the arguments and set target
+	let argc=-1
+	for arg in "$@" ; do target="$arg" ; argc=$((argc+1)) ; done
+	args=()
+	let a=0
+	for arg in "$@" ; do
+		if [ $a -lt $argc ]; then
+			args[$a]="$arg"
+		fi
+		a=$((a+1))
+	done
+	
+	#if [ $argc -gt  0 ]; then
+	#	for arg in $(seq 0 $argc); do echo arg $arg = "${args[$arg]}" ; done
+	#fi
+	
+	# pain over.  find possible targets
+	if [ $argc -ge  0 ]; then
+		tmp=/tmp/2.tmp
+		find . -name "$target" -print > $tmp
+		count=$(wc -l $tmp | cut -b1-9)
+
+		if [ $count -eq 1 ]; then
+			dir=$(dirname `cat "$tmp"`)
+			if [ $argc -gt 0 ]; then
+				pushd "$dir"  > /dev/null
+				echo $ "${args[@]}" "$target"
+				find . -name "$target" -print0 | xargs -0 "${args[@]}"
+				popd >/dev/null
+			elif [ $argc -eq 0 ]; then
+				cd "$dir" 
+			fi
+		elif [ $count == 0 ]; then
+				echo "NONE"
+				rm "$tmp"
+		else
+			echo "TOO Many"
+		fi
+		
+		if [ -e "$tmp" ]; then
+			cat $tmp
+		fi
+	fi
+}

@@ -216,38 +216,52 @@ crdir() {
 }
 alias crd=crdir
 
-to() { # Work in progress.  work on this in the bus
-	argc=${#*}
-	tmp=/tmp/2.tmp
+to() {
+	# I have to find a simpler way to copy the arguments and set target
+	let argc=-1
+	for arg in "$@" ; do target="$arg" ; argc=$((argc+1)) ; done
+	args=()
+	let a=0
+	for arg in "$@" ; do
+		if [ $a -lt $argc ]; then
+			args[$a]="$arg"
+		fi
+		a=$((a+1))
+	done
 	
-	if [ $argc -eq 1 ]; then
-		find . -name "$1" -print > $tmp
-		count=`wc -l $tmp | cut -b1-9`
-		if [ $count == 1 ]; then
-			filename=`cat $tmp`
-			type=`file $filename  | cut -f2 -d:`
-			if [ "$type" != "directory" ]; then
-				filename=`dirname "$filename"`
+	#if [ $argc -gt  0 ]; then
+	#	for arg in $(seq 0 $argc); do echo arg $arg = "${args[$arg]}" ; done
+	#fi
+	
+	# pain over.  find possible targets
+	if [ $argc -ge  0 ]; then
+		tmp=/tmp/2.tmp
+		find . -name "$target" -print > $tmp
+		count=$(wc -l $tmp | cut -b1-9)
+
+		if [ $count -eq 1 ]; then
+			dir=$(dirname `cat "$tmp"`)
+			if [ $argc -gt 0 ]; then
+				pushd "$dir"  > /dev/null
+				echo $ "${args[@]}" "$target"
+				find . -name "$target" -print0 | xargs -0 "${args[@]}"
+				popd >/dev/null
+			elif [ $argc -eq 0 ]; then
+				echo $ cd "$dir" 
+				cd "$dir" 
 			fi
-			echo cd \"$filename\"   PASTE
-			echo cd \"$filename\" | pbcopy
+			rm "$tmp"
 		elif [ $count == 0 ]; then
 			echo "NONE"
 		else
 			echo "TOO Many"
-			cat $tmp
 		fi
 		
-		# type $dir | grep directory
-		# if [ $? != 0 ]; then dir=`dirname \"${dir}\"`;fi
-		# echo cd "\"${dir}\"" | pbcopy
-	fi
-	
-	if [ $argc -gt 1 ]; then
-		args find . -name "$target" -print0 | xargs -0 "${args[@]}"
+		if [ -e "$tmp" ]; then
+			cat $tmp
+		fi
 	fi
 }
-
 
 ##
 # set CE = editor of choice
@@ -267,7 +281,8 @@ fi
 # catch all - use good old vi!
 if [ -z "$CE" ]; then
 	export CE=vi
-fi			
+fi
+alias 2=to			
 
 ##
 # aliases
