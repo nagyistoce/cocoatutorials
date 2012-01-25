@@ -1,16 +1,36 @@
 #!/bin/bash
 
 drive=iMacHD
-if [ ! -e /$drive ]; then
-	ln -s /Volumes/$drive /$drive
+
+if [ "$PLATFORM" == "Darwin" ]; then
+	if [ ! -e /$drive ]; then
+		ln -s /Volumes/$drive /$drive
+	fi
+
+	ls "/$drive/etc" >& /dev/null
+	if [ $? -ne 0 ]; then
+		echo "/$drive isn't mounted.  Hang on."
+		osascript -e "mount volume \"afp://rmills-imac/$drive\""
+	else
+		echo "/$drive is mounted"	
+	fi
 fi
 
-ls "/$drive/etc" >& /dev/null
-if [ $? -ne 0 ]; then
-	echo "/$drive isn't mounted.  Hang on."
-	osascript -e "mount volume \"afp://rmills-imac/$drive\""
-else
-	echo "/$drive is mounted"
+if [ "$PLATFORM" == "linux" ]; then
+	Drive="/mnt/$drive"
+	if [ ! -e "$Drive" ]; then
+		sudo mkdir "$Drive"
+	fi
+	files=`ls "$Drive"`
+
+	if [ -z "$files" ]; then
+		sudo mount -t nfs -o rw rmills-imac:/ "$Drive"
+	else
+		echo "*** already mounted *** "
+	fi
+	if [ ! -e "/$drive" ]; then
+		sudo ln -s "$Drive" "/$drive"
+	fi
 fi
 
 # That's all Folks!
