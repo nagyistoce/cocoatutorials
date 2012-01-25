@@ -2,7 +2,7 @@
 
 drive=iMacHD
 
-if [ "$PLATFORM" == "Darwin" ]; then
+if [ "$PLATFORM"  ==  "macosx"  ];  then
 	if [ ! -e /$drive ]; then
 		ln -s /Volumes/$drive /$drive
 	fi
@@ -14,9 +14,7 @@ if [ "$PLATFORM" == "Darwin" ]; then
 	else
 		echo "/$drive is mounted"	
 	fi
-fi
-
-if [ "$PLATFORM" == "linux" ]; then
+elif [ "$PLATFORM" == "linux" ]; then
 	Drive="/mnt/$drive"
 	if [ ! -e "$Drive" ]; then
 		sudo mkdir "$Drive"
@@ -31,6 +29,8 @@ if [ "$PLATFORM" == "linux" ]; then
 	if [ ! -e "/$drive" ]; then
 		sudo ln -s "$Drive" "/$drive"
 	fi
+else
+	echo "*** unknown platform '$PLATFORM' ***"
 fi
 
 # That's all Folks!

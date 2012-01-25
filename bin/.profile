@@ -253,6 +253,9 @@ alias ..='cd ..'
 alias ...=sudo
 alias ~='cd ~'
 
+# one-liners
+alias ridLeadingSpace="pbpaste | perl -e 'while(<>){\$_=~s/^\s*//g;print(\$_);}' | pbcopy "
+
 # favorite directories
 year=$(date "+%Y")
 alias homepages="cd ~/clanmills/Homepages/$year"
