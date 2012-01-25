@@ -1,8 +1,0 @@
-1	ACROBAT 7.0 PRO WIN RET UE BETA (has Activation)	Windows	English (UE)	1118-1605-9057-2032-0044-9740	2004-10-29 09:12:47	rmills
-2	Suites Prem 2.0 Win Retail UE Activation	Windows	English (UE)	1131-1897-8503-5668-9061-1087	2005-02-24 14:25:48	rmills
-3	Suites Std 2.0 Win Retail UE Activation	Windows	English (UE)	1130-1617-8602-5309-1393-3831	2005-02-24 16:12:59	rmills
-4	Suites Std 2.0 Mac Upgrade UE Activation	Macintosh	English (UE)	1130-0652-0020-4984-8294-2981	2005-02-25 13:36:37	rmills
-5	--> Suites Prem 2.0 Mac Retail UE Activation	Macintosh	English (UE)	1131-0048-8478-6760-6121-2551	2005-02-25 15:56:29	rmills <--
-6	Suites Std 2.0 Mac Retail UE Activation	Macintosh	English (UE)	1130-0619-6535-5210-0735-5531	2005-02-25 15:58:01	rmills
-
-Doug's cookie dough (Mac Retail UE Prem 2.0)                    mcbride 1131-0112-5484-5215-4829-5178

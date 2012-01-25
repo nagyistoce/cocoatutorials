@@ -216,6 +216,39 @@ crdir() {
 }
 alias crd=crdir
 
+to() { # Work in progress.  work on this in the bus
+	argc=${#*}
+	tmp=/tmp/2.tmp
+	
+	if [ $argc -eq 1 ]; then
+		find . -name "$1" -print > $tmp
+		count=`wc -l $tmp | cut -b1-9`
+		if [ $count == 1 ]; then
+			filename=`cat $tmp`
+			type=`file $filename  | cut -f2 -d:`
+			if [ "$type" != "directory" ]; then
+				filename=`dirname "$filename"`
+			fi
+			echo cd \"$filename\"   PASTE
+			echo cd \"$filename\" | pbcopy
+		elif [ $count == 0 ]; then
+			echo "NONE"
+		else
+			echo "TOO Many"
+			cat $tmp
+		fi
+		
+		# type $dir | grep directory
+		# if [ $? != 0 ]; then dir=`dirname \"${dir}\"`;fi
+		# echo cd "\"${dir}\"" | pbcopy
+	fi
+	
+	if [ $argc -gt 1 ]; then
+		args find . -name "$target" -print0 | xargs -0 "${args[@]}"
+	fi
+}
+
+
 ##
 # set CE = editor of choice
 if [ `uname` == 'Darwin' ]; then                # Mac
