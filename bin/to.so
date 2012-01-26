@@ -1,45 +1,82 @@
 to() {
-	# I don't while I can find a simple way to copy the arguments and set target
-	let argc=-1
-	for arg in "$@" ; do target="$arg" ; argc=$((argc+1)) ; done
+	##
+	# parse the arguments
+	target=""
+	error=0
+	cd=0
+	help=0
+	verbose=0
+	parse=1
 	args=()
-	let a=0
 	for arg in "$@" ; do
-		if [ $a -lt $argc ]; then
-			args[$a]="$arg"
+		target="$arg"
+		if [ $parse == 1 ]; then
+			# to lower case if more than 2 characters
+			if [ "${#arg}" -gt 2 ]; then
+				arg="$(echo $arg|perl -e 'print lc <>;')"
+			fi
+			case "$arg" in
+			  -n|--nocd)  	 cd=0   	;;
+			  -c|--cd)  	 cd=1   	;;
+			  -v|--verbose)  verbose=1	;;
+			 -\?|--help|-h)  help=1		;;
+			  --)            parse=0    ;;
+			  *)             parse=0 	; args+=("$target") ;;
+			esac
+		else
+			args+=("$target")
 		fi
-		a=$((a+1))
 	done
 	
-	#if [ $argc -gt  0 ]; then
-	#	for arg in $(seq 0 $argc); do echo arg $arg = "${args[$arg]}" ; done
-	#fi
+	##
+	# report or bail
+	if [ ${#args} == 0 ]; then help=1; fi
+	if [ $help == 1 ]; then
+		echo "to [--[no]cd --help --verbose --] [command ...] filename"
+		error=1
+	fi
+	if [ $error == 1 ]; then return; fi
 	
+	unset args[${#args[@]}-1]		
+	argc=${#args}
+	if [ $verbose == 1 ]; then
+		echo args   = ${args[@]} "(argc = $argc)"
+		echo target = "$target" ;
+		echo cd     =  $cd
+	fi
+	
+	##
 	# pain over.  find possible targets
-	if [ $argc -ge  0 ]; then
-		tmp=/tmp/2.tmp
-		find . -name "$target" -print > $tmp
-		count=$(wc -l $tmp | cut -b1-9)
+	tmp=/tmp/2.tmp
+	find . -name "$target" -print > $tmp
+	count=$(wc -l $tmp | cut -b1-9)
 
-		if [ $count -eq 1 ]; then
-			dir=$(dirname `cat "$tmp"`)
-			if [ $argc -gt 0 ]; then
-				pushd "$dir"  > /dev/null
-				echo $ "${args[@]}" "$target"
+	if [ $count -eq 1 ]; then
+		dir=$(dirname `cat "$tmp"`)
+		if [ $argc -gt 0 ]; then
+			if [ $cd == 1 ]; then
+				pushd "$dir"  >/dev/null
+				echo "$" cd "$dir" ";" "${args[@]}" "$target"
 				find . -name "$target" -print0 | xargs -0 "${args[@]}"
 				popd >/dev/null
-			elif [ $argc -eq 0 ]; then
-				cd "$dir" 
+			else
+				echo ">" "${args[@]}" "$dir/$target"
+				find . -name "$target" -print0 | xargs -0 "${args[@]}"
 			fi
-		elif [ $count == 0 ]; then
-				echo "NONE"
-				rm "$tmp"
-		else
-			echo "TOO Many"
+		elif [ $argc -eq 0 ]; then
+			if [ -d "$dir/$target" ]; then
+				dir="$dir/$target"
+			fi
+			echo $ cd "$dir" 
+			cd "$dir" 
 		fi
-		
-		if [ -e "$tmp" ]; then
-			cat $tmp
-		fi
+	elif [ $count == 0 ]; then
+		echo "NONE"
+	else
+		echo "*** TOO Many files found ***"
+		cat $tmp
 	fi
 }
+
+# That's all Folks
+##
