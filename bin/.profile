@@ -3,20 +3,20 @@
 
 export HOST=`(hostname|cut -d. -f 1)`
 # If id command returns zero, you’ve root access.
-if [ "$USER" == "root" ]; then                # $(id -u) -eq 0 ];
+if [ "$USER" == "rootXXX" ]; then                # $(id -u) -eq 0 ];
 	# you are root, set yellow color prompt
 	# http://news.softpedia.com/news/How-to-Customize-the-Shell-Prompt-40033.shtml
   	PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\] "
 fi
 
-export PS1='\! $(tput setaf 3)\u@\h:\w$(tput sgr0) $ '
-export PS1='\! \u@\h:\w $ '
-if [ "$USER" == "root" ]; then
+# export PS1='\! $(tput setaf 3)\u@\h:\w$(tput sgr0) $ '
+if [ "$USER" == "rootYYY" ]; then
 #  	PS1="\\[\! $(tput setaf 2)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
   	PS1='\! $(tput setaf 2)\u@\h:\w$(tput sgr0) # '
 fi
 
 # http://wiki.bash-hackers.org/scripting/debuggingtips
+export PS1='\! \u@\h:\w \$ '
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 
 # increase the number of open files
@@ -363,6 +363,16 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 # export M2=$M2_HOME/bin
 # export PATH=$M2:$PATH
 # export MAVEN_OPTS="-Xms256m -Xmx512m"
+
+# set | grep profile
+if [ ! -z `which lnresolve` ]; then
+	cd=$(lnresolve ${BASH_SOURCE[0]})
+	cd=$(dirname "$cd")
+	profile="$cd/../robin_mills_bin/.profile" 
+	if [ -e "$profile"  ]; then
+		source "$profile"
+	fi
+fi
 
 # That's all Folks!
 ##

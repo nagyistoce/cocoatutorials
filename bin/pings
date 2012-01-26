@@ -1,28 +1,67 @@
 #!/bin/bash
 
-if [[ $# -eq 0  && ! -z $PINGS ]];then
-	echo using environment string "\"PINGS=$PINGS\""
+syntaxError()
+{
+	echo "usage: pings [--opt | server]+ or set PINGS"
+	echo "opt  : forever | whiledead untilalive help"
+	exit 1
+}
+
+parseArgs()
+{
+	for ping in $@ ; do
+		arg=$ping
+		# to lower case if more than 2 characters
+		if [ "${#arg}" -gt 2 ]; then
+			arg="$(echo $arg|perl -e 'print lc <>;')"
+		fi
+		# echo arg = "$arg"
+		case "$arg" in
+		  -f|--forever)       forever=1   ;;
+		  -w|--whiledead)     forever=1;whiledead=1 ;;
+		  -u|--untilalive)    forever=1;whiledead=1 ;;
+		  -h|-\?|--help)      syntaxError;;
+		  --*)                syntaxError;;
+		  *) 			      args+=($arg) ;;
+		esac
+	done
+}
+
+once=1
+forever=0
+verbose=1
+whiledead=0
+args=()
+
+parseArgs "$@"
+if [[ ${#args} -eq 0  && ! -z $PINGS ]]; then
+	echo using environment string "PINGS=$PINGS"
+	parseArgs $PINGS
 fi
 
-if [ $# -ne 0 ];then
-	PINGS="$@"
+if [ ${#args} -eq 0 ]; then
+	syntaxError
 fi
 
-if [ -z "$PINGS" ]; then
-    echo "*** usage: pings [server]+ or set PINGS ***"
-    exit 1
+if [ $verbose == 1 ]; then
+	echo pinging: ${args[@]} forever = $forever whiledead = $whiledead
 fi
 
-echo pinging: $PINGS
-
-for ping in $PINGS ; do
-	result=alive
-	ping -c 2 $ping 2>&1 > /dev/null
-	st=$?
-	if [ $st -ne 0 ]; then
-		result=DEAD	
-	fi
-	echo $ping is $result
+while [[ $once == 1 || $forever == 1 ]]; do
+	once=0
+	for ping in ${args[@]} ; do
+		result=DEAD
+		ping -c 2 $ping 2>/dev/null >/dev/null
+		st=$?
+		if [ $st -eq 0 ]; then
+			result=alive	
+		fi
+		echo $ping is $result
+		if [[ $whiledead == 1 && "$result" == "alive" ]]; then
+			forever=0
+		fi
+		sleep 1
+	done
 done
 
 # That's all Folks!
