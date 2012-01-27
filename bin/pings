@@ -2,12 +2,12 @@
 
 syntaxError()
 {
-	echo "usage: pings [--opt | server]+ or set PINGS"
-	echo "opt  : forever | whiledead untilalive help"
+	echo "usage: pings [--opt | server]+ (or set PINGS)"
+	echo "opt  : forever | whiledead | untilalive | help | verbose"
 	exit 1
 }
 
-parseArgs()
+parseservers()
 {
 	for ping in $@ ; do
 		arg=$ping
@@ -17,46 +17,54 @@ parseArgs()
 		fi
 		# echo arg = "$arg"
 		case "$arg" in
-		  -f|--forever)       forever=1   ;;
-		  -w|--whiledead)     forever=1;whiledead=1 ;;
-		  -u|--untilalive)    forever=1;whiledead=1 ;;
-		  -h|-\?|--help)      syntaxError;;
-		  --*)                syntaxError;;
-		  *) 			      args+=($arg) ;;
+		  -f|--forever)       forever=1     ;;
+		  -v|--verbose)       verbose=1     ;;
+		  -w|--whiledead)     whiledead=1   ;;
+		  -u|--untilalive)    whiledead=1   ;;
+		  -h|-\?|--help)      syntaxError   ;;
+		  --*)                syntaxError   ;;
+		  *) 			      servers+=($ping) ;;
 		esac
 	done
 }
 
-once=1
+##
+# defaults
 forever=0
 verbose=1
 whiledead=0
-args=()
+servers=()
 
-parseArgs "$@"
-if [[ ${#args} -eq 0  && ! -z $PINGS ]]; then
+##
+# parse command line (and PINGS if no servers)
+parseservers "$@"
+if [[ ${#servers} -eq 0  && ! -z $PINGS ]]; then
 	echo using environment string "PINGS=$PINGS"
-	parseArgs $PINGS
+	parseservers $PINGS
 fi
 
-if [ ${#args} -eq 0 ]; then
+if [ ${#servers} -eq 0 ]; then
 	syntaxError
 fi
 
-if [ $verbose == 1 ]; then
-	echo pinging: ${args[@]} forever = $forever whiledead = $whiledead
+if [ $whiledead == 1 ]; then
+	forever=1
 fi
 
-while [[ $once == 1 || $forever == 1 ]]; do
-	once=0
-	for ping in ${args[@]} ; do
+if [ $verbose == 1 ]; then
+	echo servers= ${servers[@]} forever= $forever whiledead= $whiledead
+fi
+
+let count=0
+while [[ $((++count)) == 1 || $forever == 1 ]]; do
+	for server in ${servers[@]} ; do
 		result=DEAD
-		ping -c 2 $ping 2>/dev/null >/dev/null
+		ping -c 2 $server 2>/dev/null >/dev/null
 		st=$?
 		if [ $st -eq 0 ]; then
 			result=alive	
 		fi
-		echo $ping is $result
+		echo $server is $result
 		if [[ $whiledead == 1 && "$result" == "alive" ]]; then
 			forever=0
 		fi
