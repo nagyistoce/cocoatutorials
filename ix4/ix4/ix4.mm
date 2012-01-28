@@ -19,6 +19,9 @@
 //  Created 2012 http://clanmills.com robin@clanmills.com
 //
 
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 1
+
 #import  <Foundation/Foundation.h>
 #import  <AppKit/AppKit.h>
 #import  <Quartz/Quartz.h>
@@ -77,14 +80,16 @@ static void reportns(NSString* msg);
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
 static void display_usage(void);
 static void display_args (void);
+static void display_version(void);
 
-static const char *optString = "o:s:adOvm:h?";
+static const char *optString = "o:s:adOvVm:h?";
 struct {
 	const char*	outFileName;			/* -o: option       */
 	sort_e      sort;                   /* -s: option       */
     bool        asc;                    /* -a|-d option     */
     int         open;                   /* -O  option       */
 	int 		verbose;				/* -v  option       */
+    int         version;                /* -V  option       */
 	NSInteger 	minsize;				/* -m: option       */
 	char**		inputFiles;				/* input files      */
 	int 		numInputFiles;			/* # of input files */
@@ -94,10 +99,11 @@ struct {
 static const struct option longOpts[] = {
 	{ "output"		, required_argument	, NULL, 'o' },
 	{ "sort"		, required_argument	, NULL, 's' },
-	{ "asc"         , optional_argument	, NULL, 'a' },
-	{ "desc"		, optional_argument	, NULL, 'd' },
+	{ "asc"         , no_argument       , NULL, 'a' },
+	{ "desc"		, no_argument       , NULL, 'd' },
 	{ "open"		, no_argument		, NULL, 'O' },
-	{ "verbose"		, optional_argument	, NULL, 'v' },
+	{ "verbose"		, no_argument       , NULL, 'v' },
+	{ "version"		, no_argument       , NULL, 'V' },
 	{ "minsize"     , required_argument	, NULL, 'm' },
 	{ "help"		, no_argument		, NULL, 'h' },
 	{ NULL			, no_argument		, NULL, 0   }
@@ -107,8 +113,16 @@ static const struct option longOpts[] = {
  */
 static void display_usage( void )
 {
-	puts("ix4 - convert images to PDF" );
-	puts("usage: [ --[output filename | sort key | asc | desc | open | verbose | minsize n | help] | file ]+");
+	report("ix4 - convert images to PDF" );
+	report("usage: [ --[output filename | sort key | asc | desc | open | verbose | version | minsize n | help] | file ]+");
+	exit( EXIT_FAILURE );
+}
+
+/* Display program version, and exit.
+ */
+static void display_version( void )
+{
+	reportns( [NSString stringWithFormat:@"ix4 %d.%d",VERSION_MAJOR,VERSION_MINOR] );
 	exit( EXIT_FAILURE );
 }
 
@@ -335,6 +349,10 @@ int main (int argc,char** argv)
 				globalArgs.verbose = 1;
 				break;
 				
+			case 'V':
+				globalArgs.version = 1;
+				break;
+				
 			case 's':
 				globalArgs.sort = findSort(optarg);
                 if ( !error && !globalArgs.sort ) invalidSortKey(optarg);
@@ -359,6 +377,8 @@ int main (int argc,char** argv)
 	
 	globalArgs.inputFiles 		= argv + optind;
 	globalArgs.numInputFiles 	= argc - optind;
+    
+    if ( globalArgs.version ) display_version();
 	
     if ( !error && !globalArgs.outFileName) noPDFFileName(NULL);
 
@@ -375,7 +395,7 @@ int main (int argc,char** argv)
         NSString* fileName = [path lastPathComponent];
 		NSImage*  image    = [[NSImage alloc] initWithContentsOfFile:path];
         id        keyValue = NULL;
-		if ( !image ) notImage(fileName) ;
+		if ( !image ) notImage(path) ;
 		
 		if ( image)
 		{
@@ -400,11 +420,11 @@ int main (int argc,char** argv)
 			if ( biggest >= globalArgs.minsize ) {
 				NSImageRep*	  imageRep = [reps objectAtIndex:jBig];
                 switch ( globalArgs.sort ) {
-                    case se_filename :
+                    case se_filename:
                         keyValue = fileName;
                         break;
                         
-                    case se_path     :
+                    case se_path:
                         keyValue = path;
                         break;
                         
