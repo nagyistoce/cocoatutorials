@@ -30,17 +30,11 @@
 #include <getopt.h>
 #include <string.h>
 
+#define KEYVALUE "keyvalue"
 #define FILENAME "filename"
 #define PATH     "path"
 #define DATE     "date"
-
-//#define FILENAME @sFILENAME
-//#define PATH     @sPATH
-//#define DATE     @sDATE
-
-#define IMAGE    "Image"
-
-static NSString* KEY;
+#define IMAGEREP "imageRep"
 
 #ifndef lengthof
 #define lengthof(x) sizeof(x)/sizeof(x[0])
@@ -71,42 +65,39 @@ struct
 ,   DATE        , se_date
 };
 
-sort_e findSort(const char* key);
-sort_e findSort(const char* key)
-{
-    sort_e result = se_none;
-    for ( int i = 0 ; !result && i < lengthof(sortKeys) ; i++ )
-        if ( strcmp(key,sortKeys[i].key)==0 ) {
-            result = sortKeys[i].value;
-            [KEY release];
-             KEY = [NSString stringWithUTF8String:key];
-        }
-    return result;
-}
+static sort_e findSort(const char* key);
+static void warn    (const char* msg);
+static void errors  (const char* msg);
+static void report  (const char* msg);
+
+static void warns   (NSString* msg);
+static void errorns (NSString* msg);
+static void reportns(NSString* msg);
 
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
-void display_usage(void);
-void display_args (void);
+static void display_usage(void);
+static void display_args (void);
 
 static const char *optString = "o:s:adOvm:h?";
-struct globalArgs_t {
-	const char*	outFileName;			/* -o option        */
-	sort_e      sort;                   /* -s option        */
+struct {
+	const char*	outFileName;			/* -o: option       */
+	sort_e      sort;                   /* -s: option       */
     bool        asc;                    /* -a|-d option     */
-    int         open;                   /* -O option        */
-	int 		verbose;				/* -v option        */
-	NSInteger 	minsize;				/* -m option        */
+    int         open;                   /* -O  option       */
+	int 		verbose;				/* -v  option       */
+	NSInteger 	minsize;				/* -m: option       */
 	char**		inputFiles;				/* input files      */
 	int 		numInputFiles;			/* # of input files */
+    NSString*   sortKey;                /*                  */
 } globalArgs;
 
 static const struct option longOpts[] = {
 	{ "output"		, required_argument	, NULL, 'o' },
-	{ "open"		, no_argument		, NULL, 'O' },
 	{ "sort"		, required_argument	, NULL, 's' },
-	{ "verbose"		, optional_argument	, NULL, 'v' },
 	{ "asc"         , optional_argument	, NULL, 'a' },
 	{ "desc"		, optional_argument	, NULL, 'd' },
+	{ "open"		, no_argument		, NULL, 'O' },
+	{ "verbose"		, optional_argument	, NULL, 'v' },
 	{ "minsize"     , required_argument	, NULL, 'm' },
 	{ "help"		, no_argument		, NULL, 'h' },
 	{ NULL			, no_argument		, NULL, 0   }
@@ -114,7 +105,7 @@ static const struct option longOpts[] = {
 
 /* Display program usage, and exit.
  */
-void display_usage( void )
+static void display_usage( void )
 {
 	puts("ix4 - convert images to PDF" );
 	puts("usage: [ --[output filename | verbose | open | sort key | minsize n | asc | desc | help] | file ]+");
@@ -123,7 +114,7 @@ void display_usage( void )
 
 /* Convert the input files to PDF, governed by globalArgs.
  */
-void display_args( void )
+static void display_args( void )
 {
     if ( globalArgs.verbose ) {
         printf( "output:    %s\n" , globalArgs.outFileName);
@@ -132,40 +123,53 @@ void display_args( void )
         printf( "sort:      %s\n" , sortKeys[globalArgs.sort].key);
         printf( "direction: %s\n" , globalArgs.asc  ? "asc" : "desc");
         
-//        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
-//            printf("file %2d = %s\n",i,globalArgs.inputFiles[i]);
-//        }
+        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
+            reportns([NSString stringWithFormat:@"file %2d = %s",i,globalArgs.inputFiles[i]]);
+        }
     }
 }
 // end of code copied from ibm
 
-// making a wee change to test Xcode's SVN support
-// let's try this again
-// And another change, just for fun from the iMac
-// making a change from the laptop
+static sort_e findSort(const char* key)
+{
+    sort_e result = se_none;
+    for ( int i = 0 ; !result && i < lengthof(sortKeys) ; i++ )
+        if ( strcmp(key,sortKeys[i].key)==0 ) {
+            result = sortKeys[i].value;
+            [globalArgs.sortKey release];
+            globalArgs.sortKey = [NSString stringWithUTF8String:key];
+        }
+    return result;
+}
 
-void warn(const char* msg);
-void warns(NSString*   msg);
-void errors(const char* msg);
-void errorns(NSString* msg);
-void warn (const char* msg)
+static void warn(const char* msg)
 {
     if ( globalArgs.verbose ) {
         puts(msg);
     }
 }
 
-void errors(const char* msg)
+static void errors(const char* msg)
 {
     puts(msg);
 }
 
-void errorns(NSString* msg)
+static void errorns(NSString* msg)
 {
     errors([msg UTF8String]);
 }
 
-void warns(NSString* msg)
+static void report(const char* msg)
+{
+    puts(msg);
+}
+
+static void reportns(NSString* msg)
+{
+    errors([msg UTF8String]);
+}
+
+static void warns(NSString* msg)
 {
     warn([msg UTF8String]);
 }
@@ -206,8 +210,6 @@ static void syntax(void)
 	error = SYNTAX ;
 }
 
-static NSComparisonResult comp(NSString* a,NSString* b) { return [a localizedCaseInsensitiveCompare : b]; }
-
 static NSComparisonResult sortFunction (id a, id b, void* )
 {
 	if ( !globalArgs.asc ) {
@@ -215,17 +217,14 @@ static NSComparisonResult sortFunction (id a, id b, void* )
         a = b ;
         b = t ;
     }
-    a = [a valueForKey:KEY];
-	b = [b valueForKey:KEY];
+    a = [a valueForKey:@KEYVALUE];
+    b = [b valueForKey:@KEYVALUE];
     
-//	NSComparisonResult result = comp([a lastPathComponent],[b lastPathComponent]);
-//	if ( !result )     result =  ;
-	return comp(a,b) ;
+	return ( a && b ) ? [a compare:b] : NSOrderedSame ;
 }
 
 static void doIt(NSString* pdfFileName,NSMutableArray* images)
 {
-	// sort the images using the filename (case insensitive)
     if ( globalArgs.sort ) [images sortUsingFunction:sortFunction context:nil];
 	
 	PDFDocument* document = [[PDFDocument alloc]init] ;
@@ -240,17 +239,20 @@ static void doIt(NSString* pdfFileName,NSMutableArray* images)
 		// cycle over the images
 		for ( int i = 0 ; i < [images count] ; i++ ) {
 			NSDictionary* dict		= [images objectAtIndex:i];
-			NSImageRep* imageRep	= [dict  valueForKey:@IMAGE];
-            NSString*	fileName	= [dict  valueForKey:@FILENAME];
-            NSString*   path        = [dict  valueForKey:@PATH];
-            NSString*   label       = fileName ; // KEY ? [dict  valueForKey:KEY]: fileName;
+			NSImageRep* imageRep	= [dict  valueForKey:@IMAGEREP];
+            //NSString*	fileName	= [dict  valueForKey:@FILENAME];
+            //NSString*   path        = [dict  valueForKey:@PATH];
+            id          keyValue    = [dict  valueForKey:@KEYVALUE];
+            NSString*   label       = [keyValue description]; // fileName ; // KEY ? [dict  valueForKey:KEY]: fileName;
 			NSInteger	width		= [imageRep pixelsWide];
 			NSInteger	height		= [imageRep pixelsHigh];
             
-//            NSInteger   maxLength = 50 ;
-//            if ( [label length] > maxLength ) label = [label substringToIndex:maxLength];
+            reportns([NSString stringWithFormat:@"sort value = %@",keyValue?keyValue:@"--null--"]);
             
-            if ( globalArgs.verbose ) warns(path);
+//          NSInteger   maxLength = 50 ;
+//          if ( [label length] > maxLength ) label = [label substringToIndex:maxLength];
+            
+            // warns(path);
 			// NSLog(@"%@ width,height = %ldx%ld",fileName,width,height) ;
             
 			////
@@ -303,14 +305,8 @@ int main (int argc,char** argv)
 	int longIndex = 0;
 	
 	/* Initialize globalArgs before we get to work. */
-	globalArgs.outFileName 		= NULL  ;
-    globalArgs.open             = 0     ;
-    globalArgs.asc              = 1     ;
-    globalArgs.sort             = se_none;
-	globalArgs.verbose 			= 0     ;
-	globalArgs.inputFiles 		= NULL  ;
-	globalArgs.numInputFiles 	= 0     ;
-	globalArgs.minsize          = 512   ;
+    memset(&globalArgs,0,sizeof(globalArgs));
+	globalArgs.minsize = 512   ;
 	
 	/* Process the arguments with getopt_long(), then 
 	 * populate globalArgs. 
@@ -377,6 +373,7 @@ int main (int argc,char** argv)
 		NSString* path     = [NSString stringWithUTF8String:globalArgs.inputFiles[i]];
         NSString* fileName = [path lastPathComponent];
 		NSImage*  image    = [[NSImage alloc] initWithContentsOfFile:path];
+        id        keyValue = NULL;
 		if ( !image ) notImage(fileName) ;
 		
 		if ( image)
@@ -398,13 +395,39 @@ int main (int argc,char** argv)
 			}
             
 			////
-			// save the imageRep and filename in a dictionary in the images array
+			// save the imageRep and other metadata in a dictionary in the images array
 			if ( biggest >= globalArgs.minsize ) {
-				NSImageRep*		imageRep= [reps objectAtIndex:jBig];
-				NSDictionary*	dict	= [ NSDictionary dictionaryWithObjectsAndKeys
-                                           :imageRep,@IMAGE
+				NSImageRep*	  imageRep = [reps objectAtIndex:jBig];
+                switch ( globalArgs.sort ) {
+                    case se_filename :
+                        keyValue = fileName;
+                        break;
+                        
+                    case se_path     :
+                        keyValue = path;
+                        break;
+                        
+                    case se_date     :
+                        {   NSDictionary* exifDict = [((id)imageRep) valueForProperty: NSImageEXIFData];
+                            if ( exifDict ) for ( NSString* exifKey in exifDict ) {
+                                id value = [exifDict objectForKey: exifKey];
+                                if (  [exifKey compare:@"DateTimeOriginal"] == 0 ) {
+                                    keyValue = value;
+                                    reportns([NSString stringWithFormat:@"exifKey: %@ value: %@",exifKey,value]);
+                                }
+                            }
+                        }break;
+                        
+                    case se_none:
+                    default:
+                        break;
+                }
+
+                NSDictionary*	dict	= [ NSDictionary dictionaryWithObjectsAndKeys
+                                           :imageRep,@IMAGEREP
                                            ,fileName,@FILENAME
                                            ,path,@PATH
+                                           ,keyValue,@KEYVALUE
                                            ,nil
                                            ] ;
                 
