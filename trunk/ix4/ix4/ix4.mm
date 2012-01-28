@@ -60,8 +60,8 @@ struct
 {   const char* key;
     sort_e      value;
 }  sortKeys[] = 
-{   FILENAME    , se_path
-,   PATH        , se_filename
+{   FILENAME    , se_filename
+,   PATH        , se_path
 ,   DATE        , se_date
 };
 
@@ -108,7 +108,7 @@ static const struct option longOpts[] = {
 static void display_usage( void )
 {
 	puts("ix4 - convert images to PDF" );
-	puts("usage: [ --[output filename | verbose | open | sort key | minsize n | asc | desc | help] | file ]+");
+	puts("usage: [ --[output filename | sort key | asc | desc | open | verbose | minsize n | help] | file ]+");
 	exit( EXIT_FAILURE );
 }
 
@@ -117,15 +117,16 @@ static void display_usage( void )
 static void display_args( void )
 {
     if ( globalArgs.verbose ) {
-        printf( "output:    %s\n" , globalArgs.outFileName);
-        printf( "verbose:   %d\n" , globalArgs.verbose);
-        printf( "minsize:   %ld\n", globalArgs.minsize);
-        printf( "sort:      %s\n" , sortKeys[globalArgs.sort].key);
-        printf( "direction: %s\n" , globalArgs.asc  ? "asc" : "desc");
+        warns([NSString stringWithFormat:@"output:    %s\n" , globalArgs.outFileName]);
+        warns([NSString stringWithFormat:@ "sort:      %s\n" , sortKeys[globalArgs.sort].key]);
+        warns([NSString stringWithFormat:@ "direction: %s\n" , globalArgs.asc  ? "asc" : "desc"]);
+        warns([NSString stringWithFormat:@ "verbose:   %d\n" , globalArgs.verbose]);
+        warns([NSString stringWithFormat:@ "minsize:   %ld\n", globalArgs.minsize]);
+        warns([NSString stringWithFormat:@ "open:      %d\n" , globalArgs.open]);
         
-        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
-            reportns([NSString stringWithFormat:@"file %2d = %s",i,globalArgs.inputFiles[i]]);
-        }
+//        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
+//            warnsns([NSString stringWithFormat:@"file %2d = %s",i,globalArgs.inputFiles[i]]);
+//        }
     }
 }
 // end of code copied from ibm
@@ -137,7 +138,7 @@ static sort_e findSort(const char* key)
         if ( strcmp(key,sortKeys[i].key)==0 ) {
             result = sortKeys[i].value;
             [globalArgs.sortKey release];
-            globalArgs.sortKey = [NSString stringWithUTF8String:key];
+             globalArgs.sortKey = [NSString stringWithUTF8String:key];
         }
     return result;
 }
@@ -196,9 +197,9 @@ static void invalidSortKey(const char* key)
 static void noPDFFileName(const char* filename)
 {
 	if ( filename ) {
-        NSLog(@"Unable to create pdfFileName %s",filename) ;
+        errorns([NSString stringWithFormat:@"Unable to create pdfFileName %s",filename]) ;
     } else {
-        NSLog(@"--output pdffile not specified") ;
+        errorns(@"--output pdffile not specified") ;
         display_usage();
     }
 	error = NO_PDF_FILENAME ;
@@ -238,19 +239,15 @@ static void doIt(NSString* pdfFileName,NSMutableArray* images)
 		////
 		// cycle over the images
 		for ( int i = 0 ; i < [images count] ; i++ ) {
-			NSDictionary* dict		= [images objectAtIndex:i];
-			NSImageRep* imageRep	= [dict  valueForKey:@IMAGEREP];
-            //NSString*	fileName	= [dict  valueForKey:@FILENAME];
-            //NSString*   path        = [dict  valueForKey:@PATH];
-            id          keyValue    = [dict  valueForKey:@KEYVALUE];
-            NSString*   label       = [keyValue description]; // fileName ; // KEY ? [dict  valueForKey:KEY]: fileName;
-			NSInteger	width		= [imageRep pixelsWide];
-			NSInteger	height		= [imageRep pixelsHigh];
+			NSDictionary*   dict	= [images objectAtIndex:i];
+			NSImageRep*     imageRep= [dict  valueForKey:@IMAGEREP];
+            id              keyValue= [dict  valueForKey:@KEYVALUE];
+            NSString*       label   = [NSString stringWithFormat:@"%@",keyValue?keyValue:@"--null--"];
+			NSInteger       width	= [imageRep pixelsWide];
+			NSInteger       height	= [imageRep pixelsHigh];
             
-            reportns([NSString stringWithFormat:@"sort value = %@",keyValue?keyValue:@"--null--"]);
-            
-//          NSInteger   maxLength = 50 ;
-//          if ( [label length] > maxLength ) label = [label substringToIndex:maxLength];
+            // I suspect label is having trouble with leading /'s (for example in paths)
+            reportns([NSString stringWithFormat:@"label = %@",label]);
             
             // warns(path);
 			// NSLog(@"%@ width,height = %ldx%ld",fileName,width,height) ;
@@ -271,7 +268,6 @@ static void doIt(NSString* pdfFileName,NSMutableArray* images)
 				// store the filename in the Outline
 				PDFOutline* outline = [[PDFOutline alloc]init] ;
 				
-				// [outline setLabel:[fileName lastPathComponent]] ;
 				[outline setLabel:label] ;
 				NSPoint point = { width/2, height/2 } ;
                 
@@ -400,11 +396,11 @@ int main (int argc,char** argv)
 				NSImageRep*	  imageRep = [reps objectAtIndex:jBig];
                 switch ( globalArgs.sort ) {
                     case se_filename :
-                        keyValue = fileName;
+                        keyValue = [NSString stringWithFormat:@"filename: %@",fileName];;
                         break;
                         
                     case se_path     :
-                        keyValue = path;
+                        keyValue = [NSString stringWithFormat:@"path: %@",path];
                         break;
                         
                     case se_date     :
@@ -412,7 +408,7 @@ int main (int argc,char** argv)
                             if ( exifDict ) for ( NSString* exifKey in exifDict ) {
                                 id value = [exifDict objectForKey: exifKey];
                                 if (  [exifKey compare:@"DateTimeOriginal"] == 0 ) {
-                                    keyValue = value;
+                                    keyValue = [NSString stringWithFormat:@"DateTimeOriginal: %@",value];
                                     reportns([NSString stringWithFormat:@"exifKey: %@ value: %@",exifKey,value]);
                                 }
                             }
