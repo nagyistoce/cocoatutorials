@@ -141,7 +141,8 @@ void display_args( void )
 
 // making a wee change to test Xcode's SVN support
 // let's try this again
-// And another change, just for fun from the iMac.
+// And another change, just for fun from the iMac
+// making a change from the laptop
 
 void warn(const char* msg);
 void warns(NSString*   msg);
