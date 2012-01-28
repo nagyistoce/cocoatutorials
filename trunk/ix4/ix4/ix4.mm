@@ -246,7 +246,12 @@ static void doIt(NSString* pdfFileName,NSMutableArray* images)
 			NSInteger       width	= [imageRep pixelsWide];
 			NSInteger       height	= [imageRep pixelsHigh];
             
-            // I suspect label is having trouble with leading /'s (for example in paths)
+            // label is having trouble with leading /'s (for example in paths)
+            NSMutableString* mString = [NSMutableString stringWithCapacity:[label length]+1];
+            [mString appendString:label];
+            [mString replaceOccurrencesOfString:@"/" withString:@" /" options:NSLiteralSearch range:NSMakeRange(0,1)];// [mString length])];
+            label = [NSString stringWithString:mString];
+
             reportns([NSString stringWithFormat:@"label = %@",label]);
             
             // warns(path);
@@ -396,11 +401,11 @@ int main (int argc,char** argv)
 				NSImageRep*	  imageRep = [reps objectAtIndex:jBig];
                 switch ( globalArgs.sort ) {
                     case se_filename :
-                        keyValue = [NSString stringWithFormat:@"filename: %@",fileName];;
+                        keyValue = fileName;
                         break;
                         
                     case se_path     :
-                        keyValue = [NSString stringWithFormat:@"path: %@",path];
+                        keyValue = path;
                         break;
                         
                     case se_date     :
@@ -408,8 +413,9 @@ int main (int argc,char** argv)
                             if ( exifDict ) for ( NSString* exifKey in exifDict ) {
                                 id value = [exifDict objectForKey: exifKey];
                                 if (  [exifKey compare:@"DateTimeOriginal"] == 0 ) {
-                                    keyValue = [NSString stringWithFormat:@"DateTimeOriginal: %@",value];
-                                    reportns([NSString stringWithFormat:@"exifKey: %@ value: %@",exifKey,value]);
+                                    keyValue = value;
+                                    reportns([NSString stringWithFormat:@"exifKey %@ value: %@",exifKey,value]);
+                                    break;
                                 }
                             }
                         }break;
