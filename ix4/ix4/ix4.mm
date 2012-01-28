@@ -30,9 +30,59 @@
 #include <getopt.h>
 #include <string.h>
 
-#define FILENAME @"FileName"
-#define IMAGE    @"Image"
-#define KEY      @"Key"
+#define FILENAME "filename"
+#define PATH     "path"
+#define DATE     "date"
+
+//#define FILENAME @sFILENAME
+//#define PATH     @sPATH
+//#define DATE     @sDATE
+
+#define IMAGE    "Image"
+
+static NSString* KEY;
+
+#ifndef lengthof
+#define lengthof(x) sizeof(x)/sizeof(x[0])
+#endif
+
+static enum
+{	OK = 0 
+,	SYNTAX 
+,   NOT_IMAGE
+,	NO_IMAGES
+,	NO_PDF_FILENAME
+,   INVALIDSORT
+}	error = OK ;
+
+enum sort_e
+{   se_none=0
+,   se_path
+,   se_filename
+,   se_date
+}   sort=se_none;
+
+struct
+{   const char* key;
+    sort_e      value;
+}  sortKeys[] = 
+{   FILENAME    , se_path
+,   PATH        , se_filename
+,   DATE        , se_date
+};
+
+sort_e findSort(const char* key);
+sort_e findSort(const char* key)
+{
+    sort_e result = se_none;
+    for ( int i = 0 ; !result && i < lengthof(sortKeys) ; i++ )
+        if ( strcmp(key,sortKeys[i].key)==0 ) {
+            result = sortKeys[i].value;
+            [KEY release];
+             KEY = [NSString stringWithUTF8String:key];
+        }
+    return result;
+}
 
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
 void display_usage(void);
@@ -41,7 +91,7 @@ void display_args (void);
 static const char *optString = "o:s:adOvm:h?";
 struct globalArgs_t {
 	const char*	outFileName;			/* -o option        */
-	const char*	sort;                   /* -s option        */
+	sort_e      sort;                   /* -s option        */
     bool        asc;                    /* -a|-d option     */
     int         open;                   /* -O option        */
 	int 		verbose;				/* -v option        */
@@ -79,8 +129,8 @@ void display_args( void )
         printf( "output:    %s\n" , globalArgs.outFileName);
         printf( "verbose:   %d\n" , globalArgs.verbose);
         printf( "minsize:   %ld\n", globalArgs.minsize);
-        printf( "sort:      %s\n" , globalArgs.sort ? globalArgs.sort : "none");
-        printf( "direction: %s\n" , globalArgs.asc  ? "asc" : "des");
+        printf( "sort:      %s\n" , sortKeys[globalArgs.sort].key);
+        printf( "direction: %s\n" , globalArgs.asc  ? "asc" : "desc");
         
 //        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
 //            printf("file %2d = %s\n",i,globalArgs.inputFiles[i]);
@@ -89,21 +139,26 @@ void display_args( void )
 }
 // end of code copied from ibm
 
-static enum
-{	OK = 0 
-,	SYNTAX 
-,   NOT_IMAGE
-,	NO_IMAGES
-,	NO_PDF_FILENAME
-}	error = OK ;
 
-void warn (const char* msg);
+void warn(const char* msg);
 void warns(NSString*   msg);
+void errors(const char* msg);
+void errorns(NSString* msg);
 void warn (const char* msg)
 {
     if ( globalArgs.verbose ) {
         puts(msg);
     }
+}
+
+void errors(const char* msg)
+{
+    puts(msg);
+}
+
+void errorns(NSString* msg)
+{
+    errors([msg UTF8String]);
 }
 
 void warns(NSString* msg)
@@ -113,14 +168,21 @@ void warns(NSString* msg)
 
 static void notImage(NSString* filename)
 {
-    warns([NSString stringWithFormat:@"%@ is not an image file",filename]);
+    errorns([NSString stringWithFormat:@"%@ is not an image file",filename]);
     error = NOT_IMAGE ; // only warn, don't terminate
 }
 
 static void noImages(bool bCreate /*= true*/)
 {
-	warn(bCreate?"Unable to create images array":"no suitable images") ;
+	errors(bCreate?"Unable to create images array":"no suitable images") ;
 	error = NO_IMAGES ;
+}
+
+static void invalidSortKey(const char* key)
+{
+	NSString* msg = [NSString stringWithFormat:@"invalid sort key %s",key];
+    errorns(msg);
+    error = INVALIDSORT;
 }
 
 static void noPDFFileName(const char* filename)
@@ -174,19 +236,27 @@ static void doIt(NSString* pdfFileName,NSMutableArray* images)
 		// cycle over the images
 		for ( int i = 0 ; i < [images count] ; i++ ) {
 			NSDictionary* dict		= [images objectAtIndex:i];
-			NSImageRep* imageRep	= [dict  valueForKey:IMAGE];
-			NSString*	fileName	= [dict  valueForKey:FILENAME];
+			NSImageRep* imageRep	= [dict  valueForKey:@IMAGE];
+            NSString*	fileName	= [dict  valueForKey:@FILENAME];
+            NSString*   path        = [dict  valueForKey:@PATH];
+            NSString*   label       = fileName ; // KEY ? [dict  valueForKey:KEY]: fileName;
 			NSInteger	width		= [imageRep pixelsWide];
 			NSInteger	height		= [imageRep pixelsHigh];
             
-            if ( globalArgs.verbose ) warns(fileName);
+//            NSInteger   maxLength = 50 ;
+//            if ( [label length] > maxLength ) label = [label substringToIndex:maxLength];
+            
+            if ( globalArgs.verbose ) warns(path);
 			// NSLog(@"%@ width,height = %ldx%ld",fileName,width,height) ;
             
 			////
 			// create the PDF page with the image and insert it at the end of the document
 			NSImage* image = [[NSImage alloc]init] ;
 			[image addRepresentation:imageRep] ;
-			PDFPage* page = [[ PDFPage alloc]initWithImage:/*(CIImage*)*/image];
+
+            // older compiler demands (CIImage*) cast for (NSImage*)
+            // cast him to (id) to keep compiler happy
+			PDFPage* page = [[ PDFPage alloc]initWithImage:(id)image];
             
 			if ( page ) {
 				[document insertPage:page atIndex:i] ;
@@ -195,7 +265,8 @@ static void doIt(NSString* pdfFileName,NSMutableArray* images)
 				// store the filename in the Outline
 				PDFOutline* outline = [[PDFOutline alloc]init] ;
 				
-				[outline setLabel:[fileName lastPathComponent]] ;
+				// [outline setLabel:[fileName lastPathComponent]] ;
+				[outline setLabel:label] ;
 				NSPoint point = { width/2, height/2 } ;
                 
 				PDFDestination* dest = [[PDFDestination alloc]initWithPage:page atPoint:point];
@@ -228,14 +299,14 @@ int main (int argc,char** argv)
 	int longIndex = 0;
 	
 	/* Initialize globalArgs before we get to work. */
-	globalArgs.outFileName 		= NULL;
-    globalArgs.open             = 0   ;
-    globalArgs.asc              = 1   ;
-    globalArgs.sort             = NULL;
-	globalArgs.verbose 			= 0   ;
-	globalArgs.inputFiles 		= NULL;
-	globalArgs.numInputFiles 	= 0   ;
-	globalArgs.minsize          = 512 ;
+	globalArgs.outFileName 		= NULL  ;
+    globalArgs.open             = 0     ;
+    globalArgs.asc              = 1     ;
+    globalArgs.sort             = se_none;
+	globalArgs.verbose 			= 0     ;
+	globalArgs.inputFiles 		= NULL  ;
+	globalArgs.numInputFiles 	= 0     ;
+	globalArgs.minsize          = 512   ;
 	
 	/* Process the arguments with getopt_long(), then 
 	 * populate globalArgs. 
@@ -260,11 +331,12 @@ int main (int argc,char** argv)
 				break;
 				
 			case 'v':
-				globalArgs.verbose = optarg?atoi(optarg):1;
+				globalArgs.verbose = 1;
 				break;
 				
 			case 's':
-				globalArgs.sort = optarg;
+				globalArgs.sort = findSort(optarg);
+                if ( !error && !globalArgs.sort ) invalidSortKey(optarg);
 				break;
 				
 			case 'm':
@@ -298,8 +370,9 @@ int main (int argc,char** argv)
     ////
 	// run over inputFiles to be sure everything is an image
 	if ( !error ) for ( int i = 0 ; !error && i < globalArgs.numInputFiles ; i++ ) {
-		NSString* fileName =  [NSString stringWithUTF8String:globalArgs.inputFiles[i]];
-		NSImage*  image    =  [[NSImage alloc] initWithContentsOfFile:fileName];
+		NSString* path     = [NSString stringWithUTF8String:globalArgs.inputFiles[i]];
+        NSString* fileName = [path lastPathComponent];
+		NSImage*  image    = [[NSImage alloc] initWithContentsOfFile:path];
 		if ( !image ) notImage(fileName) ;
 		
 		if ( image)
@@ -324,14 +397,16 @@ int main (int argc,char** argv)
 			// save the imageRep and filename in a dictionary in the images array
 			if ( biggest >= globalArgs.minsize ) {
 				NSImageRep*		imageRep= [reps objectAtIndex:jBig];
-				NSDictionary*	dict	= [ NSDictionary dictionaryWithObjectsAndKeys:imageRep,IMAGE
-                                           ,fileName,FILENAME
+				NSDictionary*	dict	= [ NSDictionary dictionaryWithObjectsAndKeys
+                                           :imageRep,@IMAGE
+                                           ,fileName,@FILENAME
+                                           ,path,@PATH
                                            ,nil
                                            ] ;
                 
 				[images addObject:dict] ;
 			} else {
-                warns([NSString stringWithFormat:@"too small %@",fileName]);
+                warns([NSString stringWithFormat:@"too small %@",path]);
             }
 		}
         if ( [images count]==0 ) noImages(false);
@@ -341,6 +416,6 @@ int main (int argc,char** argv)
 	if ( !error ) doIt(pdfFileName,images) ;
 	
     [pool drain];
-    return 0;
+    return error;
 }
 
