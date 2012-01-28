@@ -5,7 +5,7 @@
 renamer JPG jpg "*.JPG"
 
 ##
-# get "raw" files (raw = straight from the camera)
+# get "raw" filenames (raw = IMG_1234.JPG - as it arrives from the camera)
 IFS=$'\n'
 FILES="$(ls [A-Z]*_[0-9]*.jpg)"
 

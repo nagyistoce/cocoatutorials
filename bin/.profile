@@ -300,19 +300,27 @@ alias 2=to
 
 ##
 # set CE = editor of choice
-if [ `uname` == 'Darwin' ]; then                # Mac
-	export CE=`which bbedit 2>/dev/null`
-	if [ -z "$CE" ]; then
-		export CE=`which edit 2>/dev/null`
+if [ -z "$SSH_CLIENT" ]; then
+	if   [ "$PLATFORM" == 'macosx' ]; then
+		export CE=`which bbedit 2>/dev/null`
+		if [ -z "$CE" ]; then
+			export CE=`which edit 2>/dev/null`
+		fi
+	elif [ "$PLATFORM" == 'cygwin' ]; then
+		CE='/cygdrive/c/Users/rmills/com/ce.exe'
+	elif [ "$PLATFORM" == 'linux' ]; then
+		export CE=`which kate`
+		if [ ! -z "$CE" ]; then
+			export CE="kate --use"
+			export CE2="&"
+		fi		
 	fi
-elif [ `uname -o` == 'Cygwin' ]; then            # Cygwin
-	CE='/cygdrive/c/Users/rmills/com/ce.exe'
-else                                            # probably linux
-	export CE=`which kate`
-	if [ ! -z "$CE" ]; then
-		export CE="kate --use"
-	fi		
 fi
+ce()
+{
+	$CE "$@" $CE2
+}
+
 # catch all - use good old vi!
 if [ -z "$CE" ]; then
 	export CE=vi
