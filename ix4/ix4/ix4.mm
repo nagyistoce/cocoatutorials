@@ -32,20 +32,22 @@
 
 #define FILENAME @"FileName"
 #define IMAGE    @"Image"
+#define KEY      @"Key"
 
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
 void display_usage(void);
 void display_args (void);
 
-static const char *optString = "o:Os:vm:h?";
+static const char *optString = "o:s:adOvm:h?";
 struct globalArgs_t {
 	const char*	outFileName;			/* -o option        */
 	const char*	sort;                   /* -s option        */
+    bool        asc;                    /* -a|-d option     */
     int         open;                   /* -O option        */
 	int 		verbose;				/* -v option        */
+	NSInteger 	minsize;				/* -m option        */
 	char**		inputFiles;				/* input files      */
 	int 		numInputFiles;			/* # of input files */
-	NSInteger 	minsize;				/* -m option        */
 } globalArgs;
 
 static const struct option longOpts[] = {
@@ -53,6 +55,8 @@ static const struct option longOpts[] = {
 	{ "open"		, no_argument		, NULL, 'O' },
 	{ "sort"		, required_argument	, NULL, 's' },
 	{ "verbose"		, optional_argument	, NULL, 'v' },
+	{ "asc"         , optional_argument	, NULL, 'a' },
+	{ "desc"		, optional_argument	, NULL, 'd' },
 	{ "minsize"     , required_argument	, NULL, 'm' },
 	{ "help"		, no_argument		, NULL, 'h' },
 	{ NULL			, no_argument		, NULL, 0   }
@@ -63,7 +67,7 @@ static const struct option longOpts[] = {
 void display_usage( void )
 {
 	puts("ix4 - convert images to PDF" );
-	puts("usage: [ --output filename | --verbose | --open | --sort s | --minsize n | --help | file ]+");
+	puts("usage: [ --[output filename | verbose | open | sort key | minsize n | asc | desc | help] | file ]+");
 	exit( EXIT_FAILURE );
 }
 
@@ -72,10 +76,11 @@ void display_usage( void )
 void display_args( void )
 {
     if ( globalArgs.verbose ) {
-        printf( "output:  %s\n" , globalArgs.outFileName);
-        printf( "verbose: %d\n" , globalArgs.verbose);
-        printf( "minsize: %ld\n", globalArgs.minsize);
-        printf( "sort:    %s\n" , globalArgs.sort ? globalArgs.sort : "none");
+        printf( "output:    %s\n" , globalArgs.outFileName);
+        printf( "verbose:   %d\n" , globalArgs.verbose);
+        printf( "minsize:   %ld\n", globalArgs.minsize);
+        printf( "sort:      %s\n" , globalArgs.sort ? globalArgs.sort : "none");
+        printf( "direction: %s\n" , globalArgs.asc  ? "asc" : "des");
         
 //        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
 //            printf("file %2d = %s\n",i,globalArgs.inputFiles[i]);
@@ -139,11 +144,17 @@ static NSComparisonResult comp(NSString* a,NSString* b) { return [a localizedCas
 
 static NSComparisonResult sortFunction (id a, id b, void* )
 {
-	a = [a valueForKey:FILENAME];
-	b = [b valueForKey:FILENAME];
-	NSComparisonResult result = comp([a lastPathComponent],[b lastPathComponent]);
-	if ( !result )     result = comp(a,b) ;
-	return result ;
+	if ( !globalArgs.asc ) {
+        id t = a;
+        a = b ;
+        b = t ;
+    }
+    a = [a valueForKey:KEY];
+	b = [b valueForKey:KEY];
+    
+//	NSComparisonResult result = comp([a lastPathComponent],[b lastPathComponent]);
+//	if ( !result )     result =  ;
+	return comp(a,b) ;
 }
 
 static void doIt(NSString* pdfFileName,NSMutableArray* images)
@@ -219,11 +230,12 @@ int main (int argc,char** argv)
 	/* Initialize globalArgs before we get to work. */
 	globalArgs.outFileName 		= NULL;
     globalArgs.open             = 0   ;
+    globalArgs.asc              = 1   ;
     globalArgs.sort             = NULL;
-	globalArgs.verbose 			= 0;
+	globalArgs.verbose 			= 0   ;
 	globalArgs.inputFiles 		= NULL;
-	globalArgs.numInputFiles 	= 0;
-	globalArgs.minsize          = 512;
+	globalArgs.numInputFiles 	= 0   ;
+	globalArgs.minsize          = 512 ;
 	
 	/* Process the arguments with getopt_long(), then 
 	 * populate globalArgs. 
@@ -235,12 +247,24 @@ int main (int argc,char** argv)
 				globalArgs.outFileName = optarg;
 				break;
 
+			case 'a':
+				globalArgs.asc = 1;
+				break;
+                
+			case 'd':
+				globalArgs.asc = 0;
+				break;
+                
 			case 'O':
 				globalArgs.open = 1;
 				break;
 				
 			case 'v':
 				globalArgs.verbose = optarg?atoi(optarg):1;
+				break;
+				
+			case 's':
+				globalArgs.sort = optarg;
 				break;
 				
 			case 'm':
