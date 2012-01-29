@@ -45,11 +45,12 @@
 
 static enum
 {	OK = 0 
-,	SYNTAX 
-,   NOT_IMAGE
-,	NO_IMAGES
-,	NO_PDF_FILENAME
-,   INVALIDSORT
+,	e_SYNTAX 
+,   e_NOT_IMAGE
+,	e_NO_IMAGES
+,	e_NO_PDF_FILENAME
+,   e_INVALIDSORT
+,   e_UNRECOGNIZED_ARG
 }	error = OK ;
 
 enum sort_e
@@ -62,13 +63,14 @@ enum sort_e
 struct
 {   const char* key;
     sort_e      value;
-}  sortKeys[] = 
+}   sortKeys[] = 
 {   FILENAME    , se_filename
 ,   PATH        , se_path
 ,   DATE        , se_date
 };
 
 static sort_e findSort(const char* key);
+// report => stdout error => stderr warn => stderr IF verbose
 static void warn    (const char* msg);
 static void errors  (const char* msg);
 static void report  (const char* msg);
@@ -92,21 +94,21 @@ struct {
     int         version;                /* -V  option       */
 	NSInteger 	minsize;				/* -m: option       */
 	char**		inputFiles;				/* input files      */
-	int 		numInputFiles;			/* # of input files */
+	int 		nInputFiles;			/* # of input files */
     NSString*   sortKey;                /*                  */
 } globalArgs;
 
-static const struct option longOpts[] = {
-	{ "output"		, required_argument	, NULL, 'o' },
-	{ "sort"		, required_argument	, NULL, 's' },
-	{ "asc"         , no_argument       , NULL, 'a' },
-	{ "desc"		, no_argument       , NULL, 'd' },
-	{ "open"		, no_argument		, NULL, 'O' },
-	{ "verbose"		, no_argument       , NULL, 'v' },
-	{ "version"		, no_argument       , NULL, 'V' },
-	{ "minsize"     , required_argument	, NULL, 'm' },
-	{ "help"		, no_argument		, NULL, 'h' },
-	{ NULL			, no_argument		, NULL, 0   }
+static const struct option longOpts[] =
+{	{ "output"		, required_argument	, NULL, 'o' }
+,	{ "sort"		, required_argument	, NULL, 's' }
+,	{ "asc"         , no_argument       , NULL, 'a' }
+,	{ "desc"		, no_argument       , NULL, 'd' }
+,	{ "open"		, no_argument		, NULL, 'O' }
+,	{ "verbose"		, no_argument       , NULL, 'v' }
+,	{ "version"		, no_argument       , NULL, 'V' }
+,	{ "minsize"     , required_argument	, NULL, 'm' }
+,	{ "help"		, no_argument		, NULL, 'h' }
+,	{ NULL			, no_argument		, NULL, 0   }
 };
 
 /* Display program usage, and exit.
@@ -122,7 +124,7 @@ static void display_usage( void )
  */
 static void display_version( void )
 {
-	reportns( [NSString stringWithFormat:@"ix4 %d.%d",VERSION_MAJOR,VERSION_MINOR] );
+	reportns( [NSString stringWithFormat:@"ix4: %d.%d built:%s %s",VERSION_MAJOR,VERSION_MINOR,__TIME__,__DATE__] );
 	exit( EXIT_FAILURE );
 }
 
@@ -131,15 +133,15 @@ static void display_version( void )
 static void display_args( void )
 {
     if ( globalArgs.verbose ) {
-        warns([NSString stringWithFormat:@"output:    %s\n" , globalArgs.outFileName]);
-        warns([NSString stringWithFormat:@ "sort:      %s\n" , sortKeys[globalArgs.sort].key]);
-        warns([NSString stringWithFormat:@ "direction: %s\n" , globalArgs.asc  ? "asc" : "desc"]);
-        warns([NSString stringWithFormat:@ "verbose:   %d\n" , globalArgs.verbose]);
-        warns([NSString stringWithFormat:@ "minsize:   %ld\n", globalArgs.minsize]);
-        warns([NSString stringWithFormat:@ "open:      %d\n" , globalArgs.open]);
+        reportns([NSString stringWithFormat:@"output:    %s\n" , globalArgs.outFileName]);
+        reportns([NSString stringWithFormat:@ "sort:      %s\n" , sortKeys[globalArgs.sort].key]);
+        reportns([NSString stringWithFormat:@ "direction: %s\n" , globalArgs.asc  ? "asc" : "desc"]);
+        reportns([NSString stringWithFormat:@ "verbose:   %d\n" , globalArgs.verbose]);
+        reportns([NSString stringWithFormat:@ "minsize:   %ld\n", globalArgs.minsize]);
+        reportns([NSString stringWithFormat:@ "open:      %d\n" , globalArgs.open]);
         
-//        for (int i = 0 ; i < globalArgs.numInputFiles ; i++ ) {
-//            warnsns([NSString stringWithFormat:@"file %2d = %s",i,globalArgs.inputFiles[i]]);
+//        for (int i = 0 ; i < globalArgs.nInputFiles ; i++ ) {
+//            reports([NSString stringWithFormat:@"file %2d = %s",i,globalArgs.inputFiles[i]]);
 //        }
     }
 }
@@ -160,13 +162,14 @@ static sort_e findSort(const char* key)
 static void warn(const char* msg)
 {
     if ( globalArgs.verbose ) {
-        puts(msg);
+        errors(msg);
     }
 }
 
 static void errors(const char* msg)
 {
-    puts(msg);
+    fputs(msg,stderr);
+    fputc('\n',stderr);
 }
 
 static void errorns(NSString* msg)
@@ -181,7 +184,7 @@ static void report(const char* msg)
 
 static void reportns(NSString* msg)
 {
-    errors([msg UTF8String]);
+    report([msg UTF8String]);
 }
 
 static void warns(NSString* msg)
@@ -189,23 +192,29 @@ static void warns(NSString* msg)
     warn([msg UTF8String]);
 }
 
+static void unrecognizedArgument(const char* arg)
+{
+    errorns([NSString stringWithFormat:@"%unrecognized argument: %s",arg]);
+    error = e_UNRECOGNIZED_ARG ;
+}
+
 static void notImage(NSString* filename)
 {
     errorns([NSString stringWithFormat:@"%@ is not an image file",filename]);
-    error = NOT_IMAGE ; // only warn, don't terminate
+    error = e_NOT_IMAGE ;
 }
 
 static void noImages(bool bCreate /*= true*/)
 {
 	errors(bCreate?"Unable to create images array":"no suitable images") ;
-	error = NO_IMAGES ;
+	error = e_NO_IMAGES ;
 }
 
 static void invalidSortKey(const char* key)
 {
 	NSString* msg = [NSString stringWithFormat:@"invalid sort key %s",key];
     errorns(msg);
-    error = INVALIDSORT;
+    error = e_INVALIDSORT;
 }
 
 static void noPDFFileName(const char* filename)
@@ -216,13 +225,13 @@ static void noPDFFileName(const char* filename)
         errorns(@"--output pdffile not specified") ;
         display_usage();
     }
-	error = NO_PDF_FILENAME ;
+	error = e_NO_PDF_FILENAME ;
 }
 
 static void syntax(void)
 {
     void display_usage(void);
-	error = SYNTAX ;
+	error = e_SYNTAX ;
 }
 
 static NSComparisonResult sortFunction (id a, id b, void* )
@@ -326,8 +335,7 @@ int main (int argc,char** argv)
 	/* Process the arguments with getopt_long(), then 
 	 * populate globalArgs. 
 	 */
-	opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex );
-	while( opt != -1 ) {
+	while( (opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex)) !=-1 ) {
 		switch( opt ) {
 			case 'o':
 				globalArgs.outFileName = optarg;
@@ -366,17 +374,18 @@ int main (int argc,char** argv)
 			case '?':
 				display_usage();
 				break;
-
+            
 			default:
-				/* You won't actually get here. */
+                // can't happen
 				break;
 		}
-		
-		opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex );
 	}
 	
 	globalArgs.inputFiles 		= argv + optind;
-	globalArgs.numInputFiles 	= argc - optind;
+	globalArgs.nInputFiles 	= argc - optind;
+    for ( int i = 0 ; !error && i < globalArgs.nInputFiles ; i++ ) 
+        if ( globalArgs.inputFiles[i][0] == '-' )
+            unrecognizedArgument(globalArgs.inputFiles[i]);
     
     if ( globalArgs.version ) display_version();
 	
@@ -390,7 +399,7 @@ int main (int argc,char** argv)
     
     ////
 	// run over inputFiles to be sure everything is an image
-	if ( !error ) for ( int i = 0 ; !error && i < globalArgs.numInputFiles ; i++ ) {
+	if ( !error ) for ( int i = 0 ; !error && i < globalArgs.nInputFiles ; i++ ) {
 		NSString* path     = [NSString stringWithUTF8String:globalArgs.inputFiles[i]];
         NSString* fileName = [path lastPathComponent];
 		NSImage*  image    = [[NSImage alloc] initWithContentsOfFile:path];
