@@ -44,6 +44,8 @@
 #define lengthof(x) sizeof(x)/sizeof(x[0])
 #endif
 
+// static data
+static int gbVerbose = 1 ;
 static enum error_e
 {	OK = 0 
 ,	e_SYNTAX 
@@ -54,6 +56,7 @@ static enum error_e
 ,   e_UNRECOGNIZED_ARG
 }	error = OK ;
 
+// local data structures
 enum sort_e
 {   se_none=0
 ,   se_path
@@ -70,10 +73,13 @@ struct
 ,   DATE        , se_date
 };
 
-static sort_e  findSort(const char* key);
-static error_e parseArgs(int argc,char** argv);
-static error_e inspectInput( NSMutableArray* images );
-static error_e doIt(NSString* pdfFileName,NSMutableArray* images);
+// forward declaration
+struct Args ;
+
+static sort_e           findSort    (Args& args,const char* key);
+static error_e          parseArgs   (Args& args,int argc,char** argv);
+static NSMutableArray*  inspectInput(Args& args);
+static error_e          doIt        (Args& args,NSArray* images);
 
 // report => stdout error => stderr warn => stderr IF verbose
 static void warn    (const char* msg);
@@ -84,26 +90,22 @@ static void warns   (NSString* msg);
 static void errorns (NSString* msg);
 static void reportns(NSString* msg);
 
-
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
-static void display_usage(bool bAll=false);
-static void display_args (void);
-static void display_version(void);
 
 static const char *optString = "o:s:adOvVm:h?";
-struct {
+struct Args {
 	const char*	outFileName;			/* -o: option       */
 	sort_e      sort;                   /* -s: option       */
-    bool        asc;                    /* -a|-d option     */
+    bool        desc;                   /* -a|-d option     */
     int         open;                   /* -O  option       */
-	int 		verbose;				/* -v  option       */
+//	int 		verbose;				/* -v  Global option*/ 
     int         version;                /* -V  option       */
 	NSInteger 	minsize;				/* -m: option       */
     int         help;                   /* -h  option       */
 	char**		inputFiles;				/* input files      */
 	int 		nInputFiles;			/* # of input files */
     NSString*   sortKey;                /*                  */
-} globalArgs;
+};
 
 static const struct option longOpts[] =
 {	{ "output"		, required_argument	, NULL, 'o' }
@@ -118,11 +120,15 @@ static const struct option longOpts[] =
 ,	{ NULL			, no_argument		, NULL, 0   }
 };
 
+static void display_usage(char** argv,bool bAll=false);
+static void display_args (Args& args);
+static void display_version(void);
+
 /* Display program usage, and exit.
  */
-static void display_usage(bool bAll /* = false*/)
+static void display_usage(char** argv,bool bAll /* = false*/)
 {
-	if ( bAll ) report("ix4 - convert images to PDF" );
+	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",argv[0]]);
 	report("usage: [ --[output filename | sort key | asc | desc | open | verbose | version | minsize n | help] | file ]+");
 	exit( EXIT_FAILURE );
 }
@@ -135,20 +141,20 @@ static void display_version( void )
 	exit( EXIT_FAILURE );
 }
 
-/* Convert the input files to PDF, governed by globalArgs.
+/* Convert the input files to PDF, governed by args.
  */
-static void display_args( void )
+static void display_args( Args& args )
 {
-    if ( globalArgs.verbose ) {
-        reportns([NSString stringWithFormat:@ "output:    %s" , globalArgs.outFileName]);
-        reportns([NSString stringWithFormat:@ "sort:      %s" , sortKeys[globalArgs.sort].key]);
-        reportns([NSString stringWithFormat:@ "direction: %s" , globalArgs.asc  ? "asc" : "desc"]);
-        reportns([NSString stringWithFormat:@ "verbose:   %d" , globalArgs.verbose]);
-        reportns([NSString stringWithFormat:@ "minsize:   %ld", globalArgs.minsize]);
-        reportns([NSString stringWithFormat:@ "open:      %d" , globalArgs.open]);
+    if ( gbVerbose ) {
+        reportns([NSString stringWithFormat:@ "output:    %s" , args.outFileName]);
+        reportns([NSString stringWithFormat:@ "sort:      %s" , sortKeys[args.sort].key]);
+        reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
+        reportns([NSString stringWithFormat:@ "verbose:   %d" , gbVerbose]);
+        reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
+        reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
         
-        for (int i = 0 ; i < globalArgs.nInputFiles ; i++ ) {
-            reportns([NSString stringWithFormat:@"file %2d = %s",i,globalArgs.inputFiles[i]]);
+        for (int i = 0 ; i < args.nInputFiles ; i++ ) {
+            reportns([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
         }
     }
 }
@@ -156,21 +162,21 @@ static void display_args( void )
 
 static NSInteger bigger(NSInteger a,NSInteger b) { return a > b ? a : b ; }
 
-static sort_e findSort(const char* key)
+static sort_e findSort(Args& args,const char* key)
 {
     sort_e result = se_none;
     for ( int i = 0 ; !result && i < lengthof(sortKeys) ; i++ )
         if ( strcmp(key,sortKeys[i].key)==0 ) {
             result = sortKeys[i].value;
-            [globalArgs.sortKey release];
-             globalArgs.sortKey = [NSString stringWithUTF8String:key];
+            [args.sortKey release];
+             args.sortKey = [NSString stringWithUTF8String:key];
         }
     return result;
 }
 
 static void warn(const char* msg)
 {
-    if ( globalArgs.verbose ) {
+    if ( gbVerbose ) {
         errors(msg);
     }
 }
@@ -232,20 +238,19 @@ static void noPDFFileName(const char* filename)
         errorns([NSString stringWithFormat:@"Unable to create pdfFileName %s",filename]) ;
     } else {
         errorns(@"--output pdffile not specified") ;
-        display_usage();
     }
 	error = e_NO_PDF_FILENAME ;
 }
 
-static void syntax(void)
+static void syntaxError()
 {
-    void display_usage(void);
 	error = e_SYNTAX ;
 }
 
-static NSComparisonResult sortFunction (id a, id b, void* )
+static NSComparisonResult sortFunction (id a, id b, void* p)
 {
-	if ( !globalArgs.asc ) {
+    Args* pArgs = (Args*) p;
+	if ( pArgs->desc ) {
         id t = a;
         a = b ;
         b = t ;
@@ -256,12 +261,15 @@ static NSComparisonResult sortFunction (id a, id b, void* )
 	return ( a && b ) ? [a compare:b] : NSOrderedSame ;
 }
 
-static error_e inspectInput( NSMutableArray* images )
+static NSMutableArray* inspectInput(Args& args)
 {
+    NSMutableArray* images = [[NSMutableArray alloc]init] ;
+    if ( !images ) noImages(true);
+    
     ////
     // run over inputFiles to be sure everything is an image
-    for ( int i = 0 ; !error && i < globalArgs.nInputFiles ; i++ ) {
-        NSString* path     = [NSString stringWithUTF8String:globalArgs.inputFiles[i]];
+    for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) {
+        NSString* path     = [NSString stringWithUTF8String:args.inputFiles[i]];
         NSString* fileName = [path lastPathComponent];
         NSImage*  image    = [[NSImage alloc] initWithContentsOfFile:path];
         id        keyValue = NULL;
@@ -287,9 +295,9 @@ static error_e inspectInput( NSMutableArray* images )
             
             ////
             // save the imageRep and other metadata in a dictionary in the images array
-            if ( biggest >= globalArgs.minsize ) {
+            if ( biggest >= args.minsize ) {
                 NSImageRep*	  imageRep = [reps objectAtIndex:jBig];
-                switch ( globalArgs.sort ) {
+                switch ( args.sort ) {
                     case se_filename:
                         keyValue = fileName;
                         break;
@@ -331,15 +339,21 @@ static error_e inspectInput( NSMutableArray* images )
                 warns([NSString stringWithFormat:@"image less than minsize %@",path]);
             }
         }
+        if ( !error && ![images count]) noImages(false);
+        if ( args.sort ) [images sortUsingFunction:sortFunction context:&args];
     }
-    return error;
+    
+    return images;
 }
 
-static error_e doIt(NSString* pdfFileName,NSMutableArray* images)
+static error_e doIt(Args& args,NSArray* images)
 {
-    if ( globalArgs.sort ) [images sortUsingFunction:sortFunction context:nil];
-	
-	PDFDocument* document = [[PDFDocument alloc]init] ;
+	if ( !error && !args.outFileName) noPDFFileName(NULL);
+    const char* outFileName = (const char*)args.outFileName ;
+	NSString*   pdfFileName = error==OK ? [NSString stringWithUTF8String:outFileName]: nil ;
+	if ( !error && !pdfFileName   ) noPDFFileName((const char*)args.outFileName);
+
+	PDFDocument* document = error==OK?[[PDFDocument alloc]init]:NULL ;
 	if ( document ) {
         
 		////
@@ -361,7 +375,8 @@ static error_e doIt(NSString* pdfFileName,NSMutableArray* images)
             // label is having trouble with leading /'s (for example in paths)
             NSMutableString* mString = [NSMutableString stringWithCapacity:[label length]+1];
             [mString appendString:label];
-            [mString replaceOccurrencesOfString:@"/" withString:@" /" options:NSLiteralSearch range:NSMakeRange(0,1)];// [mString length])];
+            [mString replaceOccurrencesOfString:@"/" withString:@" /" options:NSLiteralSearch range:NSMakeRange(0,1)];
+                                                                        // [mString length])];
             label = [NSString stringWithString:mString];
 
             reportns([NSString stringWithFormat:@"label = %@",label]);
@@ -399,7 +414,7 @@ static error_e doIt(NSString* pdfFileName,NSMutableArray* images)
 		////
 		// write the PDF file and display it
 		if ( [document writeToFile:pdfFileName] ) {
-            if ( globalArgs.open ) {
+            if ( args.open ) {
                 [[NSWorkspace sharedWorkspace] openFile:pdfFileName];
             }
 		} else {
@@ -409,56 +424,56 @@ static error_e doIt(NSString* pdfFileName,NSMutableArray* images)
     return error;
 }
 
-static error_e parseArgs(int argc,char** argv)
+static error_e parseArgs(Args& args,int argc,char** argv)
 {
     int opt = 0;
 	int longIndex = 0;
 	
-	/* Initialize globalArgs before we get to work. */
-    memset(&globalArgs,0,sizeof(globalArgs));
-	globalArgs.minsize = 512   ;
+	/* Initialize args before we get to work. */
+    memset(&args,0,sizeof(args));
+	args.minsize = 512   ;
 	
 	/* Process the arguments with getopt_long(), then 
-	 * populate globalArgs. 
+	 * populate args. 
 	 */
 	while( (opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex)) !=-1 ) {
 		switch( opt ) {
 			case 'o':
-				globalArgs.outFileName = optarg;
+				args.outFileName = optarg;
 				break;
                 
 			case 'a':
-				globalArgs.asc = 1;
+				args.desc = 0;
 				break;
                 
 			case 'd':
-				globalArgs.asc = 0;
+				args.desc = 1;
 				break;
                 
 			case 'O':
-				globalArgs.open = 1;
+				args.open = 1;
 				break;
 				
 			case 'v':
-				globalArgs.verbose = 1;
+				gbVerbose++;
 				break;
 				
 			case 'V':
-				globalArgs.version = 1;
+				args.version = 1;
 				break;
 				
 			case 's':
-				globalArgs.sort = findSort(optarg);
-                if ( !error && !globalArgs.sort ) invalidSortKey(optarg);
+				args.sort = findSort(args,optarg);
+                if ( !error && !args.sort ) invalidSortKey(optarg);
 				break;
 				
 			case 'm':
-				globalArgs.minsize = optarg?atoi(optarg):0;
+				args.minsize = optarg?atoi(optarg):0;
 				break;
 				
 			case 'h':	/* fall-through is intentional */
 			case '?':
-				globalArgs.help = 1;
+				args.help = 1;
 				break;
                 
 			default:
@@ -467,40 +482,39 @@ static error_e parseArgs(int argc,char** argv)
 		}
 	}
 	
-	globalArgs.inputFiles 	= argv + optind;
-	globalArgs.nInputFiles 	= argc - optind;
-    for ( int i = 0 ; !error && i < globalArgs.nInputFiles ; i++ ) 
-        if ( globalArgs.inputFiles[i][0] == '-' )
-            unrecognizedArgument(globalArgs.inputFiles[i]);
+	args.inputFiles 	= argv + optind;
+	args.nInputFiles 	= argc - optind;
+    for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) 
+        if ( args.inputFiles[i][0] == '-' )
+            unrecognizedArgument(args.inputFiles[i]);
     
     return error ;
 }
 
 int main (int argc,char** argv)
 {
+    if ( argc <= 1 ) display_usage(argv,true);
+    
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	
+
     // parse the command line
-    error = parseArgs(argc,argv);
-    if ( globalArgs.version ) display_version();
-    if ( globalArgs.help    ) display_usage(true);
-	
-    if ( !error && !globalArgs.outFileName) noPDFFileName(NULL);
-	if ( !error                   ) display_args();
+    Args args ;
+    error = parseArgs(args,argc,argv);
+    
+    // tell the use what's going on
+    if ( args.version ) display_version();
+    if ( args.help    ) display_usage(argv,true);
+    gbVerbose--;
+    
+	if ( !error       ) display_args(args);
 
-	// convert the globalArgs into cocoa structures
-    NSMutableArray* images = error==OK ? [[NSMutableArray alloc]init]: nil ;
-	if ( !error && !images        ) noImages(true) ;
-
-	NSString* pdfFileName  = error==OK ? [NSString stringWithUTF8String:(const char*)globalArgs.outFileName]: nil ;
-	if ( !error && !pdfFileName   ) noPDFFileName((const char*)globalArgs.outFileName);
-
-    if ( !error                   ) inspectInput(images) ;
-    if ( !error && ![images count]) noImages(false);
-
+	// convert the args into cocoa structures
+    NSMutableArray* images = inspectInput(args) ;
+    
 	// generate output
-    if ( !error                   ) doIt(pdfFileName,images) ;
-	
+    if ( !error ) doIt(args,images) ;
+    
+    if ( !error && !args.nInputFiles ) args.help = 1 ;
     [pool drain];
     return error;
 }
