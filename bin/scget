@@ -1,0 +1,62 @@
+#!/bin/bash
+
+### usage : ___ [--user  user ]+ -- server path [destination]
+
+base=$(basename "$0")
+dir=$(dirname   "$0")
+Base=$(perl -e "\$A=\""$base"\";\$A =~ s#/#\\\\\\/#g;print(\$A)")
+
+syntaxError() {
+	grep "^\#\#\# " "$0" | sed "s/^\#\#\# //g" | sed "s/___/$Base/"
+	exit 1
+}
+
+syntaxError() {
+	grep "^\#\#\# " "$0" | sed "s/^\#\#\# //g" | sed "s/___/$Base/"
+	exit 1
+}
+
+bomb() {
+	echo "*** $1 requires an argument ***" 1>&2	
+	syntaxError
+}
+
+destination=''
+user="root"
+
+##
+# parse the command line
+# values
+while [ $# -gt 0 ]; do
+	arg="$1"
+	# to lower case if more than 2 characters
+	if [ "${#arg}" -gt 2 ]; then
+		arg="$(echo $arg|perl -e 'print lc <>;')"
+	fi
+    case "$arg" in
+      -u|--user)          if [ $# -gt 1 ]; then user="$2"    ; shift 2 ; else bomb $1 ; fi ;;
+      --)                 shift; break;;
+      *)                  break;;
+    esac
+done
+
+server="$1"
+path="$2"
+if [ $# == 2 ]; then
+	destination="$path"
+elif [ $# == 3 ]; then
+	destination="$3"
+fi
+
+if [ ! -z "$destination" ]; then
+	if [ -d "$destination" ]; then
+		destination="$destination"/`basename $path`
+	fi
+	args scp "$user@$server:$path" "$destination"
+		 scp "$user@$server:$path" "$destination"
+else
+	syntaxError
+fi
+
+# That's all Folks!
+##
