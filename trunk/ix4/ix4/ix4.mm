@@ -44,6 +44,8 @@
 #define lengthof(x) sizeof(x)/sizeof(x[0])
 #endif
 
+// http://www.dribin.org/dave/blog/archives/2008/04/29/ddcli/
+
 // static data
 static int gbVerbose = 1 ;
 static enum error_e
