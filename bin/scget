@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### usage : ___ [--user <name> --dryrun]+ server path [destination]
+### usage : ___ [--user <name> --dryrun --verbose --help]+ [--] server path [destination]
 
 base=$(basename "$0")
 dir=$(dirname   "$0")
@@ -8,7 +8,7 @@ Base=$(perl -e "\$A=\""$base"\";\$A =~ s#/#\\\\\\/#g;print(\$A)")
 
 reportError()
 {
-	echo "$@" >2
+	echo "$@" 1>&2
 }
 
 syntaxError() {
@@ -34,6 +34,7 @@ while [ $# -gt 0 ]; do
 		arg="$(echo $arg|perl -e 'print lc <>;')"
 	fi
     case "$arg" in
+      -h|--help|-\?)      syntaxError ;;
       -u|--user)          if [ $# -gt 1 ]; then user="$2" ; shift 2 ; else bomb $1 ; fi ;;
       -d|--dryrun)        dryrun=1;verbose=1              ; shift                       ;;
       -v|--verbose)       verbose=1                       ; shift                       ;;
