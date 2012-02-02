@@ -14,8 +14,8 @@ animals=( "cow:moo"
           "bash:rock" )
 
 for animal in ${animals[@]} ; do
-    KEY=${animal%%:*}
-    VALUE=${animal#*:}
+    KEY="${animal%%:*}"
+    VALUE="${animal#*:}"
     printf "%s likes to %s.\n" $KEY $VALUE
 done
 
@@ -40,11 +40,10 @@ hget() {
     eval echo '${'"$1$2"'#hash}'
 }
 
-hput capitols France Paris
+hput capitols France      Paris
 hput capitols Netherlands Amsterdam
-hput capitols Spain Madrid
+hput capitols Spain       Madrid
 echo `hget capitols France` and `hget capitols Netherlands` and `hget capitols Spain`
-
 
 # That's all Folks!
 ##

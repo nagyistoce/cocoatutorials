@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### usage : ___ [--user <name> --dryrun]+ server path [destination]
+### usage : ___ [--user  user --dryrun ]+ path server [destination]
 
 base=$(basename "$0")
 dir=$(dirname   "$0")
@@ -17,7 +17,7 @@ syntaxError() {
 }
 
 bomb() {
-	reportError "*** $1 requires an argument ***"	
+	reportError "*** $1 requires an argument ***"
 	syntaxError
 }
 
@@ -27,6 +27,7 @@ bomb() {
 unset user
 dryrun=0
 verbose=0
+
 while [ $# -gt 0 ]; do
 	arg="$1"
 	# to lower case if more than 2 characters
@@ -42,9 +43,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+path="$1"
+server="$2"
 unset destination
-server="$1"
-path="$2"
 
 if [ -z "$user" ]; then
 # Array pretending to be a Pythonic dictionary
@@ -70,24 +71,25 @@ elif [ $# == 3 ]; then
 	destination="$3"
 fi
 
-if [ $verbose == 1 ]; then
-	echo user = $user server = $server path = $path destination = $destination dryrun = $dryrun
+if [ -z "$user" ]; then
+	echo user = $user path = $path server = $server destination = $destination dryrun = $dryrun
 fi
 
 if [ -z "$destination" ]; then
 	syntaxError
 fi
 
-if [ -d "$destination" ]; then
-	destination="$destination"/`basename $path`
+if [ ! -e "$path" ]; then
+	reportError "*** path $path does not exist ***"
+	exit 1
 fi
 
 if [ $verbose == 1 ]; then
-	echo scp "$user@$server:$path" "$destination"
+	echo scp "$path" "$user@$server:$destination"
 fi
 
 if [ $dryrun == 0 ]; then
-	scp "$user@$server:$path" "$destination"
+	scp "$path" "$user@$server:$destination"
 fi
 
 # That's all Folks!
