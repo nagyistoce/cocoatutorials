@@ -55,6 +55,7 @@ parseArgs()
 	done
 }
 parseArgs "$@"
+if [ -z $stub ]; then help=helpMessage ; fi
 
 ##
 # setup variables

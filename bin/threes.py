@@ -213,11 +213,19 @@ def threes(opts):
 		for g in groups:
 			# print p,len(g)
 			if len(g)==3:
+				filenames=[]
+				while len(filenames) != 3:
+					for f in range(1,3+1):
+						filename="%04d.jpg" % (file+f)
+						if not os.path.exists(os.path.join(hdrDir,filename)):
+							filenames.append(filename)
+					file+=10
 				# print g[0]['path']
+				i=0
 				for p in g:
-					file=file+1
-					subprocess.call([ 'cp',p['path'],os.path.join(hdrDir,("%04d.jpg"%file) ) ])
-				file=file+7
+					subprocess.call([ 'cp',p['path'],os.path.join(hdrDir,filenames[i]) ])
+					i+=1
+				print 'created',filenames	
 			else:
 				print g[0]['path'],len(g)
 		##
