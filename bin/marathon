@@ -106,7 +106,7 @@ sub getSeconds
 		$hours   = int($1);
 		$minutes = int($2);
 		$seconds = int($3);
-    } elsif ( $time =~ /(\d+):(\d+)/) {    # match hh:mm:ss format
+    } elsif ( $time =~ /(\d+):(\d+)/) {    # match mm:ss format
 		$minutes = int($1);
 		$seconds = int($2);
     } 

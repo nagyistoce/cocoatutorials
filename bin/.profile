@@ -162,7 +162,7 @@ dir() {
 	fi
 }
 
-export HISTTIMEFORMAT="%T"
+export HISTTIMEFORMAT="%T "
 history() { 
 	builtin history | tail -30
 }

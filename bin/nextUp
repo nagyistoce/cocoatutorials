@@ -1,0 +1,88 @@
+#!/bin/bash
+
+VERSION=0.1
+helpMessage()
+{
+	echo "usage: $(basename $0) [--numeric --version --help --verbose --file --directory --upper --lower stub]+ "
+	exit 1
+}
+
+versionMessage()
+{
+	echo "version: $(basename $0) $VERSION"
+	exit 2
+}
+
+verboseMessage()
+{
+	echo from=$from to=$to n=$n stub=$stub lower=$lower mk=$mk
+}
+
+mkfile()
+{
+	echo -ne '' > "$*"
+}
+
+##
+# default arguments
+numeric=0
+upper=0
+unset verbose
+unset help
+unset stub
+mk=mkdir
+
+parseArgs()
+{
+	for arg in $@ ; do
+		ARG="$arg"
+		# to lower case if more than 2 characters
+		if [ "${#arg}" -gt 2 ]; then
+			arg="$(echo $arg|perl -e 'print lc <>;')"
+		fi
+		case "$arg" in
+		  -a|--alphabetic)    numeric=0               ;;
+		  -n|--numeric)       numeric=1               ;;
+		  -f|--file)          mk=mkfile               ;;
+		  -d|--directory)     mk=mkdir                ;;
+		  -v|--verbose)       verbose=verboseMessage  ;;
+		  -V|--version)       version=versionMessage  ;;
+		  -u|--upper)         upper=1                 ;;
+		  -l|--lower)         upper=0                 ;;
+		  -h|-\?|--help)      help=helpMessage        ;;
+		  *) 			      stub="$ARG"             ;;
+		esac
+	done
+}
+parseArgs "$@"
+
+##
+# setup variables
+n=96
+if [ $upper == 1 ]; then n=64 ; fi
+from=1
+to=26
+if [ $numeric == 1 ]; then
+	n=48
+	to=9
+fi
+
+##
+# report to the user
+$verbose
+$version
+$help
+
+##
+# action
+for i in $(seq $from $to) ; do
+	name=$(perl -e "print('$stub' . chr($n+$i))")
+	if [ ! -e $name ]; then
+		echo $mk \""$name"\"
+		$mk "$name"
+		break;
+	fi
+done 
+
+# That's all Folks
+##
