@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A12807CB14DDE1C4001EF617 /* DDCliApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C314DDE1C4001EF617 /* DDCliApplication.m */; };
+		A12807CC14DDE1C4001EF617 /* DDCliParseException.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C514DDE1C4001EF617 /* DDCliParseException.m */; };
+		A12807CD14DDE1C4001EF617 /* DDCliUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C714DDE1C4001EF617 /* DDCliUtil.m */; };
+		A12807CE14DDE1C4001EF617 /* DDGetoptLongParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807CA14DDE1C4001EF617 /* DDGetoptLongParser.m */; };
 		A193E4AF14D24B1D001D3486 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A193E4AE14D24B1D001D3486 /* Foundation.framework */; };
 		A193E4B614D24B1D001D3486 /* ix4.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = A193E4B514D24B1D001D3486 /* ix4.1 */; };
 		A193E4BD14D24B89001D3486 /* ix4.mm in Sources */ = {isa = PBXBuildFile; fileRef = A193E4BC14D24B89001D3486 /* ix4.mm */; };
@@ -28,6 +32,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A12807C214DDE1C4001EF617 /* DDCliApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliApplication.h; path = ../ddcli/lib/DDCliApplication.h; sourceTree = "<group>"; };
+		A12807C314DDE1C4001EF617 /* DDCliApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDCliApplication.m; path = ../ddcli/lib/DDCliApplication.m; sourceTree = "<group>"; };
+		A12807C414DDE1C4001EF617 /* DDCliParseException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliParseException.h; path = ../ddcli/lib/DDCliParseException.h; sourceTree = "<group>"; };
+		A12807C514DDE1C4001EF617 /* DDCliParseException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDCliParseException.m; path = ../ddcli/lib/DDCliParseException.m; sourceTree = "<group>"; };
+		A12807C614DDE1C4001EF617 /* DDCliUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliUtil.h; path = ../ddcli/lib/DDCliUtil.h; sourceTree = "<group>"; };
+		A12807C714DDE1C4001EF617 /* DDCliUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDCliUtil.m; path = ../ddcli/lib/DDCliUtil.m; sourceTree = "<group>"; };
+		A12807C814DDE1C4001EF617 /* DDCommandLineInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCommandLineInterface.h; path = ../ddcli/lib/DDCommandLineInterface.h; sourceTree = "<group>"; };
+		A12807C914DDE1C4001EF617 /* DDGetoptLongParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDGetoptLongParser.h; path = ../ddcli/lib/DDGetoptLongParser.h; sourceTree = "<group>"; };
+		A12807CA14DDE1C4001EF617 /* DDGetoptLongParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDGetoptLongParser.m; path = ../ddcli/lib/DDGetoptLongParser.m; sourceTree = "<group>"; };
 		A193E4AA14D24B1D001D3486 /* ix4 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ix4; sourceTree = BUILT_PRODUCTS_DIR; };
 		A193E4AE14D24B1D001D3486 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A193E4B414D24B1D001D3486 /* ix4-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ix4-Prefix.pch"; sourceTree = "<group>"; };
@@ -51,9 +64,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A123C09314DDC959003AE23E /* DDcli */ = {
+			isa = PBXGroup;
+			children = (
+				A12807C214DDE1C4001EF617 /* DDCliApplication.h */,
+				A12807C314DDE1C4001EF617 /* DDCliApplication.m */,
+				A12807C414DDE1C4001EF617 /* DDCliParseException.h */,
+				A12807C514DDE1C4001EF617 /* DDCliParseException.m */,
+				A12807C614DDE1C4001EF617 /* DDCliUtil.h */,
+				A12807C714DDE1C4001EF617 /* DDCliUtil.m */,
+				A12807C814DDE1C4001EF617 /* DDCommandLineInterface.h */,
+				A12807C914DDE1C4001EF617 /* DDGetoptLongParser.h */,
+				A12807CA14DDE1C4001EF617 /* DDGetoptLongParser.m */,
+			);
+			name = DDcli;
+			sourceTree = "<group>";
+		};
 		A193E49F14D24B1C001D3486 = {
 			isa = PBXGroup;
 			children = (
+				A123C09314DDC959003AE23E /* DDcli */,
 				A193E4B014D24B1D001D3486 /* ix4 */,
 				A193E4AD14D24B1D001D3486 /* Frameworks */,
 				A193E4AB14D24B1D001D3486 /* Products */,
@@ -147,6 +177,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A193E4BD14D24B89001D3486 /* ix4.mm in Sources */,
+				A12807CB14DDE1C4001EF617 /* DDCliApplication.m in Sources */,
+				A12807CC14DDE1C4001EF617 /* DDCliParseException.m in Sources */,
+				A12807CD14DDE1C4001EF617 /* DDCliUtil.m in Sources */,
+				A12807CE14DDE1C4001EF617 /* DDGetoptLongParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +271,7 @@
 				A193E4BB14D24B1D001D3486 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
