@@ -3,7 +3,7 @@
 VERSION=0.1
 helpMessage()
 {
-	echo "usage: $(basename $0) [--numeric --version --help --verbose --file --directory --upper --lower stub]+ "
+	echo "usage: $(basename $0) [--numeric | --version | --help | --verbose | --file | --directory | --upper | --lower | --from n | stub]+ "
 	exit 1
 }
 
@@ -15,7 +15,7 @@ versionMessage()
 
 verboseMessage()
 {
-	echo from=$from to=$to n=$n stub=$stub lower=$lower mk=$mk
+	echo from=$from to=$to n=$n stub=$stub lower=$lower mk=$mk numeric=$numeric
 }
 
 mkfile()
@@ -23,10 +23,15 @@ mkfile()
 	echo -ne '' > "$*"
 }
 
+bomb() {
+	echo "*** $1 requires an argument ***" 1>&2	
+	syntaxError
+}
+
 ##
 # default arguments
-numeric=0
-upper=0
+unset upper
+unset numeric
 unset verbose
 unset help
 unset stub
@@ -34,39 +39,47 @@ mk=mkdir
 
 parseArgs()
 {
+	skip=0
+	let count=0
+	args=("$@")
 	for arg in $@ ; do
-		ARG="$arg"
-		# to lower case if more than 2 characters
-		if [ "${#arg}" -gt 2 ]; then
-			arg="$(echo $arg|perl -e 'print lc <>;')"
+		if [ $skip == 0 ]; then
+			count=$((count+1))
+			ARG="$arg"
+			# to lower case if more than 2 characters
+			if [ "${#arg}" -gt 2 ]; then
+				arg="$(echo $arg|perl -e 'print lc <>;')"
+			fi
+			case "$arg" in
+			  -a|--alphabetic)    unset numeric           ;;
+			  -1|--from)          if [ $# -gt $count ]; then from="${args[$count]}" ; skip=1 ; else bomb $1 ; fi ;;
+			  -n|--numeric)       numeric=1               ;;
+			  -f|--file)          mk=mkfile               ;;
+			  -d|--directory)     mk=mkdir                ;;
+			  -v|--verbose)       verbose=verboseMessage  ;;
+			  -V|--version)       version=versionMessage  ;;
+			  -u|--upper)         upper=1                 ;;
+			  -l|--lower)         unset upper             ;;
+			  -h|-\?|--help)      help=helpMessage        ;;
+			  *) 			      stub="$ARG"             ;;
+			esac
+		else
+			skip=$(($skip-1))
 		fi
-		case "$arg" in
-		  -a|--alphabetic)    numeric=0               ;;
-		  -n|--numeric)       numeric=1               ;;
-		  -f|--file)          mk=mkfile               ;;
-		  -d|--directory)     mk=mkdir                ;;
-		  -v|--verbose)       verbose=verboseMessage  ;;
-		  -V|--version)       version=versionMessage  ;;
-		  -u|--upper)         upper=1                 ;;
-		  -l|--lower)         upper=0                 ;;
-		  -h|-\?|--help)      help=helpMessage        ;;
-		  *) 			      stub="$ARG"             ;;
-		esac
 	done
 }
 parseArgs "$@"
 if [ -z $stub ]; then help=helpMessage ; fi
 
 ##
-# setup variables
+# setup loop variables
 n=96
-if [ $upper == 1 ]; then n=64 ; fi
-from=1
+if [ ! -z $upper ]; then n=64 ; fi
 to=26
-if [ $numeric == 1 ]; then
-	n=48
-	to=9
+if [ ! -z $numeric ]; then
+	to=999
 fi
+if [ -z $from ]; then let from=1 ; fi
 
 ##
 # report to the user
@@ -77,7 +90,11 @@ $help
 ##
 # action
 for i in $(seq $from $to) ; do
-	name=$(perl -e "print('$stub' . chr($n+$i))")
+	stub=$(perl -e "print('$stub' =~ /%/ ? \"$stub\" : \"$stub%s\")")
+	arg=$i
+	if [ -z $numeric ]; then arg=$(perl -e "print(chr($n+$i))") ; fi
+
+	name=$(printf $stub $arg)
 	if [ ! -e $name ]; then
 		echo $mk \""$name"\"
 		$mk "$name"
