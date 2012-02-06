@@ -86,7 +86,6 @@
     mTarget = target;
 }
 
-
 - (void) setGetoptLongOnly: (BOOL) getoptLongOnly;
 {
     if (getoptLongOnly)
