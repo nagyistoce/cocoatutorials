@@ -21,7 +21,11 @@
 
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
-// #define USE_DDCLI
+
+// #define    GETOPT_LONG 1
+#define    DDCLI      2
+
+//#define    BUILD_WITH DDLCLI
 
 #import  <Foundation/Foundation.h>
 #import  <AppKit/AppKit.h>
@@ -34,20 +38,34 @@
 #include <getopt.h>
 #include <string.h>
 
-#define KEYVALUE "keyvalue"
-#define FILENAME "filename"
-#define PATH     "path"
-#define DATE     "date"
-#define LABEL    "label"
-#define IMAGEREP "imageRep"
-
+#include "PDFImages.h"
 
 #ifndef lengthof
 #define lengthof(x) sizeof(x)/sizeof(x[0])
 #endif
 
+sort_e sort=se_none;
+
+static void display_usage(const char* program,bool bAll)
+{
+	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",program]);
+	report("usage: [ --[pdf filename | sort key | asc | desc | open | verbose | version | minsize n | help] | file ]+");
+	exit( EXIT_FAILURE );
+}
+
+static void display_version( void )
+{
+	reportns( [NSString stringWithFormat:@"ix4: %d.%d built:%s %s",VERSION_MAJOR,VERSION_MINOR,__TIME__,__DATE__] );
+	exit( EXIT_FAILURE );
+}
+
+#ifdef GETOPT_LONG
+
+// prototypes
+struct Args ;
+static void display_args (Args& args);
+
 // static data
-static int gbVerbose = 1 ;
 static enum error_e
 {	OK = 0 
 ,	e_SYNTAX 
@@ -58,59 +76,37 @@ static enum error_e
 ,   e_UNRECOGNIZED_ARG
 }	error = OK ;
 
-// local data structures
-enum sort_e
-{   se_none=0
-,   se_path
-,   se_filename
-,   se_date
-}   sort=se_none;
+static sort_e    findSort    (Args& args,const char* key);
+static error_e   parseArgs   (Args& args,int argc,char** argv);
+static NSArray*  argsToImages(Args& args);
 
 struct
-{   const char* key;
-    sort_e      value;
+{   const char*  key;
+    sort_e       value;
 }   sortKeys[] = 
-{   FILENAME    , se_filename
-,   PATH        , se_path
-,   DATE        , se_date
+{   "filename" , se_filename
+,   "path"     , se_path
+,   "date"     , se_date
 };
 
-// forward declaration
-struct Args ;
-
-static sort_e           findSort    (Args& args,const char* key);
-static error_e          parseArgs   (Args& args,int argc,char** argv);
-static NSMutableArray*  inspectInput(Args& args);
-static error_e          doIt        (Args& args,NSArray* images);
-
-// report => stdout error => stderr warn => stderr IF verbose
-static void warn    (const char* msg);
-static void errors  (const char* msg);
-static void report  (const char* msg);
-
-static void warns   (NSString* msg);
-static void errorns (NSString* msg);
-static void reportns(NSString* msg);
+struct Args {
+	const char*	 pdf;                    /* -p: option       */
+	sort_e       sort;                   /* -s: option       */
+    bool         desc;                   /* -a|-d option     */
+    int          open;                   /* -o  option       */
+	int 		 verbose;                /* -v  global option*/ 
+    int          version;                /* -V  option       */
+	NSInteger 	 minsize;				 /* -m: option       */
+    int          help;                   /* -h  option       */
+	char**		 inputFiles;			 /* input files      */
+	int 		 nInputFiles;			 /* # of input files */
+    NSString*    sortKey;                /*                  */
+};
 
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
-
-static const char *optString = "o:s:adOvVm:h?";
-struct Args {
-	const char*	outFileName;			/* -o: option       */
-	sort_e      sort;                   /* -s: option       */
-    bool        desc;                   /* -a|-d option     */
-    int         open;                   /* -O  option       */
-//	int 		verbose;				/* -v  Global option*/ 
-    int         version;                /* -V  option       */
-	NSInteger 	minsize;				/* -m: option       */
-    int         help;                   /* -h  option       */
-	char**		inputFiles;				/* input files      */
-	int 		nInputFiles;			/* # of input files */
-    NSString*   sortKey;                /*                  */
-};
-
+static const char *optString = "p:s:adovVm:h?";
 static const struct option longOpts[] =
-{	{ "output"		, required_argument	, NULL, 'o' }
+{	{ "pdf"         , required_argument	, NULL, 'p' }
 ,	{ "sort"		, required_argument	, NULL, 's' }
 ,	{ "asc"         , no_argument       , NULL, 'a' }
 ,	{ "desc"		, no_argument       , NULL, 'd' }
@@ -122,48 +118,6 @@ static const struct option longOpts[] =
 ,	{ NULL			, no_argument		, NULL, 0   }
 };
 
-static void display_usage(char** argv,bool bAll=false);
-static void display_args (Args& args);
-static void display_version(void);
-
-/* Display program usage, and exit.
- */
-static void display_usage(char** argv,bool bAll /* = false*/)
-{
-	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",argv[0]]);
-	report("usage: [ --[output filename | sort key | asc | desc | open | verbose | version | minsize n | help] | file ]+");
-	exit( EXIT_FAILURE );
-}
-
-/* Display program version, and exit.
- */
-static void display_version( void )
-{
-	reportns( [NSString stringWithFormat:@"ix4: %d.%d built:%s %s",VERSION_MAJOR,VERSION_MINOR,__TIME__,__DATE__] );
-	exit( EXIT_FAILURE );
-}
-
-/* Convert the input files to PDF, governed by args.
- */
-static void display_args( Args& args )
-{
-    if ( gbVerbose ) {
-        reportns([NSString stringWithFormat:@ "output:    %s" , args.outFileName]);
-        reportns([NSString stringWithFormat:@ "sort:      %s" , sortKeys[args.sort].key]);
-        reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
-        reportns([NSString stringWithFormat:@ "verbose:   %d" , gbVerbose]);
-        reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
-        reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
-        
-        for (int i = 0 ; i < args.nInputFiles ; i++ ) {
-            reportns([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
-        }
-    }
-}
-// end of code copied from ibm
-
-static NSInteger bigger(NSInteger a,NSInteger b) { return a > b ? a : b ; }
-
 static sort_e findSort(Args& args,const char* key)
 {
     sort_e result = se_none;
@@ -174,39 +128,6 @@ static sort_e findSort(Args& args,const char* key)
              args.sortKey = [NSString stringWithUTF8String:key];
         }
     return result;
-}
-
-static void warn(const char* msg)
-{
-    if ( gbVerbose ) {
-        errors(msg);
-    }
-}
-
-static void errors(const char* msg)
-{
-    fputs(msg,stderr);
-    fputc('\n',stderr);
-}
-
-static void errorns(NSString* msg)
-{
-    errors([msg UTF8String]);
-}
-
-static void report(const char* msg)
-{
-    puts(msg);
-}
-
-static void reportns(NSString* msg)
-{
-    report([msg UTF8String]);
-}
-
-static void warns(NSString* msg)
-{
-    warn([msg UTF8String]);
 }
 
 static void unrecognizedArgument(const char* arg)
@@ -234,12 +155,12 @@ static void invalidSortKey(const char* key)
     error = e_INVALIDSORT;
 }
 
-static void noPDFFileName(const char* filename)
+static void noPDFFileName(NSString* filename)
 {
 	if ( filename ) {
-        errorns([NSString stringWithFormat:@"Unable to create pdfFileName %s",filename]) ;
+        errorns([NSString stringWithFormat:@"Unable to create pdfFileName %@",filename]) ;
     } else {
-        errorns(@"--output pdffile not specified") ;
+        errorns(@"--pdf pdffile not specified") ;
     }
 	error = e_NO_PDF_FILENAME ;
 }
@@ -249,181 +170,40 @@ static void syntaxError()
 	error = e_SYNTAX ;
 }
 
-static NSComparisonResult sortFunction (id a, id b, void* p)
+/* Convert the input files to PDF, governed by args.
+ */
+static void display_args( Args& args )
 {
-    Args* pArgs = (Args*) p;
-	if ( pArgs->desc ) {
-        id t = a;
-        a = b ;
-        b = t ;
+    if ( getVerbose() ) {
+        reportns([NSString stringWithFormat:@ "pdf:       %s" , args.pdf]);
+        reportns([NSString stringWithFormat:@ "sort:      %s" , sortKeys[args.sort].key]);
+        reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
+        reportns([NSString stringWithFormat:@ "verbose:   %d" , getVerbose()]);
+        reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
+        reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
+        
+        for (int i = 0 ; i < args.nInputFiles ; i++ ) {
+            reportns([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
+        }
     }
-    a = [a valueForKey:@KEYVALUE];
-    b = [b valueForKey:@KEYVALUE];
-    
-	return ( a && b ) ? [a compare:b] : NSOrderedSame ;
 }
 
-static NSMutableArray* inspectInput(Args& args)
+static NSArray* argsToImages(Args& args)
 {
-    NSMutableArray* images = [[NSMutableArray alloc]init] ;
-    if ( !images ) noImages(true);
+    NSArray*        result = NULL;
+    NSMutableArray* paths  = [[NSMutableArray alloc]init] ;
+    if ( !paths ) noImages(true);
     
     ////
     // run over inputFiles to be sure everything is an image
-    for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) {
-        NSString* path     = [NSString stringWithUTF8String:args.inputFiles[i]];
-        NSString* fileName = [path lastPathComponent];
-        NSImage*  image    = [[NSImage alloc] initWithContentsOfFile:path];
-        id        keyValue = NULL;
-        // if ( !image ) notImage(path) ;
-        
-        if ( image )
-        {
-            NSArray* reps = [image representations] ;
-            ////
-            // find the biggest representation
-            NSInteger jBig	= -1 ;
-            NSInteger biggest = 0 ;
-            for ( int j = 0 ; j < [reps count] ; j++ ) {
-                NSImageRep* imageRep= [ reps objectAtIndex:j] ;
-                NSInteger   width   = [imageRep pixelsWide];
-                NSInteger   height	= [imageRep pixelsHigh];
-                NSInteger   big		= bigger(width,height) ;
-                if ( big > biggest ) {
-                    jBig = j ;
-                    biggest = big ;
-                }
-            }
-            
-            ////
-            // save the imageRep and other metadata in a dictionary in the images array
-            if ( biggest >= args.minsize ) {
-                NSImageRep*	  imageRep = [reps objectAtIndex:jBig];
-                switch ( args.sort ) {
-                    case se_filename:
-                        keyValue = fileName;
-                        break;
-                        
-                    case se_path:
-                        keyValue = path;
-                        break;
-                        
-                    case se_date     :
-                    {   NSDictionary* exifDict = [((id)imageRep) valueForProperty: NSImageEXIFData];
-                        if ( exifDict ) for ( NSString* exifKey in exifDict ) {
-                            id value = [exifDict objectForKey: exifKey];
-                            if (  [exifKey compare:@"DateTimeOriginal"] == 0 ) {
-                                keyValue = value;
-                                reportns([NSString stringWithFormat:@"exifKey %@ value: %@",exifKey,value]);
-                                break;
-                            }
-                        }
-                        if ( exifDict ) for ( NSString* exifKey in exifDict ) 
-                            reportns([NSString stringWithFormat:@"exifKey %@ value: %@"
-                                      ,exifKey,[exifDict objectForKey: exifKey]]);
-                    }break;
-                        
-                    case se_none:
-                    default:
-                        break;
-                }
-                
-                NSDictionary*	dict	= [ NSDictionary dictionaryWithObjectsAndKeys
-                                           :imageRep,@IMAGEREP
-                                           ,fileName,@FILENAME
-                                           ,path,@PATH
-                                           ,keyValue,@KEYVALUE
-                                           ,nil
-                                           ] ;
-                
-                [images addObject:dict] ;
-            } else {
-                warns([NSString stringWithFormat:@"image less than minsize %@",path]);
-            }
+    else {
+        for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) {
+            NSString* path = [NSString stringWithUTF8String:args.inputFiles[i]];
+            [paths addObject:path];
         }
-        if ( !error && ![images count]) noImages(false);
-        if ( args.sort ) [images sortUsingFunction:sortFunction context:&args];
+        result = pathsToImages(paths,args.sort,args.desc,args.minsize);
     }
-    
-    return images;
-}
-
-static error_e doIt(Args& args,NSArray* images)
-{
-	if ( !error && !args.outFileName) noPDFFileName(NULL);
-    const char* outFileName = (const char*)args.outFileName ;
-	NSString*   pdfFileName = error==OK ? [NSString stringWithUTF8String:outFileName]: nil ;
-	if ( !error && !pdfFileName   ) noPDFFileName((const char*)args.outFileName);
-
-	PDFDocument* document = error==OK?[[PDFDocument alloc]init]:NULL ;
-	if ( document ) {
-        
-		////
-		// store an outline (with the name of the file on the label for every page)
-		PDFOutline* outlines = [[PDFOutline alloc]init] ;
-		[document setOutlineRoot:outlines] ;
-		
-		////
-		// cycle over the images
-		for ( int i = 0 ; i < [images count] ; i++ ) {
-			NSDictionary*   dict	= [images objectAtIndex:i];
-			NSImageRep*     imageRep= [dict  valueForKey:@IMAGEREP];
-            NSString*       fileName= [dict  valueForKey:@FILENAME];
-            id              keyValue= [dict  valueForKey:@KEYVALUE];
-            NSString*       label   = [NSString stringWithFormat:@"%@",keyValue?keyValue:fileName];
-			NSInteger       width	= [imageRep pixelsWide];
-			NSInteger       height	= [imageRep pixelsHigh];
-            
-            // label is having trouble with leading /'s (for example in paths)
-            NSMutableString* mString = [NSMutableString stringWithCapacity:[label length]+1];
-            [mString appendString:label];
-            [mString replaceOccurrencesOfString:@"/" withString:@" /" options:NSLiteralSearch range:NSMakeRange(0,1)];
-                                                                        // [mString length])];
-            label = [NSString stringWithString:mString];
-
-            reportns([NSString stringWithFormat:@"label = %@",label]);
-            
-            // warns(path);
-			// NSLog(@"%@ width,height = %ldx%ld",fileName,width,height) ;
-            
-			////
-			// create the PDF page with the image and insert it at the end of the document
-			NSImage* image = [[NSImage alloc]init] ;
-			[image addRepresentation:imageRep] ;
-
-            // older compiler demands (CIImage*) cast for (NSImage*)
-            // cast him to (id) to keep compiler happy
-			PDFPage* page = [[ PDFPage alloc]initWithImage:(id)image];
-            
-			if ( page ) {
-				[document insertPage:page atIndex:i] ;
-				
-				////
-				// store the filename in the Outline
-				PDFOutline* outline = [[PDFOutline alloc]init] ;
-				
-				[outline setLabel:label] ;
-				NSPoint point = { width/2, height/2 } ;
-                
-				PDFDestination* dest = [[PDFDestination alloc]initWithPage:page atPoint:point];
-				[outline setAction:[[PDFActionGoTo alloc]initWithDestination:dest]];
-				[outlines insertChild:outline atIndex:i];
-                
-				[page release];
-			}
-		}
-        
-		////
-		// write the PDF file and display it
-		if ( [document writeToFile:pdfFileName] ) {
-            if ( args.open ) {
-                [[NSWorkspace sharedWorkspace] openFile:pdfFileName];
-            }
-		} else {
-			errorns([NSString stringWithFormat:@"unable to write pdffile %@",pdfFileName]);
-		}
-	}
-    return error;
+    return result; 
 }
 
 static error_e parseArgs(Args& args,int argc,char** argv)
@@ -440,8 +220,8 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 	 */
 	while( (opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex)) !=-1 ) {
 		switch( opt ) {
-			case 'o':
-				args.outFileName = optarg;
+			case 'p':
+				args.pdfFileName = optarg;
 				break;
                 
 			case 'a':
@@ -457,7 +237,7 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 				break;
 				
 			case 'v':
-				gbVerbose++;
+				setVerbose(YES);
 				break;
 				
 			case 'V':
@@ -490,107 +270,112 @@ static error_e parseArgs(Args& args,int argc,char** argv)
         if ( args.inputFiles[i][0] == '-' )
             unrecognizedArgument(args.inputFiles[i]);
     
+    if ( !args.nInputFiles ) args.help = 1 ;
+    
     return error ;
 }
 
-#ifdef USE_DDCLI
-// http://www.dribin.org/dave/blog/archives/2008/04/29/ddcli/
-
-#import "DDCommandLineInterface.h"
-@interface IX4App : NSObject <DDCliApplicationDelegate>
+int main (int argc,char** argv)
 {
-    NSString*       _foo;
-    NSMutableArray* _includeDirectories;
-    NSString*       _bar;
-    NSString*       _longOpt;
-    int             _verbosity;
-    BOOL            _version;
-    BOOL            _help;
+    if ( argc <= 1 ) display_usage(argv[0],true);
     
-    Args            _args;
-    const char**    _argv;
-    int             _argc;
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    
+    // parse the command line
+    Args args ;
+    error = parseArgs(args,argc,argv);
+    
+    // tell the user what's going on
+    if ( args.version ) display_version();
+    if ( args.help    ) display_usage(argv[0],true);
+	if ( !error       ) display_args(args);
+    
+	// convert the args into cocoa structures
+    NSArray*  images      = argsToImages(args) ;
+    NSString* pdfFileName = [NSString stringWithUTF8String:args.pdfFileName];
+    
+	// generate output
+    if ( images ) imagesToPDF(images,pdfFileName,args.open) ;
+    
+    [pool drain];
+    return error;
 }
 
+#endif
+
+#ifdef DDCLI
+// http://www.dribin.org/dave/blog/archives/2008/04/29/ddcli/
+#import "DDCommandLineInterface.h"
+
+@interface IX4App : NSObject <DDCliApplicationDelegate>
+{
+    int             _verbose;
+    BOOL            _version;
+    BOOL            _help;
+    NSString*       _pdf;
+    NSInteger       _minsize;
+    BOOL            _open;
+    NSString*       _sort;
+    BOOL            _desc;
+}
 @end
 
 @implementation IX4App
-
-- (id) init;
-{
-    self = [super init];
-    if (self == nil)
-        return nil;
-    
-    _includeDirectories = [[NSMutableArray alloc] init];
-    
-    return self;
-}
-
-- (void) setVerbose: (BOOL) verbose;
-{
-    if (verbose)
-        _verbosity++;
-    else if (_verbosity > 0)
-        _verbosity--;
-}
-
-- (void) setInclude: (NSString *) file;
-{
-    if ([file isEqualToString: @"invalid"])
-    {
-        DDCliParseException * e =
-        [DDCliParseException parseExceptionWithReason: @"Invalid include name"
-                                             exitCode: EX_USAGE];
-        @throw e;
-    }
-    [_includeDirectories addObject: file];
-}
-
-- (void) printUsage: (FILE *) stream;
-{
-    ddfprintf(stream, @"%@: Usage [OPTIONS] <argument> [...]\n", DDCliApp);
-}
-
-- (void) printHelp;
-{
-    [self printUsage: stdout];
-    printf("\n"
-           "  -f, --foo FOO                 Use foo with FOO\n"
-           "  -I, --include FILE            Include FILE\n"
-           "  -b, --bar[=BAR]               Use bar with BAR\n"
-           "      --long-opt                Enable long option\n"
-           "  -v, --verbose                 Increase verbosity\n"
-           "      --version                 Display version and exit\n"
-           "  -h, --help                    Display this help and exit\n"
-           "\n"
-           "A test application for DDCommandLineInterface.\n");
-    const char* name = "bullshit";
-    ::display_usage((char**)&name);
-}
-
-- (void) printVersion;
-{
-//    ddprintf(@"%@ version: %d.%d built: %s %s\n", DDCliApp, VERSION_MINOR,VERSION_MAJOR,__TIME__,__DATE__);
-    ::display_version();
-}
-
 - (void) application: (DDCliApplication *) app
     willParseOptions: (DDGetoptLongParser *) optionsParser;
 {
     DDGetoptOption optionTable[] = 
     {
         // Long         Short   Argument options
-        {@"foo",        'f',    DDGetoptRequiredArgument},
-        {@"include",    'I',    DDGetoptRequiredArgument},
-        {@"bar",        'b',    DDGetoptOptionalArgument},
-        {@"long-opt",   0,      DDGetoptNoArgument},
-        {@"verbose",    'v',    DDGetoptNoArgument},
-        {@"version",    0,      DDGetoptNoArgument},
-        {@"help",       'h',    DDGetoptNoArgument},
-        {nil,           0,      (DDGetoptArgumentOptions)0},
+        {@"open"       ,'o',    DDGetoptNoArgument},
+        {@"desc"       ,'d',    DDGetoptNoArgument},
+        {@"asc"        ,'a',    DDGetoptNoArgument},
+        {@"verbose"    ,'v',    DDGetoptNoArgument},
+        {@"version"    ,'V' ,   DDGetoptNoArgument},
+        {@"help"       ,'h',    DDGetoptNoArgument},
+        {@"sort"       ,'s',    DDGetoptRequiredArgument},
+        {@"pdf"        ,'p',    DDGetoptRequiredArgument},
+        {@"minsize"    ,'m',    DDGetoptRequiredArgument},
+        {nil,            0 ,   (DDGetoptArgumentOptions)0},
     };
     [optionsParser addOptionsFromTable: optionTable];
+}
+- (id) init;
+{
+    self = [super init];
+    if (self == nil)
+        return nil;
+    return self;
+}
+
+- (void) setVerbose: (BOOL) verbose;
+{
+    _verbose = verbose;
+    ::setVerbose(verbose);
+}
+
+- (void) setAsc: (BOOL) asc;
+{
+    _desc = NO;
+}
+
+- (void) printUsage: (FILE *) stream;
+{
+    ddfprintf(stream, @"%@: Usage [OPTIONS] <argument> [...]\n", DDCliApp);
+    display_usage("ix4",false);
+}
+
+- (void) printHelp;
+{
+    [self printUsage: stdout];
+    const char* ix4 = "ix4";
+    display_usage(ix4,false);
+}
+
+- (void) printVersion;
+{
+    ddprintf(@"%@ version: %d.%d built: %s %s\n", DDCliApp, VERSION_MINOR,VERSION_MAJOR,__TIME__,__DATE__);
+    display_version();
 }
 
 - (int) application: (DDCliApplication *) app
@@ -615,48 +400,33 @@ static error_e parseArgs(Args& args,int argc,char** argv)
         ddfprintf(stderr, @"Try `%@ --help' for more information.\n", DDCliApp);
         return EX_USAGE;
     }
+    if ( _verbose ) {
+        ddprintf(@"pdf: %@\n"       ,_pdf);
+        ddprintf(@"asc: %d\n"       ,_desc?0:1);
+        ddprintf(@"open: %d\n"      ,_open);
+        ddprintf(@"verbose: %d\n"   ,_verbose);
+        ddprintf(@"sort: %@\n"      ,_sort);
+        ddprintf(@"minsize: %d\n"   ,_minsize);
+        ddprintf(@"pdf: %@\n"       ,_pdf);
+        ddprintf(@"Arguments: %@\n" , arguments);
+    }
+    NSArray*    images  = pathsToImages(arguments,se_none,!_desc,_minsize);
+    const char* message = !images         ? "no images allocated" 
+                        : ![images count] ? "no suitable images found!"
+                        : NULL
+                        ;
+    if (message) printf("%s\n",message);
+    else imagesToPDF(images,_pdf,_open);    
     
-    ddprintf(@"foo: %@, bar: %@, longOpt: %@, verbosity: %d\n",
-             _foo, _bar, _longOpt, _verbosity);
-    ddprintf(@"Include directories: %@\n", _includeDirectories);
-    ddprintf(@"Arguments: %@\n", arguments);
-    return EXIT_SUCCESS;
+    return !message ? EXIT_SUCCESS : EXIT_FAILURE ;
 }
-
-@end
 
 int main (int argc, char * const * argv)
 {
     return DDCliAppRunWithClass([IX4App class]);
 }
+@end
 
-#else
-int main (int argc,char** argv)
-{
-    if ( argc <= 1 ) display_usage(argv,true);
-    
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-
-    // parse the command line
-    Args args ;
-    error = parseArgs(args,argc,argv);
-    
-    // tell the use what's going on
-    if ( args.version ) display_version();
-    if ( args.help    ) display_usage(argv,true);
-    gbVerbose--;
-    
-	if ( !error       ) display_args(args);
-
-	// convert the args into cocoa structures
-    NSMutableArray* images = inspectInput(args) ;
-    
-	// generate output
-    if ( !error ) doIt(args,images) ;
-    
-    if ( !error && !args.nInputFiles ) args.help = 1 ;
-    [pool drain];
-    return error;
-}
 #endif
+
 

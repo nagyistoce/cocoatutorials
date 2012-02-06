@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1031B3A14DEFF330064CED5 /* PDFImages.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1031B3914DEFF330064CED5 /* PDFImages.mm */; };
+		A1031B4414DF423B0064CED5 /* IO.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1031B4314DF423B0064CED5 /* IO.mm */; };
 		A12807CB14DDE1C4001EF617 /* DDCliApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C314DDE1C4001EF617 /* DDCliApplication.m */; };
 		A12807CC14DDE1C4001EF617 /* DDCliParseException.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C514DDE1C4001EF617 /* DDCliParseException.m */; };
 		A12807CD14DDE1C4001EF617 /* DDCliUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C714DDE1C4001EF617 /* DDCliUtil.m */; };
@@ -32,6 +34,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A1031B3814DEFDA40064CED5 /* PDFImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDFImages.h; sourceTree = "<group>"; };
+		A1031B3914DEFF330064CED5 /* PDFImages.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PDFImages.mm; sourceTree = "<group>"; };
+		A1031B4214DF41EA0064CED5 /* IO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IO.h; sourceTree = "<group>"; };
+		A1031B4314DF423B0064CED5 /* IO.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = IO.mm; sourceTree = "<group>"; };
 		A12807C214DDE1C4001EF617 /* DDCliApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliApplication.h; path = ../ddcli/lib/DDCliApplication.h; sourceTree = "<group>"; };
 		A12807C314DDE1C4001EF617 /* DDCliApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDCliApplication.m; path = ../ddcli/lib/DDCliApplication.m; sourceTree = "<group>"; };
 		A12807C414DDE1C4001EF617 /* DDCliParseException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliParseException.h; path = ../ddcli/lib/DDCliParseException.h; sourceTree = "<group>"; };
@@ -113,6 +119,10 @@
 			children = (
 				A193E4BC14D24B89001D3486 /* ix4.mm */,
 				A193E4B514D24B1D001D3486 /* ix4.1 */,
+				A1031B4214DF41EA0064CED5 /* IO.h */,
+				A1031B4314DF423B0064CED5 /* IO.mm */,
+				A1031B3814DEFDA40064CED5 /* PDFImages.h */,
+				A1031B3914DEFF330064CED5 /* PDFImages.mm */,
 				A193E4B314D24B1D001D3486 /* Supporting Files */,
 			);
 			path = ix4;
@@ -181,6 +191,8 @@
 				A12807CC14DDE1C4001EF617 /* DDCliParseException.m in Sources */,
 				A12807CD14DDE1C4001EF617 /* DDCliUtil.m in Sources */,
 				A12807CE14DDE1C4001EF617 /* DDGetoptLongParser.m in Sources */,
+				A1031B3A14DEFF330064CED5 /* PDFImages.mm in Sources */,
+				A1031B4414DF423B0064CED5 /* IO.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
