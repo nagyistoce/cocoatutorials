@@ -22,10 +22,8 @@
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 
-// #define    GETOPT_LONG 1
-#define    DDCLI      2
-
-//#define    BUILD_WITH DDLCLI
+// #define GETOPT_LONG 1
+#define DDCLI       2
 
 #import  <Foundation/Foundation.h>
 #import  <AppKit/AppKit.h>
@@ -221,7 +219,7 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 	while( (opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex)) !=-1 ) {
 		switch( opt ) {
 			case 'p':
-				args.pdfFileName = optarg;
+				args.pdf = optarg;
 				break;
                 
 			case 'a':
@@ -291,11 +289,11 @@ int main (int argc,char** argv)
 	if ( !error       ) display_args(args);
     
 	// convert the args into cocoa structures
-    NSArray*  images      = argsToImages(args) ;
-    NSString* pdfFileName = [NSString stringWithUTF8String:args.pdfFileName];
+    NSArray*  images  = argsToImages(args) ;
+    NSString* pdf     = [NSString stringWithUTF8String:args.pdf];
     
 	// generate output
-    if ( images ) imagesToPDF(images,pdfFileName,args.open) ;
+    if ( images ) imagesToPDF(images,pdf,args.open) ;
     
     [pool drain];
     return error;
