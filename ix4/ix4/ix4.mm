@@ -22,8 +22,9 @@
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
 
-// #define GETOPT_LONG 1
-#define DDCLI       2
+#define    GETOPT_LONG 1
+#define    DDCLI       2
+#define    BUILD_WITH  DDCLI
 
 #import  <Foundation/Foundation.h>
 #import  <AppKit/AppKit.h>
@@ -57,7 +58,10 @@ static void display_version( void )
 	exit( EXIT_FAILURE );
 }
 
-#ifdef GETOPT_LONG
+//////////////////////////////////////////////////////////////////
+//==============================================================//
+//////////////////////////////////////////////////////////////////
+#if (BUILD_WITH==GETOPT_LONG)
 
 // prototypes
 struct Args ;
@@ -94,6 +98,7 @@ struct Args {
     int          open;                   /* -o  option       */
 	int 		 verbose;                /* -v  global option*/ 
     int          version;                /* -V  option       */
+    int          resize;                 /* -r: option       */
 	NSInteger 	 minsize;				 /* -m: option       */
     int          help;                   /* -h  option       */
 	char**		 inputFiles;			 /* input files      */
@@ -102,7 +107,7 @@ struct Args {
 };
 
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
-static const char *optString = "p:s:adovVm:h?";
+static const char *optString = "p:s:adovVr:m:h?";
 static const struct option longOpts[] =
 {	{ "pdf"         , required_argument	, NULL, 'p' }
 ,	{ "sort"		, required_argument	, NULL, 's' }
@@ -111,6 +116,7 @@ static const struct option longOpts[] =
 ,	{ "open"		, no_argument		, NULL, 'O' }
 ,	{ "verbose"		, no_argument       , NULL, 'v' }
 ,	{ "version"		, no_argument       , NULL, 'V' }
+,	{ "resize"      , required_argument	, NULL, 'r' }
 ,	{ "minsize"     , required_argument	, NULL, 'm' }
 ,	{ "help"		, no_argument		, NULL, 'h' }
 ,	{ NULL			, no_argument		, NULL, 0   }
@@ -123,7 +129,7 @@ static sort_e findSort(Args& args,const char* key)
         if ( strcmp(key,sortKeys[i].key)==0 ) {
             result = sortKeys[i].value;
             [args.sortKey release];
-             args.sortKey = [NSString stringWithUTF8String:key];
+            args.sortKey = [NSString stringWithUTF8String:key];
         }
     return result;
 }
@@ -177,6 +183,7 @@ static void display_args( Args& args )
         reportns([NSString stringWithFormat:@ "sort:      %s" , sortKeys[args.sort].key]);
         reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
         reportns([NSString stringWithFormat:@ "verbose:   %d" , getVerbose()]);
+        reportns([NSString stringWithFormat:@ "resize:    %d" , args.resize]);
         reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
         reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
         
@@ -242,6 +249,10 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 				args.version = 1;
 				break;
 				
+			case 'r':
+				args.resize = optarg?atoi(optarg):0;
+				break;
+				
 			case 's':
 				args.sort = findSort(args,optarg);
                 if ( !error && !args.sort ) invalidSortKey(optarg);
@@ -289,19 +300,22 @@ int main (int argc,char** argv)
 	if ( !error       ) display_args(args);
     
 	// convert the args into cocoa structures
-    NSArray*  images  = argsToImages(args) ;
-    NSString* pdf     = [NSString stringWithUTF8String:args.pdf];
+    NSArray*  images = argsToImages(args) ;
+    NSString* pdf    = [NSString stringWithUTF8String:args.pdf];
     
 	// generate output
-    if ( images ) imagesToPDF(images,pdf,args.open) ;
+    if ( images ) imagesToPDF(images,pdf,args.open,args.resize) ;
     
     [pool drain];
     return error;
 }
-
 #endif
 
-#ifdef DDCLI
+//////////////////////////////////////////////////////////////////
+//==============================================================//
+//////////////////////////////////////////////////////////////////
+
+#if (BUILD_WITH==DDCLI)
 // http://www.dribin.org/dave/blog/archives/2008/04/29/ddcli/
 #import "DDCommandLineInterface.h"
 
@@ -315,6 +329,7 @@ int main (int argc,char** argv)
     BOOL            _open;
     NSString*       _sort;
     BOOL            _desc;
+    NSInteger       _resize;
 }
 @end
 
@@ -332,6 +347,7 @@ int main (int argc,char** argv)
         {@"version"    ,'V' ,   DDGetoptNoArgument},
         {@"help"       ,'h',    DDGetoptNoArgument},
         {@"sort"       ,'s',    DDGetoptRequiredArgument},
+        {@"resize"     ,'r',    DDGetoptRequiredArgument},
         {@"pdf"        ,'p',    DDGetoptRequiredArgument},
         {@"minsize"    ,'m',    DDGetoptRequiredArgument},
         {nil,            0 ,   (DDGetoptArgumentOptions)0},
@@ -404,17 +420,18 @@ int main (int argc,char** argv)
         ddprintf(@"open: %d\n"      ,_open);
         ddprintf(@"verbose: %d\n"   ,_verbose);
         ddprintf(@"sort: %@\n"      ,_sort);
+        ddprintf(@"resize: %d\n"    ,_resize);
         ddprintf(@"minsize: %d\n"   ,_minsize);
         ddprintf(@"pdf: %@\n"       ,_pdf);
         ddprintf(@"Arguments: %@\n" , arguments);
     }
     NSArray*    images  = pathsToImages(arguments,se_none,!_desc,_minsize);
     const char* message = !images         ? "no images allocated" 
-                        : ![images count] ? "no suitable images found!"
-                        : NULL
-                        ;
+    : ![images count] ? "no suitable images found!"
+    : NULL
+    ;
     if (message) printf("%s\n",message);
-    else imagesToPDF(images,_pdf,_open);    
+    else imagesToPDF(images,_pdf,_open,_resize);    
     
     return !message ? EXIT_SUCCESS : EXIT_FAILURE ;
 }
@@ -424,6 +441,9 @@ int main (int argc, char * const * argv)
     return DDCliAppRunWithClass([IX4App class]);
 }
 @end
+//////////////////////////////////////////////////////////////////
+//==============================================================//
+//////////////////////////////////////////////////////////////////
 
 #endif
 
