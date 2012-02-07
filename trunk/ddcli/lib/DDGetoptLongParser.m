@@ -222,8 +222,15 @@
         }
     }
     
-    NSRange range = NSMakeRange(optind, argc - optind);
-    return [arguments subarrayWithRange: range];
+    //NSRange range = NSMakeRange(optind, argc - optind);
+    //return [arguments subarrayWithRange: range];
+    
+    NSMutableArray* result = [NSMutableArray arrayWithCapacity:argc-optind];
+    for ( i = 0 ; i < argc-optind ; i++ ) {
+        NSString* value = [NSString stringWithUTF8String:argv[i+optind]];
+        [result insertObject:value atIndex:i];
+    }
+    return result;    
 }
 
 @end
