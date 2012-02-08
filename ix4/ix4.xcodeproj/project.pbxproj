@@ -13,6 +13,7 @@
 		A12807CC14DDE1C4001EF617 /* DDCliParseException.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C514DDE1C4001EF617 /* DDCliParseException.m */; };
 		A12807CD14DDE1C4001EF617 /* DDCliUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807C714DDE1C4001EF617 /* DDCliUtil.m */; };
 		A12807CE14DDE1C4001EF617 /* DDGetoptLongParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A12807CA14DDE1C4001EF617 /* DDGetoptLongParser.m */; };
+		A14F641D14E1D7CB00ACC5A9 /* JSON.mm in Sources */ = {isa = PBXBuildFile; fileRef = A14F641C14E1D7CB00ACC5A9 /* JSON.mm */; };
 		A193E4AF14D24B1D001D3486 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A193E4AE14D24B1D001D3486 /* Foundation.framework */; };
 		A193E4B614D24B1D001D3486 /* ix4.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = A193E4B514D24B1D001D3486 /* ix4.1 */; };
 		A193E4BD14D24B89001D3486 /* ix4.mm in Sources */ = {isa = PBXBuildFile; fileRef = A193E4BC14D24B89001D3486 /* ix4.mm */; };
@@ -47,6 +48,8 @@
 		A12807C814DDE1C4001EF617 /* DDCommandLineInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCommandLineInterface.h; path = ../ddcli/lib/DDCommandLineInterface.h; sourceTree = "<group>"; };
 		A12807C914DDE1C4001EF617 /* DDGetoptLongParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDGetoptLongParser.h; path = ../ddcli/lib/DDGetoptLongParser.h; sourceTree = "<group>"; };
 		A12807CA14DDE1C4001EF617 /* DDGetoptLongParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDGetoptLongParser.m; path = ../ddcli/lib/DDGetoptLongParser.m; sourceTree = "<group>"; };
+		A14F641B14E1D7CB00ACC5A9 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
+		A14F641C14E1D7CB00ACC5A9 /* JSON.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSON.mm; sourceTree = "<group>"; };
 		A193E4AA14D24B1D001D3486 /* ix4 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ix4; sourceTree = BUILT_PRODUCTS_DIR; };
 		A193E4AE14D24B1D001D3486 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A193E4B414D24B1D001D3486 /* ix4-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ix4-Prefix.pch"; sourceTree = "<group>"; };
@@ -121,6 +124,8 @@
 				A193E4B514D24B1D001D3486 /* ix4.1 */,
 				A1031B4214DF41EA0064CED5 /* IO.h */,
 				A1031B4314DF423B0064CED5 /* IO.mm */,
+				A14F641B14E1D7CB00ACC5A9 /* JSON.h */,
+				A14F641C14E1D7CB00ACC5A9 /* JSON.mm */,
 				A1031B3814DEFDA40064CED5 /* PDFImages.h */,
 				A1031B3914DEFF330064CED5 /* PDFImages.mm */,
 				A193E4B314D24B1D001D3486 /* Supporting Files */,
@@ -193,6 +198,7 @@
 				A12807CE14DDE1C4001EF617 /* DDGetoptLongParser.m in Sources */,
 				A1031B3A14DEFF330064CED5 /* PDFImages.mm in Sources */,
 				A1031B4414DF423B0064CED5 /* IO.mm in Sources */,
+				A14F641D14E1D7CB00ACC5A9 /* JSON.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,6 +212,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -222,6 +229,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = ix4;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -233,7 +241,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -242,6 +250,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = ix4;
 				SDKROOT = macosx;
 			};
 			name = Release;
