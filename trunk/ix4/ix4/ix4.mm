@@ -20,11 +20,11 @@
 //
 
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 1
+#define VERSION_MINOR 2
 
 #define    GETOPT_LONG 1
 #define    DDCLI       2
-#define    BUILD_WITH  DDCLI
+#define    BUILD_WITH  2
 
 #import  <Foundation/Foundation.h>
 #import  <AppKit/AppKit.h>
@@ -43,12 +43,10 @@
 #define lengthof(x) sizeof(x)/sizeof(x[0])
 #endif
 
-sort_e sort=se_none;
-
 static void display_usage(const char* program,bool bAll)
 {
 	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",program]);
-	report("usage: [ --[pdf filename | sort key | asc | desc | open | verbose | version | minsize n | help] | file ]+");
+	report("usage: [ --[pdf path | label key | sort key | asc | desc | open | verbose | version | minsize n | help] | file ]+");
 	exit( EXIT_FAILURE );
 }
 
@@ -78,61 +76,42 @@ static enum error_e
 ,   e_UNRECOGNIZED_ARG
 }	error = OK ;
 
-static sort_e    findSort    (Args& args,const char* key);
 static error_e   parseArgs   (Args& args,int argc,char** argv);
 static NSArray*  argsToImages(Args& args);
 
-struct
-{   const char*  key;
-    sort_e       value;
-}   sortKeys[] = 
-{   "filename" , se_filename
-,   "path"     , se_path
-,   "date"     , se_date
-};
-
 struct Args {
 	const char*	 pdf;                    /* -p: option       */
-	sort_e       sort;                   /* -s: option       */
+    const char*  label;                  /* -l: option       */
+    const char*  sort;                   /* -s: option       */
+    NSInteger    resize;                 /* -r: option       */
+	NSInteger 	 minsize;				 /* -m: option       */
     bool         desc;                   /* -a|-d option     */
+    int          keys;                   /* -k  option       */
     int          open;                   /* -o  option       */
 	int 		 verbose;                /* -v  global option*/ 
     int          version;                /* -V  option       */
-    int          resize;                 /* -r: option       */
-	NSInteger 	 minsize;				 /* -m: option       */
     int          help;                   /* -h  option       */
 	char**		 inputFiles;			 /* input files      */
 	int 		 nInputFiles;			 /* # of input files */
-    NSString*    sortKey;                /*                  */
 };
 
 // Modified from http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
-static const char *optString = "p:s:adovVr:m:h?";
+static const char*  optString = "p:s:r:m:l:adovVh?";
 static const struct option longOpts[] =
 {	{ "pdf"         , required_argument	, NULL, 'p' }
 ,	{ "sort"		, required_argument	, NULL, 's' }
+,	{ "resize"      , required_argument	, NULL, 'r' }
+,	{ "minsize"     , required_argument	, NULL, 'm' }
+,	{ "label"		, required_argument , NULL, 'l' }
 ,	{ "asc"         , no_argument       , NULL, 'a' }
 ,	{ "desc"		, no_argument       , NULL, 'd' }
+,	{ "keys"		, no_argument       , NULL, 'k' }
 ,	{ "open"		, no_argument		, NULL, 'O' }
 ,	{ "verbose"		, no_argument       , NULL, 'v' }
 ,	{ "version"		, no_argument       , NULL, 'V' }
-,	{ "resize"      , required_argument	, NULL, 'r' }
-,	{ "minsize"     , required_argument	, NULL, 'm' }
 ,	{ "help"		, no_argument		, NULL, 'h' }
 ,	{ NULL			, no_argument		, NULL, 0   }
 };
-
-static sort_e findSort(Args& args,const char* key)
-{
-    sort_e result = se_none;
-    for ( int i = 0 ; !result && i < lengthof(sortKeys) ; i++ )
-        if ( strcmp(key,sortKeys[i].key)==0 ) {
-            result = sortKeys[i].value;
-            [args.sortKey release];
-            args.sortKey = [NSString stringWithUTF8String:key];
-        }
-    return result;
-}
 
 static void unrecognizedArgument(const char* arg)
 {
@@ -180,11 +159,13 @@ static void display_args( Args& args )
 {
     if ( getVerbose() ) {
         reportns([NSString stringWithFormat:@ "pdf:       %s" , args.pdf]);
-        reportns([NSString stringWithFormat:@ "sort:      %s" , sortKeys[args.sort].key]);
+        reportns([NSString stringWithFormat:@ "sort:      %s" , args.sort]);
         reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
+        reportns([NSString stringWithFormat:@ "keys: %d"      , args.keys]);
         reportns([NSString stringWithFormat:@ "verbose:   %d" , getVerbose()]);
         reportns([NSString stringWithFormat:@ "resize:    %d" , args.resize]);
         reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
+        reportns([NSString stringWithFormat:@ "label:     %s" , args.label]);
         reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
         
         for (int i = 0 ; i < args.nInputFiles ; i++ ) {
@@ -193,28 +174,11 @@ static void display_args( Args& args )
     }
 }
 
-static NSArray* argsToImages(Args& args)
-{
-    NSArray*        result = NULL;
-    NSMutableArray* paths  = [[NSMutableArray alloc]init] ;
-    if ( !paths ) noImages(true);
-    
-    ////
-    // run over inputFiles to be sure everything is an image
-    else {
-        for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) {
-            NSString* path = [NSString stringWithUTF8String:args.inputFiles[i]];
-            [paths addObject:path];
-        }
-        result = pathsToImages(paths,args.sort,args.desc,args.minsize);
-    }
-    return result; 
-}
-
-static error_e parseArgs(Args& args,int argc,char** argv)
+static error_e parseArgs(Args& args,int argc,char** argv,NSArray** pArray)
 {
     int opt = 0;
 	int longIndex = 0;
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:argc];
 	
 	/* Initialize args before we get to work. */
     memset(&args,0,sizeof(args));
@@ -237,7 +201,11 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 				args.desc = 1;
 				break;
                 
-			case 'O':
+			case 'k':
+				args.keys = 1;
+				break;
+                
+			case 'o':
 				args.open = 1;
 				break;
 				
@@ -254,8 +222,7 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 				break;
 				
 			case 's':
-				args.sort = findSort(args,optarg);
-                if ( !error && !args.sort ) invalidSortKey(optarg);
+				args.sort = optarg;
 				break;
 				
 			case 'm':
@@ -278,8 +245,11 @@ static error_e parseArgs(Args& args,int argc,char** argv)
     for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) 
         if ( args.inputFiles[i][0] == '-' )
             unrecognizedArgument(args.inputFiles[i]);
+        else
+            [array addObject:[NSString stringWithUTF8String:args.inputFiles[i]]];
     
     if ( !args.nInputFiles ) args.help = 1 ;
+    *pArray = array;
     
     return error ;
 }
@@ -292,19 +262,23 @@ int main (int argc,char** argv)
     
     // parse the command line
     Args args ;
-    error = parseArgs(args,argc,argv);
+    NSArray* paths;
+    error = parseArgs(args,argc,argv,&paths);
     
     // tell the user what's going on
     if ( args.version ) display_version();
     if ( args.help    ) display_usage(argv[0],true);
-	if ( !error       ) display_args(args);
-    
-	// convert the args into cocoa structures
-    NSArray*  images = argsToImages(args) ;
-    NSString* pdf    = [NSString stringWithUTF8String:args.pdf];
-    
-	// generate output
-    if ( images ) imagesToPDF(images,pdf,args.open,args.resize) ;
+	if ( !error       ) {
+        display_args(args);   
+        // convert the args into cocoa structures
+        NSString* label  = args.label?[NSString stringWithUTF8String:args.label]:nil;
+        NSString* sort   = args.sort ?[NSString stringWithUTF8String:args.sort]:nil;
+        NSString* pdf    = [NSString stringWithUTF8String:args.pdf];
+        NSArray*  images = pathsToImages(paths,sort,label,args.desc,args.keys,args.minsize);
+        
+        // generate output
+        if ( images ) imagesToPDF(images,pdf,args.open,args.resize) ;
+    }
     
     [pool drain];
     return error;
@@ -324,12 +298,14 @@ int main (int argc,char** argv)
     int             _verbose;
     BOOL            _version;
     BOOL            _help;
+    BOOL            _keys;
     NSString*       _pdf;
     NSInteger       _minsize;
     BOOL            _open;
     NSString*       _sort;
     BOOL            _desc;
     NSInteger       _resize;
+    NSString*       _label;
 }
 @end
 
@@ -340,16 +316,18 @@ int main (int argc,char** argv)
     DDGetoptOption optionTable[] = 
     {
         // Long         Short   Argument options
-        {@"open"       ,'o',    DDGetoptNoArgument},
-        {@"desc"       ,'d',    DDGetoptNoArgument},
-        {@"asc"        ,'a',    DDGetoptNoArgument},
-        {@"verbose"    ,'v',    DDGetoptNoArgument},
-        {@"version"    ,'V' ,   DDGetoptNoArgument},
-        {@"help"       ,'h',    DDGetoptNoArgument},
         {@"sort"       ,'s',    DDGetoptRequiredArgument},
         {@"resize"     ,'r',    DDGetoptRequiredArgument},
         {@"pdf"        ,'p',    DDGetoptRequiredArgument},
         {@"minsize"    ,'m',    DDGetoptRequiredArgument},
+        {@"label"      ,'l',    DDGetoptRequiredArgument},
+        {@"open"       ,'o',    DDGetoptNoArgument},
+        {@"desc"       ,'d',    DDGetoptNoArgument},
+        {@"asc"        ,'a',    DDGetoptNoArgument},
+        {@"keys"       ,'k',    DDGetoptNoArgument},
+        {@"verbose"    ,'v',    DDGetoptNoArgument},
+        {@"version"    ,'V' ,   DDGetoptNoArgument},
+        {@"help"       ,'h',    DDGetoptNoArgument},
         {nil,            0 ,   (DDGetoptArgumentOptions)0},
     };
     [optionsParser addOptionsFromTable: optionTable];
@@ -370,7 +348,7 @@ int main (int argc,char** argv)
 
 - (void) setAsc: (BOOL) asc;
 {
-    _desc = NO;
+    _desc = asc?NO:YES;
 }
 
 - (void) printUsage: (FILE *) stream;
@@ -417,21 +395,23 @@ int main (int argc,char** argv)
     if ( _verbose ) {
         ddprintf(@"pdf: %@\n"       ,_pdf);
         ddprintf(@"asc: %d\n"       ,_desc?0:1);
+        ddprintf(@"keys: %d\n"      ,_keys);
         ddprintf(@"open: %d\n"      ,_open);
         ddprintf(@"verbose: %d\n"   ,_verbose);
         ddprintf(@"sort: %@\n"      ,_sort);
         ddprintf(@"resize: %d\n"    ,_resize);
         ddprintf(@"minsize: %d\n"   ,_minsize);
         ddprintf(@"pdf: %@\n"       ,_pdf);
+        ddprintf(@"label: %@\n"     ,_label);
         ddprintf(@"Arguments: %@\n" , arguments);
     }
-    NSArray*    images  = pathsToImages(arguments,se_none,!_desc,_minsize);
+    NSArray*    images  = pathsToImages(arguments,_sort,_label,_desc,_keys,_minsize);
     const char* message = !images         ? "no images allocated" 
-    : ![images count] ? "no suitable images found!"
-    : NULL
-    ;
+                        : ![images count] ? "no suitable images found!"
+                        : NULL
+                        ;
     if (message) printf("%s\n",message);
-    else imagesToPDF(images,_pdf,_open,_resize);    
+    imagesToPDF(images,_pdf,_open,_resize);    
     
     return !message ? EXIT_SUCCESS : EXIT_FAILURE ;
 }
