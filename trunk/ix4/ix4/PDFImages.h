@@ -10,9 +10,11 @@
 #define ix4_PDFImages_h
 
 #include <Cocoa/Cocoa.h>
+#include <Quartz/Quartz.h>
 #include <AppKit/AppKit.h>
+#include <Foundation/Foundation.h>
 
-#include "IO.h"
+#include "ix4.h"
 
 #ifdef __cplusplus
 extern "C" {
