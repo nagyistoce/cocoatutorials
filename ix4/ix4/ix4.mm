@@ -25,23 +25,23 @@
 error_e     error ;
 const char* ix4 = "ix4";
 
+#if BUILD_WITH == DDCLI 
+const char* parser = "ddcli";
+#endif
+#if BUILD_WITH == GETOPT_LONG
+const char* parser = "getopt_long";
+#endif
 
 void display_usage(const char* program,bool bAll)
 {
 	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",program]);
-	report("usage: [ --[pdf path | label key | sort key | label key | minsize n | FLAG] | file ]+");
-    report("FLAG:  keys |  asc | desc | open | verbose | version ");
+	report("usage: [ --[ pdf path | label key | sort key | minsize n | FLAG]   | file ]+");
+    report("FLAG: { help | keys | asc | desc | open | verbose | version }");
 	exit( EXIT_FAILURE );
 }
 
 void display_version( void )
 {
-#if BUILD_WITH == DDCLI 
-    const char* parser = "ddcli";
-#endif
-#if BUILD_WITH == GETOPT_LONG
-    const char* parser = "getopt_long";
-#endif
 	reportns( [NSString stringWithFormat:@"ix4: %d.%d parser: %s built:%s %s"
                ,VERSION_MAJOR,VERSION_MINOR,parser,__TIME__,__DATE__]
             );

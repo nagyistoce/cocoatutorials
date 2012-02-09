@@ -14,7 +14,7 @@
 
 #define    GETOPT_LONG   1
 #define    DDCLI         2
-#define    BUILD_WITH    1
+#define    BUILD_WITH    2
 
 #define    VERSION_MAJOR 0
 #define    VERSION_MINOR 2
