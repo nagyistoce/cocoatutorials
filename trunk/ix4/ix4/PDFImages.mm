@@ -3,7 +3,7 @@
 //  ix4
 //
 //  Created by Robin Mills on 2012-02-05.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
+//  Copyright 2012 RMSC San Jose, CA, USA. All rights reserved.
 //
 
 #import  <Foundation/Foundation.h>
@@ -65,7 +65,7 @@ static NSArray* arrayDump(id object)
 	return array ;
 }
 
-NSArray* pathsToImages
+NSArray*    pathsToImages
 ( NSArray*  paths
 , NSString* sortKey
 , NSString* labelKey
@@ -76,60 +76,37 @@ NSArray* pathsToImages
     NSMutableArray* images = [[NSMutableArray alloc]init] ;
     NSMutableSet*   keySet = keys ? [NSMutableSet setWithCapacity:[paths count]] : nil;
     NSInteger       index = 0 ;
+    
+    if ( !images ) return images ;
 
     ////
-    // run over inputFiles to be sure everything is an image
-    if ( images ) for ( NSString* path in paths ) {
-        index++;
+    // get the metadata in JSON format with exiftool
+    NSTask*   task = [[NSTask alloc] init];
+    [task     setLaunchPath:@"/usr/bin/exiftool"];
+    NSMutableArray* args = [NSMutableArray arrayWithObjects:@"-j",nil];
+    [args     addObjectsFromArray:paths];
+    [task     setArguments:args];
+
+    NSPipe*   outPipe = [[NSPipe alloc] init];
+    [task     setStandardOutput:outPipe];
+    [task     setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"/dev/null"]];
+    [outPipe  release];
+    [task     launch];
+    
+    // Read the output
+    NSData*   data = [[outPipe fileHandleForReading] readDataToEndOfFile];
+    [task     waitUntilExit];
+    int       status = [task terminationStatus];
+    [task     release];
+
+    // convert to JSON
+    NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    JSON*     json       = [[JSON alloc]init];
+    NSObject* metaData   = status==0?[json jsonToObj:jsonString]:nil;
+
+    for ( NSString* path in paths ) {
         NSString*     fileName = [path lastPathComponent];
         NSImage*      image    = [[NSImage alloc] initWithContentsOfFile:path];
-        
-        ////
-        // get the metadata in JSON format with exiftool
-        NSTask*  task = [[NSTask alloc] init];
-        [task    setLaunchPath:@"/usr/local/bin/exiftool"];
-               
-        NSArray* args = [NSArray arrayWithObjects:@"-j", path, nil];
-        [task    setArguments:args];
-       
-        //        NSMutableArray* args = [NSMutableArray arrayWithObjects:@"-j"];
-        //        [args addObjectsFromArray:paths];
-
-        
-        NSPipe*  outPipe = [[NSPipe alloc] init];
-        [task    setStandardOutput:outPipe];
-        [outPipe release];
-        [task    launch];
-       
-        // Read the output
-        NSData* data = [[outPipe fileHandleForReading] readDataToEndOfFile];
-        [task waitUntilExit];
-        int status = [task terminationStatus];
-        [task release];
-        
-        // ddprintf(@"status=%d,length now=%d\n",status,[data length]);
-        
-        ////
-        // convert JSON to metadict (JSON is an array which contains 1 dictionary)
-        NSDictionary* metaDict = nil;
-        if ( status == 0 ) {
-            NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            JSON*     json       = [[JSON alloc]init];
-            NSObject* metaData   = [json jsonToObj:jsonString];
-            
-            if ( [metaData isKindOfClass:[NSArray class]] ) {
-                NSArray* metaArray = (NSArray*) metaData;
-                if ( [metaArray count] > 0 ) {
-                    if ( [ [metaArray objectAtIndex:0] isKindOfClass:[NSDictionary class]] ) {
-                        metaDict = [metaArray objectAtIndex:0];
-                        if ( keySet ) {
-                            for ( id k in metaDict )
-                                [keySet addObject:k];
-                        }
-                    }
-                } 
-            }
-        }
 
         if ( image )
         {
@@ -147,6 +124,20 @@ NSArray* pathsToImages
                     jBig = j ;
                     biggest = big ;
                 }
+            }
+            
+            NSDictionary* metaDict = nil;
+            if ( [metaData isKindOfClass:[NSArray class]] ) {
+                NSArray* metaArray = (NSArray*) metaData;
+                if ( [metaArray count] > 0 ) {
+                    if ( [ [metaArray objectAtIndex:index] isKindOfClass:[NSDictionary class]] ) {
+                        metaDict = [metaArray objectAtIndex:index];
+                        if ( keySet ) {
+                            for ( id k in metaDict )
+                                [keySet addObject:k];
+                        }
+                    }
+                } 
             }
             
             ////
@@ -187,16 +178,16 @@ NSArray* pathsToImages
             }
         }
         [images sortUsingFunction:sortFunction context:&desc];
+        index++;
     }
     
-    // arrayDump(images);
     if ( keySet ) {
         NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"description"
-                                                                     ascending:desc?NO:YES];
+                                                               ascending:desc?NO:YES];
         for ( id key in [keySet sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]] ) 
             ddprintf(@"key: %@\n",key);
     }
-
+    
     return keys ? nil : images ;
 }
 

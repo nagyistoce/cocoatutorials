@@ -337,6 +337,7 @@ int main (int argc,char** argv)
     self = [super init];
     if (self == nil)
         return nil;
+    _label = @"Description";
     return self;
 }
 

@@ -3,7 +3,7 @@
 //  ix4
 //
 //  Created by Robin Mills on 2012-02-05.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
+//  Copyright 2012 RMSC San Jose, CA, USA. All rights reserved.
 //
 
 #ifndef ix4_IO_h
