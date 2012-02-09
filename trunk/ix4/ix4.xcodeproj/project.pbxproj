@@ -19,6 +19,8 @@
 		A193E4BD14D24B89001D3486 /* ix4.mm in Sources */ = {isa = PBXBuildFile; fileRef = A193E4BC14D24B89001D3486 /* ix4.mm */; };
 		A193E4BF14D25062001D3486 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A193E4BE14D25062001D3486 /* Quartz.framework */; };
 		A193E4C114D25070001D3486 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A193E4C014D25070001D3486 /* AppKit.framework */; };
+		A1D7762614E37CCD00DF9F21 /* ddcli.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1D7762414E37CCD00DF9F21 /* ddcli.mm */; };
+		A1D7762714E37CCD00DF9F21 /* getopt_long.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1D7762514E37CCD00DF9F21 /* getopt_long.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,6 +59,9 @@
 		A193E4BC14D24B89001D3486 /* ix4.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ix4.mm; sourceTree = "<group>"; };
 		A193E4BE14D25062001D3486 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = ../../../../../System/Library/Frameworks/Quartz.framework; sourceTree = "<group>"; };
 		A193E4C014D25070001D3486 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = ../../../../../System/Library/Frameworks/AppKit.framework; sourceTree = "<group>"; };
+		A1D7762314E37CCD00DF9F21 /* ix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ix4.h; sourceTree = "<group>"; };
+		A1D7762414E37CCD00DF9F21 /* ddcli.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ddcli.mm; sourceTree = "<group>"; };
+		A1D7762514E37CCD00DF9F21 /* getopt_long.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = getopt_long.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,7 +125,10 @@
 		A193E4B014D24B1D001D3486 /* ix4 */ = {
 			isa = PBXGroup;
 			children = (
+				A1D7762314E37CCD00DF9F21 /* ix4.h */,
 				A193E4BC14D24B89001D3486 /* ix4.mm */,
+				A1D7762414E37CCD00DF9F21 /* ddcli.mm */,
+				A1D7762514E37CCD00DF9F21 /* getopt_long.mm */,
 				A193E4B514D24B1D001D3486 /* ix4.1 */,
 				A1031B4214DF41EA0064CED5 /* IO.h */,
 				A1031B4314DF423B0064CED5 /* IO.mm */,
@@ -199,6 +207,8 @@
 				A1031B3A14DEFF330064CED5 /* PDFImages.mm in Sources */,
 				A1031B4414DF423B0064CED5 /* IO.mm in Sources */,
 				A14F641D14E1D7CB00ACC5A9 /* JSON.mm in Sources */,
+				A1D7762614E37CCD00DF9F21 /* ddcli.mm in Sources */,
+				A1D7762714E37CCD00DF9F21 /* getopt_long.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
