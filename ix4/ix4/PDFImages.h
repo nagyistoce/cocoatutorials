@@ -17,17 +17,24 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
-enum sort_e
-{   se_none=0
-,   se_path
-,   se_filename
-,   se_date
-};
-    
 
-NSMutableArray* pathsToImages(NSArray* paths,sort_e sort,boolean_t asc,NSInteger minsize);
-PDFDocument*    imagesToPDF  (NSArray* images,NSString* pdfFileName,boolean_t bOpen);
+NSArray*
+pathsToImages
+( NSArray*  paths
+, NSString* sortKey
+, NSString* labelKey
+, boolean_t desc
+, boolean_t keys
+, NSInteger minsize
+);
+    
+PDFDocument*
+imagesToPDF
+( NSArray*  images
+, NSString* pdfFileName
+, boolean_t bOpen
+, NSInteger resize
+);
 
 #ifdef __cplusplus
 }
