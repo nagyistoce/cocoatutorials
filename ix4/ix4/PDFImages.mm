@@ -81,8 +81,9 @@ NSArray*    pathsToImages
 
     ////
     // get the metadata in JSON format with exiftool
+    // http://www.sno.phy.queensu.ca/~phil/exiftool/
     NSTask*   task = [[NSTask alloc] init];
-    [task     setLaunchPath:@"/usr/bin/exiftool"];
+    [task     setLaunchPath:@"/usr/local/bin/exiftool"];
     NSMutableArray* args = [NSMutableArray arrayWithObjects:@"-j",nil];
     [args     addObjectsFromArray:paths];
     [task     setArguments:args];
