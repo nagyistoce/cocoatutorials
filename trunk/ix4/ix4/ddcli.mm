@@ -32,17 +32,17 @@
 
 @interface IX4App : NSObject <DDCliApplicationDelegate>
 {
-    BOOL            _verbose;
-    BOOL            _version;
+    NSString*       _pdf;
+    NSString*       _label;
+    NSString*       _sort;
+    NSInteger       _minsize;
+    NSInteger       _resize;
     BOOL            _help;
     BOOL            _keys;
-    BOOL            _open;
     BOOL            _desc;
-    NSString*       _pdf;
-    NSInteger       _minsize;
-    NSString*       _sort;
-    NSInteger       _resize;
-    NSString*       _label;
+    BOOL            _open;
+    BOOL            _verbose;
+    BOOL            _version;
 }
 @end
 
@@ -53,23 +53,37 @@
     DDGetoptOption optionTable[] = 
     {
     // Long         Short   Argument options
-    {@"verbose"    ,'v',    DDGetoptNoArgument},
-    {@"version"    ,'V' ,   DDGetoptNoArgument},
+    {@"pdf"        ,'p',    DDGetoptRequiredArgument},
+    {@"label"      ,'l',    DDGetoptRequiredArgument},
+    {@"sort"       ,'s',    DDGetoptRequiredArgument},
+    {@"minsize"    ,'m',    DDGetoptRequiredArgument},
+    {@"resize"     ,'r',    DDGetoptRequiredArgument},
     {@"help"       ,'h',    DDGetoptNoArgument},
     {@"keys"       ,'k',    DDGetoptNoArgument},
-    {@"open"       ,'o',    DDGetoptNoArgument},
     {@"asc"        ,'a',    DDGetoptNoArgument},
     {@"desc"       ,'d',    DDGetoptNoArgument},
-    {@"pdf"        ,'p',    DDGetoptRequiredArgument},
-    {@"minsize"    ,'m',    DDGetoptRequiredArgument},
-    {@"sort"       ,'s',    DDGetoptRequiredArgument},
-    {@"resize"     ,'r',    DDGetoptRequiredArgument},
-    {@"label"      ,'l',    DDGetoptRequiredArgument},
+    {@"open"       ,'o',    DDGetoptNoArgument},
+    {@"verbose"    ,'v',    DDGetoptNoArgument},
+    {@"version"    ,'V' ,   DDGetoptNoArgument},
     {nil,            0 ,   (DDGetoptArgumentOptions)0},
     };
     [optionsParser addOptionsFromTable: optionTable];
 }
 
+- (void) printVerbose:(NSArray *) arguments;
+{
+    ddprintf(@"pdf: %@\n"       ,_pdf);
+    ddprintf(@"label: %@\n"     ,_label);
+    ddprintf(@"sort: %@\n"      ,_sort);
+    ddprintf(@"minsize: %d\n"   ,_minsize);
+    ddprintf(@"resize: %d\n"    ,_resize);
+    ddprintf(@"help: %d\n"      ,_help);
+    ddprintf(@"keys: %d\n"      ,_keys);
+    ddprintf(@"asc: %d\n"       ,_desc?0:1);
+    ddprintf(@"open: %d\n"      ,_open);
+    ddprintf(@"verbose: %d\n"   ,_verbose);
+    ddprintf(@"Arguments: %@\n" , arguments);
+}
 - (id) init;
 {
     self = [super init];
@@ -130,19 +144,11 @@
         ddfprintf(stderr, @"Try `%@ --help' for more information.\n", DDCliApp);
         return EX_USAGE;
     }
+    
     if ( _verbose ) {
-        ddprintf(@"pdf: %@\n"       ,_pdf);
-        ddprintf(@"asc: %d\n"       ,_desc?0:1);
-        ddprintf(@"keys: %d\n"      ,_keys);
-        ddprintf(@"open: %d\n"      ,_open);
-        ddprintf(@"verbose: %d\n"   ,_verbose);
-        ddprintf(@"sort: %@\n"      ,_sort);
-        ddprintf(@"resize: %d\n"    ,_resize);
-        ddprintf(@"minsize: %d\n"   ,_minsize);
-        ddprintf(@"pdf: %@\n"       ,_pdf);
-        ddprintf(@"label: %@\n"     ,_label);
-        ddprintf(@"Arguments: %@\n" , arguments);
+        [self printVerbose:arguments];
     }
+    
     NSArray*    images  = pathsToImages(arguments,_sort,_label,_desc,_keys,_minsize);
     const char* message = !images         ? "no images allocated" 
                         : ![images count] ? "no suitable images found!"

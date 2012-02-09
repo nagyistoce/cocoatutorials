@@ -37,10 +37,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A1031B3814DEFDA40064CED5 /* PDFImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDFImages.h; sourceTree = "<group>"; };
-		A1031B3914DEFF330064CED5 /* PDFImages.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PDFImages.mm; sourceTree = "<group>"; };
-		A1031B4214DF41EA0064CED5 /* IO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IO.h; sourceTree = "<group>"; };
-		A1031B4314DF423B0064CED5 /* IO.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = IO.mm; sourceTree = "<group>"; };
+		A1031B3814DEFDA40064CED5 /* PDFImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PDFImages.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		A1031B3914DEFF330064CED5 /* PDFImages.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = PDFImages.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		A1031B4214DF41EA0064CED5 /* IO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = IO.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		A1031B4314DF423B0064CED5 /* IO.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = IO.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		A12807C214DDE1C4001EF617 /* DDCliApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliApplication.h; path = ../ddcli/lib/DDCliApplication.h; sourceTree = "<group>"; };
 		A12807C314DDE1C4001EF617 /* DDCliApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDCliApplication.m; path = ../ddcli/lib/DDCliApplication.m; sourceTree = "<group>"; };
 		A12807C414DDE1C4001EF617 /* DDCliParseException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCliParseException.h; path = ../ddcli/lib/DDCliParseException.h; sourceTree = "<group>"; };
@@ -50,8 +50,8 @@
 		A12807C814DDE1C4001EF617 /* DDCommandLineInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDCommandLineInterface.h; path = ../ddcli/lib/DDCommandLineInterface.h; sourceTree = "<group>"; };
 		A12807C914DDE1C4001EF617 /* DDGetoptLongParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDGetoptLongParser.h; path = ../ddcli/lib/DDGetoptLongParser.h; sourceTree = "<group>"; };
 		A12807CA14DDE1C4001EF617 /* DDGetoptLongParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDGetoptLongParser.m; path = ../ddcli/lib/DDGetoptLongParser.m; sourceTree = "<group>"; };
-		A14F641B14E1D7CB00ACC5A9 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		A14F641C14E1D7CB00ACC5A9 /* JSON.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSON.mm; sourceTree = "<group>"; };
+		A14F641B14E1D7CB00ACC5A9 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = JSON.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		A14F641C14E1D7CB00ACC5A9 /* JSON.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = JSON.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		A193E4AA14D24B1D001D3486 /* ix4 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ix4; sourceTree = BUILT_PRODUCTS_DIR; };
 		A193E4AE14D24B1D001D3486 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A193E4B414D24B1D001D3486 /* ix4-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ix4-Prefix.pch"; sourceTree = "<group>"; };

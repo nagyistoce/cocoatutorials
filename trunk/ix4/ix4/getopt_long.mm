@@ -39,31 +39,31 @@ struct Args {
 	const char*	 pdf;                    /* -p: option       */
     const char*  label;                  /* -l: option       */
     const char*  sort;                   /* -s: option       */
-    NSInteger    resize;                 /* -r: option       */
 	NSInteger 	 minsize;				 /* -m: option       */
-    bool         desc;                   /* -a|-d option     */
+    NSInteger    resize;                 /* -r: option       */
+    int          help;                   /* -h  option       */
     int          keys;                   /* -k  option       */
+    bool         desc;                   /* -a|-d option     */
     int          open;                   /* -o  option       */
 	int 		 verbose;                /* -v  global option*/ 
     int          version;                /* -V  option       */
-    int          help;                   /* -h  option       */
 	char**		 inputFiles;			 /* input files      */
 	int 		 nInputFiles;			 /* # of input files */
 };
-static const char*  optString = "p:s:r:m:l:adovVh?";
+static const char*  optString = "p:l:s:m:r:h?adovV";
 static const struct option longOpts[] =
 {	{ "pdf"         , required_argument	, NULL, 'p' }
 ,	{ "label"		, required_argument , NULL, 'l' }
 ,	{ "sort"		, required_argument	, NULL, 's' }
-,	{ "resize"      , required_argument	, NULL, 'r' }
 ,	{ "minsize"     , required_argument	, NULL, 'm' }
+,	{ "resize"      , required_argument	, NULL, 'r' }
+,	{ "help"		, no_argument		, NULL, 'h' }
+,	{ "keys"		, no_argument       , NULL, 'k' }
 ,	{ "asc"         , no_argument       , NULL, 'a' }
 ,	{ "desc"		, no_argument       , NULL, 'd' }
-,	{ "keys"		, no_argument       , NULL, 'k' }
-,	{ "open"		, no_argument		, NULL, 'O' }
+,	{ "open"		, no_argument		, NULL, 'o' }
 ,	{ "verbose"		, no_argument       , NULL, 'v' }
 ,	{ "version"		, no_argument       , NULL, 'V' }
-,	{ "help"		, no_argument		, NULL, 'h' }
 ,	{ NULL			, no_argument		, NULL,  0  }
 };
 
@@ -71,14 +71,16 @@ static void display_args( Args& args )
 {
     if ( getVerbose() ) {
         reportns([NSString stringWithFormat:@ "pdf:       %s" , args.pdf]);
-        reportns([NSString stringWithFormat:@ "sort:      %s" , args.sort]);
-        reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
-        reportns([NSString stringWithFormat:@ "keys: %d"      , args.keys]);
-        reportns([NSString stringWithFormat:@ "verbose:   %d" , getVerbose()]);
-        reportns([NSString stringWithFormat:@ "resize:    %d" , args.resize]);
-        reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
         reportns([NSString stringWithFormat:@ "label:     %s" , args.label]);
+        reportns([NSString stringWithFormat:@ "sort:      %s" , args.sort]);
+        reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
+        reportns([NSString stringWithFormat:@ "resize:    %ld", args.resize]);
+        reportns([NSString stringWithFormat:@ "help: %d"      , args.help]);
+        reportns([NSString stringWithFormat:@ "keys: %d"      , args.keys]);
+        reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
         reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
+        reportns([NSString stringWithFormat:@ "verbose:   %d" , getVerbose()]);
+        reportns([NSString stringWithFormat:@ "version:   %d" , args.version]);
         
         for (int i = 0 ; i < args.nInputFiles ; i++ ) {
             reportns([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
