@@ -27,19 +27,21 @@
 
 #define    GETOPT_LONG   1
 #define    DDCLI         2
-#define    BUILD_WITH    1
+#define    BUILD_WITH    2
 
 #define    VERSION_MAJOR 0
 #define    VERSION_MINOR 2
 
 typedef enum error_e
-{	OK = 0 
+{   OK_ALMOST=-1
+,   OK=0 
 ,	e_SYNTAX 
-,   e_NOT_IMAGE
+,   e_IMAGE_BAD
 ,	e_NO_IMAGES
-,	e_NO_PDF_FILENAME
-,   e_INVALIDSORT
-,   e_UNRECOGNIZED_ARG
+,   e_ALLOC_FAILED
+,	e_PDF_CANT_WRITE
+,   e_ARG_UNRECOGNISED
+,   e_TASK_FAILED
 } error_e;
 
 // horrible global variables
@@ -50,15 +52,10 @@ extern const char* ix4;
 #define lengthof(x) sizeof(x)/sizeof(x[0])
 #endif
 
-void display_usage(const char* program,bool bAll);
+void display_usage(bool bAll);
 void display_version( void );
-
+void unrecognizedArgument(NSString* arg);
 void unrecognizedArgument(const char* arg);
-void notImage(NSString* filename);
-void noImages(bool bCreate /*= true*/);
-void invalidSortKey(const char* key);
-void noPDFFileName(NSString* filename);
-void syntaxError();
 
 int  main_longopt(int argc,char** argv);
 int  main_ddcli  (int,char**);

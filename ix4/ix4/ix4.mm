@@ -32,26 +32,30 @@ const char* parser = "ddcli";
 const char* parser = "getopt_long";
 #endif
 
-void display_usage(const char* program,bool bAll)
+void display_usage(bool bAll)
 {
-	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",program]);
-	report("usage: [ --[ pdf path | label key | sort key | minsize n | FLAG]   | file ]+");
-    report("FLAG: { keys | asc | desc | open | verbose | version | help }");
-	exit( EXIT_FAILURE );
+	if ( bAll ) reports([NSString stringWithFormat:@"%s - convert images to PDF",ix4]);
+	reports([NSString stringWithFormat
+          :@"usage: %s [ --[ pdf path | label key | sort key | minsize n | FLAG ] | file ]+",ix4]);
+    reports("      FLAG { keys | asc | desc | open | verbose | version | help }");
 }
 
 void display_version( void )
 {
-	reportns( [NSString stringWithFormat:@"ix4: %d.%d parser: %s built:%s %s"
+	reports( [NSString stringWithFormat:@"ix4: %d.%d parser: %s built:%s %s"
                ,VERSION_MAJOR,VERSION_MINOR,parser,__TIME__,__DATE__]
-            );
-	exit( EXIT_FAILURE );
+           );
+}
+
+void unrecognizedArgument(NSString* arg)
+{
+    errors([NSString stringWithFormat:@"%unrecognized argument: %s",arg]);
+    error = e_ARG_UNRECOGNISED ;
 }
 
 void unrecognizedArgument(const char* arg)
 {
-    errorns([NSString stringWithFormat:@"%unrecognized argument: %s",arg]);
-    error = e_UNRECOGNIZED_ARG ;
+    unrecognizedArgument([NSString stringWithUTF8String:arg]);
 }
 
 int main (int argc,char** argv)
@@ -64,6 +68,3 @@ int main (int argc,char** argv)
 #endif
     return 1;
 }
-
-
-

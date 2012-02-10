@@ -84,6 +84,7 @@
     ddprintf(@"help:      %d\n"      ,_help);
     ddprintf(@"Arguments: %@\n" , arguments);
 }
+
 - (id) init;
 {
     self = [super init];
@@ -104,60 +105,38 @@
     _desc = asc?NO:YES;
 }
 
-- (void) printUsage: (FILE *) stream;
-{
-    ddfprintf(stream, @"%@: Usage [OPTIONS] <argument> [...]\n", DDCliApp);
-    display_usage(ix4,false);
-}
-
-- (void) printHelp;
-{
-    [self printUsage: stdout];
-    display_usage(ix4,false);
-}
-
-- (void) printVersion;
-{
-    ddprintf(@"%@ version: %d.%d built: %s %s\n", DDCliApp, VERSION_MINOR,VERSION_MAJOR,__TIME__,__DATE__);
-    display_version();
-}
-
 - (int) application: (DDCliApplication *) app
    runWithArguments: (NSArray *) arguments;
 {
-    if (_help)
-    {
-        [self printHelp];
-        return EXIT_SUCCESS;
-    }
-    
-    if (_version)
-    {
-        [self printVersion];
-        return EXIT_SUCCESS;
-    }
-    
-    if ([arguments count] < 1)
-    {
-        ddfprintf(stderr, @"%@: At least one argument is required\n", DDCliApp);
-        [self printUsage: stderr];
-        ddfprintf(stderr, @"Try `%@ --help' for more information.\n", DDCliApp);
-        return EX_USAGE;
-    }
-    
+    error = OK;
     if ( _verbose ) {
         [self printVerbose:arguments];
     }
+
+    if (_version || _help)
+    {
+        if ( _version ) display_version();
+        if ( _help    ) display_usage(false);
+        error = OK_ALMOST ; // locally pretend we have an error
+    }
     
-    NSArray*    images  = pathsToImages(arguments,_sort,_label,_desc,_keys,_minsize);
-    const char* message = !images         ? "no images allocated" 
-                        : ![images count] ? "no suitable images found!"
-                        : NULL
-                        ;
-    if (message) printf("%s\n",message);
-    imagesToPDF(images,_pdf,_open,_resize);    
+    if (!error && [arguments count] < 1)
+    {
+        display_usage(false);
+        error = e_SYNTAX;
+    }
     
-    return !message ? EXIT_SUCCESS : EXIT_FAILURE ;
+    for ( NSString* argument in arguments )
+        if ( [argument characterAtIndex:0] == '-' )
+            unrecognizedArgument(argument);
+        
+    if ( !error ) {
+        NSArray*       images  = pathsToImages(arguments,_sort,_label,_desc,_keys,_minsize);
+        if ( !error && images ) imagesToPDF(images,_pdf,_open,_resize);    
+    }
+    
+    if ( error == OK_ALMOST ) error = OK;
+    return error;
 }
 @end
 

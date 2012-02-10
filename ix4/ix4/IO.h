@@ -22,16 +22,19 @@
 #ifndef ix4_IO_h
 #define ix4_IO_h
 
-void setVerbose(boolean_t verbose);
+void      setVerbose(boolean_t verbose);
 boolean_t getVerbose();
 
 // report => stdout error => stderr warn => stderr IF verbose
-void warn    (const char* msg);
-void errors  (const char* msg);
-void report  (const char* msg);
 
-void warns   (NSString* msg);
-void errorns (NSString* msg);
-void reportns(NSString* msg);
+// C++ interface
+void warns  (const char* msg);
+void errors (const char* msg);
+void reports(const char* msg);
+
+// Obj-C interface
+void warns  (NSString* msg);
+void errors (NSString* msg);
+void reports(NSString* msg);
 
 #endif

@@ -23,6 +23,7 @@
 
 @interface JSON : NSObject
 
--(NSObject*) jsonToObj:(NSString *)json ;
--(NSObject*) jsonToObj:(NSString *)json offset:(int)offset nextOffset:(int*)nextOffset;
+- (NSObject*) jsonToObj:(NSString *)json ;
+- (NSObject*) jsonToObj:(NSString *)json offset:(int)offset nextOffset:(int*)nextOffset;
+
 @end
