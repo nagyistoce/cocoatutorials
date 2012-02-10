@@ -71,20 +71,20 @@ static const struct option longOpts[] =
 static void display_args( Args& args )
 {
     if ( getVerbose() ) {
-        reportns([NSString stringWithFormat:@ "pdf:      %s" ,args.pdf]);
-        reportns([NSString stringWithFormat:@ "label:    %s" ,args.label]);
-        reportns([NSString stringWithFormat:@ "sort:     %s" ,args.sort]);
-        reportns([NSString stringWithFormat:@ "minsize:  %ld",args.minsize]);
-        reportns([NSString stringWithFormat:@ "resize:   %ld",args.resize]);
-        reportns([NSString stringWithFormat:@ "keys:     %d" ,args.keys]);
-        reportns([NSString stringWithFormat:@ "asc:      %d" ,args.desc?0:1]);
-        reportns([NSString stringWithFormat:@ "open:     %d" ,args.open]);
-        reportns([NSString stringWithFormat:@ "verbose:  %d" ,getVerbose()]);
-        reportns([NSString stringWithFormat:@ "version:  %d" ,args.version]);
-        reportns([NSString stringWithFormat:@ "help:     %d" ,args.help]);
+        reports([NSString stringWithFormat:@ "pdf:      %s" ,args.pdf]);
+        reports([NSString stringWithFormat:@ "label:    %s" ,args.label]);
+        reports([NSString stringWithFormat:@ "sort:     %s" ,args.sort]);
+        reports([NSString stringWithFormat:@ "minsize:  %ld",args.minsize]);
+        reports([NSString stringWithFormat:@ "resize:   %ld",args.resize]);
+        reports([NSString stringWithFormat:@ "keys:     %d" ,args.keys]);
+        reports([NSString stringWithFormat:@ "asc:      %d" ,args.desc?0:1]);
+        reports([NSString stringWithFormat:@ "open:     %d" ,args.open]);
+        reports([NSString stringWithFormat:@ "verbose:  %d" ,getVerbose()]);
+        reports([NSString stringWithFormat:@ "version:  %d" ,args.version]);
+        reports([NSString stringWithFormat:@ "help:     %d" ,args.help]);
         
         for (int i = 0 ; i < args.nInputFiles ; i++ ) {
-            reportns([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
+            reports([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
         }
     }
 }
@@ -95,14 +95,12 @@ static error_e parseArgs(Args& args,int argc,char** argv,NSArray** pArray)
 	int longIndex = 0;
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:argc];
 	
-	/* Initialize args before we get to work. */
+	// Initialize args
     memset(&args,0,sizeof(args));
 	args.minsize = 512   ;
     args.label   = "Description";
 	
-	/* Process the arguments with getopt_long(), then 
-	 * populate args. 
-	 */
+	// Process the arguments with getopt_long()
 	while( (opt = ::getopt_long( argc, argv, optString, longOpts, &longIndex)) !=-1 ) {
 		switch( opt ) {
 			case 'p':
@@ -156,15 +154,10 @@ static error_e parseArgs(Args& args,int argc,char** argv,NSArray** pArray)
 		}
 	}
 	
-	args.inputFiles 	= argv + optind;
-	args.nInputFiles 	= argc - optind;
+	args.inputFiles  = argv + optind;
+	args.nInputFiles = argc - optind;
     for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) 
-        if ( args.inputFiles[i][0] == '-' )
-            unrecognizedArgument(args.inputFiles[i]);
-        else
-            [array addObject:[NSString stringWithUTF8String:args.inputFiles[i]]];
-    
-    if ( !args.nInputFiles ) args.help = 1 ;
+        [array addObject:[NSString stringWithUTF8String:args.inputFiles[i]]];
     *pArray = array;
     
     return error ;
@@ -172,31 +165,43 @@ static error_e parseArgs(Args& args,int argc,char** argv,NSArray** pArray)
 
 int main_longopt(int argc,char** argv)
 {
-    if ( argc <= 1 ) display_usage(argv[0],true);
-    
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    error = OK;
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
     // parse the command line
-    Args args ;
+    Args     args ;
     NSArray* paths;
     error = parseArgs(args,argc,argv,&paths);
-    
-    // tell the user what's going on
-    if ( args.version ) display_version();
-    if ( args.help    ) display_usage(argv[0],true);
-    if ( !error       ) {
-        display_args(args);   
-        // convert the args into cocoa structures
-        NSString* label  = args.label?[NSString stringWithUTF8String:args.label]:nil;
-        NSString* sort   = args.sort ?[NSString stringWithUTF8String:args.sort]:nil;
-        NSString* pdf    = [NSString stringWithUTF8String:args.pdf];
-        NSArray*  images = pathsToImages(paths,sort,label,args.desc,args.keys,args.minsize);
-        
-        // generate output
-        if ( images ) imagesToPDF(images,pdf,args.open,args.resize) ;
+
+    if ( args.verbose ) {
+        display_args(args);
     }
     
-    [pool drain];
+    if (args.help || args.version )
+    {
+        if ( args.help    ) display_usage(true);
+        if ( args.version ) display_version();
+        if ( !error ) error = OK_ALMOST ; // locally pretend we have an error
+    }
+    
+    if ( !error && args.nInputFiles < 1)
+    {
+        display_usage(false);
+        error = e_SYNTAX;
+    }
+        
+    for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) 
+        if ( args.inputFiles[i][0] == '-' )
+            unrecognizedArgument(args.inputFiles[i]);
+
+    if (!error ) {
+        NSArray* images  = pathsToImages(paths,args.sort,args.label,args.desc,args.keys,args.minsize);
+        if (     images && !error ) imagesToPDF(images,args.pdf,args.open,args.resize);    
+    }
+    
+    [pool release];
+    if ( error == OK_ALMOST ) error = OK;
     return error;
 }
+
 #endif

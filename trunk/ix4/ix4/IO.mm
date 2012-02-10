@@ -31,7 +31,7 @@ void setVerbose(boolean_t verbose)
 
 boolean_t getVerbose() { return gbVerbose ; }
 
-void warn(const char* msg)
+void warns(const char* msg)
 {
     if ( gbVerbose ) {
         errors(msg);
@@ -40,26 +40,28 @@ void warn(const char* msg)
 
 void errors(const char* msg)
 {
-    fputs(msg,stderr);
-    fputc('\n',stderr);
+    if ( !error ) {
+        fputs(msg,stderr);
+        fputc('\n',stderr);
+    }
 }
 
-void errorns(NSString* msg)
+void errors(NSString* msg)
 {
     errors([msg UTF8String]);
 }
 
-void report(const char* msg)
+void reports(const char* msg)
 {
     puts(msg);
 }
 
-void reportns(NSString* msg)
+void reports(NSString* msg)
 {
-    report([msg UTF8String]);
+    reports([msg UTF8String]);
 }
 
 void warns(NSString* msg)
 {
-    warn([msg UTF8String]);
+    warns([msg UTF8String]);
 }

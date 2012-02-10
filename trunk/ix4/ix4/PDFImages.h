@@ -29,10 +29,7 @@
 
 #include "ix4.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+// Obj-C interface
 NSArray*
 pathsToImages
 ( NSArray*  paths
@@ -51,8 +48,25 @@ imagesToPDF
 , NSInteger resize
 );
 
-#ifdef __cplusplus
-}
-#endif
+// C++ interface
+PDFDocument*
+imagesToPDF
+( NSArray*  images
+, const char* pdf
+, boolean_t bOpen
+, NSInteger resize
+);
+
+NSArray*
+pathsToImages
+( NSArray*  paths
+, const char* sortKey
+, const char* labelKey
+, boolean_t desc
+, boolean_t keys
+, NSInteger minsize
+);
+
+
 
 #endif

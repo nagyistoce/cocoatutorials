@@ -87,10 +87,14 @@ NSArray*    pathsToImages
 , NSInteger minsize
 ) {
     NSMutableArray* images = [[NSMutableArray alloc]init] ;
+    if ( !images ) {
+        errors("cannot alloc images");
+        error = e_ALLOC_FAILED;
+        return images;
+    }
+    
     NSMutableSet*   keySet = keys ? [NSMutableSet setWithCapacity:[paths count]] : nil;
     NSInteger       index = 0 ;
-    
-    if ( !images ) return images ;
 
     ////
     // get the metadata in JSON format with exiftool
@@ -105,13 +109,25 @@ NSArray*    pathsToImages
     [task     setStandardOutput:outPipe];
     [task     setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"/dev/null"]];
     [outPipe  release];
-    [task     launch];
-    
-    // Read the output
-    NSData*   data = [[outPipe fileHandleForReading] readDataToEndOfFile];
-    [task     waitUntilExit];
-    int       status = [task terminationStatus];
-    [task     release];
+    NSData*   data  = nil;
+    int       status = -1;
+
+    @try
+    {
+        [task     launch];
+        data = [[outPipe fileHandleForReading] readDataToEndOfFile];
+        [task     waitUntilExit];
+        status = [task terminationStatus];
+        [task     release];
+    }
+    @catch (NSException * e)
+    {
+        errors([NSString stringWithFormat:@"Can't execute %@: %@: %@\n",[task launchPath], [e name], [e description]]);
+        error = e_TASK_FAILED;
+    }
+    @finally
+    {
+    }
 
     // convert to JSON
     NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
@@ -192,6 +208,9 @@ NSArray*    pathsToImages
             } else {
                 warns([NSString stringWithFormat:@"image less than minsize %@",path]);
             }
+        } else {
+            errors([NSString stringWithFormat:@"file %@ is not an image",path]);
+            error = e_IMAGE_BAD;
         }
         [images sortUsingFunction:sortFunction context:&desc];
         index++;
@@ -234,11 +253,41 @@ static NSImage* scaleImage(NSImage* image,double width,double height)
     [result lockFocus];
     [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
     [image setSize:[at transformSize:[image size]]];
-    [image compositeToPoint:NSMakePoint((width-[image size].width)/2 , (height-[image size].height)/2) operation:NSCompositeCopy];
+    [image compositeToPoint:NSMakePoint((width-[image size].width)/2 , (height-[image size].height)/2)
+                  operation:NSCompositeCopy
+    ];
     [result unlockFocus];
     
     return result;
 }
+
+// C++ interface
+NSArray*
+pathsToImages
+( NSArray*  paths
+, const char* sortKey
+, const char* labelKey
+, boolean_t desc
+, boolean_t keys
+, NSInteger minsize
+) {
+    return pathsToImages(paths
+                        ,[NSString stringWithUTF8String:sortKey]
+                        ,[NSString stringWithUTF8String:labelKey]
+                        ,desc,keys,minsize
+                        );
+}
+
+PDFDocument*
+imagesToPDF
+( NSArray*  images
+, const char* pdf
+, boolean_t bOpen
+, NSInteger resize
+) {
+    return imagesToPDF(images,[NSString stringWithUTF8String:pdf],bOpen,resize);
+}
+
 
 PDFDocument* imagesToPDF
 ( NSArray*  images
@@ -247,8 +296,13 @@ PDFDocument* imagesToPDF
 , NSInteger resize
 ) {
     if ( !images ) return nil;
-    
 	PDFDocument* document = [[PDFDocument alloc]init];
+    if ( !document ) {
+        errors("cannot allocate pdf");
+        error = e_ALLOC_FAILED;
+        return document;
+    }
+    
 	if ( document ) {
         
 		////
@@ -305,11 +359,12 @@ PDFDocument* imagesToPDF
 		////
 		// write the PDF file and display it
 		if ( [document writeToFile:pdf] ) {
-            if ( bOpen/*args.open*/ ) {
+            if ( bOpen ) {
                 [[NSWorkspace sharedWorkspace] openFile:pdf];
             }
 		} else {
-			errorns([NSString stringWithFormat:@"unable to write pdffile %@",pdf]);
+			errors([NSString stringWithFormat:@"unable to write pdffile %@",pdf]);
+            error = e_PDF_CANT_WRITE;
 		}
 	}
     return document ;
