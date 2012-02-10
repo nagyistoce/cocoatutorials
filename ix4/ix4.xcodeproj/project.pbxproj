@@ -129,7 +129,6 @@
 				A193E4BC14D24B89001D3486 /* ix4.mm */,
 				A1D7762414E37CCD00DF9F21 /* ddcli.mm */,
 				A1D7762514E37CCD00DF9F21 /* getopt_long.mm */,
-				A193E4B514D24B1D001D3486 /* ix4.1 */,
 				A1031B4214DF41EA0064CED5 /* IO.h */,
 				A1031B4314DF423B0064CED5 /* IO.mm */,
 				A14F641B14E1D7CB00ACC5A9 /* JSON.h */,
@@ -144,6 +143,7 @@
 		A193E4B314D24B1D001D3486 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A193E4B514D24B1D001D3486 /* ix4.1 */,
 				A193E4B414D24B1D001D3486 /* ix4-Prefix.pch */,
 			);
 			name = "Supporting Files";

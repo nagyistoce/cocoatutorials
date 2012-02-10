@@ -1,9 +1,22 @@
 //
 //  PDFImages.cpp
-//  ix4
+//  This file is part of ix4
+// 
+//  ix4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
 //
-//  Created by Robin Mills on 2012-02-05.
-//  Copyright 2012 RMSC San Jose, CA, USA. All rights reserved.
+//  ix is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+// 
+//  You should have received a copy of the GNU General Public License
+//  along with Favorites.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  This file is original work by Robin Mills, San Jose, CA 95112, USA
+//  Created 2012 http://clanmills.com robin@clanmills.com
 //
 
 #import  <Foundation/Foundation.h>
@@ -127,10 +140,12 @@ NSArray*    pathsToImages
                 }
             }
             
+            ////
+            // find metadict in the metadata
             NSDictionary* metaDict = nil;
             if ( [metaData isKindOfClass:[NSArray class]] ) {
                 NSArray* metaArray = (NSArray*) metaData;
-                if ( [metaArray count] > 0 ) {
+                if ( [metaArray count] > index ) {
                     if ( [ [metaArray objectAtIndex:index] isKindOfClass:[NSDictionary class]] ) {
                         metaDict = [metaArray objectAtIndex:index];
                         if ( keySet ) {
@@ -151,7 +166,7 @@ NSArray*    pathsToImages
                                                    ,nil
                                                    ] ;
                 [images addObject:dict ] ;
-                // kept metadict for features like auto-rotate (not implemented yet)
+                // keep metadict for future features based on meta-data
                 [dict setObject:metaDict forKey:METADICT];
 
                 // find the label in the meta data
