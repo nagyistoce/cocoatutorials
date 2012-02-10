@@ -2,7 +2,7 @@
 //  ddcli.mm
 //  This file is part of ix4
 // 
-//  ix is free software: you can redistribute it and/or modify
+//  ix4 is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
@@ -37,12 +37,12 @@
     NSString*       _sort;
     NSInteger       _minsize;
     NSInteger       _resize;
-    BOOL            _help;
     BOOL            _keys;
     BOOL            _desc;
     BOOL            _open;
     BOOL            _verbose;
     BOOL            _version;
+    BOOL            _help;
 }
 @end
 
@@ -58,13 +58,13 @@
     {@"sort"       ,'s',    DDGetoptRequiredArgument},
     {@"minsize"    ,'m',    DDGetoptRequiredArgument},
     {@"resize"     ,'r',    DDGetoptRequiredArgument},
-    {@"help"       ,'h',    DDGetoptNoArgument},
     {@"keys"       ,'k',    DDGetoptNoArgument},
     {@"asc"        ,'a',    DDGetoptNoArgument},
     {@"desc"       ,'d',    DDGetoptNoArgument},
     {@"open"       ,'o',    DDGetoptNoArgument},
     {@"verbose"    ,'v',    DDGetoptNoArgument},
     {@"version"    ,'V' ,   DDGetoptNoArgument},
+    {@"help"       ,'h',    DDGetoptNoArgument},
     {nil,            0 ,   (DDGetoptArgumentOptions)0},
     };
     [optionsParser addOptionsFromTable: optionTable];
@@ -72,16 +72,16 @@
 
 - (void) printVerbose:(NSArray *) arguments;
 {
-    ddprintf(@"pdf: %@\n"       ,_pdf);
-    ddprintf(@"label: %@\n"     ,_label);
-    ddprintf(@"sort: %@\n"      ,_sort);
-    ddprintf(@"minsize: %d\n"   ,_minsize);
-    ddprintf(@"resize: %d\n"    ,_resize);
-    ddprintf(@"help: %d\n"      ,_help);
-    ddprintf(@"keys: %d\n"      ,_keys);
-    ddprintf(@"asc: %d\n"       ,_desc?0:1);
-    ddprintf(@"open: %d\n"      ,_open);
-    ddprintf(@"verbose: %d\n"   ,_verbose);
+    ddprintf(@"pdf:       %@\n"       ,_pdf);
+    ddprintf(@"label:     %@\n"     ,_label);
+    ddprintf(@"sort:      %@\n"      ,_sort);
+    ddprintf(@"minsize:   %d\n"   ,_minsize);
+    ddprintf(@"resize:    %d\n"    ,_resize);
+    ddprintf(@"keys:      %d\n"      ,_keys);
+    ddprintf(@"asc:       %d\n"       ,_desc?0:1);
+    ddprintf(@"open:      %d\n"      ,_open);
+    ddprintf(@"verbose:   %d\n"   ,_verbose);
+    ddprintf(@"help:      %d\n"      ,_help);
     ddprintf(@"Arguments: %@\n" , arguments);
 }
 - (id) init;

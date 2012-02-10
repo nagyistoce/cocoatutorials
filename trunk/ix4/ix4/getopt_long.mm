@@ -2,7 +2,7 @@
 //  getopt_long.mm
 //  This file is part of ix4
 // 
-//  ix is free software: you can redistribute it and/or modify
+//  ix4 is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
@@ -29,9 +29,10 @@
 
 #if BUILD_WITH == GETOPT_LONG
 
+// http://www.ibm.com/developerworks/aix/library/au-unix-getopt.html
 // prototypes
 struct Args ;
-static void      display_args (Args& args);
+static void      display_args(Args& args);
 static error_e   parseArgs   (Args& args,int argc,char** argv);
 static NSArray*  argsToImages(Args& args);
 
@@ -41,46 +42,46 @@ struct Args {
     const char*  sort;                   /* -s: option       */
 	NSInteger 	 minsize;				 /* -m: option       */
     NSInteger    resize;                 /* -r: option       */
-    int          help;                   /* -h  option       */
     int          keys;                   /* -k  option       */
     bool         desc;                   /* -a|-d option     */
     int          open;                   /* -o  option       */
 	int 		 verbose;                /* -v  global option*/ 
     int          version;                /* -V  option       */
+    int          help;                   /* -h  option       */
 	char**		 inputFiles;			 /* input files      */
 	int 		 nInputFiles;			 /* # of input files */
 };
-static const char*  optString = "p:l:s:m:r:h?adovV";
+static const char*  optString = "p:l:s:m:r:adovVh?";
 static const struct option longOpts[] =
 {	{ "pdf"         , required_argument	, NULL, 'p' }
 ,	{ "label"		, required_argument , NULL, 'l' }
 ,	{ "sort"		, required_argument	, NULL, 's' }
 ,	{ "minsize"     , required_argument	, NULL, 'm' }
 ,	{ "resize"      , required_argument	, NULL, 'r' }
-,	{ "help"		, no_argument		, NULL, 'h' }
 ,	{ "keys"		, no_argument       , NULL, 'k' }
 ,	{ "asc"         , no_argument       , NULL, 'a' }
 ,	{ "desc"		, no_argument       , NULL, 'd' }
 ,	{ "open"		, no_argument		, NULL, 'o' }
 ,	{ "verbose"		, no_argument       , NULL, 'v' }
 ,	{ "version"		, no_argument       , NULL, 'V' }
+,	{ "help"		, no_argument		, NULL, 'h' }
 ,	{ NULL			, no_argument		, NULL,  0  }
 };
 
 static void display_args( Args& args )
 {
     if ( getVerbose() ) {
-        reportns([NSString stringWithFormat:@ "pdf:       %s" , args.pdf]);
-        reportns([NSString stringWithFormat:@ "label:     %s" , args.label]);
-        reportns([NSString stringWithFormat:@ "sort:      %s" , args.sort]);
-        reportns([NSString stringWithFormat:@ "minsize:   %ld", args.minsize]);
-        reportns([NSString stringWithFormat:@ "resize:    %ld", args.resize]);
-        reportns([NSString stringWithFormat:@ "help: %d"      , args.help]);
-        reportns([NSString stringWithFormat:@ "keys: %d"      , args.keys]);
-        reportns([NSString stringWithFormat:@ "direction: %s" , args.desc  ? "desc" : "asc"]);
-        reportns([NSString stringWithFormat:@ "open:      %d" , args.open]);
-        reportns([NSString stringWithFormat:@ "verbose:   %d" , getVerbose()]);
-        reportns([NSString stringWithFormat:@ "version:   %d" , args.version]);
+        reportns([NSString stringWithFormat:@ "pdf:      %s" ,args.pdf]);
+        reportns([NSString stringWithFormat:@ "label:    %s" ,args.label]);
+        reportns([NSString stringWithFormat:@ "sort:     %s" ,args.sort]);
+        reportns([NSString stringWithFormat:@ "minsize:  %ld",args.minsize]);
+        reportns([NSString stringWithFormat:@ "resize:   %ld",args.resize]);
+        reportns([NSString stringWithFormat:@ "keys:     %d" ,args.keys]);
+        reportns([NSString stringWithFormat:@ "asc:      %d" ,args.desc?0:1]);
+        reportns([NSString stringWithFormat:@ "open:     %d" ,args.open]);
+        reportns([NSString stringWithFormat:@ "verbose:  %d" ,getVerbose()]);
+        reportns([NSString stringWithFormat:@ "version:  %d" ,args.version]);
+        reportns([NSString stringWithFormat:@ "help:     %d" ,args.help]);
         
         for (int i = 0 ; i < args.nInputFiles ; i++ ) {
             reportns([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);

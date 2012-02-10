@@ -2,7 +2,7 @@
 //  ix4.mm
 //  This file is part of ix4
 // 
-//  ix is free software: you can redistribute it and/or modify
+//  ix4 is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
@@ -36,7 +36,7 @@ void display_usage(const char* program,bool bAll)
 {
 	if ( bAll ) reportns([NSString stringWithFormat:@"%s - convert images to PDF",program]);
 	report("usage: [ --[ pdf path | label key | sort key | minsize n | FLAG]   | file ]+");
-    report("FLAG: { help | keys | asc | desc | open | verbose | version }");
+    report("FLAG: { keys | asc | desc | open | verbose | version | help }");
 	exit( EXIT_FAILURE );
 }
 
