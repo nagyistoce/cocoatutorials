@@ -35,7 +35,7 @@
 typedef enum error_e
 {   OK_ALMOST=-1
 ,   OK=0 
-,	e_SYNTAX 
+,	e_SYNTAX=10 
 ,   e_IMAGE_BAD
 ,	e_NO_IMAGES
 ,   e_ALLOC_FAILED
