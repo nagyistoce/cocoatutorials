@@ -109,6 +109,7 @@
    runWithArguments: (NSArray *) arguments;
 {
     error = OK;
+    // report to user
     if ( _verbose ) {
         [self printVerbose:arguments];
     }
@@ -117,7 +118,7 @@
     {
         if ( _version ) display_version();
         if ( _help    ) display_usage(false);
-        error = OK_ALMOST ; // locally pretend we have an error
+        if ( !error   ) error = OK_ALMOST ; // pretend error
     }
     
     if (!error && [arguments count] < 1)
@@ -130,9 +131,10 @@
         if ( [argument characterAtIndex:0] == '-' )
             unrecognizedArgument(argument);
         
+    // do the job
     if ( !error ) {
-        NSArray*       images  = pathsToImages(arguments,_sort,_label,_desc,_keys,_minsize);
-        if ( !error && images ) imagesToPDF(images,_pdf,_open,_resize);    
+        NSArray*  images  = pathsToImages(arguments,_sort,_label,_desc,_keys,_minsize);
+        imagesToPDF(images,_pdf,_open,_resize);    
     }
     
     if ( error == OK_ALMOST ) error = OK;
