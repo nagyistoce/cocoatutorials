@@ -48,8 +48,8 @@ struct Args {
 	int 		 verbose;                /* -v  global option*/ 
     int          version;                /* -V  option       */
     int          help;                   /* -h  option       */
-	char**		 inputFiles;			 /* input files      */
-	int 		 nInputFiles;			 /* # of input files */
+	char**		 paths;	        		 /* input files      */
+	int 		 nPaths;		    	 /* # of input files */
 };
 static const char*  optString = "p:l:s:m:r:adovVh?";
 static const struct option longOpts[] =
@@ -83,17 +83,16 @@ static void display_args( Args& args )
         reports([NSString stringWithFormat:@ "version:  %d" ,args.version]);
         reports([NSString stringWithFormat:@ "help:     %d" ,args.help]);
         
-        for (int i = 0 ; i < args.nInputFiles ; i++ ) {
-            reports([NSString stringWithFormat:@"file %2d = %s",i,args.inputFiles[i]]);
+        for (int i = 0 ; i < args.nPaths ; i++ ) {
+            reports([NSString stringWithFormat:@"file %2d = %s",i,args.paths[i]]);
         }
     }
 }
 
-static error_e parseArgs(Args& args,int argc,char** argv,NSArray** pArray)
+static error_e parseArgs(Args& args,int argc,char** argv)
 {
     int opt = 0;
 	int longIndex = 0;
-    NSMutableArray* array = [NSMutableArray arrayWithCapacity:argc];
 	
 	// Initialize args
     memset(&args,0,sizeof(args));
@@ -154,11 +153,8 @@ static error_e parseArgs(Args& args,int argc,char** argv,NSArray** pArray)
 		}
 	}
 	
-	args.inputFiles  = argv + optind;
-	args.nInputFiles = argc - optind;
-    for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) 
-        [array addObject:[NSString stringWithUTF8String:args.inputFiles[i]]];
-    *pArray = array;
+	args.paths  = argv + optind;
+	args.nPaths = argc - optind;
     
     return error ;
 }
@@ -169,10 +165,10 @@ int main_longopt(int argc,char** argv)
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
     // parse the command line
-    Args     args ;
-    NSArray* paths;
-    error = parseArgs(args,argc,argv,&paths);
+    Args args ;
+    parseArgs(args,argc,argv);
 
+    // output to user
     if ( args.verbose ) {
         display_args(args);
     }
@@ -181,22 +177,23 @@ int main_longopt(int argc,char** argv)
     {
         if ( args.help    ) display_usage(true);
         if ( args.version ) display_version();
-        if ( !error ) error = OK_ALMOST ; // locally pretend we have an error
+        if ( !error       ) error = OK_ALMOST ; // pretend error
     }
     
-    if ( !error && args.nInputFiles < 1)
+    if ( !error && args.nPaths < 1)
     {
         display_usage(false);
         error = e_SYNTAX;
     }
         
-    for ( int i = 0 ; !error && i < args.nInputFiles ; i++ ) 
-        if ( args.inputFiles[i][0] == '-' )
-            unrecognizedArgument(args.inputFiles[i]);
+    for ( int i = 0 ; !error && i < args.nPaths ; i++ ) 
+        if ( args.paths[i][0] == '-' )
+            unrecognizedArgument(args.paths[i]);
 
+    // do the job
     if (!error ) {
-        NSArray* images  = pathsToImages(paths,args.sort,args.label,args.desc,args.keys,args.minsize);
-        if (     images && !error ) imagesToPDF(images,args.pdf,args.open,args.resize);    
+        NSArray* images = pathsToImages(args.nPaths,args.paths,args.sort,args.label,args.desc,args.keys,args.minsize);
+        imagesToPDF(images,args.pdf,args.open,args.resize);    
     }
     
     [pool release];

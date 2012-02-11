@@ -36,8 +36,8 @@ void display_usage(bool bAll)
 {
 	if ( bAll ) reports([NSString stringWithFormat:@"%s - convert images to PDF",ix4]);
 	reports([NSString stringWithFormat
-          :@"usage: %s [ --[ pdf path | label key | sort key | minsize n | FLAG ] | file ]+",ix4]);
-    reports("      FLAG { keys | asc | desc | open | verbose | version | help }");
+            :@"usage: %s [ --[ pdf path | label key | sort key | minsize n | FLAG ] | file ]+",ix4]);
+    reports (@"      FLAG { keys | asc | desc | open | verbose | version | help }");
 }
 
 void display_version( void )

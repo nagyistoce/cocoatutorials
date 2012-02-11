@@ -51,20 +51,21 @@ imagesToPDF
 // C++ interface
 PDFDocument*
 imagesToPDF
-( NSArray*  images
+( NSArray*    images
 , const char* pdf
-, boolean_t bOpen
-, NSInteger resize
+, boolean_t   bOpen
+, NSInteger   resize
 );
 
 NSArray*
 pathsToImages
-( NSArray*  paths
+( int         nPaths
+, char**      paths
 , const char* sortKey
 , const char* labelKey
-, boolean_t desc
-, boolean_t keys
-, NSInteger minsize
+, boolean_t   desc
+, boolean_t   keys
+, NSInteger   minsize
 );
 
 
