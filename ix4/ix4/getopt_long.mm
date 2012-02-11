@@ -45,7 +45,7 @@ struct Args {
     int          keys;                   /* -k  option       */
     bool         desc;                   /* -a|-d option     */
     int          open;                   /* -o  option       */
-	int 		 verbose;                /* -v  global option*/ 
+	int 		 verbose;                /* -v  option       */ 
     int          version;                /* -V  option       */
     int          help;                   /* -h  option       */
 	char**		 paths;	        		 /* input files      */
@@ -118,12 +118,17 @@ static error_e parseArgs(Args& args,int argc,char** argv)
 				args.keys = 1;
 				break;
                 
+			case 'l':
+				args.label = optarg;
+				break;
+                
 			case 'o':
 				args.open = 1;
 				break;
 				
 			case 'v':
 				setVerbose(YES);
+                args.verbose = 1;
 				break;
 				
 			case 'V':
@@ -186,7 +191,7 @@ int main_longopt(int argc,char** argv)
         error = e_SYNTAX;
     }
         
-    for ( int i = 0 ; !error && i < args.nPaths ; i++ ) 
+    for ( int i = 0 ; !error && i < args.nPaths ; i++ )
         if ( args.paths[i][0] == '-' )
             unrecognizedArgument(args.paths[i]);
 

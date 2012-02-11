@@ -79,6 +79,16 @@ static NSArray* arrayDump(id object)
 	return array ;
 }
 
+static BOOL dictHasKey(NSDictionary* dict,id key)
+{
+    return (dict && key) ? [[dict allKeys] containsObject:key] : NO;
+}
+
+static id dictGetKey(NSDictionary* dict,id key)
+{
+    return dictHasKey(dict,key) ? [dict valueForKey:key] : nil;
+}
+
 NSArray*    pathsToImages
 ( NSArray*  paths
 , NSString* sortKey
@@ -94,14 +104,14 @@ NSArray*    pathsToImages
         return images;
     }
     
-    NSMutableSet*   keySet = keys ? [NSMutableSet setWithCapacity:[paths count]] : nil;
-    NSInteger       index = 0 ;
+    int       status     =  -1;
+    NSData*   data       = nil;
+    NSObject* metaData   = nil;
 
     ////
     // get the metadata in JSON format with exiftool
     // http://www.sno.phy.queensu.ca/~phil/exiftool/
     NSTask*   task       = [[NSTask alloc] init];
-    [task     setLaunchPath:@"/usr/bin/exiftool"];
     NSMutableArray* args = [NSMutableArray arrayWithObjects:@"-j",nil];
     [args     addObjectsFromArray:paths];
     [task     setArguments:args];
@@ -111,29 +121,30 @@ NSArray*    pathsToImages
     [task     setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"/dev/null"]];
     [outPipe  release];
     
-    NSData*   data       = nil;
-    NSObject* metaData   = nil;
-    int       status     =  -1;
+    NSArray* exiftoolPaths = [NSArray arrayWithObjects:@"/usr/bin/exiftool",@"/usr/local/bin/exiftool",nil];
+    for (id  exiftoolPath in exiftoolPaths ) {
+        [task  setLaunchPath:exiftoolPath];
+        @try
+        {
+            [task  launch];
+            data   = [[outPipe fileHandleForReading] readDataToEndOfFile];
+            [task  waitUntilExit];
+            status = [task terminationStatus];
+            [task  release];
 
-    @try
-    {
-        [task  launch];
-        data   = [[outPipe fileHandleForReading] readDataToEndOfFile];
-        [task  waitUntilExit];
-        status = [task terminationStatus];
-        [task  release];
-
-        // convert to JSON and then to a dictionary
-        NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        JSON*     json       = [[JSON alloc]init];
-        metaData             = status==0?[json jsonToObj:jsonString]:nil;
+            // convert to JSON and then to a dictionary
+            NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            JSON*     json       = [[JSON alloc]init];
+            metaData             = status==0?[json jsonToObj:jsonString]:nil;
+        }
+        @catch (NSException * e)
+        {
+            warns([NSString stringWithFormat:@"Can't execute %@: %@: %@",[task launchPath], [e name], [e description]]);
+            //error = e_TASK_FAILED; // don't die - cook up some survival metadata
+        }
+        @finally { ; }
+        if ( metaData ) break ;
     }
-    @catch (NSException * e)
-    {
-        warns([NSString stringWithFormat:@"Can't execute %@: %@: %@\n",[task launchPath], [e name], [e description]]);
-        //error = e_TASK_FAILED;
-    }
-    @finally { ; }
     
     // check the meta data is sane
     if ( metaData ) {
@@ -155,23 +166,26 @@ NSArray*    pathsToImages
         metaData = array;
     }
     
-    bool bLabelWarn             = labelKey ? true : false;
-    bool bSortWarn              = sortKey  ? true : false;
-    NSFileManager* fileManager  = [NSFileManager defaultManager];
-    NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
+    // label/sort key management
+    NSInteger        index       = 0 ;
+    bool             bLabelWarn  = labelKey ? true : false;
+    bool             bSortWarn   = sortKey  ? true : false;
+    NSMutableSet*    keySet      = keys ? [NSMutableSet setWithCapacity:[paths count]] : nil;
+    NSFileManager*   fileManager = [NSFileManager defaultManager];
+    NSDateFormatter* dateFormat  = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"Date: yyyy-MM-dd Time: HH:mm:ss"];
     
     for ( NSString* path in paths ) {
-        NSString*     fileName = [path lastPathComponent];
-        NSImage*      image    = [[NSImage alloc] initWithContentsOfFile:path];
+        NSString*   fileName     = [path lastPathComponent];
+        NSImage*    image        = [[NSImage alloc] initWithContentsOfFile:path];
 
         if ( image )
         {
             NSArray* reps = [image representations] ;
             ////
             // find the biggest representation
-            NSInteger jBig	= -1 ;
-            NSInteger biggest = 0 ;
+            NSInteger jBig	  = -1 ;
+            NSInteger biggest =  0 ;
             for ( int j = 0 ; j < [reps count] ; j++ ) {
                 NSImageRep* imageRep= [ reps objectAtIndex:j] ;
                 NSInteger   width   = [imageRep pixelsWide];
@@ -188,25 +202,26 @@ NSArray*    pathsToImages
             NSDictionary* metaDict = [(NSArray*) metaData objectAtIndex:index];
 
             // add the keys "FileName" and "DateTime" to the meta data if necessary
-            if ( ![metaDict valueForKey:FILENAME] ) {
+            if ( ! dictHasKey(metaDict,FILENAME) )
                 [metaData setValue:fileName forKey:FILENAME];
-            }
-            if ( ![metaDict valueForKey:DATETIME] ) {
-                id    datetime = [metaDict valueForKey:@"DateTimeOriginal"];
+
+            if ( ! dictHasKey(metaDict,DATETIME) ) {
+                id    datetime = dictGetKey(metaDict,@"DateTimeOriginal") ;
                 if ( !datetime ) {
                     NSError*      err;
                     NSDictionary* fileDict = [fileManager attributesOfItemAtPath:path error:&err];
-                    datetime =    fileDict ? [fileDict valueForKey:NSFileModificationDate] : nil ;
+                    datetime =    dictGetKey(fileDict,NSFileModificationDate) ;
                     if ( !datetime ) {
                         datetime = [dateFormat stringFromDate:[[NSDate alloc]init]];
                     }
                 }
                 [metaData setValue:datetime forKey:DATETIME];
             }
-            if ( keySet ) {
+            
+            // update the key set with keys found for this image
+            if ( keySet )
                 for ( id k in metaDict )
                     [keySet addObject:k];
-            }
             
             ////
             // save the imageRep and other metadata in a dictionary in the images array
@@ -221,13 +236,12 @@ NSArray*    pathsToImages
                 // keep metadict for future features based on meta-data
                 [dict setObject:metaDict forKey:METADICT];
 
+
+                
                 // find the label in the meta data
                 NSString* label = nil;
-                if ( metaDict && labelKey ) {
-                    if ( [metaDict objectForKey:labelKey] ) {
-                        label = [metaDict objectForKey:labelKey];
-                    } 
-                }
+                if ( dictHasKey(metaDict,labelKey) )
+                    label = [metaDict objectForKey:labelKey];
                 if ( !label ) {
                     label = fileName ;
                     if ( bLabelWarn ) warns([NSString stringWithFormat:@"labelKey %@ not known",labelKey]);
@@ -237,10 +251,9 @@ NSArray*    pathsToImages
 
                 // find the sort in the meta data
                 NSString* sort = nil;
-                if ( metaDict && sortKey ) {
-                    if ( [metaDict objectForKey:sortKey] ) {
-                        sort = [metaDict objectForKey:sortKey];
-                    } 
+                
+                if ( dictHasKey(metaDict,sortKey) ) {
+                    sort = [metaDict objectForKey:sortKey];
                 }
                 if ( !sort  ) {
                     sort = [NSString stringWithFormat:@"06d",index] ;
@@ -319,9 +332,11 @@ pathsToImages
     NSMutableArray* aPaths = [NSMutableArray arrayWithCapacity:nPaths];
     for (int i = 0 ; i < nPaths ; i++ )
         [aPaths addObject:[NSString stringWithUTF8String:paths[i]]];
+    NSString* sort = sortKey ? [NSString stringWithUTF8String:sortKey]: nil;
+    NSString* label= labelKey ? [NSString stringWithUTF8String:labelKey] : nil ;
+
     return pathsToImages(aPaths
-                        ,[NSString stringWithUTF8String:sortKey]
-                        ,[NSString stringWithUTF8String:labelKey]
+                        ,sort,label
                         ,desc,keys,minsize
                         );
 }
