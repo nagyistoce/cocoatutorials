@@ -81,12 +81,90 @@ static NSArray* arrayDump(id object)
 
 static BOOL dictHasKey(NSDictionary* dict,id key)
 {
-    return (dict && key) ? [[dict allKeys] containsObject:key] : NO;
+    BOOL result = NO;
+    if ( dict && key ) 
+        if ( [dict objectForKey:key]!= nil )
+            result = YES;
+    return result;
 }
 
 static id dictGetKey(NSDictionary* dict,id key)
 {
-    return dictHasKey(dict,key) ? [dict valueForKey:key] : nil;
+    return dictHasKey(dict,key) ? [dict objectForKey:key] : nil;
+}
+
+static bool pathExists(NSString* path)
+{
+    NSError*       err;
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSDictionary*  fileDict    = [fileManager attributesOfItemAtPath:path error:&err];
+    return         fileDict ? YES : NO ;
+}
+
+static id getMetadata(NSArray* paths)
+{
+    id  metaData = nil;
+    int status   =  -1;
+
+    ////
+    // get the metadata in JSON format with exiftool
+    // http://www.sno.phy.queensu.ca/~phil/exiftool/
+    NSMutableArray* args = [NSMutableArray arrayWithObjects:@"-j",nil];
+    [args     addObjectsFromArray:paths];
+    
+    NSArray* exiftoolPaths = [NSArray arrayWithObjects:@"/usr/local/bin/exiftool",@"/usr/bin/exiftool",nil];
+    for (id  exiftoolPath in exiftoolPaths ) {
+        if ( pathExists(exiftoolPath) ) {
+            NSPipe*   outPipe    = [[NSPipe alloc] init];
+            NSTask*   task       = [[NSTask alloc] init];
+            [task     setArguments:args];
+            [task     setLaunchPath:exiftoolPath];
+            [task     setStandardOutput:outPipe];
+            [task     setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"/dev/null"]];
+
+            @try
+            {
+                [task   launch];
+                NSData* data   = [[outPipe fileHandleForReading] readDataToEndOfFile];
+                [task   waitUntilExit];
+                status= [task terminationStatus];
+                [task   release];
+                
+                // convert to JSON and then to a dictionary
+                NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                JSON*     json       = [[JSON alloc]init];
+                metaData             = status==0?[json jsonToObj:jsonString]:nil;
+                if ( metaData ) break ;
+            }
+            @catch (NSException * e)
+            {
+                warns([NSString stringWithFormat:@"Can't execute %@: %@: %@",[task launchPath], [e name], [e description]]);
+                //error = e_TASK_FAILED; // don't die - cook up some survival metadata
+            }
+            @finally { ; }
+        }
+    }
+    
+    // check the meta data is sane
+    if ( metaData ) {
+        bool bKill = ![metaData isKindOfClass:[NSArray class]];
+        if ( !bKill  ) 
+            bKill = [(NSArray*)metaData count] != [paths count];
+        if ( bKill ) {
+            [metaData release];
+            metaData= nil;
+        }
+    }
+    
+    // invent metadata if exiftool doesn't provide it
+    if ( !metaData ) {
+        NSMutableArray* array = [NSMutableArray arrayWithCapacity:[paths count]];
+        for ( id path in paths ) {
+            [array addObject:[NSMutableDictionary dictionaryWithCapacity:1]];
+        }
+        metaData = array;
+    }
+    return metaData;
 }
 
 NSArray*    pathsToImages
@@ -104,67 +182,7 @@ NSArray*    pathsToImages
         return images;
     }
     
-    int       status     =  -1;
-    NSData*   data       = nil;
-    NSObject* metaData   = nil;
-
-    ////
-    // get the metadata in JSON format with exiftool
-    // http://www.sno.phy.queensu.ca/~phil/exiftool/
-    NSTask*   task       = [[NSTask alloc] init];
-    NSMutableArray* args = [NSMutableArray arrayWithObjects:@"-j",nil];
-    [args     addObjectsFromArray:paths];
-    [task     setArguments:args];
-
-    NSPipe*   outPipe    = [[NSPipe alloc] init];
-    [task     setStandardOutput:outPipe];
-    [task     setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"/dev/null"]];
-    [outPipe  release];
-    
-    NSArray* exiftoolPaths = [NSArray arrayWithObjects:@"/usr/bin/exiftool",@"/usr/local/bin/exiftool",nil];
-    for (id  exiftoolPath in exiftoolPaths ) {
-        [task  setLaunchPath:exiftoolPath];
-        @try
-        {
-            [task  launch];
-            data   = [[outPipe fileHandleForReading] readDataToEndOfFile];
-            [task  waitUntilExit];
-            status = [task terminationStatus];
-            [task  release];
-
-            // convert to JSON and then to a dictionary
-            NSString* jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            JSON*     json       = [[JSON alloc]init];
-            metaData             = status==0?[json jsonToObj:jsonString]:nil;
-        }
-        @catch (NSException * e)
-        {
-            warns([NSString stringWithFormat:@"Can't execute %@: %@: %@",[task launchPath], [e name], [e description]]);
-            //error = e_TASK_FAILED; // don't die - cook up some survival metadata
-        }
-        @finally { ; }
-        if ( metaData ) break ;
-    }
-    
-    // check the meta data is sane
-    if ( metaData ) {
-        bool bKill = ![metaData isKindOfClass:[NSArray class]];
-        if ( !bKill  ) 
-            bKill = [(NSArray*)metaData count] != [paths count];
-        if ( bKill ) {
-            [metaData release];
-            metaData= nil;
-        }
-    }
-
-    // invent metadata if exiftool doesn't provide it
-    if ( !metaData ) {
-        NSMutableArray* array = [NSMutableArray arrayWithCapacity:[paths count]];
-        for ( id path in paths ) {
-            [array addObject:[NSMutableDictionary dictionaryWithCapacity:1]];
-        }
-        metaData = array;
-    }
+    NSObject* metaData   = getMetadata(paths);
     
     // label/sort key management
     NSInteger        index       = 0 ;
@@ -233,15 +251,12 @@ NSArray*    pathsToImages
                                                    ,nil
                                                    ] ;
                 [images addObject:dict ] ;
+
                 // keep metadict for future features based on meta-data
                 [dict setObject:metaDict forKey:METADICT];
-
-
                 
                 // find the label in the meta data
-                NSString* label = nil;
-                if ( dictHasKey(metaDict,labelKey) )
-                    label = [metaDict objectForKey:labelKey];
+                NSString* label = dictGetKey(metaDict,labelKey);
                 if ( !label ) {
                     label = fileName ;
                     if ( bLabelWarn ) warns([NSString stringWithFormat:@"labelKey %@ not known",labelKey]);
@@ -250,11 +265,7 @@ NSArray*    pathsToImages
                 [dict setObject:label forKey:LABEL];
 
                 // find the sort in the meta data
-                NSString* sort = nil;
-                
-                if ( dictHasKey(metaDict,sortKey) ) {
-                    sort = [metaDict objectForKey:sortKey];
-                }
+                NSString* sort = dictGetKey(metaDict,sortKey);
                 if ( !sort  ) {
                     sort = [NSString stringWithFormat:@"06d",index] ;
                     if ( bSortWarn ) warns([NSString stringWithFormat:@"sortKey %@ not known",sortKey]);
@@ -269,9 +280,9 @@ NSArray*    pathsToImages
             errors([NSString stringWithFormat:@"file %@ is not an image",path]);
             error = e_IMAGE_BAD;
         }
-        [images sortUsingFunction:sortFunction context:&desc];
         index++;
     }
+    [images sortUsingFunction:sortFunction context:&desc];
     
     if ( keySet ) {
         NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"description"
@@ -317,40 +328,6 @@ static NSImage* scaleImage(NSImage* image,double width,double height)
     
     return result;
 }
-
-// C++ interface
-NSArray*
-pathsToImages
-( int         nPaths
-, char**      paths
-, const char* sortKey
-, const char* labelKey
-, boolean_t   desc
-, boolean_t   keys
-, NSInteger   minsize
-) {
-    NSMutableArray* aPaths = [NSMutableArray arrayWithCapacity:nPaths];
-    for (int i = 0 ; i < nPaths ; i++ )
-        [aPaths addObject:[NSString stringWithUTF8String:paths[i]]];
-    NSString* sort = sortKey ? [NSString stringWithUTF8String:sortKey]: nil;
-    NSString* label= labelKey ? [NSString stringWithUTF8String:labelKey] : nil ;
-
-    return pathsToImages(aPaths
-                        ,sort,label
-                        ,desc,keys,minsize
-                        );
-}
-
-PDFDocument*
-imagesToPDF
-( NSArray*    images
-, const char* pdf
-, boolean_t   bOpen
-, NSInteger   resize
-) {
-    return imagesToPDF(images,[NSString stringWithUTF8String:pdf],bOpen,resize);
-}
-
 
 PDFDocument* imagesToPDF
 ( NSArray*   images
@@ -432,3 +409,37 @@ PDFDocument* imagesToPDF
 	}
     return document ;
 }
+
+// C++ interface
+NSArray*
+pathsToImages
+( int         nPaths
+ , char**      paths
+ , const char* sortKey
+ , const char* labelKey
+ , boolean_t   desc
+ , boolean_t   keys
+ , NSInteger   minsize
+ ) {
+    NSMutableArray* aPaths = [NSMutableArray arrayWithCapacity:nPaths];
+    for (int i = 0 ; i < nPaths ; i++ )
+        [aPaths addObject:[NSString stringWithUTF8String:paths[i]]];
+    NSString* sort = sortKey ? [NSString stringWithUTF8String:sortKey]: nil;
+    NSString* label= labelKey ? [NSString stringWithUTF8String:labelKey] : nil ;
+    
+    return pathsToImages(aPaths
+                         ,sort,label
+                         ,desc,keys,minsize
+                         );
+}
+
+PDFDocument*
+imagesToPDF
+( NSArray*    images
+ , const char* pdf
+ , boolean_t   bOpen
+ , NSInteger   resize
+ ) {
+    return imagesToPDF(images,[NSString stringWithUTF8String:pdf],bOpen,resize);
+}
+
