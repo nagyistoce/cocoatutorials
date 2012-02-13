@@ -28,13 +28,18 @@ boolean_t getVerbose();
 // report => stdout error => stderr warn => stderr IF verbose
 
 // C++ interface
-void warns  (const char* msg);
-void errors (const char* msg);
-void reports(const char* msg);
+void warns   (const char* msg);
+void whispers(const char* msg);
+void errors  (const char* msg);
+void reports (const char* msg);
 
 // Obj-C interface
-void warns  (NSString* msg);
-void errors (NSString* msg);
-void reports(NSString* msg);
+void warns   (NSString* msg);
+void whispers(NSString* msg);
+void errors  (NSString* msg);
+void reports (NSString* msg);
 
 #endif
+
+// That's all Folks!
+////

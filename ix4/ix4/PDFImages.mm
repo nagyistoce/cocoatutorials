@@ -34,6 +34,7 @@ NSString* METADICT = @"metadict";
 NSString* IMAGEREP = @"imageRep";
 NSString* LABEL    = @"label";
 NSString* SORT     = @"sort";
+NSFileManager* fileManager = [NSFileManager defaultManager];
 
 static NSInteger bigger(NSInteger a,NSInteger b) { return a > b ? a : b ; }
 
@@ -96,7 +97,6 @@ static id dictGetKey(NSDictionary* dict,id key)
 static bool pathExists(NSString* path)
 {
     NSError*       err;
-    NSFileManager* fileManager = [NSFileManager defaultManager];
     NSDictionary*  fileDict    = [fileManager attributesOfItemAtPath:path error:&err];
     return         fileDict ? YES : NO ;
 }
@@ -189,13 +189,14 @@ NSArray*    pathsToImages
     bool             bLabelWarn  = labelKey ? true : false;
     bool             bSortWarn   = sortKey  ? true : false;
     NSMutableSet*    keySet      = keys ? [NSMutableSet setWithCapacity:[paths count]] : nil;
-    NSFileManager*   fileManager = [NSFileManager defaultManager];
     NSDateFormatter* dateFormat  = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"Date: yyyy-MM-dd Time: HH:mm:ss"];
     
     for ( NSString* path in paths ) {
         NSString*   fileName     = [path lastPathComponent];
         NSImage*    image        = [[NSImage alloc] initWithContentsOfFile:path];
+        
+        whispers([NSString stringWithFormat:@"processing image %@",path]);
 
         if ( image )
         {
@@ -294,8 +295,8 @@ NSArray*    pathsToImages
     return keys ? nil : images ;
 }
 
-static NSImage* scaleImage(NSImage* image,double width,double height);
-static NSImage* scaleImage(NSImage* image,double width,double height)
+static NSImage* resizeImage(NSImage* image,double width,double height);
+static NSImage* resizeImage(NSImage* image,double width,double height)
 {
     // http://lists.apple.com/archives/cocoa-dev/2004/Sep/msg01309.html
     double widthFactor;
@@ -319,7 +320,7 @@ static NSImage* scaleImage(NSImage* image,double width,double height)
     [at scaleBy:scale];
     
     [result lockFocus];
-    [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
+    [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
     [image setSize:[at transformSize:[image size]]];
     [image compositeToPoint:NSMakePoint((width-[image size].width)/2 , (height-[image size].height)/2)
                   operation:NSCompositeCopy
@@ -372,17 +373,17 @@ PDFDocument* imagesToPDF
 			NSImage* image = [[NSImage alloc]init] ;
 			[image addRepresentation:imageRep] ;
             
-            NSImage* thumb = resize ? scaleImage(image,resize,resize) : [image retain];
+            NSImage* thumb = resize ? resizeImage(image,resize,resize) : [image retain];
             
             // older compiler demands (CIImage*) cast for (NSImage*)
-            // cast him to (id) to keep compiler happy
+            // cast to (id) to keep compiler happy
 			PDFPage* page = [[ PDFPage alloc]initWithImage:(id)thumb];
             
 			if ( page ) {
 				[document insertPage:page atIndex:i] ;
 				
 				////
-				// store the filename in the Outline
+				// store the label in the Outline
 				PDFOutline* outline = [[PDFOutline alloc]init] ;
 				
 				[outline setLabel:label] ;
@@ -413,7 +414,7 @@ PDFDocument* imagesToPDF
 // C++ interface
 NSArray*
 pathsToImages
-( int         nPaths
+( int          nPaths
  , char**      paths
  , const char* sortKey
  , const char* labelKey
@@ -435,7 +436,7 @@ pathsToImages
 
 PDFDocument*
 imagesToPDF
-( NSArray*    images
+( NSArray*     images
  , const char* pdf
  , boolean_t   bOpen
  , NSInteger   resize
@@ -443,3 +444,5 @@ imagesToPDF
     return imagesToPDF(images,[NSString stringWithUTF8String:pdf],bOpen,resize);
 }
 
+// That's all Folks!
+////

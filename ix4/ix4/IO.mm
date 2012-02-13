@@ -38,6 +38,11 @@ void warns(const char* msg)
     }
 }
 
+void warns(NSString* msg)
+{
+    warns([msg UTF8String]);
+}
+
 void errors(const char* msg)
 {
     if ( !error ) {
@@ -61,7 +66,17 @@ void reports(NSString* msg)
     reports([msg UTF8String]);
 }
 
-void warns(NSString* msg)
+void whispers(const char* msg)
 {
-    warns([msg UTF8String]);
+    if ( gbVerbose ) {
+        puts(msg);
+    }
 }
+
+void whispers(NSString* msg)
+{
+    whispers([msg UTF8String]);
+}
+
+// That's all Folks!
+////
