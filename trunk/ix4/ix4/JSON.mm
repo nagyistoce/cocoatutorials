@@ -36,7 +36,6 @@
     return self;
 }
 
-
 -(NSObject*)jsonToObj:(NSString *)json {
     int nextOffset;
     return [self jsonToObj:json offset:0 nextOffset:&nextOffset];
@@ -223,3 +222,6 @@ static int parseHex(NSString *hexStr) {
 }
 
 @end
+
+// That's all Folks!
+////
