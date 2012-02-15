@@ -1,0 +1,17 @@
+#!/bin/bash
+
+drive=deliverables
+if [ ! -e /$drive ]; then
+	ln -s /Volumes/$drive /$drive
+fi
+
+ls "/$drive/buildresults" >& /dev/null
+if [ $? -ne 0 ]; then
+	echo "/$drive isn't mounted.  Hang on."
+	osascript -e "mount volume \"afp://robin_mills@tuber.apple.com/$drive\"" 2>&1 >/dev/null
+else
+	echo "/$drive is mounted"
+fi
+
+# That's all Folks!
+##

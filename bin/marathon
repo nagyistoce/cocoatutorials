@@ -1,6 +1,11 @@
 #!/usr/bin/perl
 
 use Getopt::Long;
+use Data::Dumper;
+
+print "---------------------\n";
+print Dumper(@ARGV);
+print "---------------------\n";
 
 ##
 # forward declarations

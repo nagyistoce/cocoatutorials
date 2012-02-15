@@ -1,0 +1,6 @@
+#!/bin/bash
+perl -E 's/.$/++($x=$&)/e, print for @ARGV' "$@"
+echo
+
+# That's all folks
+##

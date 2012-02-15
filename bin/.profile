@@ -69,6 +69,7 @@ export P4PORT=home:1666
 export P4CLIENT=imac
 
 export PINGS="bocksbeutel tenth demi housecat"
+export FLEET="$PINGS"
 
 ## 
 # scripting support
