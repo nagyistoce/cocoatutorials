@@ -1,0 +1,27 @@
+#!/bin/bash
+
+syntaxError()
+{
+	echo 'usage: sshnop user@server'
+	exit 1
+}
+
+##
+# parse user@machine as the first argument
+IFS=@
+X=$1
+shift
+x=( $(echo "$X") )
+user=${x[0]}
+server=${x[1]}
+
+if [[ -z $user || -z $server || ${#@} -ne 0 ]]; then
+	syntaxError
+fi
+
+##
+# get on with it
+cat ~/.ssh/id_rsa.pub | ssh "$user"@"$server" 'cat >> .ssh/authorized_keys'
+
+# That's all folks
+##

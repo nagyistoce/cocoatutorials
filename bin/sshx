@@ -1,0 +1,36 @@
+#!/bin/bash
+
+syntaxError()
+{
+	echo 'usage: sshx user@server [command]+'
+	exit 1
+}
+	
+##
+# parse user@machine as the first argument
+IFS=@
+X=$1
+shift
+x=( $(echo "$X") )
+user=${x[0]}
+server=${x[1]}
+
+if [[ -z $user || -z $server ]]; then
+	syntaxError
+fi
+
+##
+# get on with it
+echo user = $user server = $server $K "$@"
+if [ $# -gt 0 ]; then
+	K='command ='
+else
+	K='NO command'
+fi;
+
+sshrm $server
+pings $server --whiledead
+ssh   $user@$server "$@"
+
+# That's all folks
+##
