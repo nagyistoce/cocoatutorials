@@ -1,0 +1,51 @@
+#!/bin/bash
+
+syntaxError()
+{
+	echo "screenSaver computer | flurry"
+	exit 1
+}
+
+saver="$1"
+if [ "$saver" == "computer" ]; then
+defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName "Computer Name" \
+         path "/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver" \
+         type -int 0 
+elif [ "$saver" == "flurry" ]; then
+defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName "Flurry" \
+         path "/System/Library/Screen Savers/Flurry.saver" \
+         type -int 0 
+else
+	syntaxError
+fi
+
+/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine
+
+# That's all Folks!
+##
+
+# defaults -currentHost write com.apple.screensaver "{ CleanExit = YES; PrefsVersion = 100; idleTime = 0; moduleDict = { { moduleName = Flurry; path = \"/System/Library/Screen Savers/Flurry.saver\"; type = 0;  };"
+
+# defaults -currentHost delete com.apple.screensaver "'{ CleanExit = YES; PrefsVersion = 100; idleTime = 0; moduleDict = '{ { moduleName = \"Computer Name\" ; path = \"/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver\"; type = 0;  }; }'"
+
+# defaults -currentHost write com.apple.screensaver robinDict -dict moduleName fooName path "/foo/path" type -int 0 
+# defaults -currentHost delete com.apple.screensaver robinDict
+
+#    moduleDict =     {
+#        moduleName = Flurry;
+#        path = "/System/Library/Screen Savers/Flurry.saver";
+#        type = 0;
+#    };
+# {
+#     CleanExit = YES;
+#     PrefsVersion = 100;
+#     idleTime = 0;
+#     moduleDict =     {
+#         moduleName = "Computer Name";
+#         path = "/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver";
+#         type = 0;
+#     };
+#     tokenRemovalAction = 0;
+#  }
+#  
+# 
