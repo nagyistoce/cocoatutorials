@@ -10,6 +10,7 @@ set smartindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set autoindent
 
 " visual feedback
 set ruler

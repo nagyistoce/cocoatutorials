@@ -24,6 +24,46 @@ fi
 # That's all Folks!
 ##
 
+##
+# this is my /Library/Preferences/com.apple.screensaver.plist
+#
+# <?xml version="1.0" encoding="UTF-8"?>
+# <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+# <plist version="1.0">
+# <dict>
+# 	<key>CleanExit</key>
+# 	<string>YES</string>
+# 	<key>PrefsVersion</key>
+# 	<integer>100</integer>
+# 	<key>idleTime</key>
+# 	<integer>1</integer>
+# 	<key>moduleDict</key>
+# 	<dict>
+# 		<key>moduleName</key>
+# 		<string>Computer Name</string>
+# 		<key>path</key>
+# 		<string>/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver</string>
+# 		<key>type</key>
+# 		<integer>0</integer>
+# 	</dict>
+# 	<key>loginWindowModulePath</key>
+# 	<string>/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver</string>
+#     <key>loginWindowIdleTime</key>
+#     <integer>15</integer>
+# </dict>
+# </plist>
+#
+##
+
+
+##
+# the rest of this are notes stuff of no importance 
+# 
+# plistbuddy -c "Set :moduleDict:moduleName 'Computer Name'" com.apple.screensaver.plist
+# plistbuddy -c "Set :moduleDict:path '/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver'" com.apple.screensaver.plist
+# plistbuddy -c "Delete :moduleDict:type" com.apple.screensaver.plist
+# plistbuddy -c "Add :moduleDict:type integer 0" com.apple.screensaver.plist
+
 # defaults -currentHost write com.apple.screensaver "{ CleanExit = YES; PrefsVersion = 100; idleTime = 0; moduleDict = { { moduleName = Flurry; path = \"/System/Library/Screen Savers/Flurry.saver\"; type = 0;  };"
 
 # defaults -currentHost delete com.apple.screensaver "'{ CleanExit = YES; PrefsVersion = 100; idleTime = 0; moduleDict = '{ { moduleName = \"Computer Name\" ; path = \"/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver\"; type = 0;  }; }'"
@@ -48,4 +88,4 @@ fi
 #     tokenRemovalAction = 0;
 #  }
 #  
-# 
+## 
