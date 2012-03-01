@@ -72,6 +72,7 @@ export P4CLIENT=imac
 
 export PINGS="bocksbeutel tenth demi housecat"
 export FLEET="$PINGS"
+export BUILDERS="b63 cbt1007 cbt1009 cbt1011 b1010"
 
 ## 
 # scripting support
