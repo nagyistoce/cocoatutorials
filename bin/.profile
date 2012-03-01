@@ -141,27 +141,23 @@ S[3]=demi
 
 ##
 # functions
-dirXX() {
-	# this if is here to remind me of the syntax !
-	if [ -z "$22" ]; then 
-	   echo usage: dir directory
-	   return
-	fi
-	ls -altF "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
-}
-
 dir() {
 	list='ls -dlthpF'
 	if [ ${#*} -eq 0 ]; then
 		$list *
 	elif [ ${#*} -eq 1 ]; then
-		if [ -d $1 ]; then
-			$list $1/*
+		if [ -d "$1" ]; then
+# 			(pushd "$1">/dev/null;$list *)
+			if [ "$1" == '.' ]; then
+				$list
+			else 
+				$list $(dirname "$1")/$(basename "$1")/*
+			fi
 		else
-			$list $*
+			$list "$@"
 		fi
 	else
-		$list $*
+		$list "$@"
 	fi
 }
 
@@ -193,14 +189,15 @@ socks() {
 	ls -altpF $1 | grep "^s"
 }
 
+
 diros() {
-	ls -ltGF $* | sort --key=5 --numeric-sort
-#	ls -ltGFp $* | tigersort +4 -n
+	ls -ltF $* | sort --key=5 --numeric-sort
+#	ls -ltFp $* | tigersort +4 -n
 }
 
 diron() {
-	ls -ltGF $* | sort --key=9 --ignore-case
-#	ls -ltGp $* | tigersort +8 -i
+	ls -ltF $* | sort --key=9 --ignore-case
+#	ls -ltp $* | tigersort +8 -i
 }
 
 hidden() {
@@ -336,7 +333,7 @@ alias 2=to
 alias rename=mv
 alias move=mv
 alias del='sudo rm -rf'
-alias dirod='ls -altGFr'
+alias dirod='ls -altFr'
 alias xcopy='ditto'
 alias finder='find . -depth -name'
 alias shellx=open

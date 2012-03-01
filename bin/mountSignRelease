@@ -1,0 +1,26 @@
+#!/bin/bash
+
+top="/SignRelease"
+drive="VDnCResults"
+user="$AUSER"
+server="locsoftware.apple.com"
+dir="BuildResult/SignRelease"
+
+# mount_afp -i afp://<ODUser>@locsoftware/VDnCResults /Volumes/VDnCResults
+
+ls "/Volumes/$drive" >& /dev/null
+if [ $? -ne 0 ]; then
+	echo "/$drive isn't mounted.  Hang on."
+	# osascript -e "mount volume \"afp://robin_mills@tuber.apple.com/$drive\"" 2>&1 >/dev/null
+	
+	osascript -e "mount volume \"afp://$user@$server/$drive/\""
+	cd $top
+	for d in *; do ls -altd $d ; done
+else
+	echo "$top is mounted"
+fi
+
+# That's all Folks!
+##
+
+
