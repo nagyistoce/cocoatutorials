@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function syntax() {
-	echo useage: "$0" '[server-name]+'
+	echo useage: "$0" '[server-name | user@server]+'
 }
 
 if [ $# -eq 0 ]; then
@@ -13,6 +13,21 @@ t=/tmp/known_hosts
 s=~/.ssh/known_hosts
 cp  "$s" "$t"
 for machine in $@ ; do
+
+	##
+	# parse user@machine as the first argument
+	IFS=@
+	X="$machine"
+	shift
+	x=( $(echo "$X") )
+	user=${x[0]}
+	server=${x[1]}
+	if [ ! -z $server ]; then 
+		machine="$server" ;
+	else 
+		machine="$user"
+	fi
+	
 	grep "^$machine" "$s" 2>&1 > /dev/null
 	if [ $? -eq 0 ]; then
 		echo "$machine" REMOVED from "$s"

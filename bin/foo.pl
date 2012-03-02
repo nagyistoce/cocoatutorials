@@ -12,6 +12,10 @@ sub println
 	}
 	print "\n";
 }
+sub OSPatch_bomspec;
+
+println(OSPatch_bomspec());
+exit(1);
 
 ##
 # array and references
@@ -76,6 +80,30 @@ sub _default
 	print ("I am _default ");
 	println(@_);
 }
+
+sub OSPatch_bomspec { return "\
+\
+my (\@PackagesToAdd,\@LITERAL_EXCEPTION_PATHS);\
+\
+\@Operations = (\
+    { Type => \$Mastering::Specs::AddPackagesOp,\
+      Objects => \\\@PackagesToAdd },\
+    { Type => \$Mastering::Specs::RemoveLiteralPathsOp,\
+      Objects => \\\@LITERAL_EXCEPTION_PATHS },\
+);\
+\
+\@PackagesToAdd =\
+(\
+    'OSPatch',\
+);\
+\
+\@LITERAL_EXCEPTION_PATHS =\
+(\
+    './Developer',\
+);\
+1;\
+" ; }
+
 
 # That's all Folks
 ##

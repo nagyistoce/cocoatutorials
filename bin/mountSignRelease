@@ -8,17 +8,29 @@ dir="BuildResult/SignRelease"
 
 # mount_afp -i afp://<ODUser>@locsoftware/VDnCResults /Volumes/VDnCResults
 
+Report() {
+	if [ $# -eq 0 ]; then
+		echo "/Volumes$top" = "afp://$user@$server/$drive/$dir" 
+		pushd $top >/dev/null
+			for d in *; do ls -altd $d ; done
+		popd >/dev/null
+	else
+		echo "*** $@  ***"
+	fi
+}
+
 ls "/Volumes/$drive" >& /dev/null
 if [ $? -ne 0 ]; then
 	echo "/$drive isn't mounted.  Hang on."
 	# osascript -e "mount volume \"afp://robin_mills@tuber.apple.com/$drive\"" 2>&1 >/dev/null
 	
 	osascript -e "mount volume \"afp://$user@$server/$drive/\""
-	cd $top
-	for d in *; do ls -altd $d ; done
-else
-	echo "$top is mounted"
+	if [ $? -ne 0 ]; then
+		result="mount failed"
+	fi
 fi
+Report  $result
+
 
 # That's all Folks!
 ##
