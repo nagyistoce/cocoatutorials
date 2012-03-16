@@ -1,5 +1,9 @@
 #!/usr/bin/perl -w
 
+use Pod::Usage;
+use Getopt::Long qw/:config auto_help auto_version bundling/;
+
+my $VERSION=0.1;
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime time ;
 
 @WDays  = ( "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") ;
@@ -12,9 +16,46 @@ $wday  = $WDays[$wday] ;
 $year += 1900 if $year < 1900 ;
 $mon++ ;
 
-printf("Time = %02d:%02d:%02d Date = %s %02d.%s.%04d = %02d-%02d-%04d = %04d-%02d-%02d\n"
-       ,$hour,$min,$sec              # time in 24 hr clock
-       ,$wday,$mday,$smon,$year      # UK format
-       ,$mon,$mday,$year             # US format
-       ,$year,$mon,$mday             # international format
-       ) ;
+##
+# parse command line options
+my $verbose =   0;
+my $version =   0;
+my $help    =   0;
+my $time    =   1;
+my $date    =   1;
+my $uk      =   0;
+my $iso     =   1;
+my $us      =   0;
+
+my $options = GetOptions
+(	"help|?"    => \$help
+,	"verbose!"  => \$verbose
+,	"version!"  => \$version
+,	"iso!"      => \$iso
+,	"uk!"       => \$uk
+,	"us!"       => \$us
+,	"time!"     => \$time
+,	"date!"     => \$date
+# ,	"24!"       => \$b24
+# ,	"12!"       => \$b12
+);
+
+# print $options;
+
+
+# 	printf("Time = %02d:%02d:%02d Date = %s %02d.%s.%04d = %02d-%02d-%04d = %04d-%02d-%02d\n"
+# 		   ,$hour,$min,$sec              # time in 24 hr clock
+# 		   ,$wday,$mday,$smon,$year      # UK format
+# 		   ,$mon,$mday,$year             # US format
+# 		   ,$year,$mon,$mday             # international format
+# 		   ) ;
+
+printf("%02d:%02d:%02d " , $hour,$min,$sec)         if $time;
+printf("%02d-%02d-%02d " , $year,$mon,$mday)        if $date && $iso;
+printf("%s %02d.%s.%04d ", $wday,$mday,$smon,$year) if $date && $uk;
+printf("%02d-%02d-%04d " , $mon,$mday,$year)        if $date && $us;
+printf("\n");
+
+# That's all Folks
+##
+	

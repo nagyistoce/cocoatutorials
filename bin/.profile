@@ -57,6 +57,7 @@ fi
 
 
 export EBSREVISION=Dev
+export CBL_STONEHENGE=1
 export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin:/usr/local/cbl/bin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
@@ -353,13 +354,20 @@ year=$(date "+%Y")
 alias homepages="cd ~/clanmills/Homepages/$year"
 alias photos="cd ~/Pictures/Photos/2008"
 alias heather='cd ~/heather/httpdocs'
-alias clanmills.com='ssh clanmil1@clanmills.com'
 alias clanmills='cd ~/clanmills'
 alias collages='cd ~/Pictures/Picasa/Collages'
 alias tuts='cd ~/Projects/cocoatutorials'
 alias QtSee='cd ~/Projects/cocoatutorials/QtSee'
 alias robin='cd ~/Projects/cocoatutorials/robin'
 #
+# Favorite servers
+alias clanmills.com='ssh clanmil1@clanmills.com'
+alias "crunch=ssh $AUSER@crunch"
+alias "bocks=ssh root@$B"
+alias "tenth=ssh root@tenth"
+alias "housecat=ssh root@housecat"
+alias "poole=ssh root@poole"
+alias "demi=ssh root@demi"
 
 ##
 # keep QtCreator happy
