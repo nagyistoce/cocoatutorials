@@ -1,9 +1,10 @@
 #!/bin/bash
 
+VERSION=0.1
 syntaxError()
 {
 	echo "usage: pings [--opt | server]+ (or set PINGS)"
-	echo "opt  : forever | whiledead | untilalive | help | verbose"
+	echo "opt  : forever | whiledead | untilalive | help | verbose | version"
 	exit 1
 }
 
@@ -21,9 +22,14 @@ parseservers()
 		  -v|--verbose)       verbose=1     ;;
 		  -w|--whiledead)     whiledead=1   ;;
 		  -u|--untilalive)    whiledead=1   ;;
+		  -V|--version)       version=1     ;;
 		  -h|-\?|--help)      syntaxError   ;;
-		  --*)                syntaxError   ;;
-		  *) 			      servers+=($ping) ;;
+		  --*)                argS=1        ;;
+		  *) if [ -z "$argS" ]; then
+		  			servers+=($ping)
+		  	else
+		  			args+=("$arg")
+		  	fi	  ;;
 		esac
 	done
 }
@@ -31,7 +37,7 @@ parseservers()
 ##
 # defaults
 forever=0
-verbose=1
+verbose=0
 whiledead=0
 servers=()
 
@@ -39,11 +45,18 @@ servers=()
 # parse command line (and PINGS if no servers)
 parseservers "$@"
 if [[ ${#servers} -eq 0  && ! -z $PINGS ]]; then
-	echo using environment string "PINGS=$PINGS"
-	parseservers $PINGS
+	if [ $verbose == 1 ]; then
+		echo using environment string "PINGS=$PINGS"
+	fi
+	servers+=($PINGS)
 fi
 
-if [ ${#servers} -eq 0 ]; then
+if [ ! -z "$version" ]; then
+	echo $0: version $VERSION
+	exit 0
+fi
+
+if [[ ${#servers} -eq 0 && -z "$args" ]]; then
 	syntaxError
 fi
 
@@ -71,6 +84,8 @@ while [[ $((++count)) == 1 || $forever == 1 ]]; do
 		sleep 1
 	done
 done
+
+${args[@]}
 
 # That's all Folks!
 ##
