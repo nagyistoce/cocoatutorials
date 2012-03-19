@@ -21,7 +21,7 @@ fi
 
 ##
 # get on with it
-cat ~/.ssh/id_rsa.pub | ssh "$user"@"$server" 'cat >> .ssh/authorized_keys'
+cat ~/.ssh/id_rsa.pub | ssh "$user"@"$server" "/bin/bash  -c 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh ; fi ; cat >> ~/.ssh/authorized_keys'"
 
 # That's all folks
 ##
