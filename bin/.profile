@@ -45,7 +45,6 @@ if [ `uname` == Darwin  ]; then
 	export "AUSER=robin_mills"
 	export "AHOME=/Network/Servers/hawthorne.apple.com/Volumes/holt/$AUSER"
 	if [ ! -e /Users/rmills ]; then
-		echo 'using the network version'
 		applebin="$AHOME/bin:$AHOME/robin_mills/bin"
 	fi
 elif [ `uname -o` == Cygwin ]; then
