@@ -37,18 +37,17 @@ ulimit -n 1024
 
 ##
 # environment strings
-if [ -e /tmp/robin/bin ]; then
-	BIN=/tmp/robin/bin
-else
-	BIN=${HOME}/bin
-fi
+BIN=${HOME}/bin
+applebin='/Users/rmills/robin_mills/bin'
 
-applebin=''
-if [ `uname` == Darwin ]; then
+if [ `uname` == Darwin  ]; then
 	export PLATFORM=macosx
 	export "AUSER=robin_mills"
 	export "AHOME=/Network/Servers/hawthorne.apple.com/Volumes/holt/$AUSER"
-	applebin="$HOME/robin_mills_bin:$AHOME/bin"
+	if [ ! -e /Users/rmills ]; then
+		echo 'using the network version'
+		applebin="$AHOME/bin:$AHOME/robin_mills/bin"
+	fi
 elif [ `uname -o` == Cygwin ]; then
 	export PLATFORM=cygwin
 else
@@ -116,7 +115,7 @@ fi
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
 export L="-exec ls -daltF {} ;"
 export X="-exec rm -rf {} ;"
-export C="-exec $CE {} ;"
+export C="-exec ce {} ;"
 export I="-exec lipo -info {} ;"
 export O="-exec otool -L {} ;"
 export Z="-exec open {} ;"
