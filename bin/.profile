@@ -38,14 +38,14 @@ ulimit -n 1024
 ##
 # environment strings
 BIN=${HOME}/bin
-applebin='/Users/rmills/robin_mills/bin'
+applebin='/Users/rmills/robin_mills/bin:/usr/local/cbl/bin'
 
 if [ `uname` == Darwin  ]; then
 	export PLATFORM=macosx
 	export "AUSER=robin_mills"
 	export "AHOME=/Network/Servers/hawthorne.apple.com/Volumes/holt/$AUSER"
 	if [ ! -e /Users/rmills ]; then
-		applebin="$AHOME/bin:$AHOME/robin_mills/bin"
+		applebin="$AHOME/bin:$AHOME/robin_mills/bin:/usr/local/cbl/bin:"
 	fi
 elif [ `uname -o` == Cygwin ]; then
 	export PLATFORM=cygwin
@@ -56,7 +56,7 @@ fi
 
 export EBSREVISION=Dev
 export CBL_STONEHENGE=1
-export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin:/usr/local/cbl/bin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
+export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
