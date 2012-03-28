@@ -17,12 +17,9 @@ def main(argv):
 	if argc >= 2:
 		try:
 			x = etree.parse(argv[1])
-			print etree.tostring(x, pretty_print = True)
+			print "OK"
 		except Exception as inst:
-			print >> sys.stderr, '-------------------' 
-			print >> sys.stderr, inst, 'name = ',inst.args
-			os.system('file ' + argv[1] + ' 1>&2')
-			print >> sys.stderr, '-------------------' 
+			print "BAD ",inst
 			result=1
 	else:
 		syntax(argv[0])
