@@ -4,7 +4,7 @@ VERSION=0.1
 syntaxError()
 {
 	echo "usage: pings [--opt | server]+ (or set PINGS)"
-	echo "opt  : forever | whiledead | untilalive | help | verbose | version"
+	echo "opt  : forever | whiledead | untilalive | help | verbose | version | remove"
 	exit 1
 }
 
@@ -23,6 +23,7 @@ parseservers()
 		  -w|--whiledead)     whiledead=1   ;;
 		  -u|--untilalive)    whiledead=1   ;;
 		  -V|--version)       version=1     ;;
+		  -r|--remove)        remove=1      ;;
 		  -h|-\?|--help)      syntaxError   ;;
 		  --*)                argS=1        ;;
 		  *) if [ -z "$argS" ]; then
@@ -56,7 +57,7 @@ if [ ! -z "$version" ]; then
 	exit 0
 fi
 
-if [[ ${#servers} -eq 0 && -z "$args" ]]; then
+if [[ ${#servers[@]} -eq 0 && -z "$args" ]]; then
 	syntaxError
 fi
 
@@ -66,6 +67,12 @@ fi
 
 if [ $verbose == 1 ]; then
 	echo servers= ${servers[@]} forever= $forever whiledead= $whiledead
+fi
+
+if [ ! -z "$remove" ]; then
+	for server in "${servers[@]}" ; do
+		sshrm "$server"
+	done
 fi
 
 let count=0
