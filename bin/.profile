@@ -71,6 +71,9 @@ export P4CLIENT=imac
 
 export PINGS="bocksbeutel tenth demi housecat"
 export FLEET="$PINGS"
+export tenth=tenth
+export demi=demi
+export housecat=housecat
 export BUILDERS="b63 cbt1007 cbt1009 cbt1011 b1010"
 
 ## 
@@ -86,7 +89,11 @@ export VERSIONER_PYTHON_PREFER_32_BIT=no
 export PERLPATH=/Users/rmills/gnu/ImageMagick
 export PYTHONPATH="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:$PYTHONPATH"  
 export RUBYOPT=rubygems
-export PERL5LIB="$PERL5LIB:${BIN}"
+if [ ! -z $PERL5LIB ]; then
+	export PERL5LIB="$PERL5LIB:${BIN}"
+else
+	export PERL5LIB="${BIN}"
+fi
 
 ##
 # clanmills support
