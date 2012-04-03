@@ -37,7 +37,7 @@ ulimit -n 1024
 
 ##
 # environment strings
-BIN=${HOME}/bin
+BIN=${HOME}/rmills/bin
 applebin='/Users/rmills/robin_mills/bin:/usr/local/cbl/bin'
 
 if [ `uname` == Darwin  ]; then
