@@ -1,0 +1,6 @@
+#!/bin/bash
+
+/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -on -allowAccessFor -allUsers -privs -all 
+
+# That's all Folks
+##
