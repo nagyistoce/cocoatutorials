@@ -69,12 +69,11 @@ export P4USER=rmills
 export P4PORT=home:1666
 export P4CLIENT=imac
 
-export PINGS="bocksbeutel tenth demi housecat"
-export FLEET="$PINGS"
-export tenth=tenth
-export demi=demi
-export housecat=housecat
-export BUILDERS="b63 cbt1007 cbt1009 cbt1011 b1010"
+export ZFLEET="moonwalk b1032 b1028 b1026 wb01"
+export CFLEET="jackson b1036 b1037 wb13"
+export XFLEET="bowman cloverfield poole"
+export  FLEET="bocksbeutel tenth demi housecat"
+export  PINGS="$FLEET"
 
 ## 
 # scripting support
