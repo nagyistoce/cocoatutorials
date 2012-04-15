@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo renice -p $(ps ax | grep [M]ail | cut -d' ' -f 1)
+
+# That's all folks!
+##
