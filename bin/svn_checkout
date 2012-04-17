@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# != 1 ]; then
+	x+=$(svn ls)
+	echo usage: svn_checkout_add '[ ' ${x[@]} ' ]' 
+else
+	svn checkout $(svn info . | grep URL | cut -d' ' -f 2)/$1 $1
+fi
+
+# That's all Folks!
+##
