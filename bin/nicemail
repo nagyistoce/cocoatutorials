@@ -1,6 +1,11 @@
 #!/bin/bash
 
-sudo renice -p $(ps ax | grep [M]ail | cut -d' ' -f 1)
+mail=$(ps ax | grep -i '[M]ail ' | cut -d' ' -f 3)
+if [ ! -z $mail ]; then
+	renice -p $mail
+else
+	echo unable to find mail in process table
+fi
 
 # That's all folks!
 ##
