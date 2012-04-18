@@ -1,10 +1,12 @@
 #!/bin/bash
 
-if [ $# != 1 ]; then
+if [ $# -eq 0 ]; then
 	x+=$(svn ls)
-	echo usage: svn_checkout_add '[ ' ${x[@]} ' ]' 
+	echo usage: $0 '[ ' ${x[@]} ' ]' ...
+	echo example: $0 tags --depth==immediates
 else
-	svn checkout $(svn info . | grep URL | cut -d' ' -f 2)/$1 $1
+	echo svn update "$@"
+	     svn update "$@"
 fi
 
 # That's all Folks!
