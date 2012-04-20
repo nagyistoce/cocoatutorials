@@ -3,7 +3,8 @@
 if [ $# -eq 0 ]; then
 	x+=$(svn ls)
 	echo usage: $0 '[ ' ${x[@]} ' ]' ...
-	echo example: $0 tags --depth==immediates
+	echo example: $0 tags --depth=immediates
+	echo
 else
 	echo svn update "$@"
 	     svn update "$@"
