@@ -45,7 +45,7 @@ if [ `uname` == Darwin  ]; then
 	export "AUSER=robin_mills"
 	export "AHOME=/Network/Servers/hawthorne.apple.com/Volumes/holt/$AUSER"
 	if [ ! -e /Users/rmills ]; then
-		applebin="$AHOME/bin:$AHOME/robin_mills/bin:/usr/local/cbl/bin:"
+		applebin="$AHOME/bin:$AHOME/rmills/bin:/usr/local/cbl/bin:"
 	fi
 elif [ `uname -o` == Cygwin ]; then
 	export PLATFORM=cygwin
