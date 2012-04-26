@@ -43,12 +43,12 @@ if [ "$opt" == "$pop" ]; then
 	shift
 fi
 
-temp=~/temp
-##
-# set up a temporary directory if necessary
-if [ ! -e $temp ]; then
-	mkdir -f $temp
-fi
+temp=/tmp
+# ##
+# # set up a temporary directory if necessary
+# if [ ! -e $temp ]; then
+# 	mkdir -f $temp
+# fi
 
 ##
 # test $temp is a directory
