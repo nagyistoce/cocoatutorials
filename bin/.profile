@@ -71,8 +71,9 @@ export P4CLIENT=imac
 
 export ZFLEET="moonwalk b1032 b1028 b1026 wb01"
 export CFLEET="jackson b1036 b1037 wb13"
-export XFLEET="bowman cloverfield poole"
-export  FLEET="bocksbeutel tenth demi housecat"
+export VFLEET="fiasco uglu quinaya"
+export XFLEET="bowman cloverfield poole tenth"
+export  FLEET="bocksbeutel demi housecat"
 export  PINGS="$FLEET"
 
 ## 

@@ -55,7 +55,7 @@ import cmLib
 
 ##
 # global variables
-useSips      = False
+useSips      = True
 mustUpdate   = False
 thumbQuality = Image.ANTIALIAS  # NEAREST, BILINEAR, BICUBIC, or ANTIALIAS 
 imageQuality = Image.ANTIALIAS
@@ -435,6 +435,7 @@ def writeImages(webDir,filename,pathname,width,aspect,rotate,cols,bGeotagIcon):
 			size  = ( int(w*scale),int(h*scale))
 			print "filename ", filename, " size = " , size 
 			image.thumbnail(size,imageQuality)
+			image.rotate(rotate)
 			image.save(imagename, "JPEG")
 
 		if bGeotagIcon:
@@ -786,11 +787,23 @@ def main(argv):
 			lonr='W'
 			bGeotag = False
 			rotate = 0
+			als='sea level'
 
 			try:
 
+# 				Value	0th Row	0th Column
+# 				1	top	left side
+# 				2	top	right side
+# 				3	bottom	right side
+# 				4	bottom	left side
+# 				5	left side	top
+# 				6	right side	top
+# 				7	right side	bottom
+# 				8	left side	bottom
 				if image['Exif.Image.Orientation'].value == 6:
 					rotate = 90
+				if image['Exif.Image.Orientation'].value == 8:
+					rotate = 270
 
 				latr= str(image['Exif.GPSInfo.GPSLatitudeRef'   ].value)
 				lonr= str(image['Exif.GPSInfo.GPSLongitudeRef'  ].value)

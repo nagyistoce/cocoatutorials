@@ -305,17 +305,17 @@ def gps():
 					# and this would also import lat and lon
 					rele = pyexiv2.utils.Fraction(int(ele*10.0),10)
 		
-					image['Exif.GPSInfo.GPSAltitude'			].value = rele
-					image['Exif.GPSInfo.GPSAltitudeRef'			].value = str(eleR)
-					image['Exif.GPSInfo.GPSDateStamp'			].value = stamp
-					image['Exif.GPSInfo.GPSLatitude'			].value = [R(d(lat)),R(m(lat)),R(s(lat))]
-					image['Exif.GPSInfo.GPSLatitudeRef'			].value = str(latR)
-					image['Exif.GPSInfo.GPSLongitude'			].value = [R(d(lon)),R(m(lon)),R(s(lon))]
-					image['Exif.GPSInfo.GPSLongitudeRef'		].value = str(lonR)
-					image['Exif.GPSInfo.GPSMapDatum'			].value = 'WGS-84'
-					image['Exif.GPSInfo.GPSProcessingMethod'	].value = '65 83 67 73 73 0 0 0 72 89 66 82 73 68 45 70 73 88 ' 
-					image['Exif.GPSInfo.GPSTimeStamp'			].value = [R(10),R(20),R(30)]
-					image['Exif.GPSInfo.GPSVersionID'			].value = '2 2 0 0'
+					image['Exif.GPSInfo.GPSAltitude'			] = rele
+					image['Exif.GPSInfo.GPSAltitudeRef'			] = str(eleR)
+					image['Exif.GPSInfo.GPSDateStamp'			] = stamp
+					image['Exif.GPSInfo.GPSLatitude'			] = [R(d(lat)),R(m(lat)),R(s(lat))]
+					image['Exif.GPSInfo.GPSLatitudeRef'			] = str(latR)
+					image['Exif.GPSInfo.GPSLongitude'			] = [R(d(lon)),R(m(lon)),R(s(lon))]
+					image['Exif.GPSInfo.GPSLongitudeRef'		] = str(lonR)
+					image['Exif.GPSInfo.GPSMapDatum'			] = 'WGS-84'
+					image['Exif.GPSInfo.GPSProcessingMethod'	] = '65 83 67 73 73 0 0 0 72 89 66 82 73 68 45 70 73 88 ' 
+					image['Exif.GPSInfo.GPSTimeStamp'			] = [R(10),R(20),R(30)]
+					image['Exif.GPSInfo.GPSVersionID'			] = '2 2 0 0'
 					image.write()
 				else:
 					print "ignoring " + path + " ** not in timedict ** timediff = " + str(timediff) + " seconds"
