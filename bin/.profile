@@ -346,6 +346,12 @@ alias finder='find . -depth -name'
 alias shellx=open
 alias start=open
 
+if [ $PLATFORM == linux ]; then 
+	alias open=xdg-open
+	alias shellx=open
+	alias start=open
+fi
+
 # hieroglyphics
 alias ..='cd ..'
 alias ...=sudo
