@@ -7,6 +7,14 @@ syntaxError()
 }
 
 ##
+# make sure we have a public key
+pub=~/.ssh/id_rsa.pub
+if [ ! -e  "$pub" ]; then
+	echo "*** public key $pub does not exist ***"
+	exit 1
+fi
+
+##
 # parse user@machine as the first argument
 IFS=@
 X=$1
@@ -21,7 +29,7 @@ fi
 
 ##
 # get on with it
-cat ~/.ssh/id_rsa.pub | ssh "$user"@"$server" "/bin/bash  -c 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh ; fi ; cat >> ~/.ssh/authorized_keys'"
+cat "$pub" | ssh "$user"@"$server" "/bin/bash  -c 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh ; fi ; cat >> ~/.ssh/authorized_keys'"
 
 # That's all folks
 ##
