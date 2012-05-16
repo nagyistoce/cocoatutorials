@@ -309,9 +309,9 @@ alias 2=to
 # set CE = editor of choice
 if [ -z "$SSH_CLIENT" ]; then
 	if   [ "$PLATFORM" == 'macosx' ]; then
-		export CE=`which bbedit 2>/dev/null`
+		export CE=`which bbedit &>/dev/null`
 		if [ -z "$CE" ]; then
-			export CE=`which edit 2>/dev/null`
+			export CE=`which edit &>/dev/null`
 		fi
 	elif [ "$PLATFORM" == 'cygwin' ]; then
 		CE='/cygdrive/c/Users/rmills/com/ce.exe'
@@ -319,13 +319,13 @@ if [ -z "$SSH_CLIENT" ]; then
 		export CE=`which kate`
 		if [ ! -z "$CE" ]; then
 			export CE="kate --use"
-			export CE2="&"
+			export CE2="&>/dev/null &"
 		fi		
 	fi
 fi
 ce()
 {
-	$CE "$@" $CE2
+	$CE "$@" &>/dev/null &
 }
 
 # catch all - use good old vi!
