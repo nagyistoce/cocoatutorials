@@ -60,7 +60,7 @@ export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin:/usr/sbin:/usr/local/bin:/usr/X11
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
-export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+# export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
 # export DYLD_LIBRARY_PATH=/opt/local/lib/
   
 ## 
@@ -402,8 +402,37 @@ if [ ! -z `which lnresolve` ]; then
 	fi
 fi
 
+## Warren's remind/remember magic
+# Function "remind" 
+remind() {
+  # remindme - Searches a data file for matching lines, or shows the entire contents
+  #	of the data file if no argument is specified.
+  rememberFile="${HOME}/bin/.remember"
+  if [ $# -eq 0 ] ; then
+  	if [ -e "$rememberFile" ]; then
+  	  more "$rememberFile"
+  	else
+  	  echo "$rememberFile" does not exist
+  	fi
+  else
+  	grep -i "$@" "$rememberFile" | ${PAGER:-more}
+  fi
+}
+# Function "remember" 
+remember() {
+  # remember - An easy command-line-based memory pad.
+  rememberFile="${HOME}/bin/.remember"
+  if [ $# -eq 0 ] ; then
+          echo "Enter note, end with ^D: "
+          cat - >> "$rememberFile"
+  else
+          echo "$@" >> "$rememberFile"
+  fi
+}
+
 # That's all Folks!
 ##
+
 
 ##
 # One last thing:

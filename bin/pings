@@ -80,6 +80,7 @@ fi
 let count=0
 while [[ $((++count)) == 1 || $forever == 1 ]]; do
 	for server in ${servers[@]} ; do
+		sleep=1
 		result=DEAD
 		ping -c 2 $server 2>/dev/null >/dev/null
 		st=$?
@@ -89,8 +90,9 @@ while [[ $((++count)) == 1 || $forever == 1 ]]; do
 		echo $server is $result
 		if [[ $whiledead == 1 && "$result" == "alive" ]]; then
 			forever=0
+			sleep=0
 		fi
-		sleep 1
+		sleep $sleep
 	done
 done
 
