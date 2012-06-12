@@ -394,7 +394,7 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 # export MAVEN_OPTS="-Xms256m -Xmx512m"
 
 # set | grep profile
-which lnresolve 2>/dev/nul >/dev/null 
+which lnresolve 2>/dev/null >/dev/null 
 if [[ $? == 0 && "$PLATFORM" == "macosx" ]]; then
 	cd=$(lnresolve ${BASH_SOURCE[0]})
 	cd=$(dirname "$cd")
