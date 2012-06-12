@@ -56,7 +56,7 @@ fi
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
-export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
+export PATH=".:${BIN}:$BIN/$PLATFORM:$applebin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:"
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
@@ -119,7 +119,7 @@ fi
 # export ARCHFLAGS="-arch x86_64" # "-arch i386 -arch ppc"
 # export CFLAGS="$ARCHFLAGS"      # "-arch i386 -arch ppc"
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
-export L="-exec ls -daltF {} ;"
+export L="-exec ls -daltFh {} ;"
 export X="-exec rm -rf {} ;"
 export C="-exec ce {} ;"
 export I="-exec lipo -info {} ;"
@@ -128,7 +128,8 @@ export Z="-exec open {} ;"
 export P="$PHOTOS"
 export Q="$QHOTOS"
 export G="-exec grep"
-export __="{} ;"
+export __=";"
+export ___="{} ;"
 
 ##
 # servers
@@ -339,7 +340,7 @@ alias 2=to
 # dos like things
 alias rename=mv
 alias move=mv
-alias del='sudo rm -rf'
+alias del='rm -rf'
 alias dirod='ls -altFr'
 alias xcopy='ditto'
 alias finder='find . -depth -name'
@@ -393,7 +394,8 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 # export MAVEN_OPTS="-Xms256m -Xmx512m"
 
 # set | grep profile
-if [ ! -z `which lnresolve` ]; then
+which lnresolve 2>/dev/nul >/dev/null 
+if [[ $? == 0 && "$PLATFORM" == "macosx" ]]; then
 	cd=$(lnresolve ${BASH_SOURCE[0]})
 	cd=$(dirname "$cd")
 	profile="$cd/../robin_mills_bin/.profile" 
