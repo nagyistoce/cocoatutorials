@@ -326,7 +326,7 @@ if [ -z "$SSH_CLIENT" ]; then
 fi
 ce()
 {
-	$CE "$@" &>/dev/null &
+	$CE "$@" 2>/dev/null >/dev/null &
 }
 
 # catch all - use good old vi!
@@ -395,12 +395,14 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 
 # set | grep profile
 which lnresolve 2>/dev/null >/dev/null 
-if [[ $? == 0 && "$PLATFORM" == "macosx" ]]; then
-	cd=$(lnresolve ${BASH_SOURCE[0]})
-	cd=$(dirname "$cd")
-	profile="$cd/../robin_mills_bin/.profile" 
-	if [ -e "$profile"  ]; then
-		source "$profile"
+if [ $? == 0 ]; then 
+	if [ "$PLATFORM" == "macosx" ]; then
+		cd=$(lnresolve ${BASH_SOURCE[0]})
+		cd=$(dirname "$cd")
+		profile="$cd/../robin_mills_bin/.profile" 
+		if [ -e "$profile"  ]; then
+			source "$profile"
+		fi
 	fi
 fi
 
