@@ -324,6 +324,11 @@ if [ -z "$SSH_CLIENT" ]; then
 		fi		
 	fi
 fi
+
+if [ "$PLATFORM" == "macosx" ]; then
+	export CE=bbedit
+fi
+
 ce()
 {
 	$CE "$@" 2>/dev/null >/dev/null &
