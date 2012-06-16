@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# http://www.linuxquestions.org/questions/ubuntu-63/wireless-became-disabled-how-do-i-enable-858357/
+sudo rfkill unblock all
+sudo lshw -C network
+sudo /etc/init.d/network-manager restart
+
+# That's all Folks!
+##
