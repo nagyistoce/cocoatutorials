@@ -4,7 +4,7 @@
 #
 syntax()
 {
-	echo 'usage:' $0 '[---print|--html}|--editor|--viewer] [man-options] man-page'
+	echo 'usage:' $0 '--{print|html|editor|viewer}+ [man-options] man-page'
 	echo 'eg:   ' $0 printf        
 	echo '      ' $0 3 printf
 	echo '      ' $0 --html gcc

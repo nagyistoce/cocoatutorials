@@ -433,6 +433,15 @@ remember() {
   fi
 }
 
+##
+# cygwin cleanup code
+if [ "$PLATFORM" == "cygwin" ]; then
+	unset ce
+	if [ -c ~/bin/ce ]; then
+		rm -rf ~/bin/ce
+	fi
+fi
+
 # That's all Folks!
 ##
 
