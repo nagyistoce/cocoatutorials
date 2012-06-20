@@ -443,7 +443,8 @@ remember() {
 ##
 # last minute adjustments 
 if [ "$FACTORY" == "novariant" ]; then
-	export -n ce
+	export -n CE
+	unset  ce
 	export DISPLAY=:4.0
 fi
 

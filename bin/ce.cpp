@@ -8,13 +8,13 @@ int main(int argc,char* argv[])
 {
 	char cmd[2000] ;
 	int  lcmd = lengthof(cmd)-100;
-	int  l = sprintf(cmd,"kate ");
+	int  l = sprintf(cmd,"kate -use ");
 	for ( int i = 1 ; i < argc ; i++ ) {
 		const char* filename = argv[i];
 		if ( (strlen(filename)+l) < lcmd )
 			l+=sprintf(cmd+l," \"%s\"",filename) ;
 	}
-	l+=sprintf(cmd+l," 2>/dev/null >/dev/null &") ;
+	l+=sprintf(cmd+l,"") ;
 	cmd[l]=0;
 	system(cmd) ;
 
