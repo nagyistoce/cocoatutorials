@@ -39,12 +39,19 @@ ulimit -n 1024
 # environment strings
 BIN=${HOME}/bin
 
+export PLATFORM=''
 if [ `uname` == Darwin  ]; then
-	export PLATFORM=macosx
+	PLATFORM=macosx
 elif [ `uname -o` == Cygwin ]; then
-	export PLATFORM=cygwin
+	PLATFORM=cygwin
 else
-	export PLATFORM=linux
+	PLATFORM=linux
+fi
+
+export FACTORY=''
+hostname | grep novariant 2>&1 >/dev/null 
+if [ $? == 0 ]; then
+	FACTORY=novariant
 fi
 
 
@@ -332,7 +339,6 @@ ce()
 if [ -z "$CE" ]; then
 	export CE=vi
 fi
-alias 2=to			
 
 ##
 # aliases
@@ -433,17 +439,19 @@ remember() {
   fi
 }
 
+
 ##
-# cygwin cleanup code
-if [ "$PLATFORM" == "cygwin" ]; then
-	unset ce
-	if [ -c ~/bin/ce ]; then
-		rm -rf ~/bin/ce
-	fi
+# last minute adjustments 
+if [ "$FACTORY" == "novariant" ]; then
+	export -n ce
+	export DISPLAY=:4.0
 fi
+
 
 # That's all Folks!
 ##
+
+
 
 
 ##
