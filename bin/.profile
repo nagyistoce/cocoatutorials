@@ -275,10 +275,11 @@ to() {
 	# pain over.  find possible targets
 	tmp=/tmp/2.tmp
 	find . -name "$target" -print > $tmp
-	count=$(wc -l $tmp | cut -b1-9)
+	count=$(wc -l $tmp | rev | sed -e "s/.* //" | rev)
 
-	if [ $count -eq 1 ]; then
-		dir=$(dirname `cat "$tmp"`)
+	if [ "$count" == "1" ]; then
+		dir=$(cat "$tmp")
+		dir=$(dirname "$dir")
 		if [ $argc -gt 0 ]; then
 			if [ $cd == 1 ]; then
 				pushd "$dir"  >/dev/null
@@ -296,7 +297,7 @@ to() {
 			echo $ cd "$dir" 
 			cd "$dir" 
 		fi
-	elif [ $count == 0 ]; then
+	elif [ "$count" == "0" ]; then
 		echo "*** NO file found ***"
 	else
 		echo "*** TOO Many files found ***"
