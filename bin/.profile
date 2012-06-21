@@ -444,6 +444,7 @@ if [ "$FACTORY" == "novariant" ]; then
 	export -n CE
 	unset  ce
 	export DISPLAY=:4.0
+	export PATH=~/local/bin/$PATH
 fi
 
 if [ "$PLATFORM" == "cygwin" ]; then
