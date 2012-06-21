@@ -48,12 +48,10 @@ else
 	PLATFORM=linux
 fi
 
-export FACTORY=''
-hostname | grep novariant 2>&1 >/dev/null 
-if [ $? == 0 ]; then
+export FACTORY=$(hostname)
+if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
 	FACTORY=novariant
 fi
-
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
@@ -448,6 +446,10 @@ if [ "$FACTORY" == "novariant" ]; then
 	export DISPLAY=:4.0
 fi
 
+if [ "$PLATFORM" == "cygwin" ]; then
+	export -n CE
+	unset  ce
+fi
 
 # That's all Folks!
 ##
