@@ -77,7 +77,7 @@ if [ $mode == $print ]; then
 				rm -rf $pdf
 			fi
 	  		if [ ! -e $pdf ]; then
-	  			if [[ $(uname) == 'Linux' ||  $(x=`uname`;echo ${x:0:6}) == 'CYGWIN' ]]; then
+	  			if [[ "$PLATFORM" == "linux" ||  "$PLATFORM" == "cygwin" ]]; then
 	  				echo "running gs"
 					echo '' | gs -dNOPAUSE "-sDEVICE=pdfwrite" "-sOutputFile=$pdf" "$ps" 2>&1 > /dev/null
 					echo "done"
