@@ -9,14 +9,14 @@
 
 * Purpose:
   Detab code and format code for the web
-  
+
 123456789012345678901234567890
 	1
 		2
 			3
 				4
     1   2   3   4
-    
+
 * Useage :
   detab filename
 
@@ -45,10 +45,27 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
-#include <libgen.h>
 #include <stdlib.h>
-#include <sys/param.h>
 #include <errno.h>
+
+#ifdef  _MSC_VER
+#define strcasecmp _stricmp
+static char buff[512];
+char* dirnamename(char* x)
+{
+	strcpy(buff,x);
+	*strchr(buff,'\\')=0;
+	return buff;
+}
+char* basename(char* x)
+{
+	strcpy(buff,x);
+	return strstr(buff,"\\");
+}
+#else
+#include <libgen.h>
+#include <sys/param.h>
+#endif
 
 #define        MAXLINE        1024*8           // maximum line length
 
@@ -71,9 +88,9 @@ int getline(FILE* file,char s[], int lim)
 		}
 		if ( c == '\n' ) break ;
 	}
-    
+
 //	printf("getline %d %s\n",i,s) ;
-	
+
 	int result = (c == EOF && i==0) ? EOF : i+1 ;
 	s[result == EOF ? 0 : result] = 0 ;
 	return result ;
@@ -120,25 +137,25 @@ void compress(int* pi,int* pargc,char* argv[])
 {
 	int i 		= *pi ;
 	int argc 	= *pargc ;
-	
+
 	for ( int j = i+1 ; j < argc ; j++ ) {
 	 	argv[j-1] = argv[j] ;
 	}
-	 
+
 	*pi 	= --i 	 ;
 	*pargc = --argc ;
-	
+
 //	printf("argv: ") ;	for ( i = 0 ; i < argc ; i++ ) printf("%s ",argv[i]) ;	printf("\n") ;
 }
 
 preformat_e sniff(char* line)
 {
-	return strncmp(line,"<pre>",5) ? kPreformat : kUnpreformat ;  
+	return strncmp(line,"<pre>",5) ? kPreformat : kUnpreformat ;
 }
 
 void unpreformat(char* line)
 {
-	if (  preformat != kUnpreformat ) return ; 
+	if (  preformat != kUnpreformat ) return ;
 
 	char* x ;
 	while ( (x = strstr(line,"&lt;")) ) {
@@ -160,14 +177,14 @@ void unpreformat(char* line)
 int main(int argc,char* argv[])
 {
 	char	line[MAXLINE]		;
-	
+
 	bool    bWeb 		= false ;
 	bool    bLineNumber = false ;
-	
+
 	int     i 					;
 	int     tab		= 4			;
 	int 	nErr	= 0			;
-	
+
 	// look for options
 	for ( i = 1 ; i < argc ; i++ ) {
 		if ( strcasecmp(argv[i],"-web") == 0 ) {
@@ -201,10 +218,10 @@ int main(int argc,char* argv[])
 			}
 		}
 	}
-	
+
 	// check there's work to do
 	if ( argc < 2 || nErr ) return syntax() ;
-	
+
 	// do the business
 	for ( i = 1 ; i < argc ; i++ ) {
 		char*		filename = argv[i] ;
@@ -242,11 +259,11 @@ int main(int argc,char* argv[])
 						k-- ; // back up, because we always add 1 later!
 					}
 					break ;
-				
+
 					case '<' 	: if ( bWeb ) printf("%s","&lt;") ; else putchar(c) ; break ;
 					case '>' 	: if ( bWeb ) printf("%s","&gt;") ; else putchar(c) ; break ;
-					
-					
+
+
 					case '\n'   : line[i+1] = 0 ; // drop thru
 					default		: putchar(c);
 					break ;
@@ -256,9 +273,9 @@ int main(int argc,char* argv[])
 		}
 		printFooter() ;
 	}
-	
-	
+
+
 	return 0;
-	
+
 }
 
