@@ -1,0 +1,7 @@
+#!/bin/bash
+
+## sudo - dummy script
+"$@"
+
+# That's all Folks
+##
