@@ -448,6 +448,11 @@ if [ "$FACTORY" == "novariant" ]; then
 	export PATH=~/local/bin/$PATH
 fi
 
+if [ "$PLATFORM" == "linux" ]; then
+	export -n CE
+	unset  ce
+fi
+
 if [ "$PLATFORM" == "cygwin" ]; then
 	export -n CE
 	unset  ce
