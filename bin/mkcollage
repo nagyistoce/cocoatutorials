@@ -113,9 +113,9 @@ if ( $version ) {
 	exit(1);
 }
 
+pod2usage(1) if $help;
 die "no collage-name given" if !scalar(@ARGV);
 die "too many collages"     if  scalar(@ARGV)>1;
-pod2usage(1) if $help;
 
 $name = $ARGV[0];
 
@@ -160,7 +160,7 @@ my $s = $w / $W ;
 # documented in Imager::Transformations
 # Autostretch individual channels
 my $thumb = $image->scale(scalefactor=>$s);
-   $thumb->filter(type=>'autolevels');
+#  $thumb->filter(type=>'autolevels');
    
 $w = $thumb->getwidth;
 $h = $thumb->getheight;
@@ -227,9 +227,9 @@ mkcollage - create html from a collage
 
 =head1 SYNOPSIS
 
-mkcollage [ collage-name | --OPT value | --FLAG ]+
-OPT : --title str | --width int | --quality 95
-FLAG: help | version | [no]verbose | [no]run  
+ mkcollage [ collage-name | --OPT value | --FLAG ]+
+ OPT : --title str | --width int | --quality 95
+ FLAG: help | version | [no]verbose | [no]run  
 
 =head1 DESCRIPTION
 
