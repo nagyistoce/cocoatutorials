@@ -22,7 +22,7 @@ int main(int argc,char* argv[])
       fclose(f) ;
       
       char cmd[2000] ;
-      sprintf(cmd,"$CE \"%s\" $CE2",filename) ;
+      sprintf(cmd,"ce \"%s\" 2>/dev/null >/dev/null",filename) ;
       system(cmd) ;
  //   printf("%s\n",cmd) ;
     }

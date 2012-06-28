@@ -140,7 +140,6 @@ elif [ $mode == $html ]; then
 	fi
 elif [[ ($mode == $editor) || ($mode == $viewer) ]]; then
 	man "$*" | col -bx > $temp/$page.txt
-	if [ -z "$CE" ]; then mode=$viewer ; fi
 	if [ $mode == $viewer ]; then
 		view "$temp/$page.txt"
 	else

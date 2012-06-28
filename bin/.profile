@@ -444,6 +444,8 @@ remember() {
 if [ "$FACTORY" == "novariant" ]; then
 	# export -n CE
 	unset  ce
+	unset  cet
+	export -n CE
 	export DISPLAY=:4.0
 	export PATH=~/local/bin/$PATH
 fi
@@ -451,10 +453,12 @@ fi
 if [ "$PLATFORM" == "linux" ]; then
 	export -n CE
 	unset  ce
+	unset  cet
 fi
 
 if [ "$PLATFORM" == "cygwin" ]; then
 	export -n CE
+	unset  cet
 	unset  ce
 fi
 
