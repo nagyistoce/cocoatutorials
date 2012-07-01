@@ -55,7 +55,7 @@ import cmLib
 
 ##
 # global variables
-useSips      = True
+useSips      = os.name == 'darwin' # 'darwin' | 'cygwin' | 'win32' 
 mustUpdate   = False
 thumbQuality = Image.ANTIALIAS  # NEAREST, BILINEAR, BICUBIC, or ANTIALIAS 
 imageQuality = Image.ANTIALIAS

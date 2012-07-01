@@ -20,17 +20,18 @@ static const char*   identStamp        = IDENT_STAMP;
 // END IDENTIFICATION STAMP
 
 using namespace std;
-typedef list<string> strings;
+typedef list<string>           string_l;
+typedef list<string>::iterator string_li;
 
 int main(int argc,const char* argv[])
 {
-	strings args;
+	string_l args;
 	for ( int a = 1 ; a < argc ; a++ ) {
 		args.push_back(string(argv[a]));
 	}
 
-	for ( strings::iterator i = args.begin() ; i != args.end() ; i++ ) {
-		cout << *i << endl;
+	for ( string_li it = args.begin() ; it != args.end() ; it++ ) {
+		cout << *ti << endl;
 	}
 	return 0 ;
 }
