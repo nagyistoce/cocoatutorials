@@ -834,6 +834,17 @@ def main(argv):
 				caption= str(image['Iptc.Application2.Caption'    ].value)
 			except KeyError:
 				noop()
+				
+			# no caption, see if there's a caption in the image in .picasaoriginals
+			if caption==0:
+				try:
+					po='.picasaoriginals'
+					poPath = os.path.join(os.path.dirname(pathname),po,filename);
+					poImage = pyexiv2.ImageMetadata(poPath)
+					poImage.read()
+					caption  = str(poImage['Iptc.Application2.Caption'].value)
+				except:
+					caption=0
 
 			# if there's a capDir, try it
 			if caption==0 and capDir: 
