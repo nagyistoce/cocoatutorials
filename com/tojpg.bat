@@ -1,0 +1,1 @@
+renamer JPG jpg "*.JPG"

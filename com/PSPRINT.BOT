@@ -1,0 +1,4 @@
+@type c:\robin\com\psprint.ps > psprint
+@type %1 >> psprint
+@char 4  >> psprint
+@print psprint

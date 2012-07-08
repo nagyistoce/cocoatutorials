@@ -1,0 +1,123 @@
+% @(#)CM_VerSion xdpspage.ps 3011 1.2 21473.eco sum= 19222 3011.002
+% xdpspage.ps
+%
+% (c) Copyright 1993, 1995 Adobe Systems Incorporated.
+% All rights reserved.  All information contained herein is the property
+% of Adobe Systems Incorporated or its Licensors, and are protected trade
+% secrets and copyrights, and may be covered by U.S. and foreign patents
+% or patents pending and/or mask works. Any reproduction or dissemination
+% of any portion of this document or of software or other works derived
+% from it is strictly forbidden unless prior written permission is
+% obtained from Adobe Systems Incorporated.
+
+% Patents Pending
+
+% PostScript and Display PostScript are trademarks of Adobe Systems
+% Incorporated which may be registered in certain jurisdictions.
+
+% This module creates the OutputDevices and HWOptions resource categories
+% for the DPS/X page device implementation.
+
+1183615869 internaldict /$pgdevicedict get begin
+/printerInstall {} def
+end % $pgdevicedict
+
+% BEGIN: define OutputDevice resource category and Default instance
+
+currentglobal   %save it to restore later
+true setglobal  % all category definitions must be global
+
+globaldict begin
+  /ColorRenderingResFileName { % /name ()  => (%stodev%Cat/name)
+      dup dup		% /name () () ()
+      4 2 roll		% () () /name ()
+      cvs		% () () (name)
+      (%genericresource%ColorRendering/) length
+      exch		% () () len (name)
+      putinterval	% (   name)
+      dup		% (   name) (   name)
+      0 (%genericresource%ColorRendering/) putinterval
+  } bind readonly def
+end	% globaldict
+
+% Define the ColorRendering resource category
+/Generic /Category findresource
+dup length 2 add dict copy
+dup /InstanceType /dicttype put
+dup /ResourceFileName //ColorRenderingResFileName put
+/ColorRendering exch /Category defineresource pop
+
+% Define a default Color Rendering dictionary
+globaldict begin
+  /_DfltColorRenderingDict <<
+    /ColorRenderingType 1
+    /WhitePoint [ 0.9505 1 1.089 ]
+    /MatrixLMN [
+	3.2410 -0.9692 0.0556
+	-1.5374 1.8760 -0.2040
+	-0.4986 0.0416 1.0570
+    ]
+    /RangePQR [ -0.125 1.375 -0.125 1.375 -0.125 1.375 ]
+    /MatrixPQR [ 
+	0.40024 -0.22630 0.0
+	0.70760  1.16532 0.0
+      -0.08081  0.04570 0.91822 
+    ]
+    /TransformPQR [
+      {4 index 3 get div 2 index 3 get mul 4 {exch pop} repeat} bind
+      {4 index 4 get div 2 index 4 get mul 4 {exch pop} repeat} bind
+      {4 index 5 get div 2 index 5 get mul 4 {exch pop} repeat} bind
+    ]
+  >> def
+end
+
+% Define the ContextInit resource filename procedure
+globaldict begin
+  /ContextInitFileName { % /name ()  => (%stodev%Cat/name)
+      dup dup		% /name () () ()
+      4 2 roll		% () () /name ()
+      cvs		% () () (name)
+      (%genericresource%ContextInit/) length
+      exch		% () () len (name)
+      putinterval	% (   name)
+      dup		% (   name) (   name)
+      0 (%genericresource%ContextInit/) putinterval
+  } bind readonly def
+end	% globaldict
+
+
+% Define the ContextInit resource category
+/Generic /Category findresource
+dup length 2 add dict copy
+dup /InstanceType /arraytype put
+dup /ResourceFileName //ContextInitFileName put
+/ContextInit exch /Category defineresource pop
+
+
+% Define the OutputDevice resource category
+/Generic /Category findresource  % get the generic category implementation
+dup length 1 add dict copy       % copy impl dict, leaving room for InstType
+dup /InstanceType /dicttype put
+/OutputDevice exch /Category defineresource pop  % def the new category
+
+/Default <<
+    /PageSize []	% PageSize selection not supported thru setpagedevice
+    			% for window devices
+    /ManualSize []      % manual feed is not supported
+    /HWResolution [[75 75]] % this should really reflect the device resolution
+    			% and should be changed during system initialization
+    >> /OutputDevice defineresource pop 
+
+setglobal       %restore previous value
+% END: define OutputDevice resource category and Default instance
+
+% BEGIN: define empty HWOptions resource category 
+currentglobal   %save it to restore later
+true setglobal  % all category definitions must be global
+
+/Generic /Category findresource  % get the generic category implementation
+dup length dict copy       % copy impl dict, leaving room for InstType
+/HWOptions exch /Category defineresource pop  % def the new category
+
+setglobal       %restore previous value
+% END: define HWOptions resource category 

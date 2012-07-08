@@ -1,0 +1,13 @@
+To register TextPad - copy and paste the
+text below into the license dialog box.
+
+BEGIN LICENSE
+Robin Mills
+-
+01 0001
+VNA7-QJ7V-7Z7R-RSNK
+96b6a5e0 3c31d8a4 2f102bc3 403fb15c 0d750c8b 2ab6d8b8
+a5c864d9 d0349ce1 0d750c8b 2ab6d8b8 a5c864d9 d0349ce1
+0d750c8b 2ab6d8b8 a5c864d9 d0349ce1 0d750c8b 2ab6d8b8
+a5c864d9 d0349ce1 fcbcfd18 aff2a95f b3e900da b6cb719d
+END LICENSE

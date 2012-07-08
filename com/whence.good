@@ -1,0 +1,74 @@
+#!/usr/bin/perl -w
+#
+# (c) Copyright Robin Mills Software Consultancy 1998
+# ----------------------------------------------------------------- 
+# File   : whence.pl
+# Author : Robin Mills
+# Date   : 27.Nov.98
+# -----------------------------------------------------------------
+# 
+# Purpose:
+# Finds programs on the path
+# 
+# Useage :
+# whence program ...
+# 
+# Example:
+# whence msdev
+# 
+# Description:
+# None.
+# 
+# Restrictions:
+# None
+# 
+# -----------------------------------------------------------------
+# Modified By Reason
+# 
+# -----------------------------------------------------------------
+$version = "1.00" ;
+
+# -------------------------------------
+# main program
+# -------------------------------------
+
+    if ( ! scalar @ARGV ) {
+      print "whence " . $version ;
+      exit 0 ;
+    }
+
+    my $bNT = SetupOS() ;
+    $path    = ".;" . $ENV{"path"   } ;
+    @dirs    = split(";",$path)       ;
+
+    $pathext = ";"  . $ENV{"pathext"} ;
+    @exts    = split(";",$pathext)    ;
+
+    # go over every program in the argument vector
+    foreach $program ( @ARGV ) {
+      foreach $dir (@dirs) {
+        next if !length $dir ;
+    
+        # try every extension
+        foreach $ext (@exts) {
+          $filename = $dir . $PATH_SEP . $program . $ext ;
+          if ( -e $filename ) {
+            print $filename ;
+            exit 0 ;
+          } 
+        }
+      }
+      print $program . " not on path\n" ;
+    }
+    
+
+# -------------------------------------
+# SetupOS - 
+# -------------------------------------
+sub SetupOS
+{
+    my $result = $^O =~ m:^mswin32:i ; # is OSNAME == mswin32 ?
+    $PATH_SEP  =$result?  "\\" : "/" ; # PATH_SEP = \ on NT and / on UNIX
+    return $result ;
+}
+

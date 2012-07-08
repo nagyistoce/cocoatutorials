@@ -1,0 +1,160 @@
+Internet Programming
+--------------------
+
+Purpose
+-------
+
+The purpose of the course is to experience and learn the major features
+of Internet Programming.  The course uses both lectures and a "hands-on"
+approach.  This enables students to observe demonstrations and sufficient
+time to develop and work with real-world programs.
+
+Objectives
+----------
+Understand the Internet Protocols
+Learn to program in Perl
+Learn to use the VC++ Internet classes
+Learn client and server-side programming
+Learn to program server-side databases 
+Learn to use and develop ActiveX components
+
+Audience, Equipment and Deliverables
+------------------------------------
+
+The target audience is experienced Software Development Engineers.
+Experience with Windows NT, Visual C++ and Web Browsers is assumed.
+Some experience COM is desirable.  Every student is supplied with a
+Workstation running Windows NT4.0.
+
+Every student is provided with a workbook which contains copies
+of all slides and printed copies of the main codes being demonstrated.
+Sources of additional materials and useful web sites are listed
+in the workbook.
+
+The course materials will be collected into an Internet Web Site.
+The materials will be made available as a compressed archive
+for a few weeks before and after the course for students to
+collect from http://www.rmsc.demon.co.uk/files/InternetCourse.zip
+
+The slides for the course will be available directly from:
+http://www.rmsc.demon.co.uk/InternetCourse/web/course.htm
+
+Programme
+---------
+
+Saturday     09.00 - 10.30 Introduction
+6 March                    Perl
+1999                       TCP/IP & Prototocols
+                           CGI and Scripts
+                           HTTP Servers
+                           HTML
+             10.30 - 12.30 Hands on session
+             12.30 - 13.30 Lunch
+             
+             13.30 - 14.30 Internet Client Programs
+                           Ping, Finger, News, Telnet and HTTP
+                           Winsock and WinInet
+                           Building your own browser
+                           Uploading files to the Net
+                           DHTML and Java
+                           Netscape Plug-Ins
+             15.00 - 16.00 Hands on session
+            
+             16.00 - 17.00 Internet Server Programs
+                           Configuring IIS
+                           ISAPI DLLs
+                           ISAPI Filters
+             17.00 - 18.00 Hands on session
+         
+
+Sunday       09.00 - 10.30 Internet Server Programs
+7 March                    Building a database in Perl
+1999                       Active Server Pages
+                           VBScript
+                           PerlScript
+                           JavaScript
+                           On-line databases
+             10.30 - 12.30 Hands on session
+             12.30 - 13.30 Lunch
+             
+             13.30 - 15.00 ActiveX, COM and ATL
+                           Using Active X Components
+                           Placing ActiveX components on Web Pages
+                           Building Active X components
+                           Building HTTP Client applications
+             15.00 - 17.30 Hands on session
+       
+       
+Books                               
+-----                               
+The following books will be on-hand and will be discussed:
+
+Active Server Pages 2.0    Wrox
+Programming Visual C++     MSPress
+Active Visual J++          MSPress
+
+Programming Perl           O'Reilly
+Perl Cookbook              O'Reilly
+CGI Programming            O'Reilly
+
+Perl in a Nutshell         O'Reilly
+Internet in a Nutshell     O'Reilly
+Java in a Nutshell         O'Reilly
+
+TCP/IP Network Admin       O'Reilly
+Netscape Plug-Ins Dev Kit  Que
+
+MSJ Articles
+------------
+The following MSJ Articles will be on-hand and discussed:
+
+Jun 98   How to Design Reusable HTTP Components by Exploting WinInet and COM
+Apr 98   Take IIS Customization to the Next level by Writing ISAPI Filters
+May 96   Writing Interactive Web Apps is a Piece of Cake with the ISAPI Classes
+Feb 96   Write a Simple HTTP-based Server Using MFC and Windows Sockets
+Oct 94   Getting Wired into the Internet: A Crash Course on FTP, Web, and more
+
+Software
+--------
+The following software tools will be used:
+
+Visual C++ v5.0            Microsoft
+Active Server Pages        Microsoft (v1.15 from NT4 SP3 CD)
+Perl v5.008 for NT         ActiveState
+Time Server                Roberson Computer Consulting
+Finger Server              EMWAC
+Telnet Server              Seattle Labs
+Acrobat Reader             Adobe Systems
+Internet RFC CD            Demon Internet
+ 
+Other Subjects
+--------------
+
+There are still a number of matters which are not covered in this agenda.
+These are:
+
+1.  XML - the next generation of Web content.
+    
+2.  Security and Certificates
+
+3.  Java Programming
+    Although I will demonstrate how to include Java in Web pages,
+    this course is not designed to teach the Java language.
+
+4.  Netscape Plug-Ins
+    It's possible to write plugins for NetScape and Explorer - for example
+    the Adobe Acrobat Viewer.  Although these will be demonstrated, the
+    implementation is not discussed in this course.
+
+5.  Creating Pages and Graphics for the Web
+    Pages    - Using PageMill, CyberStudio or FrontPage or CyberStudio
+    Graphics - Using ImageReady, PhotoShop or Illustrator
+    
+    
+History
+-------
+05.Feb.99 RM Version 3 - Modified book list.  Spelling corrections.
+16.Jan.99 RM Version 2 - Updated to reflect actual course content
+                         Added Books, Software and MSJ Articles
+                         Replaced CD with Web delivery
+02.Jan.99 RM Version 1 - for Comment

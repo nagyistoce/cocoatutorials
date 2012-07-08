@@ -1,0 +1,67 @@
+LISEZMOI.TXT pour TextPad 3.2
+=============================
+
+Nous vous remercions d'avoir choisi TextPad. Il a remporté le premier
+prix de sa catégorie, décerné par 1996 Shareware Industry Awards et
+1997 Ziff-Davis Shareware Awards.
+
+
+TABLE DES MATIERES
+------------------
+    DOTATIONS MINIMUM
+    INSTALLATION
+    NOUVEAUTES
+
+
+DOTATIONS MINIMUM:
+------------------
+    Version à 16 bits :                 Version à 32 bits :
+      o 386SX avec 4Mo de mémoire vive     o 486SX with 4Mo de mémoire vive
+                                                (12Mo pour  NT)
+      o 1.5Mo d'espace disque disponible   o 2.5Mo d'espace disque disponible
+      o Windows 3.1 en                     o Windows NT 3.51, Windows 95
+         mode étendu 386                     ou Windows 3.1 avec Win32s 1.3.172
+
+INSTALLATION:
+-------------
+    Pour installer TextPad, exécutez SETUP.EXE à partir de la disquette
+    marquée "TextPad Installation Disquette 1", et suivez les instructions
+    à l'écran.
+
+    NOTES IMPORTANTES :
+
+    + Si vous voulez associer des extensions de fichier au TextPad,
+      utilisez l'onglet Associations dans la boîte de dialogue
+      Préférences. Ceci permet de garantir que TextPad est lancé avec
+      les paramètres corrects lui permettant de gérer les noms de
+      fichier comportant des espaces.
+
+    + Si vous avez l'intention d'utiliser la version à 32 bits avec
+      Windows 3.1 ou 3.11, vous devez d'abord installer Win32s 1.30.172.
+      Cette version installe également les fichiers OLE2 à 16 bits. Si
+      vous avez accès à Internet, vous pouvez l'obtenir à partir de :
+
+      http://premium.microsoft.com/support/win32dev/faq/win32s/all.asp
+
+      Les utilisateurs de CompuServe peuvent télécharger Win32s du
+      forum MSWIN, sous le nom de PW1118.EXE.
+
+NOUVEAUTES :
+-----------
+Sollicitez l'aide en ligne pour connaître les nouveautés de cette
+version.
+
+
+Bonne utilisation de TextPad !
+
+_______________________________________________________________________
+ Helios Software Solutions, Carr Brook House, Chorley Old Road,
+ Brindle, Chorley, Lancashire,  PR6 7QZ,  Angleterre
+_______________________________________________________________________
+ Tél / Fax: +44-(0)1772-324353
+ E-mail:    sales@textpad.com ou support@textpad.com
+ WWW:       http://www.textpad.com/
+_______________________________________________________________________
+ Helios Software Solutions est un fournisseur homologué et un membre
+ associé de l'Association of Shareware Professionals (ASP).
+_______________________________________________________________________

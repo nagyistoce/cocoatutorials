@@ -1,0 +1,131 @@
+LIESMICH.TXT für TextPad 3.2
+============================
+
+Vielen Dank, daß Sie sich entschieden haben, TextPad zu prüfen oder zu
+aktualisieren.
+
+Arbeiten Sie mit der neuesten Version?  Schauen Sie in "Obtaining
+Updates" (Aktualisierungen besorgen) in der on-line Hilfe nach, um
+herauszufinden, wo Sie TextPad kopieren können.
+
+
+Die Presse sagt :
+--------------------
+"TextPad ist der beste 32-Bit Texteditor, den ich gesehen habe! Er ist
+schnell, reich an Funktionen und wunderschön gestaltet. Kaufen Sie
+es!" - Dr File Finder (tm), Sept. 95
+
+"Setzt neue Maßstäbe...10/10" - PC Plus, Mai 95.
+
+"Bester Editor für Windows, den wir je gesehen haben" - Windows
+Benutzer, Juni 95.
+
+Sieger: 1997 Ziff-Davis Shareware Preis - Wettbewerb.
+
+Sieger: 1996 Shareware Industry Awards.
+
+
+INHALT
+------
+
+EINLEITUNG
+MINDESTANFORDERUNGEN
+INSTALLATION
+WAS IST NEU
+REGISTRIERUNG
+
+EINLEITUNG
+----------
+TextPad wurde konzipiert, um die Leistung und Funktionalität für die
+strengsten Textbearbeitungsanforderungen zu erfüllen. Es läuft unter
+Windows und ist in 16 und 32-bit Versionen erhältlich. Große Dateien
+können von beiden Ausführungen bearbeitet werden, wählen Sie die
+Version, die am besten auf Ihrem Computer läuft. Die 32-Bit Version
+kann Dateien bis hin zum virtuellen Speicher bearbeiten (für genaue
+Angaben schauen Sie bitte  unter Spezifikationen in der on-line Hilfe
+nach), und arbeitet mit Windows 95, NT und Windows 3.1 mit der Win32s
+Erweiterung.
+
+Wenn Sie mehr erfahren möchten, installieren Sie TextPad. Bitte folgen
+Sie der Installationsanweisung und lesen dann bitte die Einleitung der
+on-line Hilfe Datei.
+
+MINDESTANFORDERUNGEN AN IHR SYSTEM:
+-----------------------------------
+    16-Bit Ausführung:          32-Bit Ausführung:
+        o 386sx mit 4MB RAM         o 486sx mit 4MB RAM (12MB für NT)
+        o 2MB freier Speicher       o 2.5MB freier Speicher
+        o Windows 3.1 im 386        o Windows NT 3.51, Windows 95 oder
+           Erweiterungsmodus           Windows 3.1 mit Win32s 1.30.172
+
+INSTALLATION:
+--------------
+    TextPad verfügt über ein Installationsprogramm, welches es auf die
+    von Ihnen genutzte Version von Windows abstimmt. Einige Merkmale
+    werden nicht einwandfrei funktionieren (einschließlich des
+    Deinstallationsprogrammes), wenn Sie Textpad nicht
+    vorschriftsmäßig installieren. Sie wurden gewarnt!
+
+    Um TextPad aus einer ZIP Datei zu installieren:
+
+      1) Dekomprimieren aller Dateien in ein leeres, temporäres
+         Verzeichnis, mit PKUNZIP 2.04g.
+      2) Führen Sie SETUP.EXE aus und folgen Sie den Anweisungen auf
+         dem Bildschirm.
+      3) Achten Sie darauf, daß Sie TextPad in einem anderen als dem
+         unter (1) benutzten Verzeichnis installieren.
+      4) Löschen Sie die dekomprimierten Dateien aus (1).
+
+    WICHTIGE MITTEILUNGEN:
+
+    + Wenn Sie Dateierweiterungen mit TextPad verknüpfen möchten,
+      erreichen Sie dies, indem Sie die Assoziations-Tabs der
+      Vorzugsdialogbox verwenden. Damit stellen Sie sicher, daß
+      TextPad mit den richtigen Parametern gestartet wird und
+      ermöglicht dem Deinstallationsprogramm, TextPad anschließend
+      vollständig zu löschen.
+
+    + Wenn Sie die 32-Bit Version mit Windows 3.1 oder 3.11 benutzen
+      möchten, müssen Sie zunächst Win32s 1.30.172 installieren. Dadurch
+      werden auch die 16-Bit OLE2 Dateien installiert. Wenn Sie
+      Zugriff auf das Internet haben, können Sie es auf folgender
+      Adresse kopieren:
+
+      http://premium.microsoft.com/support/win32dev/faq/win32s/all.asp
+
+      Benutzer von CompuServe können Win32s vom MSWIN Forum als
+      PW1118.EXE kopieren.
+
+
+WAS IST NEU:
+------------
+    Mit der on-line Hilfe erhalten Sie alle Informationen über "Was
+    ist neu?".
+
+
+REGISTRIERUNG:
+--------------
+    Wenn Sie TextPad nutzen möchten, müssen Sie sich registrieren.
+    Registrierten Benutzern wird eine Lizenz erteilt, sowohl die 16
+    als auch die 32-Bit Ausführung, zu nutzen. Es gelten verschiedene
+    Preise für das Kopieren der Software aus Online Diensten und dem
+    Erwerb einer Kopie auf Diskette.
+
+    Wählen Sie "Wie erwerben" im Hilfe-Menü für vollständige
+    Anweisungen.
+
+Viel Freude beim Einsatz von TextPad wünscht Ihnen
+
+________________________________________________________________________
+ Helios Software Solutions, Carr Brook House, Chorley Old Road,
+ Brindle, Chorley, Lancashire,  PR6 7QZ,  England
+________________________________________________________________________
+
+ Phone/Fax: +44-(0)1772-324353
+ E-mail:    sales@textpad.com oder support@textpad.com
+ WWW:       http://www.textpad.com/
+________________________________________________________________________
+ Helios Software Solutions is an approved vendor and associate member
+ of the Association of Shareware Professionals (ASP).
+________________________________________________________________________
+

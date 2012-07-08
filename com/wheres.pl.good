@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w
+# (c) Robin Mills Software Consultancy Camberley England 1999
+# ----------------------------------------------------------------- 
+# * File   : whereis.pl
+# * Author : Robin Mills
+# * Date   : 5.March.1999
+# -----------------------------------------------------------------
+# 
+# * Purpose:
+#   Seach for executable on path
+# 
+# * Useage :
+#   None.
+# 
+# * Example:
+#   whence whence
+# 
+# * Description:
+#   None.
+# 
+# * Restrictions:
+#   None.
+# 
+# -----------------------------------------------------------------
+# Modified By Reason
+# 
+# -----------------------------------------------------------------
+$version = "1.01" ;
+
+use Cwd ;
+# -------------------------------------
+# main program
+# -------------------------------------
+
+    my $ARGC = scalar @ARGV ;
+    print "argc = $ARGC\n" ;
+    if ( !scalar @ARGV ) {
+      print "whereis version " . $version  ;
+      print "\nUseage: whereis [[name] ...]" ;
+      exit 0 ;
+    }
+
+    my $bNT = SetupOS() ;
+    $path    = lc cwd() . ";" . $ENV{"path"} ;
+    $pathext = lc ";"  . $ENV{"pathext"}     ;
+
+    @dirs    = split(";",$path)              ;
+    @exts    = split(";",$pathext)           ;
+
+    # go over every program in the argument vector
+    my $program   ;
+
+    foreach $program ( @ARGV ) {
+      my $bFound  ;
+      foreach $dir (@dirs) {
+        next if !length $dir ;
+    
+        # try every extension
+        foreach $ext (@exts) {
+          my $filename = $dir . $PATH_SEP . $program . $ext ;
+          if ( !$bFound && -e $filename && !-d $filename ) {
+            print $filename . "\n" ;
+            $bFound ++ ;
+          } 
+        }
+      }
+      print $program . " not on path\n" if ! $bFound ;
+    }
+    
+# -------------------------------------
+# SetupOS - 
+# -------------------------------------
+sub SetupOS
+{
+    my $result = $^O =~ m:^mswin32:i ; # is OSNAME == mswin32 ?
+    $PATH_SEP  =$result?  "\\" : "/" ; # PATH_SEP = \ on NT and / on UNIX
+    return $result ;
+}

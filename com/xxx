@@ -1,0 +1,515 @@
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ------------------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem -- Test Script for PolarisHTTPlib.dll 
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ------------------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>call GetDLLs.bat 
+
+C:\Polaris5\PolarisHTTPlib\Testing>copy ..\debug\PolarisHTTPlib.dll . 
+        1 file(s) copied.
+
+C:\Polaris5\PolarisHTTPlib\Testing>copy ..\PolarisHTTPlib.h 
+        1 file(s) copied.
+
+C:\Polaris5\PolarisHTTPlib\Testing>copy ..\debug\PolarisHTTPlib.lib 
+        1 file(s) copied.
+
+C:\Polaris5\PolarisHTTPlib\Testing>nmake all 
+
+C:\Polaris5\PolarisHTTPlib\Testing>nmake all 
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ls -alt test.file 
+-rwxrwxrwa   1 Administrators  None             305056 Oct 14  2001 test.file
+
+C:\Polaris5\PolarisHTTPlib\Testing>Put http://localhost/temp/vvv test.file 
+Progress 0 305056
+Progress 8192 305056
+Progress 16384 305056
+Progress 24576 305056
+Progress 32768 305056
+Progress 40960 305056
+Progress 49152 305056
+Progress 57344 305056
+Progress 65536 305056
+Progress 73728 305056
+Progress 81920 305056
+Progress 90112 305056
+Progress 98304 305056
+Progress 106496 305056
+Progress 114688 305056
+Progress 122880 305056
+Progress 131072 305056
+Progress 139264 305056
+Progress 147456 305056
+Progress 155648 305056
+Progress 163840 305056
+Progress 172032 305056
+Progress 180224 305056
+Progress 188416 305056
+Progress 196608 305056
+Progress 204800 305056
+Progress 212992 305056
+Progress 221184 305056
+Progress 229376 305056
+Progress 237568 305056
+Progress 245760 305056
+Progress 253952 305056
+Progress 262144 305056
+Progress 270336 305056
+Progress 278528 305056
+Progress 286720 305056
+Progress 294912 305056
+Progress 303104 305056
+Progress 305056 305056
+result = no error
+---header-----
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/5.0
+Date: Fri, 10 May 2002 03:10:19 GMT
+Content-Length: 0
+Allow: OPTIONS, TRACE, GET, HEAD, DELETE, PUT, COPY, MOVE, PROPFIND, PROPPATCH, SEARCH, LOCK, UNLOCK
+
+---buffer-----
+
+C:\Polaris5\PolarisHTTPlib\Testing>ls -alt \temp\vvv 
+-rwxrwxrwa   1 IUSR_RMILLS-LAPTOP None             305056 May  9 20:10 /temp/vvv
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>Get http://localhost/temp/vvv 
+result = no error
+---header-----
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/5.0
+Date: Fri, 10 May 2002 03:10:23 GMT
+Content-Type: application/octet-stream
+Accept-Ranges: bytes
+Last-Modified: Fri, 10 May 2002 03:10:20 GMT
+ETag: W/"20f3de37d0f7c11:9eb"
+Content-Length: 305056
+
+---buffer-----
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<%@ page import="java.sql.*" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="com.adobe.Polaris.AdminUI.AdminUIReadXML" %>
+<%
+    String user = (String) session.getValue("user") ;
+    if ( user == null || user.length() == 0 ) {
+      response.sendRedirect("Login.jsp") ;
+    } else {
+    response.setHeader("Cache-Control", "no-cache");
+    response.setDateHeader("max-age", 0);
+    response.setDateHeader("Expires", 0);
+%>
+
+<HTML>
+<HEAD>
+<TITLE>Polaris Administrator - Server</TITLE>
+<META NAME="Generator" CONTENT="TextPad 4.4">
+<META NAME="Author" CONTENT="Robin Mills">
+<META NAME="Keywords" CONTENT="Provide Server support for Polaris AdminUI">
+<META NAME="Description" CONTENT="Provide Server support for Polaris AdminUI">
+<link rel="stylesheet" TYPE="text/css" HREF="Polaris.css" />
+
+</HEAD>
+
+<%@ page import="java.sql.*" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
+
+<%@ include file="Header1.page" %>
+<%@ include file="ServerHeader.page" %>
+<%@ include file="Header2.page" %>
+
+
+<%!
+    public int   nBG ;
+    public String BG()
+    {
+      return "<td valign = top CLASS = \"" + nBG + "\">" ;         
+    }
+    public void   BGx() { nBG = ++nBG % 2 ; }
+
+    public String EndInSlash(String s)
+    {
+       String Slash  = System.getProperties().getProperty("file.separator") ;
+       String result = s ;
+       if ( s.charAt(s.length()-1) != Slash.charAt(0) ) {
+           result += Slash ;
+       }
+       return result ;
+    }
+
+    public String JDBCdriver   = ""  ;
+    public String JDBCuser     ;
+    public String JDBCurl      ;
+    public String JDBCpassword ;
+
+    public Connection getConnection(PageContext pageContext)
+    {
+        Connection result = null ;
+        if ( JDBCdriver.length() == 0 ) {
+          ServletContext application = pageContext.getServletContext();
+          String        pFilename    = EndInSlash(application.getRealPath("")) + "AdminUI.props"
+                              ;
+          try {
+            InputStream       is = new FileInputStream(pFilename) ;
+            Properties        p  = new Properties();
+            p.load(is);
+
+            JDBCdriver   = p.getProperty("JDBCdriver"  ) ;
+            JDBCurl      = p.getProperty("JDBCurl"     ) ;
+            JDBCuser     = p.getProperty("JDBCuser"    ) ;
+            JDBCpassword = p.getProperty("JDBCpassword") ;
+          } catch ( Exception e ) {} ;
+        }
+        try {
+          Class.forName(JDBCdriver).newInstance() ;
+          String     url        = JDBCurl                 ;
+          result = DriverManager.getConnection(JDBCurl, JDBCuser,JDBCpassword) ;
+        } catch ( Exception e ) {} ;
+
+        return result ;
+    }
+%>
+
+<%
+    String     CMD  = request.getParameter("CMD" ) ;
+    String     Form = request.getParameter("Form") ;
+    if ( CMD  == null ) CMD  = "none" ;
+    if ( Form == null ) Form = "none" ;
+
+    // ------------------------------------------------
+    out.println( "<h3>Helper Services</h3>") ;
+    {
+      // Figure what to ask the database
+      String     query      = "SELECT * FROM HelperService " ;
+      String     Sortby     ;
+      String     Dir        ;
+      if ( Form.equals("HelperService") ) {
+        Sortby        = request.getParameter("Sortby") ;
+        String Sort   = Sortby == null ? "" : (" ORDER BY " + Sortby)   ;
+        if ( Sortby == null ) Sortby = ""   ;
+        Dir           = request.getParameter("Dir") ;
+        if ( Dir == null ) Dir = ""               ;
+        query         = query + Sort + " " + Dir          ;
+      } else {
+        Sortby = "" ;
+        Dir    = "" ;
+      }
+
+      // Now ask him
+      Connection connection = getConnection(pageContext) ;
+      Statement  statement  = connection.createStatement()          ;
+      ResultSet  rs         = statement.executeQuery(query);
+
+      //
+      // Were we asked to edit the database?
+      //
+      if ( Form.equals("HelperService") && CMD.equals("SetAvailable") ) {
+        while ( rs.next() ) {
+          int     HSID        = rs.getInt("HSID") ;
+          String  On          = request.getParameter("aHSID"+HSID) ;
+          boolean bAvailable  = On == null ? false : true ;
+          if ( bAvailable    != rs.getBoolean("Available") ) {
+            String     truth  = bAvailable ? "true" : "false" ;
+            Statement  st     = connection.createStatement() ;
+            String     Update = "Update HelperService Set Available = " + truth + " where HSID = " + HSID ;
+            st.executeUpdate(Update) ;
+            st.close();
+          }
+        }
+        rs = statement.executeQuery(query);
+      }
+
+
+      //
+      // Print the table from the database
+      //
+      nBG = 0 ;
+      out.println   ( "<TABLE CELLSPACING=0 CELLPADDING=2 BORDER=0 WIDTH=\"100%\">"
+                    + "<FORM NAME = \"helperservice\" METHOD=POST>"
+                    ) ;
+      String HDir   = (Sortby.equals("Helper"      ) && Dir.equals("ASC"))
+                    ? "DESC" : "ASC"  ;
+      String SDir   = (Sortby.equals("Service"    ) && Dir.equals("ASC"))
+                    ? "DESC" : "ASC"  ;
+      String ADir   = (Sortby.equals("Available"  ) && Dir.equals("ASC"))
+                    ? "DESC" : "ASC"  ;
+      String LDir   = (Sortby.equals("Load"       ) && Dir.equals("ASC"))
+                    ? "DESC" : "ASC"  ;
+
+      String HClass = Sortby.equals("Helper"     ) ? "class=\"lsorted\"" : "class=\"left\"" ;
+      String SClass = Sortby.equals("Service"    ) ? "class=\"sorted\""  : "" ;
+      String AClass = Sortby.equals("Available"  ) ? "class=\"sorted\""  : "" ;
+      String LClass = Sortby.equals("Load"       ) ? "class=\"sorted\""  : "" ;
+
+      out.println ( "<TR>"
+                  + "<TH WIDTH=\"30%\"" + HClass + "><a HREF=\"?Form=HelperService&Sortby=Helper&Dir="   + HDir + "\">Helper   </a></TH>"
+                  + "<TH WIDTH=\"30%\"" + SClass + "><a HREF=\"?Form=HelperService&Sortby=Service&Dir="  + SDir + "\">Service  </a></TH>"
+                  + "<TH WIDTH=\"20%\"" + AClass + "><a HREF=\"?Form=HelperService&Sortby=Available&Dir="+ ADir + "\">Available</a></TH>"
+                  + "<TH WIDTH=\"20%\"" + LClass + ">Load</TH>"
+                  + "</TR>"
+                  ) ;
+
+      while ( rs.next() ) {
+        String  sHelper       = rs.getString  ("Helper"   ) ;
+        String  sService      = rs.getString  ("Service"  ) ;
+        boolean bAvailable    = rs.getBoolean ("Available") ;
+        String  sHSID         = "" + rs.getInt("HSID"     ) ;
+        String  sLoad         = "0" ;
+
+        String  sAvailable    = "<INPUT TYPE=\"CheckBox\" NAME=\"aHSID" + sHSID + "\"" 
+                              + (bAvailable ? "Checked" : "") + "></input>"
+                              ;
+        sHelper               = "<INPUT TYPE=\"CheckBox\" NAME=\"sHSID" + sHSID + "\">"
+                              + sHelper + "</input>"
+                              ;
+
+        BGx() ;
+        out.println("<tr>"
+                   + BG() + sHelper      + "</td>"
+                   + BG() + sService     + "</td>"
+                   + BG() + sAvailable   + "</td>"
+                   + BG() + sLoad        + "</td>"
+                   + "</tr>"
+                   ) ;
+      }
+
+      out.println("<TR  CLASS=\"tb\">"
+                 + "\n<TD COLSPAN=2 Align=right>"
+                 + "\n<INPUT type=hidden name=\"Form\" value=\"HelperService\">"
+                 + "\n<input type=\"hidden\" name=\"CMD\"  value=\"SetAvailable\""
+            //   + "\nEdit:&nbsp;"
+                 + "\n<INPUT type=button value=\"New\"    onclick=\"HelperService()\">"
+                 + "\n<INPUT type=button value=\"Edit\"   onclick=\"HelperService()\">"
+                 + "\n<INPUT type=button value=\"Delete\" onclick=\"HelperService()\">"
+                 + "\n<INPUT type=button value=\"All\"    onclick=\"HelperService()\">"
+                 + "\n</TD>"
+                 + "\n<td COLSPAN=2><input type=submit value=\"Set Available\"></td>"
+                 + "\n</tr>") ;
+
+      out.println("</FORM></TABLE>") ;
+
+      statement.close();
+      connection.commit();
+      connection.close();
+    }
+
+    // ------------------------------------------------
+    out.println( "<h3>Helpers</h3>") ;
+    {
+      // Figure what to ask the database
+      String     query      = "SELECT * FROM Helper " ;
+      String     Sortby     ;
+      String     Dir        ;
+      if ( Form.equals("Helpers") ) {
+        Sortby        = request.getParameter("Sortby") ;
+        String Sort   = Sortby == null ? "" : (" ORDER BY " + Sortby)   ;
+        if ( Sortby == null ) Sortby = ""   ;
+        Dir           = request.getParameter("Dir") ;
+        if ( Dir == null ) Dir = ""               ;
+        query         = query + Sort + " " + Dir          ;
+      } else {
+        Sortby = "" ;
+        Dir    = "" ;
+      }
+
+      // Now ask him
+      Connection connection = getConnection(pageContext) ;
+      Statement  statement  = connection.createStatement()          ;
+      ResultSet  rs         = statement.executeQuery(query);
+
+      //
+      // Were we asked to edit the database?
+      //
+      if ( Form.equals("Helpers") && CMD.equals("SetAvailable") ) {
+        while ( rs.next() ) {
+          int     HID         = rs.getInt("HID") ;
+          String  On          = request.getParameter("aHID"+HID) ;
+          boolean bAvailable  = On == null ? false : true ;
+          if ( bAvailable    != rs.getBoolean("Available") ) {
+            String     truth  = bAvailable ? "true" : "false" ;
+            Statement  st     = connection.createStatement() ;
+            String     Update = "Update Helper Set Available = " + truth + " where HID = " + HID ;
+            st.execut
+C:\Polaris5\PolarisHTTPlib\Testing>Get http://localhost/temp/vvv vvv 
+ Volume in drive C is IBM_PRELOAD
+ Volume Serial Number is 9857-2639
+
+ Directory of C:\Polaris5\PolarisHTTPlib\Testing
+
+05/09/2002  20:10              305,056 vvv
+               1 File(s)        305,056 bytes
+               0 Dir(s)   1,098,028,544 bytes free
+result = no error
+---header-----
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/5.0
+Date: Fri, 10 May 2002 03:10:37 GMT
+Content-Type: application/octet-stream
+Accept-Ranges: bytes
+Last-Modified: Fri, 10 May 2002 03:10:20 GMT
+ETag: "20f3de37d0f7c11:9eb"
+Content-Length: 305056
+
+
+C:\Polaris5\PolarisHTTPlib\Testing>ls -alt vvv 
+-rwxrwxrwa   1 Administrators  None             305056 May  9 20:10 vvv
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>VirtualDirectory /Polaris 
+path = /Polaris error = no error buffer = C:\Web\Polaris\
+
+C:\Polaris5\PolarisHTTPlib\Testing>VirtualPath       Polaris/JDFSequencer/Pending 
+path = Polaris/JDFSequencer/Pending error = no error buffer = C:\Web\Polaris\JDFSequencer\Pending
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>IsLocal http://localhost/Polaris 
+result = no error
+
+C:\Polaris5\PolarisHTTPlib\Testing>IsLocal http://localhOst/Polaris 
+result = no error
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ParseURL http://localhost:8080/directory/file.htm 
+result = no error
+http://localhost:8080/directory/file.htm ; server = localhost filename = /directory/file.htm port = 8080
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>Head http://localhost/temp/vvv 
+result = no error
+---header-----
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/5.0
+Date: Fri, 10 May 2002 03:10:42 GMT
+Content-Type: application/octet-stream
+Accept-Ranges: bytes
+Last-Modified: Fri, 10 May 2002 03:10:20 GMT
+ETag: "20f3de37d0f7c11:9eb"
+Content-Length: 305056
+
+---buffer-----
+
+C:\Polaris5\PolarisHTTPlib\Testing>Head http://rmills-laptop/scripts/now.asp 
+result = no error
+---header-----
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/5.0
+Date: Fri, 10 May 2002 03:10:45 GMT
+Content-Length: 371
+Content-Type: text/html
+Set-Cookie: ASPSESSIONIDQQGGQYRY=ANLPDCHBDGIAGNNLIOLDJHGM; path=/
+Cache-control: private
+
+---buffer-----
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ---------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ls -alt \temp\vvv 
+-rwxrwxrwa   1 IUSR_RMILLS-LAPTOP None             305056 May  9 20:10 /temp/vvv
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem Delete http://localhost/temp/vvv 
+
+C:\Polaris5\PolarisHTTPlib\Testing>dir \temp\vvv 
+ Volume in drive C is IBM_PRELOAD
+ Volume Serial Number is 9857-2639
+
+ Directory of C:\temp
+
+05/09/2002  20:10              305,056 vvv
+               1 File(s)        305,056 bytes
+               0 Dir(s)   1,098,028,544 bytes free
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ----------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>copy/y test.file \temp\vvv 
+        1 file(s) copied.
+
+C:\Polaris5\PolarisHTTPlib\Testing>LoadLib http://localhost/temp/vvv vvv 
+ Volume in drive C is IBM_PRELOAD
+ Volume Serial Number is 9857-2639
+
+ Directory of C:\Polaris5\PolarisHTTPlib\Testing
+
+05/09/2002  20:10              305,056 vvv
+               1 File(s)        305,056 bytes
+               0 Dir(s)   1,098,020,352 bytes free
+a = 10001041
+b = 10001069
+c = 10001005
+d = 1000105f
+e = 10001073
+f = 10001050
+g = 10001046
+h = 10001082
+i = 10001023
+j = 10001019
+k = 1000103c
+l = 10001037
+m = 1000102d
+result = no error
+---header-----
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/5.0
+Date: Fri, 10 May 2002 03:10:47 GMT
+Content-Type: application/octet-stream
+Accept-Ranges: bytes
+Last-Modified: Mon, 15 Oct 2001 03:29:04 GMT
+ETag: "080fa892955c11:9eb"
+Content-Length: 305056
+
+
+C:\Polaris5\PolarisHTTPlib\Testing>ls -alt \temp\vvv vvv 
+-rwxrwxrwa   1 Administrators  None             305056 May  9 20:10 vvv
+-rwxrwxrwa   1 IUSR_RMILLS-LAPTOP None             305056 Oct 14  2001 /temp/vvv
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem ----------------------------- 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML  AdminUI.xml AdminUI DSN 
+result = no error DSN=Polaris
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML2 AdminUI.xml AdminUI DSN 
+result = no error DSN=Polaris
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML  AdminUI.xml another Purpose 
+result = no error no known purpose
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML2 AdminUI.xml another Purpose 
+result = no error no known purpose
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML  AdminUI.xml AdminUI stuff 
+result = cant find key 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML2 AdminUI.xml AdminUI stuff 
+result = cant find key 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML  AdminUI.xml another LongString 
+result = buffer too small 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML2 AdminUI.xml another LongString 
+result = buffer too small 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML  AdminUI.xml Adminui DSN 
+result = cant find section 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML2 AdminUI.xml Adminui DSN 
+result = cant find section 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML  AdminUI.yml AdminUi DSN 
+result = cant open xml file 
+
+C:\Polaris5\PolarisHTTPlib\Testing>ReadXML2 AdminUI.yml AdminUi DSN 
+result = cant open xml file 
+
+C:\Polaris5\PolarisHTTPlib\Testing>rem --- end of test --- 

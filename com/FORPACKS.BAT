@@ -1,0 +1,1 @@
+foreachpack %PRIVATE_WORLD% %CONFIG% %*

@@ -1,0 +1,1 @@
+ntinfo -process all | grep %*% | cut "-d " -f1

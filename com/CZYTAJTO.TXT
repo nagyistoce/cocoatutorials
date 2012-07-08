@@ -1,0 +1,149 @@
+CZYTAJTO.TXT dla TextPad 3.2
+============================
+
+Dziêkujemy, ¿e zdecydowa³e¶ siê na wypróbowanie lub zaktualizowanie do tej
+wersji TextPada.
+
+Czy wypróbowujesz ostatni± wersjê? Sprawd¼ w sekcji "Obtaining Updates" w
+pliku pomocy, sk±d mo¿esz ¶ci±gn±æ TextPada.
+
+Co mówi± gazety:
+----------------
+"TextPad jest NAJLEPSZYM 32-bitowym edytorem jakiego widzia³em! Jest szybki,
+pe³en mo¿liwo¶ci i przepiêknie zrobiony. Musisz go mieæ" - Dr File Finder(tm),
+Wrzesieñ 95.
+
+"Bardzo uniwersalny, ³atwy w u¿yciu edytor tekstowy" - What PC?, Luty 97.
+
+"Wyznacza nowe standardy... 10/10" - PC Plus, Maj 95.
+
+"Najlepszy edytor dla Windows jaki kiedykolwiek widzieli¶my" - Windows User,
+Czerwiec 95.
+
+*Zdobywca*: 1995 i 1997 Ziff-Davis Shareware Awards.
+
+*Zdobywca*: 1996 Shareware Industry Awards.
+
+
+SPIS TRE¦CI
+-----------
+    WPROWADZENIE
+    MINIMALNE WYMAGANIA
+    INSTALACJA
+    CO NOWEGO
+    REJESTRACJA
+
+WPROWADZENIE:
+-------------
+TextPad zosta³ zaprojektowany aby zapewniæ odpowiedni± moc i funkcjonalno¶æ dla
+zaspokojenia najbardziej wymagaj±cych zadañ zwi±zanych z edycj± tekstu.
+Pracuje on w Windows i jest dostêpny w wersjach 16 i 32-bitowych. Ka¿da z nich
+ma mo¿liwo¶æ edycji bardzo du¿ych plików - po prostu wybierz tê, która
+najlepiej nadaje siê dla Twojego PC. W wersji 32-bitowej maksymalny rozmiar
+pliku jest ograniczony tylko rozmiarem dostêpnej pamiêci wirtualnej (wiêcej
+szczegó³ów w sekcji Specifications w pliku pomocy). Wersja ta pracuje z Windows
+95, NT i Windows 3.1 z rozszerzeniem Win32s.
+
+Aby dowiedziec siê wiêcej, zainstaluj TextPada zgodnie z poni¿szymi wskazówkami
+i przeczytaj wprowadzenie w pliku pomocy.
+
+
+MINIMALNE WYMAGANIA:
+--------------------
+    Wersja 16-bitowa:           Wersja 32-bitowa:
+      o 386SX z 4MB RAM           o 486SX z 4MB RAM (12MB dla NT)
+      o 1.5MB miejsca na dysku    o 2.5MB miejsca na dysku
+      o Windows 3.1 pracuj±ce     o Windows NT 3.51, Windows 95 lub
+        w trybie rozszerzonym        Windows 3.1 z Win32s 1.30.172
+
+INSTALACJA:
+-----------
+    TextPad ma program instalacyjny, który konfiguruje go dla u¿ywanej przez
+    Ciebie wersji Windows. Niektóre rzeczy mog± nie dzia³aæ (w³±czaj±c w to
+    program odinstalowuj±cy) je¶li niepoprawnie go zainstalujesz. Pamiêtaj,
+    ostrzegali¶my!
+
+    Program instalacyjny zachowa Twoje ustawienia je¶li dokonujesz
+    uaktualnienia wcze¶niejszej wersji programu.
+
+    Instalowanie z pliku ZIP:
+
+        1) Rozkompresuj plik do tymczasowego (pustego) foldera u¿ywaj±c
+           PKUNZIP 2.04g.
+        2) Uruchom SETUP.EXE i postêpuj zgodnie ze wskazówkami na ekranie.
+        3) Upewnij siê, ¿e instalujesz TextPada do innego foldera ni¿ ten,
+           którego u¿y³e¶ w punkcie 1 powy¿ej.
+        4) Skasuj pliki rozpakowane w punkcie 1 powy¿ej.
+
+    Program instalacyjny mo¿e byæ uruchomiony w jednym z dostêpnych jêzyków
+    przy u¿yciu odpowiedniej opcji:
+
+           Angielski:   SETUP -L9
+           Francuski:   SETUP -L12
+           Niemiecki:   SETUP -L7
+           W³oski:      SETUP -L16
+           Hiszpañski:  SETUP -L10
+           Polski:      SETUP -L21
+           Portugalski: SETUP -L22
+
+    S£OWNIKI do narzêdzia sprawdzania pisowni dostêpne s± w oddzielnych
+    archiwach zip, które mo¿na ¶ci±gn±æ z http://www.textpad.com/. Aby
+    zainstalowaæ taki s³ownik rozpakuj go w podkatalogu SPELLING w folderze, w
+    którym zainstalowa³e¶ TekstPada i wybierz go na zak³adce Pisownia w okienku
+    dialogowym Preferencje.
+
+    Wa¿ne uwagi:
+    ------------
+    + Je¶li chcesz skojarzyæ rozszerzenia plików z TextPadem, zrób to u¿ywaj±c
+      zak³adki Skojarzenia w okienku dialogowym Preferencje.  Gwarantuje to, ¿e
+      TextPad zostanie uruchomiony z poprawnymi parametrami, które umo¿liwiaj±
+      obs³ugê plików ze spacjami w nazwie oraz pozwala programowi
+      odinstalowuj±cemu na usuniêcie tych skojarzeñ.
+
+    + Je¶li zamierzasz u¿ywaæ wersji 32-bitowej z Windows 3.1 lub 3.11, musisz
+      najpierw zainstalowaæ Win32s 1.30.172. Zostan± wtedy tak¿e zainstalowane
+      16-bitowe pliki do OLE2. Je¶li masz dostêp do Internetu, mo¿esz ¶ci±gn±æ
+      Win32s spod adresu:
+
+      http://premium.microsoft.com/support/win32dev/faq/win32s/all.asp
+
+      U¿ytkownicy CompuServe mog± ¶ci±gn±æ Win32s z forum MSWIN jako plik
+      PW1118.EXE.
+
+    Zgodno¶æ skrótów klawiszowych:
+    ------------------------------
+    Aby skróty klawiszowe by³y zgodne z tymi z TextPada 2 lub WordStara, BRIEFa
+    czy programów Microsoftu, wybierz odpowiedni uk³ad z listy na zak³adce
+    Zgodno¶æ w okienku Preferencje.
+
+
+CO NOWEGO:
+----------
+    Pe³ny opis zmian w tej wersji znajduje siê w pliku pomocy programu.
+
+
+REJESTRACJA:
+------------
+    Je¶li u¿ywasz TextPada, musisz go zarejestrowaæ. Zarejestrowani
+    u¿ytkownicy otrzymuj± licencjê na obie (16 i 32-bitow±) wersje. Cena ró¿ni
+    siê w zale¿no¶ci od tego, czy sam ¶ci±gniesz TextPada, czy chcesz otrzymaæ
+    go na dyskietkach.
+
+    Dok³adne instrukcje znajduj± siê w "Jak zamówiæ" w menu Pomoc.
+
+
+Mi³ej pracy z TextPadem!
+
+
+ Helios Software Solutions, Carr Brook House, Chorley Old Road,
+ Brindle, Chorley, Lancashire,  PR6 7QZ,  England
+________________________________________________________________________
+
+ Phone/Fax: +44-(0)1772-324353
+ E-mail:    sales@textpad.com or support@textpad.com
+ WWW:       http://www.textpad.com/
+________________________________________________________________________
+ Helios Software Solutions is an approved vendor and associate member
+ of the Association of Shareware Professionals (ASP).
+________________________________________________________________________
+

@@ -1,0 +1,297 @@
+*** NON-FATAL INTERNAL ERROR in Environment ***
+Date: Sep 23 2010 20:07
+
+File Name: C:\Com\turing.exe
+Version: 4.1.1
+File Size: 2441303
+File Date: Oct 25 2007 11:13
+Operating System: Bad OS Value (0)
+JVM: "assert" Statements: enabled
+
+
+Previous Operations:
+
+
+
+The environment has experienced an unexpected internal error.
+
+This error is caused by a bug in the environment and is not your fault!
+Details about the crash have been saved in the file "C:\Com\panic.log".
+
+If possible, please e-mail this file to readybugs@hsa.on.ca
+
+Here are some details about the error:
+   Error = Unable to load "C:\Com\Support\Bin\lang.dll" (6057)
+   Windows error = The specified module could not be found. (126)
+   File = P:\ready\src\edprog.c
+   Line = 95
+
+List of Modules: 
+    C:\Com\turing.exe
+    C:\Windows\SysWOW64\ntdll.dll
+    C:\Windows\syswow64\kernel32.dll
+    C:\Windows\syswow64\KERNELBASE.dll
+    C:\Windows\system32\VERSION.dll
+    C:\Windows\syswow64\msvcrt.dll
+    C:\Windows\system32\WINMM.dll
+    C:\Windows\syswow64\USER32.dll
+    C:\Windows\syswow64\GDI32.dll
+    C:\Windows\syswow64\LPK.dll
+    C:\Windows\syswow64\USP10.dll
+    C:\Windows\syswow64\ADVAPI32.dll
+    C:\Windows\SysWOW64\sechost.dll
+    C:\Windows\syswow64\RPCRT4.dll
+    C:\Windows\syswow64\SspiCli.dll
+    C:\Windows\syswow64\CRYPTBASE.dll
+    C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_5.82.7600.16385_none_ebf82fc36c758ad5\COMCTL32.dll
+    C:\Windows\syswow64\comdlg32.dll
+    C:\Windows\syswow64\SHLWAPI.dll
+    C:\Windows\syswow64\SHELL32.dll
+    C:\Windows\syswow64\WININET.dll
+    C:\Windows\syswow64\Normaliz.dll
+    C:\Windows\syswow64\iertutil.dll
+    C:\Windows\syswow64\urlmon.dll
+    C:\Windows\syswow64\ole32.dll
+    C:\Windows\syswow64\OLEAUT32.dll
+    C:\Windows\syswow64\XmlLite.dll
+    C:\Windows\system32\IMM32.DLL
+    C:\Windows\syswow64\MSCTF.dll
+    C:\Windows\system32\uxtheme.dll
+    C:\Windows\system32\dwmapi.dll
+    C:\Windows\syswow64\CLBCatQ.DLL
+    C:\Windows\system32\dbghelp.dll
+
+  0 .V PC=0023:7793f861 Ret=76aa1184 Frame=0018b0d4 Stack=0018b068
+    Parameters (0x000000f4 0x00003a98 0x00000000 0x0018b110)
+    Unknown module, ZwWaitForSingleObject() + 0021 byte(s)
+  1 .V PC=0023:76aa1184 Ret=76aa1138 Frame=0018b0ec Stack=0018b0dc
+    Parameters (0x000000f4 0x00003a98 0x00000000 0x0018d99c)
+    Unknown module, WaitForSingleObjectEx() + 0067 byte(s)
+  2 .V PC=0023:76aa1138 Ret=0041d5f2 Frame=0018b100 Stack=0018b0f4
+    Parameters (0x000000f4 0x00003a98 0x0018e2a8 0x0018d9d8)
+    Unknown module, WaitForSingleObject() + 0018 byte(s)
+  3 .V PC=0023:0041d5f2 Ret=0041cbe4 Frame=0018d99c Stack=0018b108
+    Parameters (0x00000000 0x000017a9 0x005257e0 0x0000005f)
+    Unknown module
+  4 .V PC=0023:0041cbe4 Ret=004268f3 Frame=0018d9c0 Stack=0018d9a4
+    Parameters (0x000017a9 0x005257e0 0x0000005f 0x0000007e)
+    Unknown module
+  5 .V PC=0023:004268f3 Ret=0041520e Frame=0018e2a8 Stack=0018d9c8
+    Parameters (0x00000000 0x00000000 0xcccccccc 0xcccccccc)
+    Unknown module
+  6 .V PC=0023:0041520e Ret=00401126 Frame=0018fef8 Stack=0018e2b0
+    Parameters (0x00400000 0x00000000 0x007a417f 0x0000000a)
+    Unknown module
+  7 .V PC=0023:00401126 Ret=76aa3677 Frame=0018ff88 Stack=0018ff00
+    Parameters (0x7efde000 0x0018ffd4 0x77959d42 0x7efde000)
+    Unknown module
+  8 .V PC=0023:76aa3677 Ret=77959d42 Frame=0018ff94 Stack=0018ff90
+    Parameters (0x7efde000 0x609bd0ee 0x00000000 0x00000000)
+    Unknown module, BaseThreadInitThunk() + 0018 byte(s)
+  9 .V PC=0023:77959d42 Ret=77959d15 Frame=0018ffd4 Stack=0018ff9c
+    Parameters (0x00401000 0x7efde000 0x00000000 0x00000000)
+    Unknown module, RtlInitializeExceptionChain() + 0099 byte(s)
+ 10 .V PC=0023:77959d15 Ret=00000000 Frame=0018ffec Stack=0018ffdc
+    Parameters (0x00401000 0x7efde000 0x00000000 0x78746341)
+    Unknown module, RtlInitializeExceptionChain() + 0054 byte(s)
+
+
+------------------------------------------------------
+*** NON-FATAL INTERNAL ERROR in Environment ***
+Date: Sep 23 2010 20:07
+
+File Name: C:\Com\turing.exe
+Version: 4.1.1
+File Size: 2441303
+File Date: Oct 25 2007 11:13
+Operating System: Bad OS Value (0)
+JVM: "assert" Statements: enabled
+
+
+Previous Operations:
+
+
+
+The environment has experienced an unexpected internal error.
+
+This error is caused by a bug in the environment and is not your fault!
+Details about the crash have been saved in the file "C:\Com\panic.log".
+
+If possible, please e-mail this file to readybugs@hsa.on.ca
+
+Here are some details about the error:
+   Error = Unable to load "C:\Com\Support\Bin\lang.dll" (6057)
+   Windows error = The specified module could not be found. (126)
+   File = P:\ready\src\edprog.c
+   Line = 95
+
+List of Modules: 
+    C:\Com\turing.exe
+    C:\Windows\SysWOW64\ntdll.dll
+    C:\Windows\syswow64\kernel32.dll
+    C:\Windows\syswow64\KERNELBASE.dll
+    C:\Windows\system32\VERSION.dll
+    C:\Windows\syswow64\msvcrt.dll
+    C:\Windows\system32\WINMM.dll
+    C:\Windows\syswow64\USER32.dll
+    C:\Windows\syswow64\GDI32.dll
+    C:\Windows\syswow64\LPK.dll
+    C:\Windows\syswow64\USP10.dll
+    C:\Windows\syswow64\ADVAPI32.dll
+    C:\Windows\SysWOW64\sechost.dll
+    C:\Windows\syswow64\RPCRT4.dll
+    C:\Windows\syswow64\SspiCli.dll
+    C:\Windows\syswow64\CRYPTBASE.dll
+    C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_5.82.7600.16385_none_ebf82fc36c758ad5\COMCTL32.dll
+    C:\Windows\syswow64\comdlg32.dll
+    C:\Windows\syswow64\SHLWAPI.dll
+    C:\Windows\syswow64\SHELL32.dll
+    C:\Windows\syswow64\WININET.dll
+    C:\Windows\syswow64\Normaliz.dll
+    C:\Windows\syswow64\iertutil.dll
+    C:\Windows\syswow64\urlmon.dll
+    C:\Windows\syswow64\ole32.dll
+    C:\Windows\syswow64\OLEAUT32.dll
+    C:\Windows\syswow64\XmlLite.dll
+    C:\Windows\system32\IMM32.DLL
+    C:\Windows\syswow64\MSCTF.dll
+    C:\Windows\system32\uxtheme.dll
+    C:\Windows\system32\dwmapi.dll
+    C:\Windows\syswow64\CLBCatQ.DLL
+    C:\Windows\system32\dbghelp.dll
+
+  0 .V PC=0023:7793f861 Ret=76aa1184 Frame=0018b0d4 Stack=0018b068
+    Parameters (0x000000f4 0x00003a98 0x00000000 0x0018b110)
+    Unknown module, ZwWaitForSingleObject() + 0021 byte(s)
+  1 .V PC=0023:76aa1184 Ret=76aa1138 Frame=0018b0ec Stack=0018b0dc
+    Parameters (0x000000f4 0x00003a98 0x00000000 0x0018d99c)
+    Unknown module, WaitForSingleObjectEx() + 0067 byte(s)
+  2 .V PC=0023:76aa1138 Ret=0041d5f2 Frame=0018b100 Stack=0018b0f4
+    Parameters (0x000000f4 0x00003a98 0x0018e2a8 0x0018d9d8)
+    Unknown module, WaitForSingleObject() + 0018 byte(s)
+  3 .V PC=0023:0041d5f2 Ret=0041cbe4 Frame=0018d99c Stack=0018b108
+    Parameters (0x00000000 0x000017a9 0x005257e0 0x0000005f)
+    Unknown module
+  4 .V PC=0023:0041cbe4 Ret=004268f3 Frame=0018d9c0 Stack=0018d9a4
+    Parameters (0x000017a9 0x005257e0 0x0000005f 0x0000007e)
+    Unknown module
+  5 .V PC=0023:004268f3 Ret=0041520e Frame=0018e2a8 Stack=0018d9c8
+    Parameters (0x00000000 0x00000000 0xcccccccc 0xcccccccc)
+    Unknown module
+  6 .V PC=0023:0041520e Ret=00401126 Frame=0018fef8 Stack=0018e2b0
+    Parameters (0x00400000 0x00000000 0x0085417f 0x0000000a)
+    Unknown module
+  7 .V PC=0023:00401126 Ret=76aa3677 Frame=0018ff88 Stack=0018ff00
+    Parameters (0x7efde000 0x0018ffd4 0x77959d42 0x7efde000)
+    Unknown module
+  8 .V PC=0023:76aa3677 Ret=77959d42 Frame=0018ff94 Stack=0018ff90
+    Parameters (0x7efde000 0x609b9fb3 0x00000000 0x00000000)
+    Unknown module, BaseThreadInitThunk() + 0018 byte(s)
+  9 .V PC=0023:77959d42 Ret=77959d15 Frame=0018ffd4 Stack=0018ff9c
+    Parameters (0x00401000 0x7efde000 0x00000000 0x00000000)
+    Unknown module, RtlInitializeExceptionChain() + 0099 byte(s)
+ 10 .V PC=0023:77959d15 Ret=00000000 Frame=0018ffec Stack=0018ffdc
+    Parameters (0x00401000 0x7efde000 0x00000000 0x78746341)
+    Unknown module, RtlInitializeExceptionChain() + 0054 byte(s)
+
+
+------------------------------------------------------
+*** NON-FATAL INTERNAL ERROR in Environment ***
+Date: Sep 23 2010 20:08
+
+File Name: C:\Com\turing.exe
+Version: 4.1.1
+File Size: 2441303
+File Date: Oct 25 2007 11:13
+Operating System: Bad OS Value (0)
+JVM: "assert" Statements: enabled
+
+
+Previous Operations:
+
+
+
+The environment has experienced an unexpected internal error.
+
+This error is caused by a bug in the environment and is not your fault!
+Details about the crash have been saved in the file "C:\Com\panic.log".
+
+If possible, please e-mail this file to readybugs@hsa.on.ca
+
+Here are some details about the error:
+   Error = Unable to load "C:\Com\Support\Bin\lang.dll" (6057)
+   Windows error = The specified module could not be found. (126)
+   File = P:\ready\src\edprog.c
+   Line = 95
+
+List of Modules: 
+    C:\Com\turing.exe
+    C:\Windows\SysWOW64\ntdll.dll
+    C:\Windows\syswow64\kernel32.dll
+    C:\Windows\syswow64\KERNELBASE.dll
+    C:\Windows\system32\VERSION.dll
+    C:\Windows\syswow64\msvcrt.dll
+    C:\Windows\system32\WINMM.dll
+    C:\Windows\syswow64\USER32.dll
+    C:\Windows\syswow64\GDI32.dll
+    C:\Windows\syswow64\LPK.dll
+    C:\Windows\syswow64\USP10.dll
+    C:\Windows\syswow64\ADVAPI32.dll
+    C:\Windows\SysWOW64\sechost.dll
+    C:\Windows\syswow64\RPCRT4.dll
+    C:\Windows\syswow64\SspiCli.dll
+    C:\Windows\syswow64\CRYPTBASE.dll
+    C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_5.82.7600.16385_none_ebf82fc36c758ad5\COMCTL32.dll
+    C:\Windows\syswow64\comdlg32.dll
+    C:\Windows\syswow64\SHLWAPI.dll
+    C:\Windows\syswow64\SHELL32.dll
+    C:\Windows\syswow64\WININET.dll
+    C:\Windows\syswow64\Normaliz.dll
+    C:\Windows\syswow64\iertutil.dll
+    C:\Windows\syswow64\urlmon.dll
+    C:\Windows\syswow64\ole32.dll
+    C:\Windows\syswow64\OLEAUT32.dll
+    C:\Windows\syswow64\XmlLite.dll
+    C:\Windows\system32\IMM32.DLL
+    C:\Windows\syswow64\MSCTF.dll
+    C:\Windows\system32\uxtheme.dll
+    C:\Windows\system32\dwmapi.dll
+    C:\Windows\syswow64\CLBCatQ.DLL
+    C:\Windows\system32\dbghelp.dll
+
+  0 .V PC=0023:7793f861 Ret=76aa1184 Frame=0018b0d4 Stack=0018b068
+    Parameters (0x000000f4 0x00003a98 0x00000000 0x0018b110)
+    Unknown module, ZwWaitForSingleObject() + 0021 byte(s)
+  1 .V PC=0023:76aa1184 Ret=76aa1138 Frame=0018b0ec Stack=0018b0dc
+    Parameters (0x000000f4 0x00003a98 0x00000000 0x0018d99c)
+    Unknown module, WaitForSingleObjectEx() + 0067 byte(s)
+  2 .V PC=0023:76aa1138 Ret=0041d5f2 Frame=0018b100 Stack=0018b0f4
+    Parameters (0x000000f4 0x00003a98 0x0018e2a8 0x0018d9d8)
+    Unknown module, WaitForSingleObject() + 0018 byte(s)
+  3 .V PC=0023:0041d5f2 Ret=0041cbe4 Frame=0018d99c Stack=0018b108
+    Parameters (0x00000000 0x000017a9 0x005257e0 0x0000005f)
+    Unknown module
+  4 .V PC=0023:0041cbe4 Ret=004268f3 Frame=0018d9c0 Stack=0018d9a4
+    Parameters (0x000017a9 0x005257e0 0x0000005f 0x0000007e)
+    Unknown module
+  5 .V PC=0023:004268f3 Ret=0041520e Frame=0018e2a8 Stack=0018d9c8
+    Parameters (0x00000000 0x00000000 0xcccccccc 0xcccccccc)
+    Unknown module
+  6 .V PC=0023:0041520e Ret=00401126 Frame=0018fef8 Stack=0018e2b0
+    Parameters (0x00400000 0x00000000 0x008e417a 0x0000000a)
+    Unknown module
+  7 .V PC=0023:00401126 Ret=76aa3677 Frame=0018ff88 Stack=0018ff00
+    Parameters (0x7efde000 0x0018ffd4 0x77959d42 0x7efde000)
+    Unknown module
+  8 .V PC=0023:76aa3677 Ret=77959d42 Frame=0018ff94 Stack=0018ff90
+    Parameters (0x7efde000 0x6098d91c 0x00000000 0x00000000)
+    Unknown module, BaseThreadInitThunk() + 0018 byte(s)
+  9 .V PC=0023:77959d42 Ret=77959d15 Frame=0018ffd4 Stack=0018ff9c
+    Parameters (0x00401000 0x7efde000 0x00000000 0x00000000)
+    Unknown module, RtlInitializeExceptionChain() + 0099 byte(s)
+ 10 .V PC=0023:77959d15 Ret=00000000 Frame=0018ffec Stack=0018ffdc
+    Parameters (0x00401000 0x7efde000 0x00000000 0x78746341)
+    Unknown module, RtlInitializeExceptionChain() + 0054 byte(s)
+
+
+------------------------------------------------------

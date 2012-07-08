@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+$version = "1.00" ;
+
+print "Keepy " . $version . "\n\n" ;
+
+$argc = @ARGV           ;
+die "Keepy filespec ...\n" if $argc < 1 ;
+
+opendir     DIRECTORY, "." ;
+@files = readdir DIRECTORY ;
+closedir DIRECTORY         ;
+
+foreach $file ( @files ) {
+  $bKeep = 0 ;
+  foreach $arg ( @ARGV ) {
+    if $file =~ / $arg  / {
+      $bKeep ++ ;
+    }
+  }
+  push @FileList,$file if $bKeep > 0 && -e $file && !-d $file
+} 
+
+foreach $file ( @FileList ) {
+  print "Keep $file \n" ;
+}
+
+
+

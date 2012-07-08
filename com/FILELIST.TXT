@@ -1,0 +1,59 @@
+The following files are part of the on-line distribution of TextPad 2.3:
+
+Common Files:
+    filelist.txt    - This file
+    readme.txt      - Installation instructions (English)
+    lisezmoi.txt    - Installation instructions (French)
+    liesmich.txt    - Installation instructions (German)
+    license.txt     - Shareware license
+    setup.exe       - Installation program
+    setup.cfg       - Installation configuration file
+    tipseng.dat     - Tips of the day (English)
+    tipsfra.dat     - Tips of the day (French)
+    tipsdeu.dat     - Tips of the day (German)
+    file_id.diz     - Abstract for bulletin boards
+    vendinfo.diz    - Shareware distributor information
+
+16-bit Edition Files:
+    txtpad16.exe    - TextPad program
+    textpad.hlp     - Online help file
+    ddeopn16.exe    - DDE file open program
+    uninst16.exe    - Uninstalls TextPad
+    txtpad.pif      - PIF file
+    ctl3dv2.dll     - 3-D dialog DLL
+    wrspack.dll     - Spell checker
+    txp16fra.dll    - French resources for TextPad
+    set16fra.dll    - French resources for setup
+    txp16deu.dll    - German resources for TextPad
+    set16deu.dll    - German resources for setup
+
+32-bit Edition Files:
+    txtpad32.exe    - TextPad program
+    txtpad32.hlp    - Online help file (renamed to textpad.hlp)
+    ddeopn32.exe    - DDE file open program
+    plumb.exe       - For running user tools
+    uninstal.exe    - Uninstalls TextPad
+    ut16.dll        - Win32s thunk DLL
+    ut32.dll        - Win32s thunk DLL
+    ctl3d32.dll     - 3-D dialog DLL for NT
+    ctl3d32s.dll    - 3-D dialog DLL for Win32s (as ctl3d32.dll)
+    wrs32.dll       - Spell checker
+    txp32fra.dll    - French resources for TextPad
+    set32fra.dll    - French resources for setup
+    txp32deu.dll    - German resources for TextPad
+    set32deu.dll    - German resources for setup
+
+Spell Checker Language Files:
+    100.sup, 171.lex  - US English
+    200.sup, 271.lex  - UK English
+    300.sup, 371.lex  - français
+    400.sup, 471.lex  - Deutsch
+    500.sup, 571.lex  - español
+    600.sup, 671.lex  - italiano
+    700.sup, 771.lex  - Nederlands
+    800.sup, 871.lex  - svenska
+    900.sup, 971.lex  - dansk
+   1000.sup, 1071.lex - bokmål
+
+__________________________________________________________________
+                                        Helios Software Solutions

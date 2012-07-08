@@ -1,0 +1,124 @@
+LEAME.TXT para TextPad 3.2
+==========================
+
+Gracias por haber decidido evaluar, o ascender a esta emisión de TextPad.
+
+¿Está evaluando la última emisión?  Lea "Obtención de actualizaciones" en
+la ayuda en línea para ver desde dónde puede copiar TextPad.
+
+Lo que dice la Prensa:
+----------------------
+    "¡TextPad es el MEJOR editor de textos de 32-bit que he visto! Es
+     rápido, con muchas funciones y maravillosamente hecho! ¡Consígalo!"
+        - Dr File Finder(tm), Sep. 95.
+
+    "Estableciendo nuevos niveles... 10/10" - PC Plus, Mayo 95.
+
+    "El mejor editor para Windows que jamás hemos visto" - Windows User,
+     Junio 95.
+
+    *Ganador*: Ziff-Davis Shareware Awards de 1997.
+
+    *Ganador*: Shareware Industry Awards de 1996.
+
+CONTENIDO
+---------
+    INTRODUCCION
+    REQUISITOS MINIMOS
+    INSTALACION
+    NOVEDADES
+    REGISTRO
+
+INTRODUCCION:
+-------------
+TextPad está  diseñado para facilitar la potencia y funcionalidad que
+satisfaga los requisitos más exigentes de edición de textos.  Se aloja
+en Windows, y aparece en ediciones de 16 y 32-bit.  Pueden editarse
+archivos muy grandes con sólo escoger la edición que mejor funcione
+con su PC.  La edición de 32-bit puede editar archivos hasta los límites
+de la memoria virtual (véanse Especificaciones en la ayuda en línea para
+más detalles), y funcionar  con Windows 95, NT y Windows 3.1 con
+extensiones Win32s.
+
+Para más información, instale TextPad haciendo referencia a las
+instrucciones siguientes y luego lea la introducción del archivo de ayuda
+en línea.
+
+
+REQUISITOS MINIMOS:
+-------------------
+    Edición 16-bit:             Edición 32-bit:
+     o 386SX con 4MB RAM          o 486SX con 4MB RAM (12MB para NT)
+     o 1.5MB espacio libre disco  o 2.5MB espacio libre disco
+       Windows 3.1 en 386         o Windows NT 3.51, Windows 95 o
+       modo realzado                Windows 3.1 con Win32s 1.30.172
+
+INSTALACION:
+------------
+    TextPad tiene un programa de instalación que configura la
+    versión de Windows que use. Algunas cosas no funcionarán (incluyendo
+    el programa desinstalar) si no lo instala correctamente. ¡Ya le hemos
+    avisado!
+
+    Para instalar TextPad desde un archivo ZIP:
+
+    1) Abra en una carpeta provisional vacía, con PKUNZIP 2.04g.
+    2) Ejecute SETUP.EXE, y siga las instrucciones de la pantalla.
+    3) Asegúrese de instalar TextPad en una carpeta diferente de la usada en
+       el paso 1 anterior.
+    4) Borre los archivos abiertos en el paso 1 anterior.
+
+    Los diccionarios para el verificador ortográfico están en archivos
+    cerrados aparte. Para instalar uno sólo tiene que abrirlo en la carpeta
+    de instalación, luego selecciónelo en el tabulador de Ortografía en la
+    ventana de diálogo de Preferencias.
+
+    NOTAS IMPORTANTES:
+
+    + Si quiere asociar extensiones de archivos con TextPad, hágalo usando
+      los tabuladores de Asociaciones en la ventana de diálogo de Preferencias.
+      Esto asegura el inicio de TextPad con los  parámetros correctos para
+      tratar archivos con espacios en sus nombres, y permite que el programa
+      desinstalar borre más tarde.
+
+    + Si quiere usar la edición de 32-bit con Windows 3.1 o 3.11, debe
+      instalar Win32s 1.3c primero.  Esto también instala los archivos OLE2
+      de16-bit.  Si tiene acceso a la Internet, puede conseguirlo de:
+
+       http://premium.microsoft.com/support/win32dev/faq/win32s/all.asp
+
+      Los usuarios CompuServe pueden copiar Win32s del forum MSWIN como
+      PW1118.EXE.
+
+
+NOVEDADES:
+-------------
+    Vaya a ayuda en línea para ver lo último de esta edición.
+
+
+REGISTRO:
+---------
+    Si usa TextPad debe registrarlo.  Los usuarios registrados tendrán
+    licencia para usar tanto la edición de 16-bit como de 32-bit. Existen
+    precios aparte para que usted mismo copie el software, y reciba una
+    copia en diskettes.
+
+    Seleccione "Cómo comprar" en el menú de Ayuda para instrucciones concretas.
+
+
+¡Disfrute utilizando TextPad!
+
+_____________________________________________________________
+
+Helios Software Solutions, Carr Brook House, Chorley Old Road,
+Brindle, Chorley, Lancashire,  PR6 7QZ,  Inglaterra
+_____________________________________________________________
+
+ Telf./Fax: +44-(0)1772-324353
+ E-mail:    sales@textpad.com ó support@textpad.com
+ WWW:       http://www.textpad.com/
+_____________________________________________________________
+
+Helios Software Solutions es un vendedor aprobado y miembro
+asociado de la Association of Shareware Professionals (ASP).
+_____________________________________________________________

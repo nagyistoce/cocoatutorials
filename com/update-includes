@@ -1,0 +1,258 @@
+#!/bin/csh -f
+#******************************************************************************
+#*                                                                            *
+#*  update-includes - script to update all the X-server include files in the  *
+#*  xdps_includes package.                                                    *
+#*                                                                            *
+#******************************************************************************
+
+onintr CLEAN_UP
+
+set MY_NAME = update-includes
+
+set FILE_LIST1 = header-file-list
+set FILE_LIST2 = /tmp/header-file-list.$$
+set TMP_FILE1  = /tmp/update-includes.tmp.$$
+set LOGFILE    = /tmp/update-includes.log.$$
+
+#----------------------------------#
+# First do some consistency checks #
+#----------------------------------#
+
+set this_dir  = `pwd`
+set this_tail = $this_dir:t
+
+set parent_dir  = $this_dir:h
+set parent_tail = $parent_dir:t
+
+set gparent_dir  = $parent_dir:h
+set gparent_tail = $gparent_dir:t
+
+if ( ($this_tail != sources) \
+  || ($parent_tail != xdps_includes) \
+  || ($gparent_tail != packages) ) then
+   echo ""
+   echo "You must run this script from the xdps_includes/sources"
+   echo "directory. Please move to that directory and try again."
+   echo ""
+   exit 1
+endif
+
+if !(-e $FILE_LIST1) then
+   echo ""
+   echo "The file: '$FILE_LIST1' is missing from the"
+   echo "xdps_includes/sources directory. Please correct"
+   echo "the problem and try again."
+   echo ""
+   exit 1
+endif
+
+echo ""
+echo "For each file listed in the file: '$FILE_LIST1' this script will compare"
+echo 'the file in the xdps_includes package  with the corresponding file in your'
+echo "X-server source tree. For each file that differs you will be asked if you"
+echo 'want to update (override) the file in the xdps_includes package.'
+echo ""
+echo "Please enter the major release number for your X-server tree (R5 or R6)."
+echo ""
+echo -n "X11 release: "
+set X11_RELEASE = $<
+
+if ( ($X11_RELEASE != R5) && ($X11_RELEASE != R6) ) then
+   echo ""
+   echo "You must choose either R5 or R6."
+   echo "Please try again."
+   echo ""
+   exit 1
+endif
+
+/bin/ls -1F | grep  '/' | grep -v dps-client | tr -d "/" | grep $X11_RELEASE > $TMP_FILE1
+
+if ($status != 0) then
+   echo ""
+   echo "The xdps_includes package does not have any sub-directories"
+   echo "for the X11 release that you selected ($X11_RELEASE). Please create"
+   echo "the appropriate sub-directory (i.e. R6-sun, R6-aix,...etc),"
+   echo "then run this script again."
+   echo ""
+   exit 1
+endif
+
+if ($X11_RELEASE == R5) then
+   set MY_TOP = mit
+   echo ""
+   echo "Please enter the full pathname to the top directory of your X11R5 server"
+   echo "source tree (i.e. the directory that contains the sub-directories:"
+   echo "X11, fonts, and server)."
+   echo ""
+   echo -n "Pathname: "
+   set XTOP = $<
+   
+   if !((-e $XTOP/X11) && (-e $XTOP/fonts) && (-e $XTOP/server)) then
+      echo ""
+      echo "One of the sub-directories: X11, fonts, server is missing"
+      echo "from the directory you just entered. Please correct the"
+      echo "problem and try again."
+      echo ""
+      exit 1
+   endif
+else
+   set MY_TOP = xc
+   echo ""
+   echo "Please enter the full pathname to the top directory of your X11R6 server"
+   echo "source tree (i.e. the directory that contains the sub-directories:"
+   echo "X11, include, lib, and programs)."
+   echo ""
+   echo -n "Pathname: "
+   set XTOP = $<
+   
+   if !((-e $XTOP/X11) && (-e $XTOP/include) && (-e $XTOP/lib) && (-e $XTOP/programs) ) then
+      echo ""
+      echo "One of the sub-directories: X11, include, lib, programs is missing"
+      echo "from the directory you just entered. Please correct the problem"
+      echo "and try again."
+      echo ""
+      exit 1
+   endif
+endif
+
+echo ""
+echo "You now have the choice of comparing/updating"
+echo "one of the following sub-directories:"
+echo ""
+cat $TMP_FILE1
+echo ""
+echo -n "Select one: "
+set SUBDIR = $<
+
+if !(-d $SUBDIR) then
+   echo ""
+   echo "The directory that you just selected ($SUBDIR) does"
+   echo "not exist. Please create it and try again."
+   echo ""
+   exit 1
+endif
+
+#------------------#
+# Validate choices #
+#------------------#
+
+set DEST = $this_dir/$SUBDIR/$MY_TOP
+
+echo ""
+echo "You have selected these two directories:"
+echo ""
+
+echo "src: $XTOP"
+echo "dst: $DEST"
+echo ""
+
+echo -n "Do you want to continue (y/n) [n]? "
+set ANSWER = $<
+if ("$ANSWER" != "y") then
+   exit 0
+endif
+echo ""
+
+chmod -R +w $DEST
+
+#----------------------------------------------------#
+# Now go through the file list and compare each file #
+#----------------------------------------------------#
+
+grep -v 'COM:' < $FILE_LIST1 | grep ${X11_RELEASE}: | sed -e "s/${X11_RELEASE}: //g" > $FILE_LIST2
+
+set FILES_UPDATED = 0
+
+echo "" > $LOGFILE
+
+#@ num_lines = `wc -l < $FILE_LIST2`
+set tmp_num = `wc -l < $FILE_LIST2`
+@ num_lines = $tmp_num
+
+@ count = 1
+
+while ($count <= $num_lines)
+
+   set THIS_FILE = `tail +${count} < $FILE_LIST2 | head -1`
+
+   # skip blank lines
+   if ($THIS_FILE == "") then
+      goto NEXT_FILE
+   endif
+
+   echo -n $THIS_FILE
+   set FILE1 = $XTOP/$THIS_FILE
+   set FILE2 = $DEST/$THIS_FILE
+   cmp $FILE1 $FILE2 >& /dev/null
+   if ($status) then
+      echo " -----> files differ"
+      echo ""
+      echo "=====> begin diffs ($THIS_FILE)"
+      if !(-e $FILE1) then
+         echo "$FILE1 -----> does not exist"
+      else if !(-e $FILE2) then
+         echo "$FILE2 -----> does not exist"
+      else
+         echo diff $FILE1 $FILE2
+         diff -t   $FILE1 $FILE2
+      endif
+      echo "=====> end diffs ($THIS_FILE)"
+      echo ""
+
+      if (-e $FILE1) then
+         if (-e $FILE2) then
+            echo -n "Override $FILE2 (y/n) [n]? "
+         else
+            echo -n "Copy $FILE1 (y/n) [n]? "
+         endif
+
+         set ANSWER = $<
+         if ($ANSWER == y) then
+            set PAR = $FILE2:h
+            if !(-e $PAR) then
+               mkdir -p $PAR
+            endif
+            cp $FILE1 $FILE2
+            echo $SUBDIR/$MY_TOP/$THIS_FILE >> $LOGFILE
+            set FILES_UPDATED = 1
+            echo Done
+         endif
+      endif
+   else
+      echo " -----> files are identical"
+   endif
+
+NEXT_FILE:
+
+   @ count = $count + 1
+end
+
+rm -f $FILE_LIST2
+echo "" >> $LOGFILE
+
+echo ""
+echo "All done."
+echo ""
+if ($FILES_UPDATED == 1) then
+   echo "Here is a list of all the files that were updated:"
+   cat $LOGFILE
+endif
+rm -f $LOGFILE $TMP_FILE1
+exit 0
+
+CLEAN_UP:
+   rm -f $FILE_LIST2
+   echo "" >> $LOGFILE
+   echo ""
+   echo "Received interrupt, cleaning up ..."
+   echo ""
+   echo "All done."
+   echo ""
+   if ($FILES_UPDATED == 1) then
+      echo "Here is a list of all the files that were updated:"
+      cat $LOGFILE
+   endif
+   rm -f $LOGFILE $TMP_FILE1
+   exit 0
+

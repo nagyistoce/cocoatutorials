@@ -1,0 +1,97 @@
+#!/usr/local/bin/perl -w
+
+# Usage:  foreachpack <worldroot> <configpattern> <command>
+
+use Config;
+$opsystem = $Config::Config{osname};
+
+$worldroot = shift @ARGV;
+$configpattern = shift @ARGV;
+$command = shift @ARGV;
+
+$| = 1;  # alway flush output
+
+if (($opsystem eq "MSWin32") || ($opsystem eq "Windows_NT")) {
+	$win32OS = 1;
+}
+else {
+	$win32OS = 0;
+}
+
+$cmdConjuntion = $win32OS ? "&&" : ";";
+
+
+$totalchecks = 0;
+$totalpackages = 0;
+
+# @packages = ("buildch", "cff_parse", "corender", "corenderdrvr",
+#              "device", "devpath", "devpattern", "displaylist", "filesystem",
+#              "filters", "fonts", "fp", "framemarker", "framestorage",
+#              "graphics", "init", "io", "ipm", "language", "mon", "opsys",
+#              "outputdevice", "pagecontrol", "postscript", "produtil", "pslib",
+#              "psserver", "stodev", "stream", "truetype", "util", "vm");
+
+# @packages = ("buildch", "cff_parse");
+
+opendir(WORLDPACKDIR, "$worldroot/packages") ||
+    die "Couldn't open $worldroot/packages directory!\n";
+
+while (defined($packname = readdir(WORLDPACKDIR))) {
+    if (is_package($packname)) {
+        if (opendir(PACKAGEDIR, "$worldroot/packages/$packname")) {
+            $didcommand = 0;
+            while (defined($configname = readdir(PACKAGEDIR))) {
+                if ($configname =~ /$configpattern/) {
+                    do_command($packname, $configname);
+                    $didcommand = 1;
+                }
+            }
+            $didcommand ||
+                print "*** Command NOT executed for $packname!!\n";
+            closedir(PACKAGEDIR);
+        }
+        else {
+            print "Could not opendir ${worldroot}/packages/${_}, continuing....\n";
+        }
+    }
+}
+
+closedir(WORLDPACKDIR);
+
+print "Checked a total of $totalchecks files, executed command on $totalpackages packages.\n";
+
+
+##############################
+##############################
+##############################
+# Subroutines
+#
+
+sub do_command {
+    my($package, $configname) = @_;
+    my $expanded_command = $command;
+    my $driveCmd = $win32OS ? substr($worldroot, 0, 2) . " $cmdConjuntion " : "";
+    my $packagedir = "$worldroot/packages/$package";
+    $totalpackages += 1;
+    $packagedir =~ s|/|\\|g if $win32OS;
+    $expanded_command =~ s/<CONFIG>/$configname/g;
+    $expanded_command =~ s/<PACKAGE>/$package/g;
+    my $exec_string = "$driveCmd cd $packagedir $cmdConjuntion $expanded_command";
+    print $exec_string . "\n";
+    system($exec_string);
+}
+
+sub is_package {
+    my ($packagename) = @_;
+    return 0 if (($packagename eq ".") || ($packagename eq ".."));
+
+    $totalchecks += 1;
+    if (opendir(DUMMYDIR, "$worldroot/packages/$packagename")) {
+        closedir(DUMMYDIR);
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+

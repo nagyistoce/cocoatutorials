@@ -1,0 +1,296 @@
+!=======================================================!
+! Resources for At (the AIM Toolkit)			!
+!=======================================================!
+
+! Colors
+
+*At.black:					0 0 0
+*At.gray25:					.25 .25 .25
+*At.gray33:					.33 .33 .33
+*At.gray50:					.50 .50 .50
+*At.gray66:					.66667 .66667 .66667
+*At.gray75:					.75 .75 .75
+*At.gray80:					.80 .80 .80
+*At.gray90:					.90 .90 .90
+*At.white:					1 1 1
+*At.red:					1 0 0
+*At.green:					0 1 0
+*At.blue:					0 0 1
+*At.cyan:					0 1 1
+*At.magenta:					1 0 1
+*At.yellow:					1 1 0
+
+*At.adobeAqua:					0 .76 .62
+*At.adobeLightAqua:				0 1.0 .62
+*At.adobePurple:				.47 0 .58
+*At.adobeLightPurple:				.80 0 .80
+
+! Default monochrome color scheme
+
+*At.MONOdefaultBg:				white
+*At.MONOdefaultBgHi:				gray50
+*At.MONOdefaultFg:				black
+*At.MONOdefaultDeselectFg:			gray33
+*At.MONOdefaultTextBg:				white
+*At.MONOdefaultBorder:				gray66
+*At.MONOdefaultBorderHi:			gray80
+
+! Default grayscale color scheme
+
+*At.GRAYSCALEdefaultBg:				gray66
+*At.GRAYSCALEdefaultBgHi:			gray90
+*At.GRAYSCALEdefaultFg:				black
+*At.GRAYSCALEdefaultDeselectFg:			gray33
+*At.GRAYSCALEdefaultTextBg:			white
+*At.GRAYSCALEdefaultBorder:			gray33
+*At.GRAYSCALEdefaultBorderHi:			gray90
+
+! Default color scheme for color devices
+
+*At.COLORdefaultBg:				adobeAqua
+*At.COLORdefaultBgHi:				adobeLightAqua
+*At.COLORdefaultFg:				black
+*At.COLORdefaultDeselectFg:			gray50
+*At.COLORdefaultTextBg:				gray80
+*At.COLORdefaultBorder:				adobePurple
+*At.COLORdefaultBorderHi:			adobeLightPurple
+
+
+! Each platform has a different preferred font: one of
+! these specifications will be chosen at runtime and a new
+! resource entry of the form '*At*Font: mumble x' will be created.
+*At.MAC.Font:					Helvetica 10
+*At.UNIX.Font:					helvR10
+*At.WINNT.Font:					Arial 8
+
+! Defaults for all widget types
+
+*At*Label:					\000
+*At*Width:					-1
+*At*Height:					-1
+*At*X:						-1
+*At*Y:						-1
+*At*Margin:					10
+*At*Rows:					-1
+*At*Columns:					-1
+*At*Radius:					8
+*At*ActualColors:				1
+*At*BackgroundRGB:				defaultBg
+*At*ForegroundRGB:				defaultFg
+*At*BorderRGB:					defaultBorder
+*At*HighlightRGB:				defaultBgHi
+*At*ShadowRGB:					black
+*At*Depth: 					1
+! Buttons normally don't toggle
+*At*ToggleBtn:					0
+! Left justify labels
+*At*Justify:					0
+*At*FixedPosition:				0
+*At*FixedSize:					0
+*At*MaxItems:					5
+*At*SelectionAllowed:				0
+*At*ItemAutoScroll:				0
+*At*Orientation:				vertical
+
+! Style for button panels, sliders, menubars, etc are
+!  Raised - if Depth != 0, panel appears raised from its background
+!  Bordered - draws a 2-pixel wide shadow/highlight border around panel
+!  Separator:Bottom - draws a 2-pixel wide shadow/highlight line at bottom
+!    of panel. Used in dialog boxes.
+
+! Window attributes
+
+! Default color cube for window is "use default device setup" 
+*At*Window.ForegroundRGB:			black
+*At*Window.BackgroundRGB:			white
+*At*Window.Depth: 				1
+
+! Background panel
+
+*At*Background.Depth: 				0
+
+! Dialog box
+! box.Style of Separator:Bottom draws a separator line between
+! the main organizing box at the top of the dialog and the
+! lower button panel containing the Cancel/Save/OK buttons
+
+*At*Dialog.Depth: 				0
+*At*Dialog.Orientation:				vertical
+*At*Dialog.Rows:				2
+*At*Dialog.Margin:				1
+*At*Dialog.Style:				Cancel
+*At*Dialog.ButtonPanel.Depth:			0
+*At*Dialog.ButtonPanel.Radius:			0
+*At*Dialog.box.style:				Separator:Bottom
+*At*Dialog.box.ShadowRGB:			gray33
+*At*Dialog.dialogBtnPnl.margin:			4
+*At*Dialog.dialogBtnPnl.justify:		1
+*At*Dialog.dialogBtnPnl.orientation:		horizontal
+*At*Dialog.dialogBtnPnl.Button.style:		textinside
+*At*Dialog.dialogBtnPnl.Button.radius:		0
+*At*Dialog.dialogBtnPnl.Button.justify:	1
+*At*Dialog.dialogBtnPnl.Button.backgroundRGB:	^BackgroundRGB
+*At*Dialog.dialogBtnPnl.Button.highlightRGB:	^HighlightRGB
+*At*Dialog.dialogBtnPnl.dialogCancelBtn.label:	Dismiss
+*At*Dialog.dialogBtnPnl.dialogSaveBtn.label:	Save
+*At*Dialog.dialogBtnPnl.dialogOKBtn.label:	OK
+
+! Menu
+
+*At*Menu.FixedPosition:				true
+*At*Menu.Depth: 				0
+*At*Menu.Margin:				0
+*At*Menu*BackgroundRGB:				defaultBg
+*At*Menu*HighlightRGB:				defaultBgHi
+!! For purple menus:
+!!*At*Menu*BackgroundRGB:				defaultBorder
+!!*At*Menu*HighlightRGB:				defaultBorderHi
+!!*At*Menu.ButtonPanel.Button.ForegroundRGB:	white
+*At*Menu.ButtonPanel.Depth:			0
+*At*Menu.ButtonPanel.Radius:			0
+*At*Menu.ButtonPanel.Orientation:		vertical
+*At*Menu.ButtonPanel.Margin:			0
+*At*Menu.ButtonPanel.Justify:			0
+*At*Menu.ButtonPanel.Button.Style:		textinside
+*At*Menu.ButtonPanel.Button.Radius:		0
+*At*Menu.ButtonPanel.Button.Justify:		0
+*At*Menu.ButtonPanel.Button.Depth:		1
+
+! Menu
+
+*At*MenuBar*BackgroundRGB:			defaultBg
+*At*MenuBar*HighlightRGB:			defaultBgHi
+*At*MenuBar.Radius:				0
+*At*MenuBar.Orientation:			horizontal
+*At*MenuBar.Margin:				0
+*At*MenuBar.Justify:				0
+*At*MenuBar.Depth:				0
+*At*MenuBar.Style:				Raised
+*At*MenuBar.Button.Style:			textinside
+*At*MenuBar.Button.Radius:			0
+*At*MenuBar.Button.Justify:			0
+*At*MenuBar.Button.Depth:			1
+
+! Button panel
+
+*At*ButtonPanel.Style:				Raised
+*At*ButtonPanel.Button.Style:			textoutside
+
+! Radio Button panel
+
+*At*RadioButtonPanel.Style:			Raised
+*At*RadioButtonPanel.Button.Style:		textoutside
+
+! List
+
+*At*List.Rows:					1
+*At*List*BackgroundRGB:				defaultTextBg
+*At*List*HighlightRGB:				defaultBorderHi
+! Make list's buttons contrast with border
+*At*List.Button.BackgroundRGB:			defaultBg
+*At*List.Button.HighlightRGB:			defaultBgHi
+*At*List.Slider.Button.BackgroundRGB:		^^BorderRGB
+*At*List.Slider.thumb.BackgroundRGB:		^BackgroundRGB
+*At*List.Slider.thumb.ForegroundRGB:		^^BorderRGB
+
+! Select/deselect buttons are 1.25 inches wide with centered text
+*At*List.selall.label:				Select All
+*At*List.selall.width:				90
+*At*List.selall.justify:			1
+*At*List.deselall.label:			Deselect All
+*At*List.deselall.width:			90
+*At*List.deselall.justify:			1
+
+! Slider
+
+*At*Slider.Orientation:				vertical
+*At*Slider.Width:				16
+*At*Slider.Height:				72
+*At*Slider.Depth:				-1
+*At*Slider.Style:				Raised
+*At*Slider*Radius:				0
+*At*Slider.Margin:				1
+*At*Slider.BackgroundRGB:			gray80
+*At*Slider.ForegroundRGB:			^BackgroundRGB
+*At*Slider.HighlightRGB:			gray80
+*At*Slider.IncrementPercent:			1
+*At*Slider.PagePercent:				10
+
+*At*Slider.thumb.Style:				graphic
+*At*Slider.thumb.BackgroundRGB:			^BackgroundRGB
+*At*Slider.thumb.ForegroundRGB:			^ForegroundRGB
+*At*Slider.thumb.HighlightRGB:			^HighlightRGB
+
+! Placeholder dimensions for slider buttons. These
+! will be overridden by the slider widget.
+*At*Slider.Button.Width:			1
+*At*Slider.Button.Height:			1
+*At*Slider.up.Style:				uparrow
+*At*Slider.down.Style:				downarrow
+*At*Slider.left.Style:				leftarrow
+*At*Slider.right.Style:				rightarrow
+
+! Stepper
+
+*At*Stepper.Orientation:			vertical
+*At*Stepper.Width:				16
+*At*Stepper.Height:				32
+*At*Stepper.Depth:				-1
+*At*Stepper.Style:				Raised
+*At*Stepper*Radius:				1
+*At*Stepper.Margin:				1
+*At*Stepper.BackgroundRGB:			gray80
+*At*Stepper.ForegroundRGB:			^BackgroundRGB
+*At*Stepper.HighlightRGB:			gray80
+
+! Placeholder dimensions for Stepper buttons. These
+! will be overridden by the Stepper widget implementation.
+*At*Stepper.Button.Width:			1
+*At*Stepper.Button.Height:			1
+*At*Stepper.lessV.Style:			uparrow
+*At*Stepper.moreV.Style:			downarrow
+*At*Stepper.lessH.Style:			leftarrow
+*At*Stepper.moreH.Style:			rightarrow
+
+! Button 
+
+*At*Button.Depth:				1
+*At*Button.Margin:				2
+*At*Button.BackgroundRGB:			defaultBorder
+*At*Button.HighlightRGB:			defaultBorderHi
+*At*Button.Style:				textinside
+
+! Label 
+
+*At*Label.Depth:				1
+*At*Label.Margin:				2
+*At*Label.Style:				textinside
+
+! Graphic object 
+
+*At*Graphic.FixedSize:				0
+*At*Graphic.Depth:				0
+*At*Graphic.Style:				textinside
+
+! Scrolled view control object 
+
+*At*ScrolledView.FixedSize:			0
+*At*ScrolledView.Depth:				0
+*At*ScrolledView.BackgroundRGB:			defaultTextBg
+*At*ScrolledView.ForegroundRGB:			black
+*At*ScrolledView.BorderRGB:			^HighlightRGB
+
+
+! Attributes for At debug menu tree
+
+*At*dtDebugMenu.label:				At Debug Tools
+*At*dtDebugMenu.fixedPosition:			false
+*At*dtDebugMenu*inspectorMenuItem.label:	Widget Inspector
+*At*dtDebugMenu*traceMenuItem.label:		Tracing Options
+
+*At*dtDbgInspectorMenu*dumpAttribsMenuItem.label:	Attributes
+*At*dtDbgInspectorMenu*dumpGstateMenuItem.label:	Graphic state
+
+*At*dtDbgTraceMenu*traceEventsMenuItem.label:	Events: On 
+*At*dtDbgTraceMenu*tracePSMenuItem.label:	PostScript: On 
+*At*dtDbgTraceMenu*traceMethodsMenuItem.label:	Methods: On 

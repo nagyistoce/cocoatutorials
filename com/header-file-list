@@ -1,0 +1,163 @@
+COM: 
+COM: *** File: xdps_includes/sources/header-file-list ***
+COM: 
+COM: This file contains the list of all the header files in the xdps_includes
+COM: package. It serves as the input file to the script:
+COM: 
+COM: .../xdps_includes/sources/update-includes
+COM: 
+COM: The purpose of the update-includes script is to provide a convenient
+COM: way of keeping the header files in the xdps_includes package in sync
+COM: with the corresponding header files in each OEM's X server build tree.
+COM: 
+COM: The advantages of maintaining copies of the X server header files in
+COM: the xdps_includes package rather than having symbolic links pointing
+COM: from the PostScript build area into an external OEM X-server tree are:
+COM: 
+COM: 1) The PostScript build tree is completely self-contained. It does not
+COM:    depend on some external X-server build area (which may move or be
+COM:    out-of-date).
+COM: 
+COM: 2) For each public PostScript release the state of the X-server header
+COM:    files is preserved as a snapshot in  the xdps_includes package. It
+COM:    is therefore easy to rebuild an earlier release without having to
+COM:    find and bring online the particular X-server build tree that the
+COM:    release depended on.
+COM: 
+COM: 3) This file (header-file-list) contains the exact list of the X-server
+COM:    header files that the xdps product and packages depend on. This makes
+COM:    it  a  lot  easier  to  troubleshoot  problems  with  the  PostScript
+COM:    interpreter's interaction with the X server (because we know exactly
+COM:    which header files we use for communication with the X server).
+COM: 
+COM: The update script (update-includes) ignores all blank lines in this file,
+COM: and lines that begin with "COM:" so these comments will be ignored by the
+COM: update script. The filenames in the list below all assume the prefix:
+COM: 
+COM: .../xdps_includes/sources/${X11_RELEASE}-${OS}/mit (for X11R5)
+COM: .../xdps_includes/sources/${X11_RELEASE}-${OS}/xc  (for X11R6)
+COM: 
+COM: where ${X11_RELEASE}-${OS} is the sources sub-directory for each platform.
+COM: 
+COM: If more X server header files are needed in the future, just add the
+COM: files to the lists below, and run the update-includes script for each
+COM: platform. The update script takes no options. To run it, go to the
+COM: xdps_includes sources directory and type:
+COM:
+COM: chmod +x ./update-includes
+COM: ./update-includes
+COM: 
+COM: Freddy Jensen
+COM: 
+
+
+COM: R5 header files in R5-${OS}/mit sub-directory
+COM: =============================================
+
+R5: X11/X.h
+R5: X11/Xfuncs.h
+R5: X11/Xmd.h
+R5: X11/Xos.h
+R5: X11/Xosdefs.h
+R5: X11/Xproto.h
+R5: X11/Xprotostr.h
+
+R5: fonts/include/FS.h
+R5: fonts/include/FSproto.h
+R5: fonts/include/font.h
+R5: fonts/include/fontstruct.h
+R5: fonts/include/fsmasks.h
+R5: fonts/lib/font/include/bitmap.h
+R5: fonts/lib/font/include/fontfile.h
+R5: fonts/lib/font/include/fontfilest.h
+R5: fonts/lib/font/include/fontmisc.h
+R5: fonts/lib/font/include/fontxlfd.h
+
+R5: server/ddx/mi/misprite.h
+R5: server/include/colormap.h
+R5: server/include/colormapst.h
+R5: server/include/cursor.h
+R5: server/include/dix.h
+R5: server/include/dixstruct.h
+R5: server/include/extension.h
+R5: server/include/extnsionst.h
+R5: server/include/gc.h
+R5: server/include/gcstruct.h
+R5: server/include/input.h
+R5: server/include/misc.h
+R5: server/include/miscstruct.h
+R5: server/include/os.h
+R5: server/include/pixmap.h
+R5: server/include/pixmapstr.h
+R5: server/include/property.h
+R5: server/include/region.h
+R5: server/include/regionstr.h
+R5: server/include/resource.h
+R5: server/include/screenint.h
+R5: server/include/scrnintstr.h
+R5: server/include/servermd.h
+R5: server/include/window.h
+R5: server/include/windowstr.h
+R5: server/os/osdep.h
+
+
+COM: R6 header files in R6-${OS}/xc sub-directory
+COM: ============================================
+
+R6: X11/X.h
+R6: X11/Xfuncproto.h
+R6: X11/Xfuncs.h
+R6: X11/Xmd.h
+R6: X11/Xos.h
+R6: X11/Xosdefs.h
+R6: X11/Xproto.h
+R6: X11/Xprotostr.h
+
+R6: include/extensions/XIproto.h
+R6: include/extensions/interactive.h
+R6: include/extensions/interactiveCommon.h
+
+R6: include/fonts/FS.h
+R6: include/fonts/FSproto.h
+R6: include/fonts/font.h
+R6: include/fonts/fontstruct.h
+R6: include/fonts/fsmasks.h
+
+R6: lib/font/include/bitmap.h
+R6: lib/font/include/fntfil.h
+R6: lib/font/include/fntfilst.h
+R6: lib/font/include/fontmisc.h
+R6: lib/font/include/fontxlfd.h
+
+R6: programs/Xserver/include/colormap.h
+R6: programs/Xserver/include/colormapst.h
+R6: programs/Xserver/include/cursor.h
+R6: programs/Xserver/include/dix.h
+R6: programs/Xserver/include/dixstruct.h
+R6: programs/Xserver/include/extension.h
+R6: programs/Xserver/include/extnsionst.h
+R6: programs/Xserver/include/gc.h
+R6: programs/Xserver/include/gcstruct.h
+R6: programs/Xserver/include/iapriocntl.h
+R6: programs/Xserver/include/input.h
+R6: programs/Xserver/include/misc.h
+R6: programs/Xserver/include/miscstruct.h
+R6: programs/Xserver/include/opaque.h
+R6: programs/Xserver/include/os.h
+R6: programs/Xserver/include/os_interactive.h
+R6: programs/Xserver/include/pixmap.h
+R6: programs/Xserver/include/pixmapstr.h
+R6: programs/Xserver/include/property.h
+R6: programs/Xserver/include/region.h
+R6: programs/Xserver/include/regionstr.h
+R6: programs/Xserver/include/resource.h
+R6: programs/Xserver/include/screenint.h
+R6: programs/Xserver/include/scrnintstr.h
+R6: programs/Xserver/include/servermd.h
+R6: programs/Xserver/include/validate.h
+R6: programs/Xserver/include/window.h
+R6: programs/Xserver/include/windowstr.h
+
+R6: programs/Xserver/mi/misprite.h
+R6: programs/Xserver/os/osdep.h
+

@@ -1,0 +1,153 @@
+# @(#)CM_VerSion makefile 3010 1.14 19519.eco sum= 03683 3010.101
+# @(#)CM_VerSion makefile 2017 1.11 17851.eco sum= 23788 2017.013
+# @(#)CM_VerSion makefile 2016 1.8 14474.eco sum= 27070 
+# @(#)CM_VerSion makefile 2015 1.4 11933.eco sum= 19982 
+# For portability:
+#
+# 1) Where possible, use the AUTOCOMP1, AUTOASSEM1, and other AUTO statements
+# for object files with standard build rules; and use the
+# 'Autobuild sources/makefile' ps_manager command to build the dependencies
+# automatically.  Also use the AUTOCOMMON statement to aggregate common
+# dependencies and simplify the output of the autobuilder and use AUTOOBJECTS
+# to define lists of object files referred to from the 'configs'.
+#
+# 2) If the autobuilder cannot be used, put $(CFLAGS) before module names in
+# a $(CC) compile, and put $(SWITCHES) before the module name(s) in a $(CPP)
+# assembly; and put blanks before and after ':' in make rules.
+#
+# 3) Manual defns of SHAREDOBJECTFILES and COMMON_INTERFACES are shown below,
+# but prefer AUTOOBJECTS and AUTOCOMMON to define such lists when possible.
+#
+# 4) Avoid all forward references, even though these work for Unix 4.3BSD make
+# because they do not work on the VMS make.
+
+sources :
+	@echo "Do not execute Make in the sources directory."; exit 1
+
+SOURCES = $(XATM_SOURCES)
+
+# AUTOBUILD ****Mechanically/PERL modified section****
+# AUTOOBJECTS SHAREDOBJECTFILES = (xatmbitmap xatmfont xatminit \
+#				xatminterpreter xatmmarker xatmproperty)
+# AUTOCOMP1 = (xatmbitmap xatmfont xatminit xatminterpreter \
+#	       xatmmarker xatmproperty)
+# AUTOIGNORE = ( "FSproto.h" "X.h" "Xproto.h" "font.h" "fontfile.h" \
+#                "fontfilest.h" "fontmisc.h" "fontstruct.h" \
+#                "fontxlfd.h" "os.h" )
+
+SHAREDOBJECTFILES = $(OBJECTS)xatmbitmap.$(O) \
+	$(OBJECTS)xatmfont.$(O) $(OBJECTS)xatminit.$(O) \
+	$(OBJECTS)xatminterpreter.$(O) $(OBJECTS)xatmmarker.$(O) \
+	$(OBJECTS)xatmproperty.$(O)
+
+
+$(OBJECTS)xatmbitmap.$(O) : $(SOURCES)xatmbitmap.c \
+	$(ASBASIC_SPEC) $(ASENV_SPEC) \
+	$(ASEXCEPT_SPEC) $(ASZONE_SPEC) \
+	$(CANTHAPPEN_SPEC) $(DEBUGPRINT_SPEC) \
+	$(DEVICETYPES_SPEC) $(DEVMARKER_SPEC) \
+	$(DEVPATTERN_SPEC) $(DEVPUBLIC_SPEC) \
+	$(ENVIRONMENT_SPEC) $(EXCEPT_SPEC) \
+	$(FP_SPEC) $(FRAMEPIXELTYPES_SPEC) \
+	$(FRAMEPIXEL_SPEC) $(IMAGEREGISTRY_SPEC) \
+	$(INSTRUMENTATION_SPEC) $(OPSYS_SPEC) \
+	$(PDLDEVICETYPES_SPEC) $(PKGID_SPEC) \
+	$(PROTOS_SPEC) $(PSLIB_SPEC) \
+	$(PUBLICTYPES_SPEC) $(SOURCES)X_internals.h \
+	$(SOURCES)xatmbitmap.h $(SOURCES)xatmfont.h \
+	$(SOURCES)xatminterpreter.h $(SOURCES)xatmproperty.h \
+	$(UTIL_SPEC)
+	$(CC) $(CFLAGS)  $(INCL)$(ENVIRONMENT_ROOT) $(INCL)$(PSLIB_ROOT) $(INCL)$(UTIL_ROOT) $(SOURCES)xatmbitmap.c $(POSTCCACTION)
+
+$(OBJECTS)xatmfont.$(O) : $(SOURCES)xatmfont.c \
+	$(ASBASIC_SPEC) $(ASENV_SPEC) \
+	$(ASEXCEPT_SPEC) $(ASSTMIMPL_SPEC) \
+	$(ASSTM_SPEC) $(ASZONE_SPEC) \
+	$(CANTHAPPEN_SPEC) $(DEBUGPRINT_SPEC) \
+	$(DEVICETYPES_SPEC) $(DEVMARKER_SPEC) \
+	$(DEVPATTERN_SPEC) $(DEVPUBLIC_SPEC) \
+	$(ENVIRONMENT_SPEC) $(EXCEPT_SPEC) \
+	$(FP_SPEC) $(FRAMEPIXELTYPES_SPEC) \
+	$(IMAGEREGISTRY_SPEC) $(INSTRUMENTATION_SPEC) \
+	$(OPSYS_SPEC) $(PDLDEVICETYPES_SPEC) \
+	$(PKGID_SPEC) $(PROTOS_SPEC) \
+	$(PSLIB_SPEC) $(PUBLICTYPES_SPEC) \
+	$(SOURCES)X_internals.h $(SOURCES)xatmbitmap.h \
+	$(SOURCES)xatmfont.h $(SOURCES)xatminterpreter.h \
+	$(SOURCES)xatmproperty.h $(STREAM_SPEC) \
+	$(UNIXSTREAM_SPEC) $(UTIL_SPEC)
+	$(CC) $(CFLAGS)  $(INCL)$(ENVIRONMENT_ROOT) $(INCL)$(PSLIB_ROOT) $(INCL)$(STREAM_ROOT) $(INCL)$(UTIL_ROOT) $(SOURCES)xatmfont.c $(POSTCCACTION)
+
+$(OBJECTS)xatminit.$(O) : $(SOURCES)xatminit.c \
+	$(ASBASIC_SPEC) $(ASENV_SPEC) \
+	$(DEVICETYPES_SPEC) $(DEVMARKER_SPEC) \
+	$(DEVPATTERN_SPEC) $(DEVPUBLIC_SPEC) \
+	$(ENVIRONMENT_SPEC) $(FP_SPEC) \
+	$(FRAMEPIXELTYPES_SPEC) $(IMAGEREGISTRY_SPEC) \
+	$(PDLDEVICETYPES_SPEC) $(PROTOS_SPEC) \
+	$(PUBLICTYPES_SPEC) $(SOURCES)X_internals.h \
+	$(SOURCES)xatmfont.h $(SOURCES)xatminterpreter.h \
+	$(SOURCES)xatmproperty.h $(UTIL_SPEC) \
+	$(XDPS_SUPPORT_SPEC)
+	$(CC) $(CFLAGS)  $(INCL)$(ENVIRONMENT_ROOT) $(INCL)$(UTIL_ROOT) $(SOURCES)xatminit.c $(POSTCCACTION)
+
+$(OBJECTS)xatminterpreter.$(O) : $(SOURCES)xatminterpreter.c \
+	$(ASBASIC_SPEC) $(ASENV_SPEC) \
+	$(ASEXCEPT_SPEC) $(ASSTMIMPL_SPEC) \
+	$(ASSTM_SPEC) $(ASZONE_SPEC) \
+	$(BASICTYPES_SPEC) $(CANTHAPPEN_SPEC) \
+	$(CUSTOMOPS_SPEC) $(DEBUGPRINT_SPEC) \
+	$(DEVCREATE_SPEC) $(DEVDLSUPPORT_SPEC) \
+	$(DEVICETYPES_SPEC) $(DEVICE_SPEC) \
+	$(DEVMARKER_SPEC) $(DEVPATH_SPEC) \
+	$(DEVPATTERN_SPEC) $(DEVPRIM_SPEC) \
+	$(DEVPUBLIC_SPEC) $(ENVIRONMENT_SPEC) \
+	$(EXCEPT_SPEC) $(FBCTYPES_SPEC) \
+	$(FP_SPEC) $(FRAMEPIXELTYPES_SPEC) \
+	$(FRAMEPIXEL_SPEC) $(GRAPHICSTYPES_SPEC) \
+	$(GRAPHICS_SPEC) $(IMAGEREGISTRY_SPEC) \
+	$(INSTRUMENTATION_SPEC) $(LANGUAGE_SPEC) \
+	$(ODMDICT_SPEC) $(ODMKEYS_SPEC) \
+	$(OPSYS_SPEC) $(ORPHANS_SPEC) \
+	$(PDLDEVICETYPES_SPEC) $(PDLTYPES_SPEC) \
+	$(PKGID_SPEC) $(POSTSCRIPT_SPEC) \
+	$(PROTOS_SPEC) $(PSFRAMEMARKER_SPEC) \
+	$(PSGRAPHICSTYPES_SPEC) $(PSHALFTONE_SPEC) \
+	$(PSLIB_SPEC) $(PSOBJECTTYPES_SPEC) \
+	$(PSRECORDER_SPEC) $(PSSUPPORT_SPEC) \
+	$(PUBLICTYPES_SPEC) $(RECYCLER_SPEC) \
+	$(SERVER_SPEC) $(SOURCES)X_internals.h \
+	$(SOURCES)xatmbackdoor.h $(SOURCES)xatmfont.h \
+	$(SOURCES)xatminterpreter.h $(SOURCES)xatmmarker.h \
+	$(STREAM_SPEC) $(UNIXSTREAM_SPEC) \
+	$(UTIL_SPEC) $(VM_SPEC)
+	$(CC) $(CFLAGS)  $(INCL)$(ENVIRONMENT_ROOT) $(INCL)$(PSLIB_ROOT) $(INCL)$(STREAM_ROOT) $(INCL)$(UTIL_ROOT) $(SOURCES)xatminterpreter.c $(POSTCCACTION)
+
+$(OBJECTS)xatmmarker.$(O) : $(SOURCES)xatmmarker.c \
+	$(ASBASIC_SPEC) $(ASENV_SPEC) \
+	$(ASZONE_SPEC) $(DEVICETYPES_SPEC) \
+	$(DEVIMAGE_SPEC) $(DEVMARKER_SPEC) \
+	$(DEVPATTERN_SPEC) $(DEVPUBLIC_SPEC) \
+	$(ENVIRONMENT_SPEC) $(FP_SPEC) \
+	$(FRAMEPIXELTYPES_SPEC) $(IMAGEREGISTRY_SPEC) \
+	$(INSTRUMENTATION_SPEC) $(PDLDEVICETYPES_SPEC) \
+	$(PROTOS_SPEC) $(PSLIB_SPEC) \
+	$(PUBLICTYPES_SPEC) $(SOURCES)xatmfont.h \
+	$(SOURCES)xatminterpreter.h $(SOURCES)xatmmarker.h \
+	$(UTIL_SPEC)
+	$(CC) $(CFLAGS)  $(INCL)$(ENVIRONMENT_ROOT) $(INCL)$(PSLIB_ROOT) $(INCL)$(UTIL_ROOT) $(SOURCES)xatmmarker.c $(POSTCCACTION)
+
+$(OBJECTS)xatmproperty.$(O) : $(SOURCES)xatmproperty.c \
+	$(ASBASIC_SPEC) $(ASENV_SPEC) \
+	$(ASEXCEPT_SPEC) $(ASSTMIMPL_SPEC) \
+	$(ASSTM_SPEC) $(ASZONE_SPEC) \
+	$(CANTHAPPEN_SPEC) $(DEBUGPRINT_SPEC) \
+	$(ENVIRONMENT_SPEC) $(EXCEPT_SPEC) \
+	$(FP_SPEC) $(INSTRUMENTATION_SPEC) \
+	$(OPSYS_SPEC) $(PKGID_SPEC) \
+	$(PROTOS_SPEC) $(PSLIB_SPEC) \
+	$(PUBLICTYPES_SPEC) $(SOURCES)X_internals.h \
+	$(SOURCES)xatmfont.h $(SOURCES)xatmproperty.h \
+	$(STODEV_SPEC) $(STREAM_SPEC) \
+	$(UNIXSTREAM_SPEC) $(UTIL_SPEC)
+	$(CC) $(CFLAGS)  $(INCL)$(ENVIRONMENT_ROOT) $(INCL)$(PSLIB_ROOT) $(INCL)$(STREAM_ROOT) $(INCL)$(UTIL_ROOT) $(SOURCES)xatmproperty.c $(POSTCCACTION)

@@ -1,0 +1,555 @@
+! viewing area width and height define the size of the sub-image
+! of the entire page that we can see at one time. The defaults below
+! cover ~1/6 of the width and 1/8 of the height of an sps default
+! 2432 x 3236 pixel page. Width and height are rounded up to the
+! nearest even multiple of 16.
+softdisplay.At*viewWin.viewPort.width:			416
+softdisplay.At*viewWin.viewPort.height:			416
+
+! coordinates of upper-left corner of the viewing window, in
+! device pixels. 0,0 is the upper left corner of the screen,
+! so the default position places the viewing window ll corner
+! about 1/2 inch to the right and from the top of the screen.
+softdisplay.At*viewWin.x:				36
+softdisplay.At*viewWin.y:				36
+
+! Resources controlling global preferences or attributes of the
+! initial view window are prefixed "pref"
+
+! prefPauseEachPage determines whether softdisplay pauses after
+! imaging each page, or proceeds to the next page
+softdisplay.At.prefPauseEachPage:			true
+
+! prefPauseOnDiffs determines whether softdisplay pauses in bitmap comparison
+! mode after finding differences between the most recently imaged page
+! and its corresponding bitmap file page, or proceeds to the next page
+softdisplay.At.prefPauseOnDiffs:			true
+
+! setting prefShowPageThumbnail true causes page thumbnails to be 
+! drawn for each page in the initial view
+softdisplay.At.prefShowPageThumbnail:			true
+
+! The prefZoom resource controls the initial zoom factor
+softdisplay.At.prefZoom:				1.0
+
+! The prefGridSize resource controls the initial grid size.
+softdisplay.At.prefGridSize:				4
+
+! prefStsMsgLocation controls where status messages are displayed.
+! "inView" shows messages in a box near the top of a view
+! "inPopup" shows messages in a popup alert box with a progress indicator
+! "inBoth" puts messages in both places
+softdisplay.At.prefStsMsgLocation:			inView
+
+! setting prefVerboseSts true causes more detailed status messages to be
+! displayed when processing data for a page.
+softdisplay.At.prefVerboseSts:				false
+
+! prefLogSts controls whether status messages are logged to stderr
+softdisplay.At.prefLogSts:				false
+
+! prefXorHighlightDiffs controls what is imaged in bitmap comparison
+! mode when the "Highlight diffs" button is clicked. When
+! prefXorHighlightDiffs is false, the common part of the two images
+! is displayed unchanged, and extra ink and missing ink are highlighted
+! in the colors specified by the extraInkHighlightColor and
+! missingInkHighlightColor resources.
+! When prefXorHighlightDiffs is true, the two images are XORed, and
+! only the pixels that are different are displayed, in black.
+softdisplay.At.prefXorHighlightDiffs:			false
+
+! prefBandsOn controls the presence of band boundary markers in the
+! initial view.
+softdisplay.At.prefBandsOn:				false
+
+! prefGridOn controls the presence of a grid in the initial view.
+softdisplay.At.prefGridOn:				false
+
+! prefFineScrollMovesPaper determines whether the fine scrolling buttons
+! move the aperture in the specified direction, or move the 'paper'
+! under the aperture in the specified direction. The default is
+! to move the aperture.
+softdisplay.At.prefFineScrollMovesPaper:		false
+
+! prefScanByViewWidth controls the behavior of the "Next difference" button:
+! if prefScanByViewWidth is true, clicking "Next difference" jumps ahead at
+! least one view width/height to the next set of differences. If false,
+! clicking "Next difference" centers the next different scan unit in
+! the view.
+softdisplay.At.prefScanByViewWidth:			true
+
+! prefOutputFileFormat is a string which defines the preferred format
+! of output files created by the File Output menu. Current choices are:
+!  PostScript, PDF, Softdisplay, and Raw Bitmap
+softdisplay.At.prefOutputFileFormat:			PDF
+
+! prefScaleToFit is a boolean value which controls the appearance of
+! images in output files: if true, when imaging from a selected view to an
+! output file, the view rectangle will be scaled to fit the page size
+! the image came from. If false, the selected view will be imaged at
+! one point (1/72 inch) per pixel from the view.
+softdisplay.At.prefScaleToFit:				false
+
+! prefMaxBufferAllocation is the maximum amount of space softdisplay
+! will allocate (in megabytes) as buffers for page (pixel) data.
+! 0 means "no limit". 
+softdisplay.At.prefMaxBufferAllocation:			0
+
+! Default font for all text in user interface.
+! Each platform has a different preferred font: one of
+! these specifications will be chosen at runtime and a new
+! resource entry of the form '*At*Font: mumble x' will be created.
+softdisplay.At.MAC.Font:				Helvetica 10
+softdisplay.At.UNIX.Font:				helvR10
+softdisplay.At.WINNT.Font:				Arial 8
+!! Alternate definitions for Unix systems lacking a helvR10 font:
+!! Uncomment one and remove the helvR10 definition above
+!! softdisplay.At.UNIX.Font: -*-helvetica-medium-r-normal--10-100-75-75-p-56-*-1
+!! softdisplay.At.UNIX.Font: -*-helvetica-medium-r-normal--10-*-*-*-p-*-*-*
+
+! The following resources specify the color used to highlight
+! missing and extra ink in bitmap comparison mode. Set these
+! to values which are unambiguous with respect to other colors
+! in the viewed image.
+softdisplay.At.missingInkHighlightColor:		green
+softdisplay.At.extraInkHighlightColor:			red
+
+! prefFrameBufferCoords is used to correct a difference between the
+! way the sps and rxrefsim products output fifo data. sps just
+! outputs the bits in the frame buffer, while rxrefsys outputs empty
+! scanlines from the 'top of the paper' to the top of the frame buffer
+! and stuffs blank pixels in the left and right page margins. Thus,
+! the way softdisplay reports page coordinates differs between the
+! two. To get actual frame buffer-relative coordinates when using
+! softdisplay to view rxrefsim output, set prefFrameBufferCoords true.
+softdisplay.At.prefFrameBufferCoords:			false
+
+! prefCompareViewMode controls the contents of the initial view
+! when in bitmap comparison mode. The values match the buttons
+! in the Compare dialog box: TestPage, BitmapPage, HighlightDiffs,
+! ExtraInk, and MissingInk
+softdisplay.At.prefCompareViewMode:			TestPage
+
+! prefPagesBuffered controls the number of page images buffered
+! in memory when reading page data from a pipe, so that previously
+! viewed pages can be revisited. For example, a value of 2 means
+! 2 pages besides the current page can be viewed.
+softdisplay.At.prefPagesBuffered:			0
+
+!---------------------------------------------------------------------
+! Color specifications. Uncomment the lines beginning with '!-' to
+! get a colorful user interface. Default is dull grays.
+!---------------------------------------------------------------------
+
+! Colors of various window backgrounds (main, dialogs, menus)
+softdisplay.At.mainBG:					gray66
+softdisplay.At.mainBGhi:				gray90
+!-softdisplay.At.mainBG:				defaultBg
+!-softdisplay.At.mainBGhi:				defaultBgHi
+softdisplay.At*BackgroundRGB:				mainBG
+softdisplay.At*HighlightRGB:				mainBGhi
+
+softdisplay.At.dialogBG:				mainBG
+softdisplay.At.dialogBGhi:				mainBGhi
+softdisplay.At*Dialog.BackgroundRGB:			dialogBG
+softdisplay.At*Dialog.HighlightRGB:			dialogBGhi
+softdisplay.At*Dialog.dialogBtnPnl.Button.BackgroundRGB: ^^BackgroundRGB
+softdisplay.At*Dialog.dialogBtnPnl.Button.HighlightRGB:	^^HighlightRGB
+
+softdisplay.At.menuBG:					mainBG
+softdisplay.At.menuBGhi:				mainBGhi
+softdisplay.At*Menu*BackgroundRGB:			menuBG
+softdisplay.At*Menu*HighlightRGB:			menuBGhi
+
+! colors of text backgrounds and text (FG)
+softdisplay.At.textBG:					defaultTextBg
+softdisplay.At.textBGhi:				gray90
+softdisplay.At.textFG:					black
+softdisplay.At*Label.BackgroundRGB:			textBG
+softdisplay.At*Label.ForegroundRGB:			textFG
+
+! Button colors
+softdisplay.At.buttonColor:				gray50
+softdisplay.At.buttonColorHi:				gray75
+!-softdisplay.At.buttonColor:				defaultBorder
+!-softdisplay.At.buttonColorHi:				defaultBorderHi
+softdisplay.At*Button.BackgroundRGB:			buttonColor
+softdisplay.At*Button.ForegroundRGB:			textFG
+softdisplay.At*Button.HighlightRGB:			buttonColorHi
+
+! Slider colors
+softdisplay.At*Slider.ForegroundRGB:			buttonColor
+softdisplay.At*Slider.BackgroundRGB:			textBG
+softdisplay.At*Slider.HighlightRGB:			buttonColorHi
+softdisplay.At*Slider.Button.BackgroundRGB:		^ForegroundRGB
+softdisplay.At*Slider.Button.HighlightRGB:		^HighlightRGB
+softdisplay.At*Slider.thumb.BackgroundRGB:		^BackgroundRGB
+softdisplay.At*Slider.thumb.ForegroundRGB:		^ForegroundRGB
+
+! color of viewing area and thumbnail in panning area when no
+! page image is filling it.
+softdisplay.At.blankPageColor:				black
+
+!---------------------------------------------------------------------
+! You are unlikely to need to change any resource values below
+! this line.
+!---------------------------------------------------------------------
+
+! softdisplay window
+
+softdisplay.At*viewWin.orientation:			vertical
+softdisplay.At*viewWin.margin:				2
+
+! viewing area is centered in window, and is black if no page image in it
+softdisplay.At*viewWin.viewPort.justify:		1
+softdisplay.At.viewWin.viewPort.backgroundRGB:		blankPageColor
+
+! Offscreen buffers for rendering images
+softdisplay.At.viewBfr.backgroundRGB:			blankPageColor
+softdisplay.At.viewBfr2.backgroundRGB:			blankPageColor
+
+! Panel that holds menuBar and toolBar at top of view window
+softdisplay.At*menuAndTools.orientation:		horizontal
+softdisplay.At*menuAndTools.justify:			0
+softdisplay.At*menuAndTools.margin:			2
+softdisplay.At*menuAndTools.radius:			0
+softdisplay.At*menuAndTools.depth:			0
+
+! Menu bar organization
+
+softdisplay.At*menuBar.orientation:			horizontal
+softdisplay.At*menuBar.justify:				1
+softdisplay.At*menuBar.margin:				1
+softdisplay.At*menuBar.radius:				0
+softdisplay.At*menuBar.depth:				0
+
+softdisplay.At*menuBar.Button.justify:			1
+softdisplay.At*menuBar.Button.style: 			textinside
+softdisplay.At*menuBar.Button.backgroundRGB: 		^BackgroundRGB
+softdisplay.At*menuBar.Button.highlightRGB: 		^HighlightRGB
+
+softdisplay.At*menuBar.fileMenuBtn.label:		File
+softdisplay.At*menuBar.viewMenuBtn.label:		View
+softdisplay.At*menuBar.pageMenuBtn.label:		Page
+
+! File output menu
+softdisplay.At*fileMenu*writeSelection.label:		Save view
+softdisplay.At*fileMenu*writePage.label:		Save page
+softdisplay.At*fileMenu*preferencesMenuItem.label:	Preferences...
+softdisplay.At*fileMenu*close.label:			Close
+softdisplay.At*fileMenu*exit.label:			Exit
+
+softdisplay.At*viewMenu*newView.label:			New view
+softdisplay.At*viewMenu*linkedView.label:		Linked view
+softdisplay.At*viewMenu*gridMenuItem.label:		Grid/Bands...
+softdisplay.At*viewMenu*panMenuItem.label:		Panning...
+softdisplay.At*viewMenu*compareMenuItem.label:		Compare...
+softdisplay.At*viewMenu*planesMenuItem.label:		Planes...
+
+softdisplay.At*pageMenu*nextPage.label:			Next page
+softdisplay.At*pageMenu*pagePositionMenuItem.label:	Set page position...
+softdisplay.At*pageMenu*pageInfoMenuItem.label:		Page Info...
+
+! Tool bar
+softdisplay.At*toolBar.orientation:			horizontal
+softdisplay.At*toolBar.justify:				1
+softdisplay.At*toolBar.margin:				2
+softdisplay.At*toolBar.radius:				0
+softdisplay.At*toolBar.depth:				0
+softdisplay.At*toolBar.Button.justify:			1
+softdisplay.At*toolBar.Button.Height:			20
+softdisplay.At*toolBar.Button.Width:			20
+softdisplay.At*toolBar.Button.backgroundRGB: 		^BackgroundRGB
+softdisplay.At*toolBar.Button.highlightRGB: 		^HighlightRGB
+
+softdisplay.At*toolBar.nextPage.style:			image
+softdisplay.At*toolBar.nextPage.radius:			0
+softdisplay.At*toolBar.panning.style:			image
+softdisplay.At*toolBar.panning.radius:			0
+
+! Optional status label next to toolBar
+softdisplay.At*menuAndTools.statusLbl.backgroundRGB:	textBG
+softdisplay.At*menuAndTools.statusLbl.depth:		-1
+softdisplay.At*menuAndTools.statusLbl.margin:		2
+softdisplay.At*menuAndTools.statusLbl.justify:		0
+softdisplay.At*menuAndTools.statusLbl.radius:		0
+
+! Info bar at bottom of each view window holds page #, scale, pixel coords, etc
+softdisplay.At*infoBar.depth: 				0
+softdisplay.At*infoBar.margin: 				1
+softdisplay.At*infoBar.orientation: 			horizontal
+softdisplay.At*infoBar.backgroundRGB: 			^BackgroundRGB
+softdisplay.At*infoBar*Label.Height:			16
+softdisplay.At*infoBar*Label.Radius:			0
+softdisplay.At*infoBar*Button.Radius:			0
+softdisplay.At*infoBar*Label.Depth:			-1
+softdisplay.At*infoBar*Label.Style:			textinside
+softdisplay.At*infoBar*Label.Justify:			0
+softdisplay.At*infoBar*Button.Justify:			0
+
+softdisplay.At*infoBar.pageNum.backgroundRGB:		textBG
+softdisplay.At*infoBar.pageNum.highlightRGB:		textBGhi
+softdisplay.At*infoBar.pageNum.depth:			1
+softdisplay.At*infoBar.pageNum.style:			textinside
+
+! Informational labels should appear to be part of the background,
+! so have to override default label BG colors. Text is right-justified
+! in these because it can change for instance from RGB to CMYK, and
+! we want the right-most character to be close to the box with the
+! actual pixel values in it.
+softdisplay.At*infoBar.pixValLbl.depth:			0
+softdisplay.At*infoBar.pixValLbl.justify:		2
+softdisplay.At*infoBar.pixValLbl.backgroundRGB:		^BackgroundRGB
+softdisplay.At*infoBar.bitmapPixValLbl.depth:		0
+softdisplay.At*infoBar.bitmapPixValLbl.justify:		2
+softdisplay.At*infoBar.bitmapPixValLbl.backgroundRGB:	^BackgroundRGB
+
+softdisplay.At*zoomPanel.orientation:			horizontal
+softdisplay.At*zoomPanel.margin:			1
+softdisplay.At*zoomPanel.depth:				0
+softdisplay.At*zoomPanel.columns:			3
+softdisplay.At*zoomPanel*Height:			16
+softdisplay.At*zoomPanel*Label.Radius:			1
+softdisplay.At*zoomPanel*Label.Justify:			0
+
+softdisplay.At*zoomPanel.zoom.depth:			-1
+softdisplay.At*zoomPanel.zoom.backgroundRGB:		textBG
+
+softdisplay.At*zoomPanel*Slider.Orientation:		horizontal
+softdisplay.At*zoomPanel*Slider.Width:			102
+softdisplay.At*zoomPanel*Slider.Margin:			2
+softdisplay.At*zoomPanel*Slider.Button.Width:		12
+softdisplay.At*zoomPanel*Slider.Button.Height:		12
+
+! General dialog box attributes
+
+*Dt*Dialog.box.margin:					6
+
+softdisplay.At*Dialog*Slider.Orientation:		horizontal
+softdisplay.At*Dialog*Slider.Width:			102
+softdisplay.At*Dialog*Slider.Height:			16
+softdisplay.At*Dialog*Slider.Margin:			2
+softdisplay.At*Dialog*Slider.Button.Width:		12
+softdisplay.At*Dialog*Slider.Button.Height:		12
+
+! Preferences dialog box
+
+softdisplay.At*preferencesDialog.label:		Softdisplay preferences
+softdisplay.At*preferencesDialog.style:			CancelSaveOK
+softdisplay.At*preferencesDialog.box.orientation:	vertical
+softdisplay.At*preferencesDialog.box.justify:		1
+softdisplay.At*preferencesDialog.box*Button.ToggleBtn:	1
+! Override normal cancel text which is 'Dismiss'
+softdisplay.At*preferencesDialog.dialogBtnPnl.dialogCancelBtn.label: Cancel
+
+softdisplay.At*preferencesDialog*pauseEachPage.label:	Pause each page
+softdisplay.At*preferencesDialog*pauseOnDiffs.label:	Pause on differences
+softdisplay.At*preferencesDialog*verboseSts.label: Verbose status messages
+softdisplay.At*preferencesDialog*logSts.label:	Log status messages
+softdisplay.At*preferencesDialog*showProgMonitor.label:	Show progress monitor
+softdisplay.At*preferencesDialog*fsBtnsMoveImage.label:	Fine scroll buttons move image
+softdisplay.At*preferencesDialog*outFormatsPanel.justify: 1
+softdisplay.At*preferencesDialog*outFormatsPanel.orientation: horizontal
+softdisplay.At*preferencesDialog*outFormatsPanel.margin: 1
+softdisplay.At*preferencesDialog*outFormatsPanel.depth:	0
+softdisplay.At*preferencesDialog*outFormatsPanel*outFmtMenuBtn.depth: 1
+softdisplay.At*preferencesDialog.box*outFormatsPanel*outFmtMenuBtn.toggleBtn:	false
+
+softdisplay.At*preferencesDialog*choiceLabel.label:	File output format
+softdisplay.At*preferencesDialog*choiceLabel.style:	textinside
+softdisplay.At*preferencesDialog*choiceLabel.justify:	1
+softdisplay.At*preferencesDialog*choiceLabel.depth:	0
+softdisplay.At*preferencesDialog*choiceLabel.backgroundRGB:	^BackgroundRGB
+
+! Page info dialog box
+
+softdisplay.At*pageInfoDialog.label:		Softdisplay page info
+softdisplay.At*pageInfoDialog.box.orientation:		horizontal
+softdisplay.At*pageInfoDialog.box.columns:		2
+softdisplay.At*pageInfoDialog.box.ButtonPanel.depth:	0
+softdisplay.At*pageInfoDialog.box.ButtonPanel.margin:	4
+softdisplay.At*pageInfoDialog*Label.Radius:		1
+
+softdisplay.At*pageInfoDialog*labels.orientation:	vertical
+softdisplay.At*pageInfoDialog*labels.columns:		1
+softdisplay.At*pageInfoDialog*labels.Label.depth:	0
+softdisplay.At*pageInfoDialog*labels.Label.Justify:	0
+softdisplay.At*pageInfoDialog*labels.Label.backgroundRGB: ^BackgroundRGB
+softdisplay.At*pageInfoDialog*labels.pageSize.label:	Page Size
+softdisplay.At*pageInfoDialog*labels.margins.label:	Top/Left Margin
+softdisplay.At*pageInfoDialog*labels.resolution.label:	Resolution
+softdisplay.At*pageInfoDialog*labels.dcc.label:		Device Colors
+softdisplay.At*pageInfoDialog*labels.depth.label:	Pixel depth
+softdisplay.At*pageInfoDialog*labels.planes.label:	# Planes
+softdisplay.At*pageInfoDialog*labels.colors.label:	# Grays
+
+softdisplay.At*pageInfoDialog*labelVals.orientation:	vertical
+softdisplay.At*pageInfoDialog*labelVals.columns:	1
+softdisplay.At*pageInfoDialog*labelVals.Label.depth:	-1
+softdisplay.At*pageInfoDialog*labelVals.Label.Justify:	0
+
+! Grid control dialog box
+
+softdisplay.At*gridDialog.box.orientation:		vertical
+softdisplay.At*gridDialog.box.rows:			2
+softdisplay.At*gridDialog.box.justify:			1
+
+softdisplay.At*gridDialog*gridBtnPnl.orientation:	horizontal
+softdisplay.At*gridDialog*gridBtnPnl.columns:		2
+softdisplay.At*gridDialog*gridBtnPnl.style:		Bordered
+softdisplay.At*gridDialog*gridBtnPnl.justify:		1
+softdisplay.At*gridDialog*showGrid.label:		Show grid
+softdisplay.At*gridDialog*showGrid.ToggleBtn:		1
+softdisplay.At*gridDialog*showBandBounds.label:		Show band boundaries
+softdisplay.At*gridDialog*showBandBounds.toggleBtn:	1
+
+softdisplay.At*gridDialog*gridSliderPnl.orientation:	horizontal
+softdisplay.At*gridDialog*gridSliderPnl.columns:	3
+softdisplay.At*gridDialog*gridSliderPnl.style:		Bordered
+softdisplay.At*gridDialog*gridSliderPnl.justify:	1
+softdisplay.At*gridDialog*gridSliderPnl.label:		Grid Size
+softdisplay.At*gridDialog*gridSliderPnl*Label.Height:	16
+softdisplay.At*gridDialog*gridSliderPnl*Label.Depth:	-1
+softdisplay.At*gridDialog*gridSliderPnl*Label.Radius:	0
+softdisplay.At*gridDialog*gridSliderPnl*Label.Justify:	0
+
+! Set page position dialog box
+softdisplay.At*pagePosDialog*pagePosSliderPnl.orientation:	horizontal
+softdisplay.At*pagePosDialog*pagePosSliderPnl.depth:		0
+softdisplay.At*pagePosDialog*pagePosSliderPnl.columns:		3
+softdisplay.At*pagePosDialog*pagePosSliderPnl.margin:		2
+softdisplay.At*pagePosDialog*pagePosSliderPnl*Label.Height:	16
+softdisplay.At*pagePosDialog*pagePosSliderPnl*Label.Depth:	-1
+softdisplay.At*pagePosDialog*pagePosSliderPnl*Label.Radius:	1
+softdisplay.At*pagePosDialog*pagePosSliderPnl*Label.Justify:	0
+softdisplay.At*pagePosDialog*currPgLbl.label:		Test Page
+softdisplay.At*pagePosDialog*pagePosSliderPnl.currPgLbl.depth:	0
+softdisplay.At*pagePosDialog*cmpPgLbl.label:		Baseline Page
+softdisplay.At*pagePosDialog*pagePosSliderPnl.cmpPgLbl.depth:	0
+! Have to override label BG default color to match dialog background
+softdisplay.At*pagePosDialog*currPgLbl.backgroundRGB:	^BackgroundRGB
+softdisplay.At*pagePosDialog*cmpPgLbl.backgroundRGB:	^BackgroundRGB
+
+! Dialog controlling visible planes
+
+softdisplay.At*planesDialog.style:			CancelSaveOK
+softdisplay.At*planesDialog.dialogBtnPnl.dialogCancelBtn.label: Cancel
+softdisplay.At*planesDialog.dialogBtnPnl.dialogSaveBtn.label: Done
+softdisplay.At*planesDialog.dialogBtnPnl.dialogOKBtn.label: Redraw
+
+softdisplay.At*planesDialog*planesPnl.label: 		Visible Planes
+softdisplay.At*planesDialog*planesPnl.style: 		Bordered
+softdisplay.At*planesDialog*planesPnl.rows: 		1
+softdisplay.At*planesDialog*planesPnl.Button.Justify:	1
+softdisplay.At*planesDialog*planesPnl.Button.Style:	textinside
+!!-softdisplay.At*planesDialog*planesPnl.Button.ForegroundRGB:	white
+softdisplay.At*planesDialog*planesPnl.Button.ToggleBtn:	1
+
+softdisplay.At*planesDialog*planesPnl.C.highlightRGB:	0 1. 1.
+softdisplay.At*planesDialog*planesPnl.C.backgroundRGB:	0 .75 .75
+softdisplay.At*planesDialog*planesPnl.C.foregroundRGB:	textFG
+softdisplay.At*planesDialog*planesPnl.M.highlightRGB:	1. 0 1.
+softdisplay.At*planesDialog*planesPnl.M.backgroundRGB:	.75 0 .75
+softdisplay.At*planesDialog*planesPnl.M.foregroundRGB:	textFG
+softdisplay.At*planesDialog*planesPnl.Y.highlightRGB:	1. 1. 0
+softdisplay.At*planesDialog*planesPnl.Y.backgroundRGB:	.75 .75 0
+softdisplay.At*planesDialog*planesPnl.Y.foregroundRGB:	textFG
+softdisplay.At*planesDialog*planesPnl.K.highlightRGB:	black
+softdisplay.At*planesDialog*planesPnl.K.backgroundRGB:	.2 .2 .2
+softdisplay.At*planesDialog*planesPnl.K.foregroundRGB:	white
+
+softdisplay.At*planesDialog*planesPnl.R.highlightRGB:	1. 0 0
+softdisplay.At*planesDialog*planesPnl.R.backgroundRGB:	.50 0 0
+softdisplay.At*planesDialog*planesPnl.R.foregroundRGB:	white
+softdisplay.At*planesDialog*planesPnl.G.highlightRGB:	0 1. 0
+softdisplay.At*planesDialog*planesPnl.G.backgroundRGB:	0 .67 0
+softdisplay.At*planesDialog*planesPnl.G.foregroundRGB:	textFG
+softdisplay.At*planesDialog*planesPnl.B.highlightRGB:	0 0 1.
+softdisplay.At*planesDialog*planesPnl.B.backgroundRGB:	0 0 .50
+softdisplay.At*planesDialog*planesPnl.B.foregroundRGB:	white
+
+! Dialog for bitmap comparison buttons
+
+softdisplay.At*compareDialog.box.orientation:		vertical
+
+softdisplay.At*compareDialog*nDiffs.depth:		-1
+softdisplay.At*compareDialog*nDiffs.justify:		1
+softdisplay.At*compareDialog*nDiffs.style: 		textinside
+
+softdisplay.At*compareDialog*bitmapFile.depth:		-1
+softdisplay.At*compareDialog*bitmapFile.justify:	1
+softdisplay.At*compareDialog*bitmapFile.style: 		textinside
+
+softdisplay.At*compareDialog*diffCtrl.justify:		1
+softdisplay.At*compareDialog*diffCtrl.orientation:	vertical
+softdisplay.At*compareDialog*diffCtrl.style:		Bordered
+softdisplay.At*compareDialog*diffCtrl.label:		Select page image
+softdisplay.At*compareDialog*diffCtrl.rows:		3
+softdisplay.At*compareDialog*diffCtrl.testPage.label:	Test Page
+softdisplay.At*compareDialog*diffCtrl.bitmapPage.label:	Baseline Page
+softdisplay.At*compareDialog*diffCtrl.highlight.label:	Highlight diffs
+softdisplay.At*compareDialog*diffCtrl.extraInk.label:	Show extra ink
+softdisplay.At*compareDialog*diffCtrl.missingInk.label:	Show missing ink
+
+softdisplay.At*compareDialog*misc.justify:		1
+softdisplay.At*compareDialog*misc.orientation:		horizontal
+softdisplay.At*compareDialog*misc.style:		Bordered
+softdisplay.At*compareDialog*misc.columns:		2
+softdisplay.At*compareDialog*misc.pauseOnDiffs.label:	Pause on differences
+softdisplay.At*compareDialog*misc.pauseOnDiffs.toggleBtn: 1
+softdisplay.At*compareDialog*misc.diffScanMode.label:	Scan by view width
+softdisplay.At*compareDialog*misc.diffScanMode.toggleBtn: 1
+softdisplay.At*compareDialog*misc.nextDiff.label:	Next difference
+
+! Dialog with panning controls.
+
+softdisplay.At*panningDialog*Justify:			1
+softdisplay.At*panningDialog.box.orientation:		vertical
+softdisplay.At*panningDialog.box.margin:		1
+
+softdisplay.At*panningDialog*pageThumbnail.label:	Show page thumbnail
+softdisplay.At*panningDialog*pageThumbnail.style:	textoutside
+softdisplay.At*panningDialog*pageThumbnail.toggleBtn:	true
+softdisplay.At*panningDialog*pageThumbnail.margin:	3
+softdisplay.At*panningDialog*pageThumbnail.backgroundRGB: ^BackgroundRGB
+softdisplay.At*panningDialog*pageThumbnail.highlightRGB: ^HighlightRGB
+
+softdisplay.At*vcPanel.orientation:			horizontal
+softdisplay.At*vcPanel.columns:				3
+softdisplay.At*vcPanel.margin:				1
+softdisplay.At*vcPanel.depth:				2
+
+softdisplay.At*vcPanel.Button.FixedSize:		true
+softdisplay.At*vcPanel.Button.Width:			12
+softdisplay.At*vcPanel.Button.Height:			12
+softdisplay.At*vcPanel.Button.Depth:			1
+softdisplay.At*vcPanel.Button.Style:			image
+softdisplay.At*vcPanel.Button.Justify:			1
+softdisplay.At*vcPanel.Button.Radius:			0
+softdisplay.At*vcPanel.Button.backgroundRGB:		^BackgroundRGB
+softdisplay.At*vcPanel.Button.highlightRGB:		^HighlightRGB
+
+! Scrolling view control: 'height' is the height of the virtual
+! page you can drag the aperture around on. 
+! Width of viewControl is determined by aspect ratio of the
+! output page as defined by the page data.
+softdisplay.At*vcPanel.viewControl.height:		144
+softdisplay.At*vcPanel.viewControl.depth:		-1
+softdisplay.At*vcPanel.viewControl.justify:		1
+softdisplay.At*vcPanel.viewControl.backgroundRGB:	blankPageColor
+softdisplay.At*vcPanel.viewControl.foregroundRGB:	buttonColor
+
+! Status dialog
+softdisplay.At*statusDialog.label:			Softdisplay Status
+softdisplay.At*statusDialog*Justify:			1
+softdisplay.At*statusDialog*Radius:			0
+
+softdisplay.At*statusDialog*statusLbl.backgroundRGB:	textBG
+softdisplay.At*statusDialog*statusLbl.depth:		-1
+softdisplay.At*statusDialog*statusLbl.margin:		2
+softdisplay.At*statusDialog*statusLbl.justify:		0
+softdisplay.At*statusDialog*progressBg.backgroundRGB:	textBG
+softdisplay.At*statusDialog*progressBg.depth:		-1
+softdisplay.At*statusDialog*progressBg.margin:		2
+softdisplay.At*statusDialog*progressBar.backgroundRGB:	buttonColor
+softdisplay.At*statusDialog*progressBar.depth:		0

@@ -1,0 +1,30 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2010.10.13 09:19:47 =~=~=~=~=~=~=~=~=~=~=~=
+login as: rmills
+Using keyboard-interactive authentication.
+Password:
+Last login: Wed Oct 13 09:17:08 2010 from rmills-laptop.corp.adobe.com
+501 /Users/rmills $ scleanup
+502 /Users/rmills/Langley/Work/10X/A10Loc/Tools/Ant/Acrobat/CODEX/serverCleanup $ dir
+-rwxr-xr-x   1 rmills  staff    63B Oct 13 09:19 codexDelete.sh
+-rwxr-xr-x@  1 rmills  staff   1.6K Oct 13 09:07 acroCodexReport
+-rw-r--r--@  1 rmills  staff    12K Oct 13 08:57 ReadMe.txt
+-rwxr-xr-x@  1 rmills  staff   7.1K Oct 13 08:40 acroCodexParser.py
+-rw-r--r--   1 rmills  staff    10K Oct 13 08:38 acroCodex.pyc
+-rw-r--r--@  1 rmills  staff   9.0K Oct 13 08:30 acroCodex.py
+-rwxr-xr-x@  1 rmills  staff   1.3K Oct 13 08:27 acroCodexP
+-rw-r--r--   1 rmills  staff   7.2K Oct 13 08:25 acroCodexParse.pyc
+-r-xr-xr-x   1 rmills  staff    58K Oct 12 16:26 serverCleanup.pyc
+-r--r--r--   1 rmills  staff   3.8K Oct 12 16:26 serverCleanupVars.pyc
+-r-xr-xr-x@  1 rmills  staff   666B Oct 11 15:18 acroCodexBuilds
+-r-xr-xr-x@  1 rmills  staff   849B Oct 11 15:13 acroCodexDelete
+-r-xr-xr-x@  1 rmills  staff   912B Oct 11 15:12 acroCodexCleanStorage
+drwxr-xr-x@ 32 rmills  staff   1.1K Oct 11 11:57 pythonLibs
+-r-xr-xr-x@  1 rmills  staff   234B Oct 11 09:57 readVersionInfo.py
+-rwxr-xr-x   1 rmills  staff    92B Oct  9 14:59 codexCleanStorage.sh
+-r-xr-xr-x@  1 rmills  staff   437B Oct  8 10:47 acroCodexMount
+-r-xr-xr-x@  1 rmills  staff   112K Oct  8 10:42 serverCleanup.py
+-r--r--r--@  1 rmills  staff   2.0K Oct  1 15:56 cleanupSettings_sjstore_acrobat.py
+drwxr-xr-x   6 rmills  staff   204B Sep 20 16:41 legacy
+-r--r--r--@  1 rmills  staff   5.9K Sep 20 15:59 serverCleanupVars.py
+-r--r--r--@  1 rmills  staff    45K Sep 20 15:58 cleanupSettings_sjstore.py
+503 /Users/rmills/Langley/Work/10X/A10Loc/Tools/Ant/Acrobat/CODEX/serverCleanup $ 

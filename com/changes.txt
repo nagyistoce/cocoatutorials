@@ -1,0 +1,55 @@
+this is it
+
+
+Changes.txt
+
+5.001 May 22, 2003
+ - log info was not properly displayed in Win2000
+
+5.000 May 15, 2003
+ - Updated to version 5.000
+ - Help now loads http://oneguycoding.com/automachron
+ - no longer attempts to lookup address for dotted ip address
+ - changed log format, time logged as microseconds rather than
+    seconds/microsecond
+
+Log Format
+protocol version host port date time offset(ms)
+
+Log Format Verbose
+ntp v2 - 192.168.1.2 - 123~5/15/2003~3:23:53 PM~3262015433669~3262015433669~3262015433669~3262015433669~15
+protocol version host port date time t1 t2 t3 t4 offset(ms)
+
+protocol - ntp/time/broadcast
+version  - protocol version
+host     - host address
+port     - host port
+date     - date (local) after applying offset
+time     - time (local) after applying offset
+t1       - client send time
+t2       - host receive time
+t3       - host reply time
+t4       - client receive time
+offset   - offset applied to system time
+
+ - updated to recognise WinXP
+
+4.00d Apr 10, 2001
+ - fixed the damn Help problem again (I gotta setup a cvs server)
+
+4.00d Mar 09, 2001
+ - automachron now properly processes host names entered as IP
+   addresses rather than host names.  It seems that on some
+   windows platforms gethostbyname() works with a dotted IP while
+   on others it does not.  Bad form apparently.  Mea culpa.
+
+4.00c Jan 32, 2001
+ - broadcast client mode was broken. fixed.
+ - log output of the time differences was nonsensical.  fixed.
+
+4.00b Jan 15, 2001
+ - added startupSleep registry hack.  This is the number of seconds
+ for which automachron will sleep before continuing with its startup.
+ This can be used in situations where the network is not configured
+ properly for an amount of time at startup.
+
