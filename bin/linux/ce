@@ -5,7 +5,7 @@ if [ $? != 0 ]; then
 	kate 2>/dev/null 1>/dev/null &
 	sleep 1
 fi
-kate "$@" 
+kate -use "$@" &
 
 # That's all Folks!
 ##
