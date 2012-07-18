@@ -462,6 +462,10 @@ if [ "$PLATFORM" == "cygwin" ]; then
 	unset  ce
 fi
 
+if [ "$FACTORY" == "rmills-imac" ]; then
+	export "PATH=/opt/subversion/bin:$PATH"
+fi
+
 # That's all Folks!
 ##
 
