@@ -448,6 +448,7 @@ if [ "$FACTORY" == "novariant" ]; then
 	export -n CE
 	export DISPLAY=:4.0
 	export PATH=~/local/bin/$PATH
+	alias ll=dir
 fi
 
 if [ "$PLATFORM" == "linux" ]; then
