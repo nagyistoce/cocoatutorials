@@ -153,4 +153,4 @@ sub DirSearch {
 
 __END__
 :endofperl
-cd /d .\cim\bin64
+cd /d .\exiv2\.svn\pristine\ce
