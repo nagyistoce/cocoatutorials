@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+// #include <tzfile.h>
+
 #include <string>
 #include <vector>
 #include <list>
@@ -67,13 +71,15 @@ typedef list<string>::iterator string_li;
  TIME_SIG
 */
 
-#include <time.h>
-#include <tzfile.h>
 
 #define TEN 10
 #define TWENTY 20
 
 #define addSignal(s,n) s[n]=#n
+
+#if defined(_MSC_VER)
+#include <windows.h>
+#endif
 
 int main(int argc,const char* argv[])
 {
@@ -106,12 +112,21 @@ int main(int argc,const char* argv[])
 #endif
 
 	time_t now = time(NULL);
-    struct tm local,utc;
-    localtime_r(&now, &local);
-    gmtime_r   (&now, &utc  );
-    
-    printf("local: offset = %6ld zone = %s dst = %d time = %s", local.tm_gmtoff,local.tm_zone,local.tm_isdst, asctime(&local));
-    printf("utc  : offset = %6ld zone = %s dst = %d time = %s", utc  .tm_gmtoff,utc  .tm_zone,utc  .tm_isdst, asctime(&utc  ));
+    struct tm local ; memcpy(&local,localtime(&now),sizeof(local));
+    struct tm utc   ; memcpy(&utc  ,gmtime   (&now),sizeof(utc  ));
+#if   defined(__CYGWIN__)
+    struct tm loc   ; memcpy(&loc  ,localtime(&now),sizeof(loc  ));
+	time_t gmt = timegm(&loc);
+	int offset = (int) ( ((long signed int) gmt) - ((long signed int) now) ) ;
+#elif defined(_MSC_VER)
+	TIME_ZONE_INFORMATION TimeZoneInfo;
+	GetTimeZoneInformation( &TimeZoneInfo );
+	int offset = - ((int)TimeZoneInfo.Bias + (int)TimeZoneInfo.DaylightBias) * 60;
+#else
+	int offset = local.tm_gmtoff ;
+#endif
+    printf("local: offset = %6ld dst = %d time = %s", offset,local.tm_isdst, asctime(&local));
+    printf("utc  : offset = %6ld dst = %d time = %s", 0     ,utc  .tm_isdst, asctime(&utc  ));
 
 	return 0 ;
 }

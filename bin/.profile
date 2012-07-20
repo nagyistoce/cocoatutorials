@@ -441,6 +441,15 @@ if [ "$FACTORY" == "rmills-imac" ]; then
 	export "PATH=/opt/subversion/bin:$PATH"
 fi
 
+if [ "$PLATFORM" == "cygwin" ]; then
+	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
+	d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)
+	if [ -d "$d" ]; then
+		export "BOOST_ROOT=$d"
+	fi
+fi
+
+
 # That's all Folks!
 ##
 
