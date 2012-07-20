@@ -67,6 +67,9 @@ typedef list<string>::iterator string_li;
  TIME_SIG
 */
 
+#include <time.h>
+#include <tzfile.h>
+
 #define TEN 10
 #define TWENTY 20
 
@@ -74,7 +77,7 @@ typedef list<string>::iterator string_li;
 
 int main(int argc,const char* argv[])
 {
-/*
+#if 0
 	string_l args;
 	for ( int a = 1 ; a < argc ; a++ ) {
 		args.push_back(string(argv[a]));
@@ -83,7 +86,9 @@ int main(int argc,const char* argv[])
 	for ( string_li it = args.begin() ; it != args.end() ; it++ ) {
 		cout << *ti << endl;
 	}
-*/
+#endif
+
+#if 0
 	map<int, string> signals;
 	addSignal(signals,TEN);
 	signals[20] = "ABC" ;
@@ -98,7 +103,17 @@ int main(int argc,const char* argv[])
 			printf("do not know %s\n",arg);
 		}
 	}
+#endif
 
+	time_t now = time(NULL);
+    struct tm local,utc;
+    localtime_r(&now, &local);
+    gmtime_r   (&now, &utc  );
+    
+    printf("local: offset = %6ld zone = %s dst = %d time = %s", local.tm_gmtoff,local.tm_zone,local.tm_isdst, asctime(&local));
+    printf("utc  : offset = %6ld zone = %s dst = %d time = %s", utc  .tm_gmtoff,utc  .tm_zone,utc  .tm_isdst, asctime(&utc  ));
 
 	return 0 ;
 }
+
+
