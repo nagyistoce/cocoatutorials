@@ -68,11 +68,7 @@ export P4USER=rmills
 export P4PORT=home:1666
 export P4CLIENT=imac
 
-export ZFLEET="moonwalk b1032 b1028 b1026 wb01"
-export CFLEET="jackson b1036 b1037 wb13"
-export VFLEET="fiasco uglu quinaya"
-export XFLEET="bowman cloverfield poole tenth"
-export  FLEET="bocksbeutel demi housecat"
+export  FLEET="clanmills.com"
 export  PINGS="$FLEET"
 
 ## 
@@ -307,37 +303,37 @@ to() {
 alias 2=to
 
 ##
-# set CE = editor of choice
-if [ -z "$SSH_CLIENT" ]; then
-	if   [ "$PLATFORM" == 'macosx' ]; then
-		export CE=`which bbedit &>/dev/null`
-		if [ -z "$CE" ]; then
-			export CE=`which edit &>/dev/null`
-		fi
-	elif [ "$PLATFORM" == 'cygwin' ]; then
-		CE='/cygdrive/c/Users/rmills/com/ce.exe'
-	elif [ "$PLATFORM" == 'linux' ]; then
-		export CE=`which kate`
-		if [ ! -z "$CE" ]; then
-			export CE="kate --use"
-			export CE2="&>/dev/null &"
-		fi		
-	fi
-fi
-
-if [ "$PLATFORM" == "macosx" ]; then
-	export CE=bbedit
-fi
-
-ce()
-{
-	$CE "$@" 2>/dev/null >/dev/null &
-}
+# set CE = editor of choice (obsolete)
+#if [ -z "$SSH_CLIENT" ]; then
+#	if   [ "$PLATFORM" == 'macosx' ]; then
+#		export CE=`which bbedit &>/dev/null`
+#		if [ -z "$CE" ]; then
+#			export CE=`which edit &>/dev/null`
+#		fi
+#	elif [ "$PLATFORM" == 'cygwin' ]; then
+#		CE='/cygdrive/c/Users/rmills/com/ce.exe'
+#	elif [ "$PLATFORM" == 'linux' ]; then
+#		export CE=`which kate`
+#		if [ ! -z "$CE" ]; then
+#			export CE="kate --use"
+#			export CE2="&>/dev/null &"
+#		fi		
+#	fi
+#fi
+#
+#if [ "$PLATFORM" == "macosx" ]; then
+#	export CE=bbedit
+#fi
+#
+#ce()
+#{
+#	$CE "$@" 2>/dev/null >/dev/null &
+#}
 
 # catch all - use good old vi!
-if [ -z "$CE" ]; then
-	export CE=vi
-fi
+#if [ -z "$CE" ]; then
+#	export CE=vi
+#fi
 
 ##
 # aliases
@@ -378,12 +374,6 @@ alias robin='cd ~/Projects/cocoatutorials/robin'
 #
 # Favorite servers
 alias clanmills.com='ssh clanmil1@clanmills.com'
-alias "crunch=ssh $AUSER@crunch"
-alias "bocks=ssh root@$B"
-alias "tenth=ssh root@tenth"
-alias "housecat=ssh root@housecat"
-alias "poole=ssh root@poole"
-alias "demi=ssh root@demi"
 
 ##
 # keep QtCreator happy
@@ -440,27 +430,11 @@ remember() {
 
 
 ##
-# last minute adjustments 
+# last minute adjustments for local machines
 if [ "$FACTORY" == "novariant" ]; then
-	# export -n CE
-	unset  ce
-	unset  cet
-	export -n CE
 	export DISPLAY=:4.0
 	export PATH=~/local/bin/$PATH
 	alias ll=dir
-fi
-
-if [ "$PLATFORM" == "linux" ]; then
-	export -n CE
-	unset  ce
-	unset  cet
-fi
-
-if [ "$PLATFORM" == "cygwin" ]; then
-	export -n CE
-	unset  cet
-	unset  ce
 fi
 
 if [ "$FACTORY" == "rmills-imac" ]; then
