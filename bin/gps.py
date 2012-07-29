@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 r"""gps - a program to update the exif data in images using GPX files
 
@@ -22,7 +22,7 @@ To use this:
 	and respected.   You can use the tzinfo file to correct for
 	camera inaccuracy, incorrect timezone setting and so.
 	
-	For example for PSD (Pacific Daylight) -07:00, this will be 3600*7 = 25200 (seconds)
+	For example for PDT (Pacific Daylight) -07:00, this will be 3600*7 = 25200 (seconds)
 	The Camera clock is 28800 seconds behind ZULU
 	If you are to the EAST of ZULU, tzinfo will be negative.
 	
@@ -61,6 +61,7 @@ from   time import altzone,daylight,timezone
 import time
 import datetime
 import xml.dom.minidom
+import re
 
 XMLtime     = '%Y-%m-%dT%H:%M:%SZ' #
 timediffMax = 180                  # 3 minutes
@@ -211,8 +212,8 @@ def getDelta(filedict):
 ##
 # get difference in seconds between two XML time stamps
 def tdiff(ts1,ts2):
-	return abs( time.mktime(time.strptime(ts1,XMLtime)) \
-	          - time.mktime(time.strptime(ts2,XMLtime)) \
+	return abs( time.mktime(time.strptime(re.sub('\.[0-9]*','',ts1),XMLtime)) \
+	          - time.mktime(time.strptime(re.sub('\.[0-9]*','',ts1),XMLtime)) \
 	          )
 
 ## 
@@ -249,6 +250,7 @@ def gps():
 	if len(timedict):
 		image 		= 0
 		firstTime 	= True
+		timetag  = 'Exif.Photo.DateTimeOriginal'
 		imagedict = {}
 		for path in glob.glob("*"):
 			path = os.path.abspath(path)
@@ -256,7 +258,7 @@ def gps():
 				try:
 					image     = pyexiv2.ImageMetadata(path)
 					image.read()
-					timestamp = image['Exif.Image.DateTime'].value
+					timestamp = image[timetag].value
 					xmlDate   = getXMLtimez(timestamp,delta)
 					imagedict[xmlDate] = path
 				except:
@@ -267,7 +269,7 @@ def gps():
 			if 1: #try
 				image	    = pyexiv2.ImageMetadata(path)
 				image.read()
-				stamp	    = str(getXMLtimez(image['Exif.Image.DateTime'].value,delta))
+				stamp	    = str(getXMLtimez(image[timetag].value,delta))
 
 				timestamp	= search(timedict,stamp)
 				timediff    = tdiff(timestamp,stamp)
