@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ $# != 2 ]; then
-	echo syntax: $0 svn-directory exp-director
-	exit 1
+    echo syntax: $0 svn-dir export-dir
+    exit 1
 fi
 svn="$1"
 exp="$2"
@@ -12,24 +12,23 @@ exp="$2"
 
 
 run() {
-	echo --- $@ ---
-	eval $@
+    # echo --- $@ ---
+    eval $@
 }
 
 if [ ! -d "$svn" ]; then
-	echo directory $svn does not exist
-	exit 1
+    echo directory $svn does not exist
+    exit 1
 fi
 
-
 if [ ! -d "$exp" ]; then
-	echo directory $exp does not exist
-	exit 1
+    echo directory $exp does not exist
+    exit 1
 fi
 
 for i in $(svn status -q "$svn"|grep '^[M|A]' |sed -e "s/^[M|A]//g"); do
-	run cp "$i" $exp$(basename $i)
-	run ls -alt ${exp}$(basename $i)
+    run cp "$i" $exp$(basename $i)
+    run ls -alt ${exp}$(basename $i)
 done
 
 # That's all Folks!

@@ -1,46 +1,56 @@
 #!/bin/bash
 
-if [ $# -lt 2 ]; then
-	echo syntax: $0 exp-director loc ...
-	exit 1
-fi
+syntax()
+{
+    echo syntax: $0 exp-directory loc ...
+    exit 1
+}
+
+if [ $# -lt 2 ]; then syntax ; fi
 exp="$1"
 # ensure $exp ends with '/'
 [[ $exp != */ ]] && exp="$exp"/
 shift
 if [ ! -d "$exp" ]; then
-	echo directory $exp does not exist
-	exit 1
+    echo directory $exp does not exist
+    exit 1
 fi
-
-
 
 declare -a dirs
 dirs=$@
 
 for d in $@; do 
-	echo $d
+    echo $d
+    if [ ! -d $d ]; then
+        echo directory $d does not exist
+        exit 1
+    fi
 done
+
+if [ ${#dirs} == 0 ]; then
+    echo no directories given
+    syntax
+fi
 
 
 run() {
-	echo --- $@ ---
-	eval $@
+    echo $@
+    eval $@
 }
 
 for F in $(ls ${exp}*); do
-	f=$(basename $F)
-	bDone=0
-	for d in $@; do 
-		x=$(find $d -name $f)
-		if [ ${#x} != 0 ]; then
-			run cp "$F" $d/$x
-			bDone=1
-		fi
-	done
-	if [ $bDone == 0 ]; then
-		echo ignored $F
-	fi
+    f=$(basename $F)
+    bDone=0
+    for d in $@; do 
+        x=$(find $d -name $f)
+        if [ ${#x} != 0 ]; then
+            run cp "$F" $x
+            bDone=1
+        fi
+    done
+    if [ $bDone == 0 ]; then
+        echo ignored $F
+    fi
 done
 
 # That's all Folks!
