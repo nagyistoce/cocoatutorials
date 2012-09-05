@@ -127,15 +127,6 @@ export __=";"
 export ___="{} ;"
 
 ##
-# servers
-export B=bocksbeutel
-export S
-S[0]=bocksbeutel
-S[1]=housecat
-S[2]=tenth
-S[3]=demi
-
-##
 # Install image magick
 # http://mirror1.smudge-it.co.uk/imagemagick/www/binary-releases.html#macosx
 # export MAGICK_HOME="/Users/rmills/gnu/ImageMagick"
@@ -433,8 +424,9 @@ remember() {
 # last minute adjustments for local machines
 if [ "$FACTORY" == "novariant" ]; then
 	export DISPLAY=:4.0
-	export PATH=~/local/bin/$PATH
+	export "PATH=~/local/bin/:$PATH"
 	alias ll=dir
+    export UUT=192.168.116
 fi
 
 if [ "$FACTORY" == "rmills-imac" ]; then

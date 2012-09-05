@@ -1,6 +1,5 @@
 // norm.cpp
 
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -18,6 +17,14 @@
 
 #define TAB 4
 
+enum
+{ OK = 0
+, NOMEM
+, NOOPEN
+, FIXED
+} ;
+    
+
 /* ------------------------------------------------------------ */
 /* detab                                                        */
 /* ------------------------------------------------------------ */
@@ -27,13 +34,15 @@ void detab(FILE* f,char* line,size_t n,unsigned tab)
     for (  size_t i = 0 ; i < n ; i++)
     {
         int c = line[i] ;
+    //  printf("c = %d %c\n",c,c);
         switch ( c )
         {
             case '\t' :
             {
                 int n      = k % tab     ;
                 int spaces = tab - n     ;
-                for ( int j = 0; j < spaces+1  ; ++j)   putc(BL,f);
+                for ( int j = 0; j < spaces+1  ; ++j)
+                    putc(BL,f);
                 k = 1 ;
             }
             break ;
@@ -64,7 +73,7 @@ bool fix(const char* path,void* buff,long l,unsigned int tab)
         FILE* f = fopen(path,"wb") ;
         if (  f ) {
             size_t n = 0 ;
-            char* line     = buffer       ;
+            char* line     = buffer;
             for ( size_t i = 0 ; i < l ; i++ ) {
                 n++ ;
                 if ( buffer[i] == CR )
@@ -82,7 +91,6 @@ bool fix(const char* path,void* buff,long l,unsigned int tab)
             detab(f,line,n,tab) ;
             fclose(f) ;
         }
-        
     }
 
     return bFix ;
@@ -93,52 +101,49 @@ bool fix(const char* path,void* buff,long l,unsigned int tab)
 /* ------------------------------------------------------------ */
 int main(int argc,char* argv[])
 {
+    int state = OK;
+
     if ( argc < 2 ) {
         printf("syntax: norm filename ...\n") ;
         return 1 ;
     }
     int errors = 0 ;
     
-    enum
-    { OK = 0
-        , NOMEM
-        , NOOPEN
-        , FIXED
-    } state = OK ;
-    
     for ( int i = 1 ; i < argc ; i++ )
     {
-            long         l       = 0       ;
-            void*        buffer  = NULL    ;
-            bool         bOpened = false   ;
-            const char*  path    = argv[i] ;
-            struct stat  buf     ;
+        long         l       = 0       ;
+        void*        buffer  = NULL    ;
+        bool         bOpened = false   ;
+        const char*  path    = argv[i] ;
+        struct stat  buf     ;
             
-            int error   = lstat(path, &buf );
+        int error   = lstat(path, &buf );
             
-            if ( !error ) {
-                l = buf.st_size ;
-                if ( l ) buffer = malloc(l) ;
-                if ( buffer ) {
-                    FILE* f = fopen(path,"rb") ;
-                    if (  f ) {
-                        fread(buffer,l,1,f) ;
-                        fclose(f) ;
-                    } else {
-                        state = NOOPEN ;
-                    }
-                } else if ( l ) state = NOMEM ;
-                if ( !state && fix(path,buffer,l,TAB) ) state= FIXED ;
-            } else state = NOOPEN ;
+        if ( !error ) {
+            l = buf.st_size ;
+            if ( l ) buffer = malloc(l) ;
+            if ( buffer ) {
+                FILE* f = fopen(path,"rb") ;
+                if (  f ) {
+                    fread(buffer,l,1,f) ;
+                    fclose(f) ;
+                } else {
+                    state = NOOPEN ;
+                }
+            } else if ( l ) state = NOMEM ;
+            if ( !state )
+                if ( fix(path,buffer,l,TAB) )
+                    state = FIXED;
+        } else state = NOOPEN ;
             
-            free(buffer) ;
-            printf("%s %s\n",path
-                   , state == NOMEM  ? "insufficient memory"
-                   : state == NOOPEN ? "cannot open"
-                   : state == FIXED  ? "fixed"
-                   : "clean"
-                   ) ;
-            if ( state == NOMEM || state == NOOPEN ) errors ++ ;
+        free(buffer) ;
+        printf("%s %s\n",path
+              , state == NOMEM  ? "insufficient memory"
+              : state == NOOPEN ? "cannot open"
+              : state == FIXED  ? "fixed"
+              : "clean"
+              ) ;
+        if ( state == NOMEM || state == NOOPEN ) errors ++ ;
     }
     
     return errors ? 2 : 0  ;
