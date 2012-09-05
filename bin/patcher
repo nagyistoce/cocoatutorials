@@ -75,7 +75,7 @@ for F in $files; do
     for T in $targets; do
     	t=$(basename $T)
     	if [ $bDone == 0 -a "$t" == "$f" ]; then
-            run cp "$F" "$T"
+            run cp -p "$F" "$T"
             bDone=1
             break
         fi
