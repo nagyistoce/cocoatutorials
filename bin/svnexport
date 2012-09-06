@@ -37,8 +37,10 @@ fi
 ##
 # do the business
 for i in $(svn status -q "$svn"|grep '^[M|A]' |sed -e "s/^[M|A]//g"); do
-    run cp -p   "$i" $exp$(basename $i)
-    run ls -alt      $exp$(basename $i)
+	if [ -f $i ]; then
+        run cp -p   "$i" $exp$(basename $i)
+        run ls -alt      $exp$(basename $i)
+    fi
 done
 
 # That's all Folks!
