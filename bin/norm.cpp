@@ -85,7 +85,7 @@ bool fix(const char* path,void* buff,long l,unsigned int tab)
                 if ( buffer[i] == LF ) {              // UNIX (or MAC or DOS)
                     detab(f,line,n,tab) ;
                     n    = 0            ;
-                    line = buffer+i     ;
+                    line = buffer+i+1   ;
                 }
             }           
             detab(f,line,n,tab) ;
