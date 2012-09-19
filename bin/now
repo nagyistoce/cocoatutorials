@@ -1,13 +1,7 @@
 #!/bin/bash
 
 c="import time; import string; print string.lower(time.strftime('%Y-%m-%d %H:%M:%S%Z', time.localtime()))"
-
-uname=$(uname)
-if [ "$PLATFORM" == "macosx" -o "$uname" == "Darwin" ]; then
-	python -c "$c" | pbcopy && pbpaste
-else
-	python -c "$c"
-fi
+python -c "$c" | pbcopy && pbpaste
 
 # That's all Folks!
 ##

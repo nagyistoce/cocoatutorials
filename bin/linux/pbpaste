@@ -1,0 +1,4 @@
+#!/bin/bash
+xclip -selection clipboard -o
+# That's all Folks
+##

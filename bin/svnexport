@@ -18,6 +18,8 @@ fi
 
 svn="$1"
 exp="$2"
+tmp=/tmp/svnexport
+rm -rf $tmp
 
 # ensure $exp ends with '/'
 [[ $exp != */ ]] && exp="$exp"/
@@ -38,8 +40,15 @@ fi
 # do the business
 for i in $(svn status -q "$svn"|grep '^[M|A]' |sed -e "s/^[M|A]//g"); do
 	if [ -f $i ]; then
-        run cp -p   "$i" $exp$(basename $i)
-        run ls -alt      $exp$(basename $i)
+        b=$(basename $i)
+		grep "^$b$" $tmp 2>/dev/null >/dev/null
+        if [ $? == 0 ]; then
+           echo "IMPOSSIBLE more than one file with the base $b  $i"
+           exit 1
+        fi
+        run cp -p   "$i" $exp$b
+        run ls -alt      $exp$b
+        echo $b >> $tmp
     fi
 done
 

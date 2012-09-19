@@ -1,0 +1,25 @@
+#!/bin/sh
+
+u=/home/rmills/temp/UUTRelease
+find $u -type f -exec ls -alt {} ";" | grep -v cpp
+echo ''
+
+copy() {
+  f=$1
+  t=$2
+  if [ -e $u/$f ]; then
+    cp -p   $u/$f $t
+    ls -alt $t/$f
+  fi
+}
+
+copy timaru                      /tmp
+copy rangimfgtest_thermal.html   /srv/www/timaru
+copy RangiMfgTest.js             /srv/www/timaru/js
+copy SteerPerformance.archive.js /srv/www/timaru/js
+copy rangimfgtest.ini            /var/lib/timaru
+copy rangi_mfgtest_stopFinal.sh  /var/mfgtest/scripts
+copy run                         /etc/service/manufacturing
+
+# That's all folks!
+##

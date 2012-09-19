@@ -109,6 +109,8 @@ done
 #--- copy RangiMfgTest.js             /srv/www/timaru/js
 #--- copy SteerPerformance.archive.js /srv/www/timaru/js
 #--- copy rangimfgtest.ini            /var/lib/timaru
-#--- 
+#--- copy rangi_mfgtest_stopFinal.sh  /var/mfgtest/scripts
+#--- copy run                         /etc/service/manufacturing
+
 # That's all folks!
 ##
