@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# http://whereswalden.com/2009/10/23/pbcopy-and-pbpaste-for-linux/
+# http://linuxtidbits.wordpress.com/2008/02/22/command-line-to-clipboard/
+
 xclip -selection clipboard
+
 # That's all Folks
 ##
