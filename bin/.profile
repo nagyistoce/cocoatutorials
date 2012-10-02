@@ -442,6 +442,7 @@ if [ "$PLATFORM" == "cygwin" ]; then
 fi
 
 
+cd ~/
 # That's all Folks!
 ##
 

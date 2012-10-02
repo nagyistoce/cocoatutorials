@@ -49,6 +49,7 @@ import cgi
 import string
 import glob
 import re
+import urllib
 from PIL import Image
 
 import cmLib
@@ -495,7 +496,7 @@ def writeWebPage(webDir,filename,pathname,webPageString,subs,width,aspect,rotate
 		os.mkdir(webDir)
 
 	if not os.path.isdir(webDir):
-		throw ("fuck me, the directory " , webDir , " isn't there");
+		throw ("the directory " , webDir , " isn't there");
 
 	pname = os.path.splitext(filename)[0]
 	path  = os.path.join(webDir,pname+subs['ext'])
@@ -532,6 +533,7 @@ def writeLightboxPage(webDir,filedict,lightboxPageString,subs,width,cols):
 
 	path = os.path.join(webDir,lightbox+ext)
 	file = open(path,"wt")
+
 	file.write(string.Template(lightboxPageString).safe_substitute(subs))
 	file.close()
 
@@ -941,7 +943,7 @@ def main(argv):
 		for caption in captions:
 			if not caption:
 				caption='None'
-			Captions+= "'" + cgi.escape(caption) + "',\n"
+			Captions+= "'" + cgi.escape(caption.replace("'","\\'")) + "',\n"
 		Captions+= ']\n'
 		# print '--------------------------'
 		# print Captions
