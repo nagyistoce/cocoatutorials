@@ -334,7 +334,7 @@ alias move=mv
 alias del='rm -rf'
 alias dirod='ls -altFr'
 alias xcopy='ditto'
-alias finder='find . -depth -name'
+alias finder='find . -depth -iname'
 alias shellx=open
 alias start=open
 
@@ -441,6 +441,10 @@ if [ "$PLATFORM" == "cygwin" ]; then
 	fi
 fi
 
+if [ "$FACTORY" == "rmills-ubuntu" ]; then
+	export PHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+	export QHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+fi
 
 cd ~/
 # That's all Folks!
