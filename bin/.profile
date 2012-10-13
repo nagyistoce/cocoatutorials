@@ -59,6 +59,10 @@ export PATH=".:${BIN}:$BIN/$PLATFORM:/sbin:/usr/sbin:/opt/subversion/bin:/usr/lo
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
+
+##
+# this should be put into the macosx section towards the end of this file.
 # export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
 # export DYLD_LIBRARY_PATH=/opt/local/lib/
   
@@ -420,6 +424,7 @@ remember() {
 }
 
 
+
 ##
 # last minute adjustments for local machines
 if [ "$FACTORY" == "novariant" ]; then
@@ -434,7 +439,6 @@ if [ "$FACTORY" == "rmills-imac" ]; then
 fi
 
 if [ "$PLATFORM" == "cygwin" ]; then
-	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
 	d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)
 	if [ -d "$d" ]; then
 		export "BOOST_ROOT=$d"
@@ -450,17 +454,13 @@ cd ~/
 # That's all Folks!
 ##
 
-
-
-
 ##
 # One last thing:
-##
-# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2011-12-06_at_12:29:07
 ##
 
 ## rmills - I've put /opt/local/bin at the end of the path to prevent Macports from putting his commands in front of the system's
 # MacPorts Installer addition on 2011-12-06_at_12:29:07: adding an appropriate PATH variable for use with MacPorts.
-export PATH=$PATH:/opt/local/bin:/opt/local/sbin
+export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 # Finished adapting your PATH environment variable for use with MacPorts.
+
 
