@@ -24,8 +24,8 @@
 {
 	// properties
 	NSTimer*			timer;
-    NSPoint             initialLocation; // position of mouse at mouse down
-    NSSize              initialSize;     // size of window at mouse down
+    NSPoint             initialLocation;  // position of mouse at mouse down
+    NSSize              initialSize;      // size of window at mouse down
     NSColor*            backgroundColor;
     NSColor*            gradientColor;
     NSColor*            handsColor;
