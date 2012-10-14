@@ -65,7 +65,9 @@ export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
 # this should be put into the macosx section towards the end of this file.
 # export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
 # export DYLD_LIBRARY_PATH=/opt/local/lib/
-  
+
+export LD_LIBRARY_PATH=/usr/local/lib:/opt/local/lib:~/local/lib:
+
 ## 
 # SCM support
 export P4USER=rmills
