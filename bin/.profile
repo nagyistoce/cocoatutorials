@@ -59,14 +59,8 @@ export PATH=".:${BIN}:$BIN/$PLATFORM:/sbin:/usr/sbin:/opt/subversion/bin:/usr/lo
 export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
-export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/opt/local/lib/pkgconfig
 
-##
-# this should be put into the macosx section towards the end of this file.
-# export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
-# export DYLD_LIBRARY_PATH=/opt/local/lib/
-
-export LD_LIBRARY_PATH=/usr/local/lib:/opt/local/lib:~/local/lib:
 
 ## 
 # SCM support
@@ -384,18 +378,6 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 # export PATH=$M2:$PATH
 # export MAVEN_OPTS="-Xms256m -Xmx512m"
 
-# set | grep profile
-which lnresolve 2>/dev/null >/dev/null 
-if [ $? == 0 ]; then 
-	if [ "$PLATFORM" == "macosx" ]; then
-		cd=$(lnresolve ${BASH_SOURCE[0]})
-		cd=$(dirname "$cd")
-		profile="$cd/../robin_mills_bin/.profile" 
-		if [ -e "$profile"  ]; then
-			source "$profile"
-		fi
-	fi
-fi
 
 ## Warren's remind/remember magic
 # Function "remind" 
@@ -425,6 +407,24 @@ remember() {
   fi
 }
 
+##
+# platform adjustments
+if [ "$PLATFORM" == "cygwin" ]; then
+	d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)
+	if [ -d "$d" ]; then
+		export "BOOST_ROOT=$d"
+	fi
+fi
+
+if [ "$PLATFORM" == "macosx" ]; then
+	: export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+	# export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH}:/opt/local/lib/"
+fi
+
+if [ "$FACTORY" == "rmills-ubuntu" ]; then
+	export PHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+	export QHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+fi
 
 
 ##
@@ -440,17 +440,6 @@ if [ "$FACTORY" == "rmills-imac" ]; then
 	export "PATH=/opt/subversion/bin:$PATH"
 fi
 
-if [ "$PLATFORM" == "cygwin" ]; then
-	d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)
-	if [ -d "$d" ]; then
-		export "BOOST_ROOT=$d"
-	fi
-fi
-
-if [ "$FACTORY" == "rmills-ubuntu" ]; then
-	export PHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
-	export QHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
-fi
 
 cd ~/
 # That's all Folks!
