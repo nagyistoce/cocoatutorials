@@ -22,14 +22,10 @@ int main(int argc,char* argv[])
       fclose(f) ;
       
       char cmd[2000] ;
-      sprintf(cmd,"ce \"%s\" 2>/dev/null >/dev/null",filename) ;
+      sprintf(cmd,"%s \"%s\" 2>/dev/null >/dev/null",argc>1?argv[1]:"bbedit",filename) ;
       system(cmd) ;
- //   printf("%s\n",cmd) ;
+      printf("%s\n",cmd) ;
     }
 
     return 0 ;
-    
-    // unused
-    argc ;
-    argv ;
 }

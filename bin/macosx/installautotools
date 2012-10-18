@@ -1,0 +1,34 @@
+#!/bin/bash
+# http://www.mattvsworld.com/blog/2010/02/install-the-latest-autoconf-and-automake-on-mac-os-10-6/
+
+curl -O http://mirrors.kernel.org/gnu/m4/m4-1.4.13.tar.gz
+tar -xzvf m4-1.4.13.tar.gz
+cd m4-1.4.13
+./configure --prefix=/usr/local
+make
+sudo make install
+cd ..
+curl -O http://mirrors.kernel.org/gnu/autoconf/autoconf-2.65.tar.gz
+tar -xzvf autoconf-2.65.tar.gz
+cd autoconf-2.65
+./configure --prefix=/usr/local # ironic, isn't it?
+make
+sudo make install
+cd ..
+# here you might want to restart your terminal session, to ensure the new autoconf is picked up and used in the rest of the script
+curl -O http://mirrors.kernel.org/gnu/automake/automake-1.11.tar.gz
+tar xzvf automake-1.11.tar.gz
+cd automake-1.11
+./configure --prefix=/usr/local
+make
+sudo make install
+cd ..
+curl -O http://mirrors.kernel.org/gnu/libtool/libtool-2.2.6b.tar.gz
+tar xzvf libtool-2.2.6b.tar.gz
+cd libtool-2.2.6b
+./configure --prefix=/usr/local
+make
+sudo make install
+
+# That's all Folks!
+##

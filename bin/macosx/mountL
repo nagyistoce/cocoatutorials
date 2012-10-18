@@ -1,0 +1,40 @@
+#!/bin/bash
+
+ls /L/windows 2>&1 > /dev/null
+if [ $? != 0 ]; then
+
+	old=$(ls /Volumes | sort)
+	osascript -e 'mount volume "smb://rmills-laptop;rmills:@rmills-laptop/C"'
+	
+	sleep 2
+	new=$(ls /Volumes | sort)
+	
+	echo $new
+	echo $old
+	
+	for n in $new; do
+		count=0
+		for o in $old; do
+			if [ $o == $n ]; then count=1 ; fi
+		done
+		if [ $count == 0 ]; then mounted=$n ; fi
+	done
+	echo mounted = $mounted
+	if [ $#mounted != 0 ]; then
+		sudo unlink /L
+		sudo ln -s /Volumes/$mounted /L
+	fi
+else
+	echo already mounted
+fi
+
+
+#if ( $status ) then
+#	echo "/L isn't mounted.  Hang on."
+#	osascript -e 'mount volume "smb://rmills-laptop;rmills:Largs12%40@rmills-laptop/C"'
+#else
+#	echo '/L is mounted'
+#endif
+
+
+# df -k | grep -e Volumes -e Filesystem
