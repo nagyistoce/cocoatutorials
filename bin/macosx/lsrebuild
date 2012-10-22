@@ -1,0 +1,17 @@
+#!/bin/bash
+# http://www.macvector.com/Support/rebuildingmacosxdesktop.html
+
+	lsregister=/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister
+if [ ! -e "$lsregister" ]; then
+	lsregister=/System/Library/Frameworks/ApplicationServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+fi
+
+if [ -e "$lsregister" ]; then
+    echo sudo "$lsregister" -kill -r -domain local -domain system -domain user
+         sudo "$lsregister" -kill -r -domain local -domain system -domain user
+else
+	echo "*** unable to find lsregister ***"
+fi
+
+# That's all Folks!
+##

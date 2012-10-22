@@ -11,6 +11,8 @@ syntaxError()
 pub=~/.ssh/id_rsa.pub
 if [ ! -e  "$pub" ]; then
 	echo "*** public key $pub does not exist ***"
+	echo "run: ssh-keygen -t rsa"
+	echo "see: http://www.linuxproblem.org/art_9.html"
 	exit 1
 fi
 
