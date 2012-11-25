@@ -7,15 +7,15 @@ renamer JPG jpg "*.JPG"
 ##
 # get "raw" filenames (raw = IMG_1234.JPG - as it arrives from the camera)
 IFS=$'\n'
-FILES="$(ls [A-Z]*_[0-9]*.jpg)"
+FILES="$(find . -maxdepth 1 -iname "*.jpg")"
 
 ##
 # rename them in lower case, one at a time
 for F in $FILES ; do
-	f="$(echo "$F"|perl -e 'print lc <>;')"
-	if [ "$f" != "$F" ]; then
-		mv "$F" "$f"
-	fi
+    f="$(echo "$F"|perl -e 'print lc <>;')"
+    if [ "$f" != "$F" ]; then
+        mv "$F" "$f"
+    fi
 done
 
 # That's all Folks!
