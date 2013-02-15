@@ -1,0 +1,317 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10596F616CA021500B7A1E5 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10596F516CA021500B7A1E5 /* WebKit.framework */; };
+		A1A21B2C16C7424100A11ECC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1A21B2B16C7424100A11ECC /* Cocoa.framework */; };
+		A1A21B3616C7424100A11ECC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1A21B3416C7424100A11ECC /* InfoPlist.strings */; };
+		A1A21B3816C7424100A11ECC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A21B3716C7424100A11ECC /* main.m */; };
+		A1A21B3C16C7424100A11ECC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A1A21B3A16C7424100A11ECC /* Credits.rtf */; };
+		A1A21B3F16C7424100A11ECC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1A21B3E16C7424100A11ECC /* AppDelegate.m */; };
+		A1A21B4216C7424100A11ECC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1A21B4016C7424100A11ECC /* MainMenu.xib */; };
+		A1A21B4916C7438A00A11ECC /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1A21B4816C7438A00A11ECC /* WebKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10596F516CA021500B7A1E5 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		A1A21B2816C7424100A11ECC /* BYOB4.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BYOB4.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1A21B2B16C7424100A11ECC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		A1A21B2F16C7424100A11ECC /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		A1A21B3016C7424100A11ECC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A1A21B3316C7424100A11ECC /* BYOB4-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BYOB4-Info.plist"; sourceTree = "<group>"; };
+		A1A21B3516C7424100A11ECC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A1A21B3716C7424100A11ECC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A1A21B3916C7424100A11ECC /* BYOB4-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BYOB4-Prefix.pch"; sourceTree = "<group>"; };
+		A1A21B3B16C7424100A11ECC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		A1A21B3D16C7424100A11ECC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A1A21B3E16C7424100A11ECC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A1A21B4116C7424100A11ECC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		A1A21B4816C7438A00A11ECC /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1A21B2516C7424100A11ECC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1A21B4916C7438A00A11ECC /* WebKit.framework in Frameworks */,
+				A1A21B2C16C7424100A11ECC /* Cocoa.framework in Frameworks */,
+				A10596F616CA021500B7A1E5 /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1A21B1F16C7424100A11ECC = {
+			isa = PBXGroup;
+			children = (
+				A1A21B4816C7438A00A11ECC /* WebKit.framework */,
+				A1A21B3116C7424100A11ECC /* BYOB4 */,
+				A1A21B2A16C7424100A11ECC /* Frameworks */,
+				A1A21B2916C7424100A11ECC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1A21B2916C7424100A11ECC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1A21B2816C7424100A11ECC /* BYOB4.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1A21B2A16C7424100A11ECC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A1A21B2B16C7424100A11ECC /* Cocoa.framework */,
+				A1A21B2D16C7424100A11ECC /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A1A21B2D16C7424100A11ECC /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A10596F516CA021500B7A1E5 /* WebKit.framework */,
+				A1A21B2F16C7424100A11ECC /* CoreData.framework */,
+				A1A21B3016C7424100A11ECC /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		A1A21B3116C7424100A11ECC /* BYOB4 */ = {
+			isa = PBXGroup;
+			children = (
+				A1A21B3D16C7424100A11ECC /* AppDelegate.h */,
+				A1A21B3E16C7424100A11ECC /* AppDelegate.m */,
+				A1A21B4016C7424100A11ECC /* MainMenu.xib */,
+				A1A21B3216C7424100A11ECC /* Supporting Files */,
+			);
+			path = BYOB4;
+			sourceTree = "<group>";
+		};
+		A1A21B3216C7424100A11ECC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A1A21B3316C7424100A11ECC /* BYOB4-Info.plist */,
+				A1A21B3416C7424100A11ECC /* InfoPlist.strings */,
+				A1A21B3716C7424100A11ECC /* main.m */,
+				A1A21B3916C7424100A11ECC /* BYOB4-Prefix.pch */,
+				A1A21B3A16C7424100A11ECC /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1A21B2716C7424100A11ECC /* BYOB4 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1A21B4516C7424100A11ECC /* Build configuration list for PBXNativeTarget "BYOB4" */;
+			buildPhases = (
+				A1A21B2416C7424100A11ECC /* Sources */,
+				A1A21B2516C7424100A11ECC /* Frameworks */,
+				A1A21B2616C7424100A11ECC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BYOB4;
+			productName = BYOB4;
+			productReference = A1A21B2816C7424100A11ECC /* BYOB4.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1A21B2016C7424100A11ECC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Robin Mills";
+			};
+			buildConfigurationList = A1A21B2316C7424100A11ECC /* Build configuration list for PBXProject "BYOB4" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A1A21B1F16C7424100A11ECC;
+			productRefGroup = A1A21B2916C7424100A11ECC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1A21B2716C7424100A11ECC /* BYOB4 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1A21B2616C7424100A11ECC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1A21B3616C7424100A11ECC /* InfoPlist.strings in Resources */,
+				A1A21B3C16C7424100A11ECC /* Credits.rtf in Resources */,
+				A1A21B4216C7424100A11ECC /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1A21B2416C7424100A11ECC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1A21B3816C7424100A11ECC /* main.m in Sources */,
+				A1A21B3F16C7424100A11ECC /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A1A21B3416C7424100A11ECC /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A1A21B3516C7424100A11ECC /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A1A21B3A16C7424100A11ECC /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A1A21B3B16C7424100A11ECC /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		A1A21B4016C7424100A11ECC /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A1A21B4116C7424100A11ECC /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A1A21B4316C7424100A11ECC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A1A21B4416C7424100A11ECC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A1A21B4616C7424100A11ECC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "BYOB4/BYOB4-Prefix.pch";
+				INFOPLIST_FILE = "BYOB4/BYOB4-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A1A21B4716C7424100A11ECC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "BYOB4/BYOB4-Prefix.pch";
+				INFOPLIST_FILE = "BYOB4/BYOB4-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1A21B2316C7424100A11ECC /* Build configuration list for PBXProject "BYOB4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1A21B4316C7424100A11ECC /* Debug */,
+				A1A21B4416C7424100A11ECC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1A21B4516C7424100A11ECC /* Build configuration list for PBXNativeTarget "BYOB4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1A21B4616C7424100A11ECC /* Debug */,
+				A1A21B4716C7424100A11ECC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1A21B2016C7424100A11ECC /* Project object */;
+}
