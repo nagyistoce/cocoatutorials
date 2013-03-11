@@ -1,0 +1,26 @@
+#!/bin/bash
+
+##
+# curl it through exiv2!
+##
+
+##
+# get arguments (but not the last one!)
+args=()
+arg=""
+t=/tmp/$$.tmp
+for i in $@ ; do
+  args+=($arg)
+  arg=$i
+done
+
+##
+# cp with curl to tmp file
+if [ $# -gt 0 ]; then
+	args+=($t)
+	curl --silent --range 0-50000 "$arg" > "$t" 
+fi
+exiv2 ${args[@]} 
+
+# That's all folks
+##
