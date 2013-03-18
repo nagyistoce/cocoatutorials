@@ -341,6 +341,10 @@ namespace Exiv2 {
     } // FileIo::Impl::winNumberOfLinks
 
 #endif // defined WIN32 && !defined __CYGWIN__
+
+	const std::string FileIo::TEMP_FILE_EXT = ".exiv2_temp";
+	const std::string FileIo::GEN_FILE_EXT = ".exiv2";
+
     FileIo::FileIo(const std::string& path)
         : p_(new Impl(path))
     {
@@ -355,8 +359,18 @@ namespace Exiv2 {
 #endif
     FileIo::~FileIo()
     {
+		std::string filePath = path();
         close();
         delete p_;
+
+		std::regex re ("\\d*" + FileIo::TEMP_FILE_EXT + "$");
+		// remove the temp file
+		if (std::regex_match (filePath, re)) {
+			if(remove(filePath.c_str()) != 0 ) {
+				// error when removing file
+				printf ("Warning: Unable to remove the temp file %s.\n", filePath.c_str());
+			}
+		}
     }
 
     int FileIo::munmap()
@@ -617,6 +631,34 @@ namespace Exiv2 {
     {
         const bool wasOpen = (p_->fp_ != 0);
         const std::string lastMode(p_->openMode_);
+
+		/*
+			If the current file is a temporary file which is created from the stdin data,
+				we change the name of this file in order to not remove it in destructor.
+		*/
+		std::string currentPath = path();
+		std::regex re ("\\d*" + FileIo::TEMP_FILE_EXT + "$");
+		if (std::regex_match (currentPath, re)) {
+			close();
+#ifdef EXV_UNICODE_PATH
+			if (p_->wpMode_ == Impl::wpStandard) {
+				ReplaceStringInPlace(p_->path_, FileIo::TEMP_FILE_EXT, FileIo::GEN_FILE_EXT);
+			} else {
+				std::wstring temp_file_ext;
+				temp_file_ext.assign(FileIo::TEMP_FILE_EXT.begin(), FileIo::TEMP_FILE_EXT.end());
+				std::wstring gen_file_ext;
+				gen_file_ext.assign(FileIo::GEN_FILE_EXT.begin(), FileIo::GEN_FILE_EXT.end());
+				ReplaceStringInPlace(p_->wpath_, temp_file_ext, gen_file_ext);
+			}
+#else
+			ReplaceStringInPlace(p_->path_, FileIo::TEMP_FILE_EXT, FileIo::GEN_FILE_EXT);
+#endif
+			// rename the file
+			if (rename(currentPath.c_str(), path().c_str()) != 0) {
+				printf("Warning: Failed to rename the temp file. \n");
+			}
+		}
+
 
         FileIo *fileIo = dynamic_cast<FileIo*>(&src);
         if (fileIo) {
@@ -976,6 +1018,9 @@ namespace Exiv2 {
     }
 
 #endif
+
+
+
     //! Internal Pimpl structure of class MemIo.
     class MemIo::Impl {
     public:
@@ -1311,5 +1356,23 @@ namespace Exiv2 {
         return file.write(buf.pData_, buf.size_);
     }
 
+#endif
+	void ReplaceStringInPlace(std::string& subject, const std::string& search,
+                          const std::string& replace) {
+		size_t pos = 0;
+		while((pos = subject.find(search, pos)) != std::string::npos) {
+			 subject.replace(pos, search.length(), replace);
+			 pos += replace.length();
+		}
+	}
+#ifdef EXV_UNICODE_PATH
+	void ReplaceStringInPlace(std::wstring& subject, const std::wstring& search,
+                          const std::wstring& replace) {
+		std::wstring::size_type pos = 0;
+		while((pos = subject.find(search, pos)) != std::wstring::npos) {
+			 subject.replace(pos, search.length(), replace);
+			 pos += replace.length();
+		}
+	}
 #endif
 }                                       // namespace Exiv2

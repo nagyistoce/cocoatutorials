@@ -416,10 +416,85 @@ namespace Exiv2 {
         return ImageType::none;
     } // ImageFactory::getType
 
+#if STDIN_MEMIO
+// handle using MemIo
+	BasicIo::AutoPtr ImageFactory::handleStdin()
+	{
+		MemIo *memIo = new MemIo();
+		char readBuf[100*1024];
+		std::streamsize readBufSize = 0;
+		while (1) {
+			std::cin.read(readBuf, sizeof(readBuf));
+			readBufSize = std::cin.gcount();
+			if (readBufSize > 0) {
+				memIo->write((byte*)readBuf, (long)readBufSize);
+			} else {
+				break;
+			}
+		}
+		return BasicIo::AutoPtr(memIo);
+	}; 
+#else
+// handle using FileIo
+	BasicIo::AutoPtr ImageFactory::handleStdin()
+	{
+		std::time_t timestamp = std::time(NULL);
+		std::stringstream ss;
+		ss << timestamp << FileIo::TEMP_FILE_EXT;
+		std::string fileName = ss.str();
+
+		//char* fileName = "hello.abc";
+		std::ofstream fs(fileName, std::ios::out | std::ios::binary | std::ios::trunc);
+		char readBuf[100*1024];
+        std::streamsize readBufSize = 0;
+        while (1) {
+            std::cin.read(readBuf, sizeof(readBuf));
+            readBufSize = std::cin.gcount();
+            if (readBufSize > 0) {
+                fs.write (readBuf, readBufSize);
+            } else {
+                break;
+            }
+        }
+        fs.close();
+		return BasicIo::AutoPtr(new FileIo(fileName));
+	}; 
+#endif	
+	BasicIo::AutoPtr ImageFactory::createIo(const std::string& path) 
+	{
+		if (path.compare("-") == 0) {
+			if (!isatty(fileno(stdin))) {
+				if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+					throw Error(54);
+				else
+					return ImageFactory::handleStdin();
+			} else {
+				throw Error(53);
+			}
+		} else {
+			return BasicIo::AutoPtr(new FileIo(path));
+		}
+	}
+#ifdef EXV_UNICODE_PATH
+	BasicIo::AutoPtr ImageFactory::createIo(const std::wstring& path) 
+	{
+		if (path.compare(L"-") == 0) {
+			if (!isatty(fileno(stdin))) {
+				if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+					throw Error(54);
+				else
+					return ImageFactory::handleStdin();
+			} else {
+				throw Error(53);
+			}
+		} else {
+			return BasicIo::AutoPtr(new FileIo(path));
+		}
+	}
+#endif
     Image::AutoPtr ImageFactory::open(const std::string& path)
     {
-        BasicIo::AutoPtr io(new FileIo(path));
-        Image::AutoPtr image = open(io); // may throw
+        Image::AutoPtr image = open(ImageFactory::createIo(path)); // may throw
         if (image.get() == 0) throw Error(11, path);
         return image;
     }
@@ -427,8 +502,7 @@ namespace Exiv2 {
 #ifdef EXV_UNICODE_PATH
     Image::AutoPtr ImageFactory::open(const std::wstring& wpath)
     {
-        BasicIo::AutoPtr io(new FileIo(wpath));
-        Image::AutoPtr image = open(io); // may throw
+        Image::AutoPtr image = open(ImageFactory::createIo(wpath)); // may throw
         if (image.get() == 0) throw WError(11, wpath);
         return image;
     }

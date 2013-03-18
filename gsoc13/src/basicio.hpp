@@ -36,6 +36,7 @@
 // + standard includes
 #include <string>
 #include <memory>                               // for std::auto_ptr
+#include <regex>								// for removing temp file
 
 // *****************************************************************************
 // namespace extensions
@@ -291,6 +292,20 @@ namespace Exiv2 {
      */
     class EXIV2API FileIo : public BasicIo {
     public:
+		//! @name Constants
+        //@{
+		/*!
+			@brief The extention of the temporary file which is created when getting input data 
+					from stdin to read metadata. This file will be deleted in destructor.
+		*/
+		static const std::string TEMP_FILE_EXT; 
+		/*!
+			@brief The extention of the generated file which is created when getting input data from 
+					stdin to add or modify the metadata.
+		*/
+		static const std::string GEN_FILE_EXT; 
+		//@}
+
         //! @name Creators
         //@{
         /*!
@@ -738,6 +753,19 @@ namespace Exiv2 {
     EXIV2API long writeFile(const DataBuf& buf, const std::wstring& wpath);
 
 #endif
-
+	/*!
+      @brief replace each substring of the subject that matches the given search string with the given replacement
+      @note Subject is modified.
+     */
+	EXIV2API void ReplaceStringInPlace(std::string& subject, const std::string& search,
+                          const std::string& replace);
+#ifdef EXV_UNICODE_PATH
+	/*!
+      @brief Like ReplaceStringInPlace() but accepts a unicode path in an std::wstring.
+      @note Subject is modified. This function is only available on Windows.
+     */
+	EXIV2API void ReplaceStringInPlace(std::wstring& subject, const std::wstring& search,
+                          const std::wstring& replace);
+#endif
 }                                       // namespace Exiv2
 #endif                                  // #ifndef BASICIO_HPP_
