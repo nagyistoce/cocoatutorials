@@ -86,6 +86,8 @@ namespace Exiv2 {
     //! Internal Pimpl structure of class FileIo.
     class FileIo::Impl {
     public:
+		//! Constructor reading the stdin and writes to a temporary file.
+		Impl();
         //! Constructor
         Impl(const std::string& path);
 #ifdef EXV_UNICODE_PATH
@@ -101,6 +103,7 @@ namespace Exiv2 {
 #endif
         // DATA
         std::string path_;              //!< (Standard) path
+		bool isTemp_;					//!< Is the file temporary? If yes, it should be removed in destructor.
 #ifdef EXV_UNICODE_PATH
         std::wstring wpath_;            //!< Unicode path
         WpMode wpMode_;                 //!< Indicates which path is in use
@@ -150,6 +153,43 @@ namespace Exiv2 {
 
     }; // class FileIo::Impl
 
+	FileIo::Impl::Impl()
+        : 
+#ifdef EXV_UNICODE_PATH
+          wpMode_(wpStandard),
+#endif	
+		  fp_(0), opMode_(opSeek),
+#if defined WIN32 && !defined __CYGWIN__
+          hFile_(0), hMap_(0),
+#endif
+          isTemp_(true), pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
+    {
+		// convert stdin to binary
+		if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+			throw Error(54);
+
+		// generating the name for temp file.
+		std::time_t timestamp = std::time(NULL);
+		std::stringstream ss;
+		ss << timestamp << FileIo::TEMP_FILE_EXT;
+		std::string path = ss.str();
+		std::ofstream fs(path, std::ios::out | std::ios::binary | std::ios::trunc);
+		// read stdin and write to the temp file.
+		char readBuf[100*1024];
+        std::streamsize readBufSize = 0;
+		do {
+			std::cin.read(readBuf, sizeof(readBuf));
+            readBufSize = std::cin.gcount();
+            if (readBufSize > 0) {
+                fs.write (readBuf, readBufSize);
+            } 
+		} while(readBufSize > 0);
+		fs.close();
+
+		// set the path
+		path_ = path;
+    }
+
     FileIo::Impl::Impl(const std::string& path)
         : path_(path),
 #ifdef EXV_UNICODE_PATH
@@ -159,7 +199,7 @@ namespace Exiv2 {
 #if defined WIN32 && !defined __CYGWIN__
           hFile_(0), hMap_(0),
 #endif
-          pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
+          isTemp_(false), pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
     {
     }
 
@@ -345,6 +385,11 @@ namespace Exiv2 {
 	const std::string FileIo::TEMP_FILE_EXT = ".exiv2_temp";
 	const std::string FileIo::GEN_FILE_EXT = ".exiv2";
 
+	FileIo::FileIo()
+        : p_(new Impl())
+    {
+    }
+
     FileIo::FileIo(const std::string& path)
         : p_(new Impl(path))
     {
@@ -359,13 +404,13 @@ namespace Exiv2 {
 #endif
     FileIo::~FileIo()
     {
+		bool isTemp = p_->isTemp_;
 		std::string filePath = path();
         close();
         delete p_;
 
-		std::regex re ("\\d*" + FileIo::TEMP_FILE_EXT + "$");
 		// remove the temp file
-		if (std::regex_match (filePath, re)) {
+		if (isTemp) {
 			if(remove(filePath.c_str()) != 0 ) {
 				// error when removing file
 				printf ("Warning: Unable to remove the temp file %s.\n", filePath.c_str());
@@ -636,10 +681,9 @@ namespace Exiv2 {
 			If the current file is a temporary file which is created from the stdin data,
 				we change the name of this file in order to not remove it in destructor.
 		*/
-		std::string currentPath = path();
-		std::regex re ("\\d*" + FileIo::TEMP_FILE_EXT + "$");
-		if (std::regex_match (currentPath, re)) {
+		if (p_->isTemp_) {
 			close();
+			std::string currentPath = path();
 #ifdef EXV_UNICODE_PATH
 			if (p_->wpMode_ == Impl::wpStandard) {
 				ReplaceStringInPlace(p_->path_, FileIo::TEMP_FILE_EXT, FileIo::GEN_FILE_EXT);
@@ -657,6 +701,7 @@ namespace Exiv2 {
 			if (rename(currentPath.c_str(), path().c_str()) != 0) {
 				printf("Warning: Failed to rename the temp file. \n");
 			}
+			p_->isTemp_ = false;
 		}
 
 
@@ -1091,9 +1136,29 @@ namespace Exiv2 {
         }
     }
 
-    MemIo::MemIo()
+	MemIo::MemIo()
         : p_(new Impl())
     {
+    }
+
+
+    MemIo::MemIo(bool readStdin)
+        : p_(new Impl())
+    {
+		if (readStdin) {
+			// convert stdin to binary
+			if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+				throw Error(54);
+			char readBuf[100*1024];
+			std::streamsize readBufSize = 0;
+			do {
+				std::cin.read(readBuf, sizeof(readBuf));
+				readBufSize = std::cin.gcount();
+				if (readBufSize > 0) {
+					write((byte*)readBuf, (long)readBufSize);
+				}
+			} while (readBufSize > 0);
+		}
     }
 
     MemIo::MemIo(const byte* data, long size)

@@ -51,8 +51,6 @@
 #include <string>
 #include <vector>
 #include <io.h>			// isatty in ImageFactory::createIo
-#include <fcntl.h>		// _O_BINARY in ImageFactory::createIo
-#include <fstream>		// write file in mageFactory::handleStdin
 
 // *****************************************************************************
 // namespace extensions
@@ -453,11 +451,6 @@ namespace Exiv2 {
         friend bool Image::good() const;
     public:
 		/*!
-          @brief Read the data from stdin, create the FileIO/ MemIo (based on STDIN_MEMIO).
-          @return An auto-pointer that owns an BasicIo instance.
-         */
-		static BasicIo::AutoPtr handleStdin();
-		/*!
           @brief Create the appropriate class implemented BasicIo by reading
               the %Image path.
           @param  path %Image file.
@@ -470,7 +463,7 @@ namespace Exiv2 {
           @brief Like createIo() but accepts a unicode path in an std::wstring.
           @note This function is only available on Windows.
          */
-		static BasicIo::AutoPtr createIo(const std::wstring& path);
+		static BasicIo::AutoPtr createIo(const std::wstring& wpath);
 #endif
         /*!
           @brief Create an Image subclass of the appropriate type by reading

@@ -36,7 +36,9 @@
 // + standard includes
 #include <string>
 #include <memory>                               // for std::auto_ptr
-#include <regex>								// for removing temp file
+#include <fstream>								// write the temporary file
+#include <fcntl.h>								// _O_BINARY in FileIo::FileIo
+#include <ctime>								// timestamp for the name of temporary file
 
 // *****************************************************************************
 // namespace extensions
@@ -308,6 +310,11 @@ namespace Exiv2 {
 
         //! @name Creators
         //@{
+		/*!
+          @brief Constructor that reads stdin and writes the data to temporary file.
+		  @throw Error If it can't convert stdin to binary.
+         */
+        FileIo();
         /*!
           @brief Constructor that accepts the file path on which IO will be
               performed. The constructor does not open the file, and
@@ -542,8 +549,15 @@ namespace Exiv2 {
     public:
         //! @name Creators
         //@{
-        //! Default constructor that results in an empty object
-        MemIo();
+		//! Default constructor that results in an empty object
+		MemIo();
+		/*!
+		  @brief Constructor that results in an empty object when readStdin = false.
+				Otherwise, it reads stdin and write the data to memory.
+          @param readStdin should it read stdin or not?
+		  @throw Error If readStdin is true and it can't convert stdin to binary.
+		 */
+        MemIo(bool readStdin);
         /*!
           @brief Constructor that accepts a block of memory. A copy-on-write
               algorithm allows read operations directly from the original data
