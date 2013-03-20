@@ -52,7 +52,7 @@ EXIV2_RCSID("@(#) $Id: futils.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 #include <cerrno>
 #include <sstream>
 #include <cstring>
-#include <io.h>	// isatty
+// #include <io.h>	// isatty
 
 #if defined EXV_HAVE_STRERROR_R && !defined EXV_HAVE_DECL_STRERROR_R
 # ifdef EXV_STRERROR_R_CHAR_P

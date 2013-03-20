@@ -154,26 +154,32 @@ namespace Exiv2 {
     }; // class FileIo::Impl
 
 	FileIo::Impl::Impl()
-        : 
+    :   pMappedArea_(NULL), mappedLength_(0)
 #ifdef EXV_UNICODE_PATH
-          wpMode_(wpStandard),
+        , wpMode_(wpStandard)
 #endif	
-		  fp_(0), opMode_(opSeek),
 #if defined WIN32 && !defined __CYGWIN__
-          hFile_(0), hMap_(0),
+        , hFile_(0), hMap_(0)
 #endif
-          isTemp_(true), pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
+    
     {
+        isTemp_      = true;
+        isMalloced_  = false;
+        isWriteable_ = false;
+        fp_          = 0;
+        opMode_      = opSeek;
+        
+#ifdef  _O_BINARY
 		// convert stdin to binary
 		if (_setmode(_fileno(stdin), _O_BINARY) == -1)
 			throw Error(54);
-
+#endif
 		// generating the name for temp file.
-		std::time_t timestamp = std::time(NULL);
+		std::time_t       timestamp = std::time(NULL);
 		std::stringstream ss;
-		ss << timestamp << FileIo::TEMP_FILE_EXT;
-		std::string path = ss.str();
-		std::ofstream fs(path, std::ios::out | std::ios::binary | std::ios::trunc);
+		                  ss << timestamp << FileIo::TEMP_FILE_EXT;
+		std::string       path = ss.str();
+		std::ofstream fs(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 		// read stdin and write to the temp file.
 		char readBuf[100*1024];
         std::streamsize readBufSize = 0;
@@ -182,7 +188,7 @@ namespace Exiv2 {
             readBufSize = std::cin.gcount();
             if (readBufSize > 0) {
                 fs.write (readBuf, readBufSize);
-            } 
+            }
 		} while(readBufSize > 0);
 		fs.close();
 
@@ -191,16 +197,17 @@ namespace Exiv2 {
     }
 
     FileIo::Impl::Impl(const std::string& path)
-        : path_(path),
+        : path_(path)
+        , isTemp_(false), pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
 #ifdef EXV_UNICODE_PATH
-          wpMode_(wpStandard),
+        , wpMode_(wpStandard)
 #endif
-          fp_(0), opMode_(opSeek),
 #if defined WIN32 && !defined __CYGWIN__
-          hFile_(0), hMap_(0),
+        , hFile_(0), hMap_(0)
 #endif
-          isTemp_(false), pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
     {
+        fp_ = 0;
+        opMode_ = opSeek;
     }
 
 #ifdef EXV_UNICODE_PATH
@@ -1146,9 +1153,11 @@ namespace Exiv2 {
         : p_(new Impl())
     {
 		if (readStdin) {
+#ifdef _O_BINARY
 			// convert stdin to binary
 			if (_setmode(_fileno(stdin), _O_BINARY) == -1)
 				throw Error(54);
+#endif
 			char readBuf[100*1024];
 			std::streamsize readBufSize = 0;
 			do {

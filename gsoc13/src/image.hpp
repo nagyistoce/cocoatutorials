@@ -50,7 +50,11 @@
 // + standard includes
 #include <string>
 #include <vector>
-#include <io.h>			// isatty in ImageFactory::createIo
+
+#ifdef _MSC_VER
+#include <io.h>
+#include <windows.h>
+#endif
 
 // *****************************************************************************
 // namespace extensions
