@@ -50,6 +50,7 @@ SET( LIBEXIV2_HDR         asfvideo.hpp
                           exiv2.hpp
                           futils.hpp
                           gifimage.hpp
+                          http.hpp
                           image.hpp
                           iptc.hpp
                           jp2image.hpp
@@ -93,6 +94,7 @@ SET( LIBEXIV2_SRC         asfvideo.cpp
                           futils.cpp
                           fujimn.cpp
                           gifimage.cpp
+                          http.cpp
                           image.cpp
                           iptc.cpp
                           jp2image.cpp
