@@ -4,6 +4,10 @@
 
 #include "http.hpp"
 
+#ifdef  _MSC_VER
+#pragma comment ( lib WSock32.lib )
+#endif
+
 #define SLEEP       1000
 #define SNOOZE         0
 
@@ -154,11 +158,11 @@ int http(dict_t& request,dict_t& response,std::string& errors)
     if ( !request.count("verb")   ) request["verb"  ]  = "GET";
     if ( !request.count("header") ) request["header"]  = ""   ;
     if ( !request.count("version")) request["version"] = "1.0";
-    
+
     std::string file;
     errors     = "";
     int result = 0;
-    
+
     ////////////////////////////////////
     // Windows specific code
 #ifdef WIN32
@@ -243,7 +247,7 @@ int http(dict_t& request,dict_t& response,std::string& errors)
 
             size_t body = 0         ; // start of body
             if ( bSearching ) {
-                
+
                 // search for the body
                 for ( size_t b = 0 ; bSearching && b < lengthof(blankLines) ; b++ ) {
                     if ( strstr(buffer,blankLines[b]) ) {
@@ -273,7 +277,7 @@ int http(dict_t& request,dict_t& response,std::string& errors)
                     n = strchr(h,N);
                 }
             }
-            
+
             // if the bufffer's full and we're still searching - give up!
             // this handles the possibility that there are no headers
             if ( bSearching && buff_l-end < 10 ) {
