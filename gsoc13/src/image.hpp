@@ -34,11 +34,6 @@
 #ifndef IMAGE_HPP_
 #define IMAGE_HPP_
 
-// The way to handle data from stdin. If STDIN_MEMIO = 1, it uses MemIo. Otherwises, it uses FileIo.
-#ifndef STDIN_MEMIO
-#define STDIN_MEMIO 0
-#endif
-
 // *****************************************************************************
 // included header files
 #include "types.hpp"
@@ -50,11 +45,6 @@
 // + standard includes
 #include <string>
 #include <vector>
-
-#ifdef _MSC_VER
-#include <io.h>
-#include <windows.h>
-#endif
 
 // *****************************************************************************
 // namespace extensions

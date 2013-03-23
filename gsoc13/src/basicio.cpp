@@ -86,8 +86,6 @@ namespace Exiv2 {
     //! Internal Pimpl structure of class FileIo.
     class FileIo::Impl {
     public:
-		//! Constructor reading the stdin and writes to a temporary file.
-		Impl();
         //! Constructor
         Impl(const std::string& path);
 #ifdef EXV_UNICODE_PATH
@@ -103,7 +101,6 @@ namespace Exiv2 {
 #endif
         // DATA
         std::string path_;              //!< (Standard) path
-		bool isTemp_;					//!< Is the file temporary? If yes, it should be removed in destructor.
 #ifdef EXV_UNICODE_PATH
         std::wstring wpath_;            //!< Unicode path
         WpMode wpMode_;                 //!< Indicates which path is in use
@@ -153,52 +150,9 @@ namespace Exiv2 {
 
     }; // class FileIo::Impl
 
-	FileIo::Impl::Impl()
-    :   pMappedArea_(NULL), mappedLength_(0)
-#ifdef EXV_UNICODE_PATH
-        , wpMode_(wpStandard)
-#endif	
-#if defined WIN32 && !defined __CYGWIN__
-        , hFile_(0), hMap_(0)
-#endif
-    
-    {
-        isTemp_      = true;
-        isMalloced_  = false;
-        isWriteable_ = false;
-        fp_          = 0;
-        opMode_      = opSeek;
-        
-#ifdef  _O_BINARY
-		// convert stdin to binary
-		if (_setmode(_fileno(stdin), _O_BINARY) == -1)
-			throw Error(54);
-#endif
-		// generating the name for temp file.
-		std::time_t       timestamp = std::time(NULL);
-		std::stringstream ss;
-		                  ss << timestamp << FileIo::TEMP_FILE_EXT;
-		std::string       path = ss.str();
-		std::ofstream fs(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
-		// read stdin and write to the temp file.
-		char readBuf[100*1024];
-        std::streamsize readBufSize = 0;
-		do {
-			std::cin.read(readBuf, sizeof(readBuf));
-            readBufSize = std::cin.gcount();
-            if (readBufSize > 0) {
-                fs.write (readBuf, readBufSize);
-            }
-		} while(readBufSize > 0);
-		fs.close();
-
-		// set the path
-		path_ = path;
-    }
-
     FileIo::Impl::Impl(const std::string& path)
         : path_(path)
-        , isTemp_(false), pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
+        , pMappedArea_(0), mappedLength_(0), isMalloced_(false), isWriteable_(false)
 #ifdef EXV_UNICODE_PATH
         , wpMode_(wpStandard)
 #endif
@@ -389,14 +343,6 @@ namespace Exiv2 {
 
 #endif // defined WIN32 && !defined __CYGWIN__
 
-	const std::string FileIo::TEMP_FILE_EXT = ".exiv2_temp";
-	const std::string FileIo::GEN_FILE_EXT = ".exiv2";
-
-	FileIo::FileIo()
-        : p_(new Impl())
-    {
-    }
-
     FileIo::FileIo(const std::string& path)
         : p_(new Impl(path))
     {
@@ -411,18 +357,8 @@ namespace Exiv2 {
 #endif
     FileIo::~FileIo()
     {
-		bool isTemp = p_->isTemp_;
-		std::string filePath = path();
         close();
         delete p_;
-
-		// remove the temp file
-		if (isTemp) {
-			if(remove(filePath.c_str()) != 0 ) {
-				// error when removing file
-				printf ("Warning: Unable to remove the temp file %s.\n", filePath.c_str());
-			}
-		}
     }
 
     int FileIo::munmap()
@@ -599,6 +535,33 @@ namespace Exiv2 {
         return p_->pMappedArea_;
     }
 
+    void FileIo::setPath(const std::string& path) {
+        close();
+#ifdef EXV_UNICODE_PATH
+		if (p_->wpMode_ == Impl::wpUnicode) {
+            std::wstring wpath;
+			wpath.assign(path.begin(), path.end());
+			p_->wpath_ = wpath;
+        }
+		p_->path_ = path;
+#else
+		p_->path_ = path;
+#endif
+    }
+
+#ifdef EXV_UNICODE_PATH
+    void FileIo::setPath(const std::wstring& wpath) {
+        close();
+		if (p_->wpMode_ == Impl::wpStandard) {
+            std::string path;
+			path.assign(wpath.begin(), wpath.end()); 
+			p_->path_ = path;
+        } else {
+			p_->wpath_ = wpath;
+		}
+    }
+#endif
+
     BasicIo::AutoPtr FileIo::temporary() const
     {
         BasicIo::AutoPtr basicIo;
@@ -683,34 +646,6 @@ namespace Exiv2 {
     {
         const bool wasOpen = (p_->fp_ != 0);
         const std::string lastMode(p_->openMode_);
-
-		/*
-			If the current file is a temporary file which is created from the stdin data,
-				we change the name of this file in order to not remove it in destructor.
-		*/
-		if (p_->isTemp_) {
-			close();
-			std::string currentPath = path();
-#ifdef EXV_UNICODE_PATH
-			if (p_->wpMode_ == Impl::wpStandard) {
-				ReplaceStringInPlace(p_->path_, FileIo::TEMP_FILE_EXT, FileIo::GEN_FILE_EXT);
-			} else {
-				std::wstring temp_file_ext;
-				temp_file_ext.assign(FileIo::TEMP_FILE_EXT.begin(), FileIo::TEMP_FILE_EXT.end());
-				std::wstring gen_file_ext;
-				gen_file_ext.assign(FileIo::GEN_FILE_EXT.begin(), FileIo::GEN_FILE_EXT.end());
-				ReplaceStringInPlace(p_->wpath_, temp_file_ext, gen_file_ext);
-			}
-#else
-			ReplaceStringInPlace(p_->path_, FileIo::TEMP_FILE_EXT, FileIo::GEN_FILE_EXT);
-#endif
-			// rename the file
-			if (rename(currentPath.c_str(), path().c_str()) != 0) {
-				printf("Warning: Failed to rename the temp file. \n");
-			}
-			p_->isTemp_ = false;
-		}
-
 
         FileIo *fileIo = dynamic_cast<FileIo*>(&src);
         if (fileIo) {
@@ -1143,31 +1078,9 @@ namespace Exiv2 {
         }
     }
 
-	MemIo::MemIo()
+    MemIo::MemIo()
         : p_(new Impl())
     {
-    }
-
-
-    MemIo::MemIo(bool readStdin)
-        : p_(new Impl())
-    {
-		if (readStdin) {
-#ifdef _O_BINARY
-			// convert stdin to binary
-			if (_setmode(_fileno(stdin), _O_BINARY) == -1)
-				throw Error(54);
-#endif
-			char readBuf[100*1024];
-			std::streamsize readBufSize = 0;
-			do {
-				std::cin.read(readBuf, sizeof(readBuf));
-				readBufSize = std::cin.gcount();
-				if (readBufSize > 0) {
-					write((byte*)readBuf, (long)readBufSize);
-				}
-			} while (readBufSize > 0);
-		}
     }
 
     MemIo::MemIo(const byte* data, long size)
@@ -1370,6 +1283,91 @@ namespace Exiv2 {
     }
 
 #endif
+
+
+#if STDIN_MEMIO
+    StdinIo::StdinIo()
+    {
+        if (isatty(fileno(stdin)))
+            throw Error(53);
+
+#ifdef _O_BINARY
+        // convert stdin to binary
+        if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+            throw Error(54);
+#endif
+
+        char readBuf[100*1024];
+        std::streamsize readBufSize = 0;
+        do {
+            std::cin.read(readBuf, sizeof(readBuf));
+            readBufSize = std::cin.gcount();
+            if (readBufSize > 0) {
+                write((byte*)readBuf, (long)readBufSize);
+            }
+        } while(readBufSize);
+    }
+#else
+    const std::string StdinIo::TEMP_FILE_EXT = ".exiv2_temp";
+    const std::string StdinIo::GEN_FILE_EXT = ".exiv2";
+
+    StdinIo::StdinIo() : FileIo(StdinIo::writeStdinToFile()) {
+        isTemp_ = true;
+        tempFilePath_ = path();
+    }
+
+    StdinIo::~StdinIo() {
+        if (isTemp_ && remove(tempFilePath_.c_str()) != 0) {
+            // error when removing file
+            printf ("Warning: Unable to remove the temp file %s.\n", tempFilePath_.c_str());
+        }
+    }
+
+    void StdinIo::transfer(BasicIo& src) {
+        if (isTemp_) {
+			// replace temp path to gent path.
+            std::string currentPath = path();
+            setPath(ReplaceStringInPlace(currentPath, StdinIo::TEMP_FILE_EXT, StdinIo::GEN_FILE_EXT));
+            // rename the file
+            tempFilePath_ = path();
+            if (rename(currentPath.c_str(), tempFilePath_.c_str()) != 0) {
+                printf("Warning: Failed to rename the temp file. \n");
+            }
+            isTemp_ = false;
+            // call super class method
+            FileIo::transfer(src);
+        }
+    }
+
+    std::string StdinIo::writeStdinToFile() {
+        if (isatty(fileno(stdin)))
+            throw Error(53);
+#ifdef _O_BINARY
+        // convert stdin to binary
+        if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+            throw Error(54);
+#endif
+        // generating the name for temp file.
+        std::time_t timestamp = std::time(NULL);
+        std::stringstream ss;
+        ss << timestamp << StdinIo::TEMP_FILE_EXT;
+        std::string path = ss.str();
+        std::ofstream fs(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+        // read stdin and write to the temp file.
+        char readBuf[100*1024];
+        std::streamsize readBufSize = 0;
+        do {
+            std::cin.read(readBuf, sizeof(readBuf));
+            readBufSize = std::cin.gcount();
+            if (readBufSize > 0) {
+                fs.write (readBuf, readBufSize);
+            }
+        } while(readBufSize);
+        fs.close();
+        return path;
+    }
+
+#endif
     // *************************************************************************
     // free functions
 
@@ -1431,22 +1429,24 @@ namespace Exiv2 {
     }
 
 #endif
-	void ReplaceStringInPlace(std::string& subject, const std::string& search,
+    std::string ReplaceStringInPlace(std::string subject, const std::string& search,
                           const std::string& replace) {
 		size_t pos = 0;
 		while((pos = subject.find(search, pos)) != std::string::npos) {
 			 subject.replace(pos, search.length(), replace);
 			 pos += replace.length();
 		}
+        return subject;
 	}
 #ifdef EXV_UNICODE_PATH
-	void ReplaceStringInPlace(std::wstring& subject, const std::wstring& search,
+    std::wstring ReplaceStringInPlace(std::wstring subject, const std::wstring& search,
                           const std::wstring& replace) {
 		std::wstring::size_type pos = 0;
 		while((pos = subject.find(search, pos)) != std::wstring::npos) {
 			 subject.replace(pos, search.length(), replace);
 			 pos += replace.length();
 		}
+        return subject;
 	}
 #endif
 }                                       // namespace Exiv2

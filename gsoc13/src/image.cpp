@@ -419,15 +419,7 @@ namespace Exiv2 {
 	BasicIo::AutoPtr ImageFactory::createIo(const std::string& path) 
 	{
 		if (path.compare("-") == 0) {
-			if (!isatty(fileno(stdin))) {
-#if STDIN_MEMIO
-				return BasicIo::AutoPtr(new MemIo(true));
-#else
-				return BasicIo::AutoPtr(new FileIo());
-#endif
-			} else {
-				throw Error(53);
-			}
+            return BasicIo::AutoPtr(new StdinIo());
 		} else {
 			return BasicIo::AutoPtr(new FileIo(path));
 		}
@@ -436,15 +428,7 @@ namespace Exiv2 {
 	BasicIo::AutoPtr ImageFactory::createIo(const std::wstring& wpath) 
 	{
 		if (wpath.compare(L"-") == 0) {
-			if (!isatty(fileno(stdin))) {
-#if STDIN_MEMIO
-				return BasicIo::AutoPtr(new MemIo(true));
-#else
-				return BasicIo::AutoPtr(new FileIo());
-#endif
-			} else {
-				throw Error(53);
-			}
+            return BasicIo::AutoPtr(new StdinIo());
 		} else {
 			return BasicIo::AutoPtr(new FileIo(wpath));
 		}

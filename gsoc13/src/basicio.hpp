@@ -29,16 +29,21 @@
 #ifndef BASICIO_HPP_
 #define BASICIO_HPP_
 
+// The way to handle data from stdin. If STDIN_MEMIO = 1, it uses MemIo. Otherwises, it uses FileIo.
+#ifndef STDIN_MEMIO
+#define STDIN_MEMIO 0
+#endif
+
 // *****************************************************************************
 // included header files
 #include "types.hpp"
 
 // + standard includes
 #include <string>
-#include <memory>                               // for std::auto_ptr
-#include <fstream>								// write the temporary file
-#include <fcntl.h>								// _O_BINARY in FileIo::FileIo
-#include <ctime>								// timestamp for the name of temporary file
+#include <memory>       // for std::auto_ptr
+#include <fstream>      // write the temporary file
+#include <fcntl.h>      // _O_BINARY in FileIo::FileIo
+#include <ctime>        // timestamp for the name of temporary file
 
 // *****************************************************************************
 // namespace extensions
@@ -294,27 +299,8 @@ namespace Exiv2 {
      */
     class EXIV2API FileIo : public BasicIo {
     public:
-		//! @name Constants
-        //@{
-		/*!
-			@brief The extention of the temporary file which is created when getting input data 
-					from stdin to read metadata. This file will be deleted in destructor.
-		*/
-		static const std::string TEMP_FILE_EXT; 
-		/*!
-			@brief The extention of the generated file which is created when getting input data from 
-					stdin to add or modify the metadata.
-		*/
-		static const std::string GEN_FILE_EXT; 
-		//@}
-
         //! @name Creators
         //@{
-		/*!
-          @brief Constructor that reads stdin and writes the data to temporary file.
-		  @throw Error If it can't convert stdin to binary.
-         */
-        FileIo();
         /*!
           @brief Constructor that accepts the file path on which IO will be
               performed. The constructor does not open the file, and
@@ -476,8 +462,19 @@ namespace Exiv2 {
                   Nonzero if failure;
          */
         virtual int munmap();
+        /*!
+          @brief close the file source and set a new path.
+         */
+        virtual void setPath(const std::string& path);
+#ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like setPath(const std::string& path) but accepts a
+              unicode path in an std::wstring.
+          @note This method is only available on Windows.
+         */
+        virtual void setPath(const std::wstring& wpath);
+#endif
         //@}
-
         //! @name Accessors
         //@{
         /*!
@@ -551,13 +548,6 @@ namespace Exiv2 {
         //@{
 		//! Default constructor that results in an empty object
 		MemIo();
-		/*!
-		  @brief Constructor that results in an empty object when readStdin = false.
-				Otherwise, it reads stdin and write the data to memory.
-          @param readStdin should it read stdin or not?
-		  @throw Error If readStdin is true and it can't convert stdin to binary.
-		 */
-        MemIo(bool readStdin);
         /*!
           @brief Constructor that accepts a block of memory. A copy-on-write
               algorithm allows read operations directly from the original data
@@ -737,6 +727,70 @@ namespace Exiv2 {
 
     }; // class MemIo
 
+    /*!
+      @brief Reading the data from stdin and provide FileIo or MemIo by inheriting from one of these classes.
+     */
+#if STDIN_MEMIO
+    class EXIV2API StdinIo : public MemIo {
+    public:
+        //! @name Creators
+        //@{
+        /*!
+            @brief Default constructor that reads the data from stdin and write the data to memory.
+            @throw Error if it can't convert stdin to binary.
+         */
+        StdinIo();
+        //@}
+    }; // class StdinIo
+#else
+    class EXIV2API StdinIo : public FileIo {
+    public:
+        /*!
+            @brief The extention of the temporary file which is created when getting input data
+                    from stdin to read metadata. This file will be deleted in destructor.
+        */
+        static const std::string TEMP_FILE_EXT;
+        /*!
+            @brief The extention of the generated file which is created when getting input data from
+                    stdin to add or modify the metadata.
+        */
+        static const std::string GEN_FILE_EXT;
+
+        //! @name Creators
+        //@{
+        //! Default constructor that reads data from stdin, write to the temp file.
+        StdinIo();
+
+        //! Destructor. Releases all managed memory and remove temp file.
+        virtual ~StdinIo();
+        //@}
+
+        //! @name Manipulators
+        //@{
+        /*!
+            @brief Change the name of the temp file and make it untemporary before
+                    calling the method of superclass FileIo::transfer.
+         */
+        virtual void transfer(BasicIo& src);
+
+        //@}
+
+        //! @name Static methods
+        //@{
+        /*!
+            @brief Read the data from stdin and write to the file.
+            @return the name of the new file.
+            @throw Error if it can't convert stdin to binary.
+         */
+        static std::string writeStdinToFile();
+        //@}
+
+    private:
+        bool isTemp_;
+        std::string tempFilePath_;
+    }; // class StdinIo
+#endif
+
 // *****************************************************************************
 // template, inline and free functions
 
@@ -765,20 +819,20 @@ namespace Exiv2 {
       @note This function is only available on Windows.
      */
     EXIV2API long writeFile(const DataBuf& buf, const std::wstring& wpath);
-
 #endif
 	/*!
-      @brief replace each substring of the subject that matches the given search string with the given replacement
-      @note Subject is modified.
+      @brief replace each substring of the subject that matches the given search string with the given replacement.
+      @return the subject after replacing.
      */
-	EXIV2API void ReplaceStringInPlace(std::string& subject, const std::string& search,
+    EXIV2API std::string ReplaceStringInPlace(std::string subject, const std::string& search,
                           const std::string& replace);
 #ifdef EXV_UNICODE_PATH
 	/*!
       @brief Like ReplaceStringInPlace() but accepts a unicode path in an std::wstring.
-      @note Subject is modified. This function is only available on Windows.
+      @return the subject after replacing.
+      @note This function is only available on Windows.
      */
-	EXIV2API void ReplaceStringInPlace(std::wstring& subject, const std::wstring& search,
+    EXIV2API std::wstring ReplaceStringInPlace(std::wstring subject, const std::wstring& search,
                           const std::wstring& replace);
 #endif
 }                                       // namespace Exiv2
