@@ -40,6 +40,7 @@ EXIV2_RCSID("@(#) $Id: basicio.cpp 2883 2012-09-21 15:43:19Z robinwmills $")
 #include "futils.hpp"
 #include "types.hpp"
 #include "error.hpp"
+#include "http.hpp"
 
 // + standard includes
 #include <string>
@@ -1366,8 +1367,104 @@ namespace Exiv2 {
         fs.close();
         return path;
     }
-
 #endif
+
+    //! Internal Pimpl structure of class HttpIo.
+    class HttpIo::Impl {
+    public:
+        //! Constructor
+        Impl(const std::string& path);
+#ifdef EXV_UNICODE_PATH
+        //! Constructor accepting a unicode path in an std::wstring
+        Impl(const std::wstring& wpath);
+#endif
+
+        // DATA
+        std::string path_;              //!< (Standard) path
+        dict_t response_;
+        dict_t request_;
+        std::string errors_;
+#ifdef EXV_UNICODE_PATH
+        std::wstring wpath_;            //!< Unicode path
+#endif
+    private:
+        // NOT IMPLEMENTED
+        Impl(const Impl& rhs);                         //!< Copy constructor
+        Impl& operator=(const Impl& rhs);              //!< Assignment
+
+    }; // class HttpIo::Impl
+
+    HttpIo::Impl::Impl(const std::string& url)
+    {
+        // simple url parse
+        char* server = new char[url.length() + 1];
+        char* page = new char[url.length() + 1];
+        sscanf(url.c_str(), "http://%[^/]/%[^\n]", server, page);
+
+        request_["server"] = server;
+        request_["page"] = page;
+		delete[] server, page;
+        request_["range"] = "0-102400";
+		
+        int statusCode = http(request_,response_,errors_);
+        if (statusCode < 0) {
+            errors_ = "Unable to connect" + request_["server"];
+            throw Error(1, errors_);
+        } else if (statusCode >= 400) {
+            errors_ = response_.begin()->second;
+            throw Error(1, errors_);
+        } else if (errors_.compare("") != 0) {
+            throw Error(1, errors_);
+        }
+    }
+#ifdef EXV_UNICODE_PATH
+    HttpIo::Impl::Impl(const std::wstring& wurl)
+    {
+		std::string url;
+		url.assign(wurl.begin(), wurl.end()); 
+
+		// simple url parse
+        char* server = new char[url.length() + 1];
+        char* page = new char[url.length() + 1];
+        sscanf(url.c_str(), "http://%[^/]/%[^\n]", server, page);
+
+        request_["server"] = server;
+        request_["page"] = page;
+		delete[] server, page;
+        request_["range"] = "0-102400";
+		
+        int statusCode = http(request_,response_,errors_);
+        if (statusCode < 0) {
+            errors_ = "Unable to connect" + request_["server"];
+            throw Error(1, errors_);
+        } else if (statusCode >= 400) {
+            errors_ = response_.begin()->second;
+            throw Error(1, errors_);
+        } else if (errors_.compare("") != 0) {
+            throw Error(1, errors_);
+        }
+    }
+#endif
+
+    HttpIo::HttpIo(const std::string& url)
+        : p_(new Impl(url))
+    {
+        write((byte*)p_->response_["body"].c_str(), (long)p_->response_["body"].length());
+    }
+
+#ifdef EXV_UNICODE_PATH
+    HttpIo::HttpIo(const std::wstring& wurl)
+        : p_(new Impl(wurl))
+    {
+		write((byte*)p_->response_["body"].c_str(), (long)p_->response_["body"].length());
+    }
+#endif
+
+    HttpIo::~HttpIo()
+    {
+        delete p_;
+    }
+
     // *************************************************************************
     // free functions
 

@@ -22,9 +22,9 @@ int main(int argc,const char** argv)
     
     request["page"]     = "robin.shtml";
     request["server"]   = "clanmills.com";
-    
+
     // convert the command-line arguments into the request dictionary
-    for ( int i = 1 ; i < argc-1 ; i++ ) {
+    for ( int i = 1 ; i < argc ; i++ ) {
         const char* arg = argv[i];
         // skip past the -'s on the key
         while ( arg[0] == '-' ) arg++;
@@ -35,8 +35,12 @@ int main(int argc,const char** argv)
                 header += "\r\n";
             }
             request[arg] += header;
+            i++;
+        } else if(string(arg) == "head") {
+            request["verb"] = "HEAD";
         } else {
             request[arg]=argv[i+1];
+            i++;
         }
     }
 
@@ -44,7 +48,7 @@ int main(int argc,const char** argv)
     std::cout << "result = " << result << std::endl ;
     std::cout << "errors = " << errors << std::endl;
     std::cout << endl;
-    
+
     for ( dict_i it = response.begin() ; it != response.end() ; it++ ) {
         std::cout << it->first << " -> ";
         if ( it->first ==  "body") cout << "# " << it->second.length();

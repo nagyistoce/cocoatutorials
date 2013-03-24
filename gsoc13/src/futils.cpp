@@ -52,7 +52,6 @@ EXIV2_RCSID("@(#) $Id: futils.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 #include <cerrno>
 #include <sstream>
 #include <cstring>
-#include <stdio.h>
 
 #if defined EXV_HAVE_STRERROR_R && !defined EXV_HAVE_DECL_STRERROR_R
 # ifdef EXV_STRERROR_R_CHAR_P
@@ -70,13 +69,10 @@ namespace Exiv2 {
     bool fileExists(const std::string& path, bool ct)
     {
 		// special case: accept "-" (means stdin)
-		if (path.compare("-") == 0) {
-			if (!isatty(fileno(stdin))) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+        if (path.compare("-") == 0 || path.find("http://") == 0) {
+			return true;
+        }
+
         struct stat buf;
 		int ret = ::stat(path.c_str(), &buf);
         if (0 != ret)                    return false;
@@ -88,13 +84,10 @@ namespace Exiv2 {
     bool fileExists(const std::wstring& wpath, bool ct)
     {
 		// special case: accept "-" (means stdin)
-		if (wpath.compare(L"-") == 0) {
-			if (!isatty(fileno(stdin))) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+        if (wpath.compare(L"-") == 0 || wpath.find(L"http://") == 0) {
+			return true;
+        }
+
         struct _stat buf;
         int ret = _wstat(wpath.c_str(), &buf);
         if (0 != ret)                    return false;

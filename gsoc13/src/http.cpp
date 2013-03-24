@@ -81,6 +81,7 @@ void Sleep(int millisecs)
 // code
 const char* httpTemplate =
 "%s %s%s HTTP/%s\r\n"              // $verb SLASH $page $version
+"Range: bytes=%s\r\n"
 "User-Agent: exiv2http/1.0.0\r\n"
 "If-Modified-Since: Sat, 1 Jan 2000 00:00:00 GMT\r\n"
 "Accept: */*\r\n"
@@ -176,7 +177,7 @@ int http(dict_t& request,dict_t& response,std::string& errors)
     const char* verb       = request["verb"   ].c_str();
     const char* header     = request["header" ].c_str();
     const char* version    = request["version"].c_str();
-
+    const char* range      = request["range"].c_str();
 
     ////////////////////////////////////
     // open the socket
@@ -210,7 +211,7 @@ int http(dict_t& request,dict_t& response,std::string& errors)
     ////////////////////////////////////
     // format the request
     const char* slash =  page[0]=='/' ? "" : "/";
-    int    n  = snprintf(buffer,buff_l,httpTemplate,verb,slash,page,version,servername,port,header) ;
+    int    n  = snprintf(buffer,buff_l,httpTemplate,verb,slash,page,version,range,servername,port,header) ;
     buffer[n] = 0 ;
     response["requestheaders"]=std::string(buffer,n);
 

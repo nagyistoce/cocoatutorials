@@ -791,6 +791,43 @@ namespace Exiv2 {
     }; // class StdinIo
 #endif
 
+    /*!
+        @brief Provides Http IO by inheriting from MemIo.
+    */
+    class EXIV2API HttpIo : public MemIo {
+    public:
+        //! @name Creators
+        //@{
+        /*!
+            @brief Constructor that accepts the url on which IO will be
+              performed. The constructor loads the first 100k of the file to memory.
+            @throw Error if it can't load the data from remote server.
+         */
+        HttpIo(const std::string& url);
+#ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like HttpIo(const std::string& path) but accepts a
+              unicode path in an std::wstring.
+          @note This constructor is only available on Windows.
+         */
+        HttpIo(const std::wstring& wurl);
+#endif
+        //! Destructor.
+        ~HttpIo();
+        //@}
+
+    private:
+        // NOT IMPLEMENTED
+        //! Copy constructor
+        HttpIo(HttpIo& rhs);
+        //! Assignment operator
+        HttpIo& operator=(const HttpIo& rhs);
+
+        // Pimpl idiom
+        class Impl;
+        Impl* p_;
+    }; // class HttpIo
+
 // *****************************************************************************
 // template, inline and free functions
 

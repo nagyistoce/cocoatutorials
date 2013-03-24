@@ -420,7 +420,9 @@ namespace Exiv2 {
 	{
 		if (path.compare("-") == 0) {
             return BasicIo::AutoPtr(new StdinIo());
-		} else {
+        } else if(path.find("http://") == 0) {
+            return BasicIo::AutoPtr(new HttpIo(path));
+        } else {
 			return BasicIo::AutoPtr(new FileIo(path));
 		}
 	}
@@ -429,7 +431,9 @@ namespace Exiv2 {
 	{
 		if (wpath.compare(L"-") == 0) {
             return BasicIo::AutoPtr(new StdinIo());
-		} else {
+        } else if(wpath.find(L"http://") == 0) {
+            return BasicIo::AutoPtr(new HttpIo(wpath));
+        } else {
 			return BasicIo::AutoPtr(new FileIo(wpath));
 		}
 	}
