@@ -10,7 +10,7 @@ int main(int argc,const char** argv)
 {
     if ( argc < 3 ) {
         cout << "usage:   " << argv[0] << " [key value]+" << endl;
-        cout << "example: " << argv[0] << " -server clanmills.com -page LargsPanorama.jpg -header 'Range: bytes=0-200'" << endl;
+        cout << "example: " << argv[0] << " -server clanmills.com -page LargsPanorama.jpg -header \"Range: bytes=0-200\"" << endl;
         cout << "useful  keys: -verb {GET|HEAD|PUT}  -page str -server str -port number -version [-header something]+ " << endl;
         cout << "default keys: -server clanmills.com -page robin.shtml -port 80 -version 1.0 -header ''" << endl;
         return 0;
@@ -20,11 +20,11 @@ int main(int argc,const char** argv)
     dict_t      request;
     std::string errors;
     
-    request["page"]     = "robin.shtml";
+    request["page"  ]   = "robin.shtml";
     request["server"]   = "clanmills.com";
 
     // convert the command-line arguments into the request dictionary
-    for ( int i = 1 ; i < argc ; i++ ) {
+    for ( int i = 1 ; i < argc-1 ; i +=2 ) {
         const char* arg = argv[i];
         // skip past the -'s on the key
         while ( arg[0] == '-' ) arg++;
@@ -35,17 +35,13 @@ int main(int argc,const char** argv)
                 header += "\r\n";
             }
             request[arg] += header;
-            i++;
-        } else if(string(arg) == "head") {
-            request["verb"] = "HEAD";
         } else {
             request[arg]=argv[i+1];
-            i++;
         }
     }
 
     int result = http(request,response,errors);
-    std::cout << "result = " << result << std::endl ;
+    std::cout << "result = " << result << std::endl;
     std::cout << "errors = " << errors << std::endl;
     std::cout << endl;
 

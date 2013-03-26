@@ -5,7 +5,7 @@
 #include "http.hpp"
 
 #ifdef  _MSC_VER
-#pragma comment ( lib WSock32.lib )
+#pragma comment(lib, "ws2_32.lib")
 #endif
 
 #define SLEEP       1000
@@ -54,7 +54,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-
 #define fopen_S(f,n,o) f=fopen(n,o)
 #define WINAPI
 typedef unsigned long DWORD ;
@@ -81,7 +80,6 @@ void Sleep(int millisecs)
 // code
 const char* httpTemplate =
 "%s %s%s HTTP/%s\r\n"              // $verb SLASH $page $version
-"Range: bytes=%s\r\n"
 "User-Agent: exiv2http/1.0.0\r\n"
 "If-Modified-Since: Sat, 1 Jan 2000 00:00:00 GMT\r\n"
 "Accept: */*\r\n"
@@ -104,12 +102,12 @@ const char*   blankLines[] =
 int             snooze    = SNOOZE    ;
 int             sleep_    =  SLEEP    ;
 
-void report(const char* msg,std::string& errors)
+static void report(const char* msg,std::string& errors)
 {
     errors += std::string(msg) + '\n';
 }
 
-int forgive(int n,int& err)
+static int forgive(int n,int& err)
 {
     err  = WSAGetLastError() ;
     if ( !n && !err ) return FINISH ;
@@ -122,8 +120,8 @@ int forgive(int n,int& err)
     return n ;
 }
 
-int error(std::string errors,const char* msg,const char* x=NULL,const char* y=NULL,int z=NULL);
-int error(std::string errors,const char* msg,const char* x,const char* y,int z)
+static int error(std::string errors,const char* msg,const char* x=NULL,const char* y=NULL,int z=NULL);
+static int error(std::string errors,const char* msg,const char* x,const char* y,int z)
 {
     char buffer[512] ;
     snprintf(buffer,sizeof buffer,msg,x,y,z) ;
@@ -136,13 +134,13 @@ int error(std::string errors,const char* msg,const char* x,const char* y,int z)
     return -1 ;
 }
 
-void flushBuffer(const char* buffer,size_t start,int& end,std::string& file)
+static void flushBuffer(const char* buffer,size_t start,int& end,std::string& file)
 {
     file += std::string(buffer+start,end-start) ;
     end = 0 ;
 }
 
-int makeNonBlocking(int sockfd)
+static int makeNonBlocking(int sockfd)
 {
 #ifdef WIN32
   ULONG ioctl_opt = 1;
@@ -177,7 +175,6 @@ int http(dict_t& request,dict_t& response,std::string& errors)
     const char* verb       = request["verb"   ].c_str();
     const char* header     = request["header" ].c_str();
     const char* version    = request["version"].c_str();
-    const char* range      = request["range"].c_str();
 
     ////////////////////////////////////
     // open the socket
@@ -211,7 +208,7 @@ int http(dict_t& request,dict_t& response,std::string& errors)
     ////////////////////////////////////
     // format the request
     const char* slash =  page[0]=='/' ? "" : "/";
-    int    n  = snprintf(buffer,buff_l,httpTemplate,verb,slash,page,version,range,servername,port,header) ;
+    int    n  = snprintf(buffer,buff_l,httpTemplate,verb,slash,page,version,servername,port,header) ;
     buffer[n] = 0 ;
     response["requestheaders"]=std::string(buffer,n);
 
