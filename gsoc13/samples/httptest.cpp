@@ -10,7 +10,7 @@ int main(int argc,const char** argv)
 {
     if ( argc < 3 ) {
         cout << "usage:   " << argv[0] << " [key value]+" << endl;
-        cout << "example: " << argv[0] << " -server clanmills.com -page LargsPanorama.jpg -header \"Range: bytes=0-200\"" << endl;
+        cout << "example: " << argv[0] << " -server clanmills.com -page LargsPanorama.jpg -header \\\"Range: bytes=0-200\\\"" << endl;
         cout << "useful  keys: -verb {GET|HEAD|PUT}  -page str -server str -port number -version [-header something]+ " << endl;
         cout << "default keys: -server clanmills.com -page robin.shtml -port 80 -version 1.0 -header ''" << endl;
         return 0;
@@ -19,7 +19,7 @@ int main(int argc,const char** argv)
     dict_t      response;
     dict_t      request;
     std::string errors;
-    
+
     request["page"  ]   = "robin.shtml";
     request["server"]   = "clanmills.com";
 
@@ -28,7 +28,7 @@ int main(int argc,const char** argv)
         const char* arg = argv[i];
         // skip past the -'s on the key
         while ( arg[0] == '-' ) arg++;
-        
+
         if ( string(arg) == "header" ) {
             string header = argv[i+1];
             if ( ! strchr(argv[i+1],'\n') ) {
@@ -51,6 +51,6 @@ int main(int argc,const char** argv)
         else                       cout << it->second;
         cout << endl;
     }
-    
+
     return 0;
 }
