@@ -6,11 +6,33 @@
 #include <iostream>
 using namespace std;
 
+// Quote a help string appropriately for DOS/bash
+std::string Q(const std::string& str)
+{
+	std::string result = str; 
+#ifdef _MSC_VER
+	std::string from("\\");
+	std::string to("^");
+#else
+	std::string from = "\\\"";
+	std::string to   = "\'"  ;
+#endif
+	size_t index = 0;
+	while (index != string::npos) {
+        index = result.find(from, index);
+	    if (index != string::npos) {
+		   result.replace(index,from.length(), to);
+		   index += to.length();
+	    }
+	}
+	return result ;
+}
+
 int main(int argc,const char** argv)
 {
     if ( argc < 3 ) {
         cout << "usage:   " << argv[0] << " [key value]+" << endl;
-        cout << "example: " << argv[0] << " -server clanmills.com -page LargsPanorama.jpg -header \\\"Range: bytes=0-200\\\"" << endl;
+        cout << "example: " << argv[0] << Q(" -server clanmills.com -page LargsPanorama.jpg -header \\\"Range: bytes=0-200\\\"") << endl;
         cout << "useful  keys: -verb {GET|HEAD|PUT}  -page str -server str -port number -version [-header something]+ " << endl;
         cout << "default keys: -server clanmills.com -page robin.shtml -port 80 -version 1.0 -header ''" << endl;
         return 0;
