@@ -792,29 +792,169 @@ namespace Exiv2 {
 #endif
 
     /*!
-        @brief Provides Http IO by inheriting from MemIo.
+        @brief Provides Http IO by implementing the BasicIo.
     */
-    class EXIV2API HttpIo : public MemIo {
+    class EXIV2API HttpIo : public BasicIo {
     public:
         //! @name Creators
         //@{
         /*!
             @brief Constructor that accepts the url on which IO will be
-              performed. The constructor loads the first 100k of the file to memory.
-            @throw Error if it can't load the data from remote server.
+              performed. The constructor does not connect to the remote server, and
+              therefore never failes.
+            @param path The url of files.
+            @param blockSize The size of block map.
          */
-        HttpIo(const std::string& url);
+        HttpIo(const std::string& url, size_t blockSize = 1024);
 #ifdef EXV_UNICODE_PATH
         /*!
-          @brief Like HttpIo(const std::string& path) but accepts a
+          @brief Like HttpIo(const std::string& path, size_t blockSize = 1024) but accepts an
               unicode path in an std::wstring.
           @note This constructor is only available on Windows.
          */
-        HttpIo(const std::wstring& wurl);
+        HttpIo(const std::wstring& wurl, size_t blockSize = 1024);
 #endif
-        //! Destructor.
+        //! Destructor. Releases all managed memory
         ~HttpIo();
         //@}
+
+        //! @name Manipulators
+        //@{
+        /*!
+          @brief Connect to the remote server, do a HEAD and get the size of the file.
+            Allocate a memory area to hold all bytes AND an array of memory to hold a bool for every blocks.
+
+            This method can also be used to "reopen" the connection which will release the
+            data and reset the IO position to the start.
+          @return 0 if successful;<BR>
+              Nonzero if failure.
+         */
+        virtual int open();
+        /*!
+          @brief Release the data and reset the IO position to the start . It is
+              safe to call close on an already closed instance.
+          @return 0 if successful;<BR>
+              Nonzero if failure.
+         */
+        virtual int close();
+        /*!
+          @brief Not support
+          @return 0 means failure
+         */
+        virtual long write(const byte* data, long wcount);
+        /*!
+          @brief Not support
+          @return 0 means failure
+         */
+        virtual long write(BasicIo& src);
+
+        /*!
+         @brief Not support
+         @return 0 means failure
+        */
+       virtual int putb(byte data);
+       /*!
+         @brief Read data from the memory blocks. Reading starts at the current
+             IO position and the position is advanced by the number of
+             bytes read.
+             If the memory blocks are not populated (False), it will connect to server
+             and populate the data to memory blocks.
+         @param rcount Maximum number of bytes to read. Fewer bytes may be
+             read if \em rcount bytes are not available.
+         @return DataBuf instance containing the bytes read. Use the
+               DataBuf::size_ member to find the number of bytes read.
+               DataBuf::size_ will be 0 on failure.
+        */
+       virtual DataBuf read(long rcount);
+       /*!
+         @brief Read data from the memory blocks. Reading starts at the current
+             IO position and the position is advanced by the number of
+             bytes read.
+             If the memory blocks are not populated (False), it will connect to server
+             and populate the data to memory blocks.
+         @param buf Pointer to a block of memory into which the read data
+             is stored. The memory block must be at least \em rcount bytes
+             long.
+         @param rcount Maximum number of bytes to read. Fewer bytes may be
+             read if \em rcount bytes are not available.
+         @return Number of bytes read from the memory block successfully;<BR>
+                0 if failure;
+        */
+       virtual long read(byte* buf, long rcount);
+       /*!
+         @brief Read one byte from the memory block. The IO position is
+             advanced by one byte.
+             If the memory block is not populated (False), it will connect to server
+             and populate the data to the memory block.
+         @return The byte read from the memory block if successful;<BR>
+                EOF if failure;
+        */
+       virtual int getb();
+       /*!
+         @brief Not support. Do no thing
+         @throw Error
+        */
+       virtual void transfer(BasicIo& src);
+       /*!
+         @brief Move the current IO position.
+         @param offset Number of bytes to move the IO position
+             relative to the starting position specified by \em pos
+         @param pos Position from which the seek should start
+         @return 0 if successful;<BR>
+                Nonzero if failure;
+        */
+#if defined(_MSC_VER)
+       virtual int seek(uint64_t offset, Position pos);
+#else
+       virtual int seek(long offset, Position pos);
+#endif
+       /*!
+         @brief Allow direct access to the underlying data buffer. The buffer
+                is not protected against write access in any way, the argument
+                is ignored.
+         @note  The application must ensure that the memory pointed to by the
+                returned pointer remains valid and allocated as long as the
+                MemIo object exists.
+        */
+       virtual byte* mmap(bool /*isWriteable*/ =false);
+       virtual int munmap();
+       //@}
+       //! @name Accessors
+       //@{
+       /*!
+         @brief Get the current IO position.
+         @return Offset from the start of the memory block
+        */
+       virtual long tell() const;
+       /*!
+         @brief Get the current memory buffer size in bytes.
+         @return Size of the in memory data in bytes;<BR>
+                -1 if failure;
+        */
+       virtual long size() const;
+       //!Returns true if the memory area is allocated.
+       virtual bool isopen() const;
+       //!Always returns 0
+       virtual int error() const;
+       //!Returns true if the IO position has reach the end, otherwise false.
+       virtual bool eof() const;
+       //!Returns the URL of the file.
+       virtual std::string path() const;
+#ifdef EXV_UNICODE_PATH
+       /*
+         @brief Like path() but returns a unicode URL path in an std::wstring.
+         @note This function is only available on Windows.
+        */
+       virtual std::wstring wpath() const;
+#endif
+       /*!
+         @brief Returns a temporary data storage location. Currently returns
+             an empty MemIo object, but callers should not rely on this
+             behavior since it may change.
+         @return An instance of BasicIo
+        */
+       virtual BasicIo::AutoPtr temporary() const;
+       //@}
 
     private:
         // NOT IMPLEMENTED

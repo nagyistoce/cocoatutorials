@@ -1373,20 +1373,40 @@ namespace Exiv2 {
     class HttpIo::Impl {
     public:
         //! Constructor
-        Impl(const std::string& path);
+        Impl(const std::string& path, size_t blockSize);
 #ifdef EXV_UNICODE_PATH
         //! Constructor accepting a unicode path in an std::wstring
-        Impl(const std::wstring& wpath);
+        Impl(const std::wstring& wpath, size_t blockSize);
 #endif
 
         // DATA
         std::string path_;              //!< (Standard) path
-        dict_t response_;
-        dict_t request_;
-        std::string errors_;
 #ifdef EXV_UNICODE_PATH
         std::wstring wpath_;            //!< Unicode path
 #endif
+        long blockSize_;                //!< Size of the block memory
+        bool* blocksRead_;              //!< bool array of all blocks.
+        dict_t hostInfo_;               //!< host information extracted from path
+
+        long size_;                     //!< The file size
+        long sizeAlloced_;              //!< Size of the allocated memory = nBlocks * blockSize
+        byte* data_;                    //!< Pointer to the start of the memory area
+        long idx_;                      //!< Index into the memory area
+
+        bool isMalloced_;               //!< Was the memory allocated?
+        bool eof_;                      //!< EOF indicator
+
+        // METHODS
+        /*!
+          @brief Populate the data form the block "lowBlock" to "highBlock".
+
+          @param lowBlock The index of block (from 0).
+          @param highBlock The index of block (from 0).
+          @return The value of the byte written if successful
+          @throw If there is any error when connecting the server.
+         */
+        long populateBlocks(long lowBlock, long highBlock);
+
     private:
         // NOT IMPLEMENTED
         Impl(const Impl& rhs);                         //!< Copy constructor
@@ -1394,75 +1414,297 @@ namespace Exiv2 {
 
     }; // class HttpIo::Impl
 
-    HttpIo::Impl::Impl(const std::string& url)
+    HttpIo::Impl::Impl(const std::string& url, size_t blockSize)
+        : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
         // simple url parse
         char* server = new char[url.length() + 1];
         char* page = new char[url.length() + 1];
         sscanf(url.c_str(), "http://%[^/]/%[^\n]", server, page);
 
-        request_["server"] = server;
-        request_["page"] = page;
-		delete[] server, page;
-        request_["range"] = "0-102400";
-		
-        int statusCode = http(request_,response_,errors_);
-        if (statusCode < 0) {
-            errors_ = "Unable to connect" + request_["server"];
-            throw Error(1, errors_);
-        } else if (statusCode >= 400) {
-            errors_ = response_.begin()->second;
-            throw Error(1, errors_);
-        } else if (errors_.compare("") != 0) {
-            throw Error(1, errors_);
-        }
+        hostInfo_["server"] = server;
+        hostInfo_["page"] = page;
+        delete[] server;
+        delete[] page;
     }
 #ifdef EXV_UNICODE_PATH
-    HttpIo::Impl::Impl(const std::wstring& wurl)
+    HttpIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
+        : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
 		std::string url;
 		url.assign(wurl.begin(), wurl.end()); 
+        path_ = url;
 
-		// simple url parse
+        // simple url parse
         char* server = new char[url.length() + 1];
         char* page = new char[url.length() + 1];
         sscanf(url.c_str(), "http://%[^/]/%[^\n]", server, page);
 
-        request_["server"] = server;
-        request_["page"] = page;
-		delete[] server, page;
-        request_["range"] = "0-102400";
-		
-        int statusCode = http(request_,response_,errors_);
-        if (statusCode < 0) {
-            errors_ = "Unable to connect" + request_["server"];
-            throw Error(1, errors_);
-        } else if (statusCode >= 400) {
-            errors_ = response_.begin()->second;
-            throw Error(1, errors_);
-        } else if (errors_.compare("") != 0) {
-            throw Error(1, errors_);
-        }
+        hostInfo_["server"] = server;
+        hostInfo_["page"] = page;
+        delete[] server;
+        delete[] page;
     }
 #endif
 
-    HttpIo::HttpIo(const std::string& url)
-        : p_(new Impl(url))
+    long HttpIo::Impl::populateBlocks(long lowBlock, long highBlock)
     {
-        write((byte*)p_->response_["body"].c_str(), (long)p_->response_["body"].length());
+        assert(isMalloced_);
+
+        // optimize: ignore all true blocks on left & right sides.
+        while(blocksRead_[lowBlock] && lowBlock < highBlock) lowBlock++;
+        while(blocksRead_[highBlock] && highBlock > lowBlock) highBlock--;
+
+        long rcount = 0;
+        if (!blocksRead_[highBlock])
+        {
+            // read from server
+            dict_t response;
+            dict_t request(hostInfo_);
+            std::string errors;
+            std::stringstream ss;
+            ss << "Range: bytes=" << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1) << "\r\n";
+            request["header"] = ss.str();
+
+            int statusCode = http(request, response, errors);
+            if (statusCode < 0) {
+                errors = "Unable to connect" + request["server"];
+                throw Error(1, errors);
+            } else if (statusCode >= 400) {
+                errors = response.begin()->second;
+                throw Error(1, errors);
+            } else if (errors.compare("") != 0) {
+                throw Error(1, errors);
+            }
+
+            rcount = (long)response["body"].length();
+            std::memcpy(&data_[lowBlock * blockSize_], (byte*)response["body"].c_str(), rcount);
+            while (lowBlock <= highBlock) {
+                blocksRead_[lowBlock] = true;
+                lowBlock++;
+            }
+        }
+
+        return rcount;
+    }
+
+    HttpIo::HttpIo(const std::string& url, size_t blockSize)
+        : p_(new Impl(url, blockSize))
+    {
     }
 
 #ifdef EXV_UNICODE_PATH
-    HttpIo::HttpIo(const std::wstring& wurl)
-        : p_(new Impl(wurl))
+    HttpIo::HttpIo(const std::wstring& wurl, size_t blockSize)
+        : p_(new Impl(wurl, blockSize))
     {
-		write((byte*)p_->response_["body"].c_str(), (long)p_->response_["body"].length());
     }
 #endif
 
     HttpIo::~HttpIo()
     {
+        close();
         delete p_;
+    }
+
+    int HttpIo::open()
+    {
+        // flush data & reset the IO position
+        close();
+
+        int returnCode = 0;
+        dict_t response;
+        dict_t request(p_->hostInfo_);
+        std::string errors;
+        request["verb"] = "HEAD";
+        int statusCode = http(request, response, errors);
+        if (statusCode < 0) {
+            returnCode = 1; // unable to connect
+        } else if (statusCode >= 400) {
+            returnCode = 2; // file not found
+        } else if (errors.compare("") != 0) {
+            returnCode = 3; //
+        } else {
+            p_->size_ = atol(response["Content-Length"].c_str());
+            if (p_->size_ == 0) {
+                returnCode = 4; // file is empty
+            } else {
+                long nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                p_->data_ = (byte*)std::malloc(nBlocks * p_->blockSize_);
+                p_->blocksRead_ = new bool[nBlocks];
+                for (int bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
+                    p_->blocksRead_[bIndex] = false;
+                p_->isMalloced_ = true;
+            }
+        }
+        return returnCode;
+    }
+
+    int HttpIo::close()
+    {
+        if (p_->isMalloced_) {
+            std::free(p_->data_);
+            delete[] p_->blocksRead_;
+            p_->size_ = 0;
+            p_->eof_ = false;
+            p_->isMalloced_ = false;
+        }
+        return 0;
+    }
+
+    long HttpIo::write(const byte* data, long wcount)
+    {
+        return 0;
+    }
+
+    long HttpIo::write(BasicIo& src)
+    {
+        return 0;
+    }
+
+    int HttpIo::putb(byte data)
+    {
+        return 0;
+    }
+
+    DataBuf HttpIo::read(long rcount)
+    {
+        DataBuf buf(rcount);
+        long readCount = read(buf.pData_, buf.size_);
+        buf.size_ = readCount;
+        return buf;
+    }
+
+    long HttpIo::read(byte* buf, long rcount)
+    {
+        assert(p_->isMalloced_);
+        if (p_->eof_) {
+            return EOF;
+        }
+
+        long allow = EXV_MIN(rcount, p_->size_ - p_->idx_);
+        long lowBlock = p_->idx_/p_->blockSize_;
+        long highBlock = (p_->idx_ + allow)/p_->blockSize_;
+
+        // connect to server & load the blocks if it's necessary (blocks are false).
+        p_->populateBlocks(lowBlock, highBlock);
+
+        std::memcpy(buf, &p_->data_[p_->idx_], allow);
+        p_->idx_ += allow;
+        if (p_->idx_ == p_->size_) p_->eof_ = true;
+
+        return allow;
+    }
+
+    int HttpIo::getb()
+    {
+        assert(p_->isMalloced_);
+        if (p_->idx_ == p_->size_) {
+            p_->eof_ = true;
+            return EOF;
+        }
+
+        long expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
+        // connect to server & load the blocks if it's necessary (blocks are false).
+        p_->populateBlocks(expectedBlock, expectedBlock);
+
+        return p_->data_[p_->idx_++];
+    }
+
+    void HttpIo::transfer(BasicIo& src)
+    {
+        throw Error(1);
+    }
+
+#if defined(_MSC_VER)
+    int HttpIo::seek( uint64_t offset, Position pos )
+    {
+        assert(p_->isMalloced_);
+        uint64_t newIdx = 0;
+
+        switch (pos) {
+            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+            case BasicIo::beg: newIdx = offset; break;
+            case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
+
+        if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
+        p_->idx_ = static_cast<long>(newIdx);   //not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
+        p_->eof_ = false;
+        return 0;
+    }
+#else
+    int HttpIo::seek(long offset, Position pos)
+    {
+        assert(p_->isMalloced_);
+        long newIdx = 0;
+
+        switch (pos) {
+            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+            case BasicIo::beg: newIdx = offset; break;
+            case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
+
+        if (newIdx < 0 || newIdx > p_->size_) return 1;
+        p_->idx_ = newIdx;
+        p_->eof_ = false;
+        return 0;
+    }
+#endif
+
+    byte* HttpIo::mmap(bool /*isWriteable*/)
+    {
+        return p_->data_;
+    }
+
+    int HttpIo::munmap()
+    {
+        return 0;
+    }
+
+    long HttpIo::tell() const
+    {
+        return p_->idx_;
+    }
+
+    long HttpIo::size() const
+    {
+        return p_->size_;
+    }
+
+    bool HttpIo::isopen() const
+    {
+        if (p_->isMalloced_)
+            return true;
+        return false;
+    }
+
+    int HttpIo::error() const
+    {
+        return 0;
+    }
+
+    bool HttpIo::eof() const
+    {
+        return p_->eof_;
+    }
+
+    std::string HttpIo::path() const
+    {
+        return p_->path_;
+    }
+
+#ifdef EXV_UNICODE_PATH
+    std::wstring HttpIo::wpath() const
+    {
+        return p_->wpath_;
+    }
+#endif
+
+    BasicIo::AutoPtr HttpIo::temporary() const
+    {
+        return BasicIo::AutoPtr(new MemIo);
     }
 
     // *************************************************************************
