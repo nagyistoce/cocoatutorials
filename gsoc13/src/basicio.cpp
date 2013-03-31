@@ -1480,10 +1480,19 @@ namespace Exiv2 {
             }
 
             rcount = (long)response["body"].length();
-            std::memcpy(&data_[lowBlock * blockSize_], (byte*)response["body"].c_str(), rcount);
-            while (lowBlock <= highBlock) {
-                blocksRead_[lowBlock] = true;
-                lowBlock++;
+
+			if (rcount == size_) {
+                // doesn't support Range
+                std::memcpy(data_, (byte*)response["body"].c_str(), rcount);
+                long nBlocks = (size_ + blockSize_ - 1) / blockSize_;
+                for (int bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
+                    blocksRead_[bIndex] = true;
+            } else {
+                std::memcpy(&data_[lowBlock * blockSize_], (byte*)response["body"].c_str(), rcount);
+                while (lowBlock <= highBlock) {
+                    blocksRead_[lowBlock] = true;
+                    lowBlock++;
+                }
             }
         }
 
