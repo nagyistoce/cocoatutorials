@@ -62,12 +62,12 @@ typedef unsigned long DWORD ;
 #define WSAEWOULDBLOCK  EINPROGRESS
 #define WSAENOTCONN     EAGAIN
 
-int WSAGetLastError()
+static int WSAGetLastError()
 {
     return errno ;
 }
 
-void Sleep(int millisecs)
+static void Sleep(int millisecs)
 {
     const struct timespec rqtp = { 0 , millisecs*1000000 } ;
     struct timespec   rmtp ;
@@ -79,7 +79,7 @@ void Sleep(int millisecs)
 ////////////////////////////////////////
 // code
 const char* httpTemplate =
-"%s %s HTTP %s\r\n"            // $verb $page $version
+"%s %s HTTP/%s\r\n"            // $verb $page $version
 "User-Agent: exiv2http/1.0.0\r\n"
 "Accept: */*\r\n"
 "Host: %s\r\n"                 // $servername
@@ -87,7 +87,10 @@ const char* httpTemplate =
 "\r\n"
 ;
 
+#ifndef lengthof
 #define lengthof(x) (sizeof(x)/sizeof((x)[0]))
+#endif
+
 #define white(c) ((c == ' ') || (c == '\t'))
 
 #define FINISH          -999
@@ -150,12 +153,12 @@ static int makeNonBlocking(int sockfd)
 #endif
 }
 
-int http(dict_t& request,dict_t& response,std::string& errors)
+int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
 {
-    if ( !request.count("port")   ) request["port"  ]  = "80" ;
-    if ( !request.count("verb")   ) request["verb"  ]  = "GET";
-    if ( !request.count("header") ) request["header"]  = ""   ;
+    if ( !request.count("verb")   ) request["verb"   ] = "GET";
+    if ( !request.count("header") ) request["header" ] = ""   ;
     if ( !request.count("version")) request["version"] = "1.0";
+    if ( !request.count("port")   ) request["port"   ] = ""   ;
     
     std::string file;
     errors     = "";
@@ -170,10 +173,10 @@ int http(dict_t& request,dict_t& response,std::string& errors)
 
     const char* servername = request["server" ].c_str();
     const char* page       = request["page"   ].c_str();
-    const char* port       = request["port"   ].c_str();
     const char* verb       = request["verb"   ].c_str();
     const char* header     = request["header" ].c_str();
     const char* version    = request["version"].c_str();
+    const char* port       = request["port"   ].c_str();
     
     const char* servername_p = servername;
     const char* port_p       = port      ;
@@ -184,16 +187,18 @@ int http(dict_t& request,dict_t& response,std::string& errors)
     const char* proxi  = "http_proxy";
     const char* PROXY  = getenv(PROXI);
     const char* proxy  = getenv(proxi);
-    bool        proxb  = PROXY || proxy;
-    const char* prox   = proxb ? (proxy?proxy:PROXY):"";
-    Uri   Proxy = Uri::Parse(prox);
-	if (  proxb ) {
+    bool        bProx  = PROXY || proxy;
+    const char* prox   = bProx ? (proxy?proxy:PROXY):"";
+    Exiv2::Uri  Proxy =  Exiv2::Uri::Parse(prox);
+	if (  bProx ) {
 		servername_p = Proxy.Host.c_str();
 		port_p       = Proxy.Port.c_str();
         page         = url.c_str();
         std::string  p(proxy?proxi:PROXI);
         std::cerr << p << '=' << prox << " page = " << page << std::endl;
 	}
+    if ( !port[0]   ) port   = "80";
+    if ( !port_p[0] ) port_p = "80";
 	
     ////////////////////////////////////
     // open the socket
@@ -339,7 +344,7 @@ int http(dict_t& request,dict_t& response,std::string& errors)
 }
 
 // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
-Uri Uri::Parse(const std::string &uri)
+Exiv2::Uri Exiv2::Uri::Parse(const std::string &uri)
 {
 	Uri result;
 

@@ -1418,6 +1418,14 @@ namespace Exiv2 {
         : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
           sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
+#if 1
+    	Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+    	hostInfo_["server"] = uri.Host;
+    	hostInfo_["page"  ] = uri.Path;
+    	hostInfo_["query" ] = uri.QueryString;
+    	hostInfo_["proto" ] = uri.Protocol;
+    	hostInfo_["port"  ] = uri.Port;
+#else
         // simple url parse
         char* server = new char[url.length() + 1];
         char* page = new char[url.length() + 1];
@@ -1427,6 +1435,7 @@ namespace Exiv2 {
         hostInfo_["page"] = page;
         delete[] server;
         delete[] page;
+#endif
     }
 #ifdef EXV_UNICODE_PATH
     HttpIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
@@ -1562,17 +1571,17 @@ namespace Exiv2 {
         return 0;
     }
 
-    long HttpIo::write(const byte* data, long wcount)
+    long HttpIo::write(const byte* /* unused data*/, long /* unused wcount*/)
     {
         return 0;
     }
 
-    long HttpIo::write(BasicIo& src)
+    long HttpIo::write(BasicIo& /* unused src*/)
     {
         return 0;
     }
 
-    int HttpIo::putb(byte data)
+    int HttpIo::putb(byte /*unused data*/)
     {
         return 0;
     }
@@ -1621,7 +1630,7 @@ namespace Exiv2 {
         return p_->data_[p_->idx_++];
     }
 
-    void HttpIo::transfer(BasicIo& src)
+    void HttpIo::transfer(BasicIo& /*unused src*/)
     {
         throw Error(1);
     }

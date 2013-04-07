@@ -17,8 +17,8 @@ int main(int argc,const char** argv)
         return 0;
     }
 
-    dict_t response;
-    dict_t request;
+    Exiv2::dict_t response;
+    Exiv2::dict_t request;
     string errors;
 
     request["page"  ]   = "robin.shtml";
@@ -36,20 +36,34 @@ int main(int argc,const char** argv)
                 header += "\r\n";
             }
             request[arg] += header;
+        } else if ( string(arg) == "uri" || string(arg) == "url" ) {
+        	Exiv2::Uri uri=Exiv2::Uri::Parse(argv[i+1]);
+        	if ( uri.Protocol == "http" ) {
+        	    request["server"] = uri.Host;
+        	    request["page"] = uri.Path;
+        	    request["port"] = uri.Port;
+        	}
         } else {
             request[arg]=argv[i+1];
         }
     }
 
-    int result = http(request,response,errors);
+    int result = Exiv2::http(request,response,errors);
     cout << "result = " << result << endl;
     cout << "errors = " << errors << endl;
     cout << endl;
 
-    for ( dict_i it = response.begin() ; it != response.end() ; it++ ) {
+    for ( Exiv2::dict_i it = response.begin() ; it != response.end() ; it++ ) {
         cout << it->first << " -> ";
-        if ( it->first ==  "body") cout << "# " << it->second.length();
-        else                       cout << it->second;
+
+        if ( it->first ==  "body") {
+        	string& value = it->second;
+        	cout << "# " << value.length();
+        	if ( value.length() < 1000 ) cout << " = " << value ;
+        } else {
+        	cout << it->second;
+        }
+
         cout << endl;
     }
 
