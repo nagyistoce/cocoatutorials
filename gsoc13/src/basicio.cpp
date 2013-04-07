@@ -114,10 +114,10 @@ namespace Exiv2 {
         HANDLE hFile_;                  //!< Duplicated fd
         HANDLE hMap_;                   //!< Handle from CreateFileMapping
 #endif
-        byte* pMappedArea_;             //!< Pointer to the memory-mapped area
+        byte*  pMappedArea_;            //!< Pointer to the memory-mapped area
         size_t mappedLength_;           //!< Size of the memory-mapped area
-        bool isMalloced_;               //!< Is the mapped area allocated?
-        bool isWriteable_;              //!< Can the mapped area be written to?
+        bool   isMalloced_;             //!< Is the mapped area allocated?
+        bool   isWriteable_;            //!< Can the mapped area be written to?
         // TYPES
         //! Simple struct stat wrapper for internal use
         struct StructStat {
@@ -1310,7 +1310,7 @@ namespace Exiv2 {
     }
 #else
     const std::string StdinIo::TEMP_FILE_EXT = ".exiv2_temp";
-    const std::string StdinIo::GEN_FILE_EXT = ".exiv2";
+    const std::string StdinIo::GEN_FILE_EXT  = ".exiv2";
 
     StdinIo::StdinIo() : FileIo(StdinIo::writeStdinToFile()) {
         isTemp_ = true;
@@ -1380,21 +1380,21 @@ namespace Exiv2 {
 #endif
 
         // DATA
-        std::string path_;              //!< (Standard) path
+        std::string  path_;             //!< (Standard) path
 #ifdef EXV_UNICODE_PATH
         std::wstring wpath_;            //!< Unicode path
 #endif
-        long blockSize_;                //!< Size of the block memory
-        bool* blocksRead_;              //!< bool array of all blocks.
-        dict_t hostInfo_;               //!< host information extracted from path
+        size_t       blockSize_;        //!< Size of the block memory
+        bool*        blocksRead_;       //!< bool array of all blocks.
+        dict_t       hostInfo_;         //!< host information extracted from path
 
-        long size_;                     //!< The file size
-        long sizeAlloced_;              //!< Size of the allocated memory = nBlocks * blockSize
-        byte* data_;                    //!< Pointer to the start of the memory area
-        long idx_;                      //!< Index into the memory area
+        size_t       size_;             //!< The file size
+        long         sizeAlloced_;      //!< Size of the allocated memory = nBlocks * blockSize
+        byte*        data_;             //!< Pointer to the start of the memory area
+        long         idx_;              //!< Index into the memory area
 
-        bool isMalloced_;               //!< Was the memory allocated?
-        bool eof_;                      //!< EOF indicator
+        bool         isMalloced_;       //!< Was the memory allocated?
+        bool         eof_;              //!< EOF indicator
 
         // METHODS
         /*!
@@ -1405,7 +1405,7 @@ namespace Exiv2 {
           @return The value of the byte written if successful
           @throw If there is any error when connecting the server.
          */
-        long populateBlocks(long lowBlock, long highBlock);
+        long populateBlocks(size_t lowBlock, size_t highBlock);
 
     private:
         // NOT IMPLEMENTED
@@ -1458,15 +1458,15 @@ namespace Exiv2 {
     }
 #endif
 
-    long HttpIo::Impl::populateBlocks(long lowBlock, long highBlock)
+    long HttpIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
     {
         assert(isMalloced_);
 
         // optimize: ignore all true blocks on left & right sides.
-        while(blocksRead_[lowBlock] && lowBlock < highBlock) lowBlock++;
-        while(blocksRead_[highBlock] && highBlock > lowBlock) highBlock--;
+        while(blocksRead_[lowBlock]  && lowBlock  < highBlock) lowBlock++;
+        while(blocksRead_[highBlock] && highBlock >  lowBlock) highBlock--;
 
-        long rcount = 0;
+        size_t rcount = 0;
         if (!blocksRead_[highBlock])
         {
             // read from server
@@ -1493,8 +1493,8 @@ namespace Exiv2 {
 			if (rcount == size_) {
                 // doesn't support Range
                 std::memcpy(data_, (byte*)response["body"].c_str(), rcount);
-                long nBlocks = (size_ + blockSize_ - 1) / blockSize_;
-                for (int bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
+                size_t nBlocks = (size_ + blockSize_ - 1) / blockSize_;
+                for (size_t bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
                     blocksRead_[bIndex] = true;
             } else {
                 std::memcpy(&data_[lowBlock * blockSize_], (byte*)response["body"].c_str(), rcount);
@@ -1505,7 +1505,7 @@ namespace Exiv2 {
             }
         }
 
-        return rcount;
+        return (long) rcount;
     }
 
     HttpIo::HttpIo(const std::string& url, size_t blockSize)
@@ -1548,10 +1548,10 @@ namespace Exiv2 {
             if (p_->size_ == 0) {
                 returnCode = 4; // file is empty
             } else {
-                long nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-                p_->data_ = (byte*)std::malloc(nBlocks * p_->blockSize_);
+                size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
                 p_->blocksRead_ = new bool[nBlocks];
-                for (int bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
+                for (size_t bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
                     p_->blocksRead_[bIndex] = false;
                 p_->isMalloced_ = true;
             }
@@ -1597,33 +1597,31 @@ namespace Exiv2 {
     long HttpIo::read(byte* buf, long rcount)
     {
         assert(p_->isMalloced_);
-        if (p_->eof_) {
-            return EOF;
-        }
+        if (p_->eof_) return EOF;
 
-        long allow = EXV_MIN(rcount, p_->size_ - p_->idx_);
-        long lowBlock = p_->idx_/p_->blockSize_;
-        long highBlock = (p_->idx_ + allow)/p_->blockSize_;
+        size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
+        size_t lowBlock  =  p_->idx_         /p_->blockSize_;
+        size_t highBlock = (p_->idx_ + allow)/p_->blockSize_;
 
         // connect to server & load the blocks if it's necessary (blocks are false).
         p_->populateBlocks(lowBlock, highBlock);
 
         std::memcpy(buf, &p_->data_[p_->idx_], allow);
-        p_->idx_ += allow;
-        if (p_->idx_ == p_->size_) p_->eof_ = true;
+        p_->idx_ += (long) allow;
+        if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
 
-        return allow;
+        return (long) allow;
     }
 
     int HttpIo::getb()
     {
         assert(p_->isMalloced_);
-        if (p_->idx_ == p_->size_) {
+        if (p_->idx_ == (long)p_->size_) {
             p_->eof_ = true;
             return EOF;
         }
 
-        long expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
+        size_t expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
         // connect to server & load the blocks if it's necessary (blocks are false).
         p_->populateBlocks(expectedBlock, expectedBlock);
 
@@ -1664,7 +1662,7 @@ namespace Exiv2 {
             case BasicIo::end: newIdx = p_->size_ + offset; break;
         }
 
-        if (newIdx < 0 || newIdx > p_->size_) return 1;
+        if (newIdx < 0 || newIdx > (long) p_->size_) return 1;
         p_->idx_ = newIdx;
         p_->eof_ = false;
         return 0;
@@ -1688,14 +1686,12 @@ namespace Exiv2 {
 
     long HttpIo::size() const
     {
-        return p_->size_;
+        return (long) p_->size_;
     }
 
     bool HttpIo::isopen() const
     {
-        if (p_->isMalloced_)
-            return true;
-        return false;
+        return p_->isMalloced_;
     }
 
     int HttpIo::error() const

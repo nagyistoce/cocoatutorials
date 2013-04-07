@@ -9,8 +9,9 @@ using namespace std;
 int main(int argc,const char** argv)
 {
     if ( argc < 3 ) {
-        cout << "usage:   " << argv[0] << " [key value]+" << endl;
-        cout << "example: " << argv[0] << " -server clanmills.com -page /LargsPanorama.jpg -header \"Range: bytes=0-200\"" << endl;
+        cout << "usage  : " << argv[0] << " [key value]+" << endl;
+        cout << "example: " << argv[0] << " [-url url | -server clanmills.com -page /LargsPanorama.jpg] -header \"Range: bytes=0-200\"" << endl;
+		cout << "or     : " << argv[0] << " -url http://clanmills.com/robin.shtml" << endl;
         cout << "useful  keys: -verb {GET|HEAD|PUT}  -page str -server str -port number -version [-header something]+ " << endl;
         cout << "default keys: -verb GET -server clanmills.com -page robin.shtml -port 80 -version 1.0" << endl;
         cout << "export http_proxy=url eg http_proxy=http://64.62.247.244:80" << endl;
@@ -37,11 +38,11 @@ int main(int argc,const char** argv)
             }
             request[arg] += header;
         } else if ( string(arg) == "uri" || string(arg) == "url" ) {
-        	Exiv2::Uri uri=Exiv2::Uri::Parse(argv[i+1]);
+        	Exiv2::Uri uri = Exiv2::Uri::Parse(argv[i+1]);
         	if ( uri.Protocol == "http" ) {
         	    request["server"] = uri.Host;
-        	    request["page"] = uri.Path;
-        	    request["port"] = uri.Port;
+        	    request["page"]   = uri.Path;
+        	    request["port"]   = uri.Port;
         	}
         } else {
             request[arg]=argv[i+1];

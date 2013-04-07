@@ -14,7 +14,7 @@ namespace Exiv2 {
     EXIV2API int http(dict_t& request,dict_t& response,std::string& errors);
 
     // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
-    EXIV2API class Uri
+    class Uri
     {
     public:
 	    std::string QueryString;
@@ -23,7 +23,7 @@ namespace Exiv2 {
 	    std::string Host;
 	    std::string Port;
 
-	    static Uri Parse(const std::string &uri);
+	    static Uri EXIV2API Parse(const std::string &uri);
     };
 }
 
