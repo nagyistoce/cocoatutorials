@@ -1418,24 +1418,12 @@ namespace Exiv2 {
         : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
           sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
-#if 1
     	Exiv2::Uri uri = Exiv2::Uri::Parse(url);
     	hostInfo_["server"] = uri.Host;
     	hostInfo_["page"  ] = uri.Path;
     	hostInfo_["query" ] = uri.QueryString;
     	hostInfo_["proto" ] = uri.Protocol;
     	hostInfo_["port"  ] = uri.Port;
-#else
-        // simple url parse
-        char* server = new char[url.length() + 1];
-        char* page = new char[url.length() + 1];
-        sscanf(url.c_str(), "http://%[^/]/%[^\n]", server, page);
-
-        hostInfo_["server"] = server;
-        hostInfo_["page"] = page;
-        delete[] server;
-        delete[] page;
-#endif
     }
 #ifdef EXV_UNICODE_PATH
     HttpIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
@@ -1446,15 +1434,12 @@ namespace Exiv2 {
 		url.assign(wurl.begin(), wurl.end()); 
         path_ = url;
 
-        // simple url parse
-        char* server = new char[url.length() + 1];
-        char* page = new char[url.length() + 1];
-        sscanf(url.c_str(), "http://%[^/]/%[^\n]", server, page);
-
-        hostInfo_["server"] = server;
-        hostInfo_["page"] = page;
-        delete[] server;
-        delete[] page;
+        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+        hostInfo_["server"] = uri.Host;
+        hostInfo_["page"  ] = uri.Path;
+        hostInfo_["query" ] = uri.QueryString;
+        hostInfo_["proto" ] = uri.Protocol;
+        hostInfo_["port"  ] = uri.Port;
     }
 #endif
 
@@ -1494,14 +1479,10 @@ namespace Exiv2 {
                 // doesn't support Range
                 std::memcpy(data_, (byte*)response["body"].c_str(), rcount);
                 size_t nBlocks = (size_ + blockSize_ - 1) / blockSize_;
-                for (size_t bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
-                    blocksRead_[bIndex] = true;
+                ::memset(blocksRead_, true, nBlocks);
             } else {
                 std::memcpy(&data_[lowBlock * blockSize_], (byte*)response["body"].c_str(), rcount);
-                while (lowBlock <= highBlock) {
-                    blocksRead_[lowBlock] = true;
-                    lowBlock++;
-                }
+                ::memset(&blocksRead_[lowBlock], true, highBlock - lowBlock + 1);
             }
         }
 
@@ -1551,8 +1532,7 @@ namespace Exiv2 {
                 size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
                 p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
                 p_->blocksRead_ = new bool[nBlocks];
-                for (size_t bIndex = 0 ; bIndex < nBlocks ; bIndex++ )
-                    p_->blocksRead_[bIndex] = false;
+                ::memset(p_->blocksRead_, false, nBlocks);
                 p_->isMalloced_ = true;
             }
         }
@@ -1562,8 +1542,8 @@ namespace Exiv2 {
     int HttpIo::close()
     {
         if (p_->isMalloced_) {
-            std::free(p_->data_);
-            delete[] p_->blocksRead_;
+            if (p_->data_) std::free(p_->data_);
+            if (p_->blocksRead_) delete[] p_->blocksRead_;
             p_->size_ = 0;
             p_->eof_ = false;
             p_->isMalloced_ = false;
