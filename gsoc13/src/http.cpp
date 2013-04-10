@@ -145,7 +145,7 @@ static void flushBuffer(const char* buffer,size_t start,int& end,std::string& fi
 static int makeNonBlocking(int sockfd)
 {
 #ifdef WIN32
-  ULONG ioctl_opt = 1;
+  ULONG  ioctl_opt = 1;
   return ioctlsocket(sockfd, FIONBIO, &ioctl_opt);
 #else
   int    result  = fcntl(sockfd, F_SETFL, O_NONBLOCK);
@@ -279,12 +279,14 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
                     }
                 }
 
-                // parse the response headers
+                // parse response headers
                 char* h = buffer;
-                char  C = ':';
+                char  C = ':' ;
                 char  N = '\n';
-                h       = strchr(h,N)+1;
-                response[""]=std::string(buffer).substr(0,h-buffer-2);
+                int   i = 0   ; // initial byte in buffer
+                while(buffer[i] == N ) i++;
+                h       = strchr(h+i,N)+1;
+                response[""]=std::string(buffer+i).substr(0,h-buffer-2);
                 result = atoi(strchr(buffer,' '));
                 char* c = strchr(h,C);
                 char* n = strchr(h,N);
