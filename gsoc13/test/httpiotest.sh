@@ -18,9 +18,9 @@ httpTest()
     if [ $scheme = http ]; then
         dot=.
         # run tests
-        runTest httpTest -url $1                                  | grep --text -v -e ^Date  -v -e ^Last -v -e ^$ | sort | sed -e $'s/\x0d/\\\\R/g'  > $test
-        runTest httpTest -url $1 -verb HEAD                       | grep --text -v -e ^Date  -v -e ^Last -v -e ^$ | sort | sed -e $'s/\x0d/\\\\R/g' >> $test
-        runTest httpTest -url $1 -header 'Range: bytes=200-1800'  | grep -v -e ^Date  -v -e ^Last -v -e ^$        | sort | sed -e $'s/\x0d/\\\\R/g' >> $test
+        runTest httptest -url $1                                  | grep --text -v -e ^Date  -v -e ^Last -v -e ^$ | sort | tr -d $'\r'  > $test
+        runTest httptest -url $1 -verb HEAD                       | grep --text -v -e ^Date  -v -e ^Last -v -e ^$ | sort | tr -d $'\r' >> $test
+        runTest httptest -url $1 -header 'Range: bytes=200-1800'  | grep        -v -e ^Date  -v -e ^Last -v -e ^$ | sort | tr -d $'\r' >> $test
 
         # check results
         diffCheck $test $good
@@ -38,9 +38,8 @@ httpIoTest()
     src=$(basename "$arg")
     test=${src}.httpiotst
     good=$datapath/${src}.httpiogd
-
     dot=x
-    
+
     if [ $scheme = http ]; then
         dot=.
         # run tests

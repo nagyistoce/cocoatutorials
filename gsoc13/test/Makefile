@@ -70,6 +70,7 @@ TESTS = addmoddel.sh      \
         exifdata-test.sh  \
         exiv2-test.sh     \
         imagetest.sh      \
+        httpiotest.sh     \
         iotest.sh         \
         iptctest.sh       \
         modify-test.sh    \

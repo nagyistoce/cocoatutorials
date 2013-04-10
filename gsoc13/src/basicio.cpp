@@ -266,7 +266,7 @@ namespace Exiv2 {
 #else
     void FileIo::Impl::copyXattrFrom(const FileIo&)
 #endif
-	{
+    {
 #if defined(__APPLE__)
 # if defined(EXV_UNICODE_PATH)
 #  error No xattr API for MacOS X with unicode support
@@ -539,27 +539,27 @@ namespace Exiv2 {
     void FileIo::setPath(const std::string& path) {
         close();
 #ifdef EXV_UNICODE_PATH
-		if (p_->wpMode_ == Impl::wpUnicode) {
+        if (p_->wpMode_ == Impl::wpUnicode) {
             std::wstring wpath;
-			wpath.assign(path.begin(), path.end());
-			p_->wpath_ = wpath;
+            wpath.assign(path.begin(), path.end());
+            p_->wpath_ = wpath;
         }
-		p_->path_ = path;
+        p_->path_ = path;
 #else
-		p_->path_ = path;
+        p_->path_ = path;
 #endif
     }
 
 #ifdef EXV_UNICODE_PATH
     void FileIo::setPath(const std::wstring& wpath) {
         close();
-		if (p_->wpMode_ == Impl::wpStandard) {
+        if (p_->wpMode_ == Impl::wpStandard) {
             std::string path;
-			path.assign(wpath.begin(), wpath.end()); 
-			p_->path_ = path;
+            path.assign(wpath.begin(), wpath.end());
+            p_->path_ = path;
         } else {
-			p_->wpath_ = wpath;
-		}
+            p_->wpath_ = wpath;
+        }
     }
 #endif
 
@@ -571,7 +571,7 @@ namespace Exiv2 {
         int ret = p_->stat(buf);
 #if defined WIN32 && !defined __CYGWIN__
         DWORD nlink = p_->winNumberOfLinks();
-#else 
+#else
         nlink_t nlink = buf.st_nlink;
 #endif
 
@@ -853,26 +853,26 @@ namespace Exiv2 {
     }
 
 #if defined(_MSC_VER)
-	int FileIo::seek( uint64_t offset, Position pos )
-	{
-		assert(p_->fp_ != 0);
+    int FileIo::seek( uint64_t offset, Position pos )
+    {
+        assert(p_->fp_ != 0);
 
-		int fileSeek = 0;
-		switch (pos) {
-		case BasicIo::cur: fileSeek = SEEK_CUR; break;
-		case BasicIo::beg: fileSeek = SEEK_SET; break;
-		case BasicIo::end: fileSeek = SEEK_END; break;
-		}
+        int fileSeek = 0;
+        switch (pos) {
+        case BasicIo::cur: fileSeek = SEEK_CUR; break;
+        case BasicIo::beg: fileSeek = SEEK_SET; break;
+        case BasicIo::end: fileSeek = SEEK_END; break;
+        }
 
-		if (p_->switchMode(Impl::opSeek) != 0) return 1;
+        if (p_->switchMode(Impl::opSeek) != 0) return 1;
 #ifdef _WIN64
-		return _fseeki64(p_->fp_, offset, fileSeek);
+        return _fseeki64(p_->fp_, offset, fileSeek);
 #else
-		return std::fseek(p_->fp_,static_cast<long>(offset), fileSeek);
+        return std::fseek(p_->fp_,static_cast<long>(offset), fileSeek);
 #endif
-	}
+    }
 #else
-	int FileIo::seek(long offset, Position pos)
+    int FileIo::seek(long offset, Position pos)
     {
         assert(p_->fp_ != 0);
 
@@ -1165,23 +1165,23 @@ namespace Exiv2 {
     }
 
 #if defined(_MSC_VER)
-	int MemIo::seek( uint64_t offset, Position pos )
-	{
-		uint64_t newIdx = 0;
+    int MemIo::seek( uint64_t offset, Position pos )
+    {
+        uint64_t newIdx = 0;
 
-		switch (pos) {
-		case BasicIo::cur: newIdx = p_->idx_ + offset; break;
-		case BasicIo::beg: newIdx = offset; break;
-		case BasicIo::end: newIdx = p_->size_ + offset; break;
-		}
+        switch (pos) {
+        case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+        case BasicIo::beg: newIdx = offset; break;
+        case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
 
-		if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
-		p_->idx_ = static_cast<long>(newIdx);	//not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
-		p_->eof_ = false;
-		return 0;
-	}
+        if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
+        p_->idx_ = static_cast<long>(newIdx);   //not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
+        p_->eof_ = false;
+        return 0;
+    }
 #else
-	int MemIo::seek(long offset, Position pos)
+    int MemIo::seek(long offset, Position pos)
     {
         long newIdx = 0;
 
@@ -1326,7 +1326,7 @@ namespace Exiv2 {
 
     void StdinIo::transfer(BasicIo& src) {
         if (isTemp_) {
-			// replace temp path to gent path.
+            // replace temp path to gent path.
             std::string currentPath = path();
             setPath(ReplaceStringInPlace(currentPath, StdinIo::TEMP_FILE_EXT, StdinIo::GEN_FILE_EXT));
             // rename the file
@@ -1343,7 +1343,7 @@ namespace Exiv2 {
     std::string StdinIo::writeStdinToFile() {
         if (isatty(fileno(stdin)))
             throw Error(53);
-#ifdef _O_BINARY
+#ifdef _MSC_VER
         // convert stdin to binary
         if (_setmode(_fileno(stdin), _O_BINARY) == -1)
             throw Error(54);
@@ -1418,20 +1418,20 @@ namespace Exiv2 {
         : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
           sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
-    	Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-    	hostInfo_["server"] = uri.Host;
-    	hostInfo_["page"  ] = uri.Path;
-    	hostInfo_["query" ] = uri.QueryString;
-    	hostInfo_["proto" ] = uri.Protocol;
-    	hostInfo_["port"  ] = uri.Port;
+        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+        hostInfo_["server"] = uri.Host;
+        hostInfo_["page"  ] = uri.Path;
+        hostInfo_["query" ] = uri.QueryString;
+        hostInfo_["proto" ] = uri.Protocol;
+        hostInfo_["port"  ] = uri.Port;
     }
 #ifdef EXV_UNICODE_PATH
     HttpIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
         : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
           sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
-		std::string url;
-		url.assign(wurl.begin(), wurl.end()); 
+        std::string url;
+        url.assign(wurl.begin(), wurl.end());
         path_ = url;
 
         Exiv2::Uri uri = Exiv2::Uri::Parse(url);
@@ -1475,7 +1475,7 @@ namespace Exiv2 {
 
             rcount = (long)response["body"].length();
 
-			if (rcount == size_) {
+            if (rcount == size_) {
                 // doesn't support Range
                 std::memcpy(data_, (byte*)response["body"].c_str(), rcount);
                 size_t nBlocks = (size_ + blockSize_ - 1) / blockSize_;
@@ -1764,22 +1764,22 @@ namespace Exiv2 {
 #endif
     std::string ReplaceStringInPlace(std::string subject, const std::string& search,
                           const std::string& replace) {
-		size_t pos = 0;
-		while((pos = subject.find(search, pos)) != std::string::npos) {
-			 subject.replace(pos, search.length(), replace);
-			 pos += replace.length();
-		}
+        size_t pos = 0;
+        while((pos = subject.find(search, pos)) != std::string::npos) {
+             subject.replace(pos, search.length(), replace);
+             pos += replace.length();
+        }
         return subject;
-	}
+    }
 #ifdef EXV_UNICODE_PATH
     std::wstring ReplaceStringInPlace(std::wstring subject, const std::wstring& search,
                           const std::wstring& replace) {
-		std::wstring::size_type pos = 0;
-		while((pos = subject.find(search, pos)) != std::wstring::npos) {
-			 subject.replace(pos, search.length(), replace);
-			 pos += replace.length();
-		}
+        std::wstring::size_type pos = 0;
+        while((pos = subject.find(search, pos)) != std::wstring::npos) {
+             subject.replace(pos, search.length(), replace);
+             pos += replace.length();
+        }
         return subject;
-	}
+    }
 #endif
 }                                       // namespace Exiv2
