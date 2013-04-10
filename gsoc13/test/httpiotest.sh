@@ -62,7 +62,7 @@ httpIoTest()
                       http://exiv2.nuditu.com/httpio2.jpg \
                       http://exiv2.nuditu.com/httpio3.jpg \
                       http://exiv2.nuditu.com/httpio4.jpg \
-                      skip://exiv2.nuditu.com/httpio5.jpg \
+                      http://exiv2.nuditu.com/httpio5.jpg \
                       http://exiv2.nuditu.com/httpio6.jpg \
                       http://exiv2.nuditu.com/httpio7.jpg \
                       http://exiv2.nuditu.com/httpio8.jpg \
