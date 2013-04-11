@@ -18,9 +18,9 @@ httpTest()
     if [ $scheme = http ]; then
         dot=.
         # run tests
-        runTest httptest -url $1                                  | grep -v -e ^Date  -v -e ^Last          | tr -d $'\r'  > $test
-        runTest httptest -url $1 -verb HEAD                       | grep -v -e ^Date  -v -e ^Last -v -e ^$ | tr -d $'\r' >> $test
-        runTest httptest -url $1 -header 'Range: bytes=200-1800'  | grep -v -e ^Date  -v -e ^Last -v -e ^$ | tr -d $'\r' >> $test
+        runTest httptest -url $1                                  | grep -v -e ^Date  -v -e ^Last  > $test
+        runTest httptest -url $1 -verb HEAD                       | grep -v -e ^Date  -v -e ^Last >> $test
+        runTest httptest -url $1 -header 'Range: bytes=200-1800'  | grep -v -e ^Date  -v -e ^Last >> $test
 
         # check results
         diffCheck $test $good 

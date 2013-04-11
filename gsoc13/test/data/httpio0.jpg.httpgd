@@ -17,6 +17,7 @@ Host: exiv2.nuditu.com
 
 result = 200
 errors = 
+
  -> HTTP/1.1 200 OK
 Accept-Ranges ->  bytes
 Connection ->  close
@@ -30,8 +31,10 @@ User-Agent: exiv2http/1.0.0
 Accept: */*
 Host: exiv2.nuditu.com
 
+
 result = 206
 errors = 
+
  -> HTTP/1.1 206 Partial Content
 Accept-Ranges ->  bytes
 Connection ->  close
@@ -46,4 +49,5 @@ User-Agent: exiv2http/1.0.0
 Accept: */*
 Host: exiv2.nuditu.com
 Range: bytes=200-1800
+
 
