@@ -1,0 +1,53 @@
+result = 200
+errors = 
+
+ -> http/1.1 200 ok
+accept-ranges ->  bytes
+connection ->  close
+content-length ->  7039
+content-type ->  image/jpeg
+server ->  apache
+vary ->  accept-encoding
+body -> # 7039
+requestheaders -> get /httptest.jpg http/1.0
+user-agent: exiv2http/1.0.0
+accept: */*
+host: exiv2.nuditu.com
+
+
+result = 200
+errors = 
+
+ -> http/1.1 200 ok
+accept-ranges ->  bytes
+connection ->  close
+content-length ->  7039
+content-type ->  image/jpeg
+server ->  apache
+vary ->  accept-encoding
+body -> # 0 = 
+requestheaders -> head /httptest.jpg http/1.0
+user-agent: exiv2http/1.0.0
+accept: */*
+host: exiv2.nuditu.com
+
+
+result = 206
+errors = 
+
+ -> http/1.1 206 partial content
+accept-ranges ->  bytes
+connection ->  close
+content-length ->  1601
+content-range ->  bytes 200-1800/7039
+content-type ->  image/jpeg
+server ->  apache
+vary ->  accept-encoding
+body -> # 1601
+requestheaders -> get /httptest.jpg http/1.0
+user-agent: exiv2http/1.0.0
+accept: */*
+host: exiv2.nuditu.com
+range: bytes=200-1800
+
+

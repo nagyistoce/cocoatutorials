@@ -11,16 +11,17 @@ httpTest()
     scheme=${arg:0:4}
 
     src=$(basename "$arg")
-    test=${src}.httptst
-    good=$datapath/${src}.httpgd
+    filename=${src%.*}
+    test=${filename}.txt
+    good=$datapath/${filename}.txt
     dot=x
     
     if [ $scheme = http ]; then
         dot=.
         # run tests
-        runTest httptest -url $1                                  | grep -v -e ^Date  -v -e ^Last  > $test
-        runTest httptest -url $1 -verb HEAD                       | grep -v -e ^Date  -v -e ^Last >> $test
-        runTest httptest -url $1 -header 'Range: bytes=200-1800'  | grep -v -e ^Date  -v -e ^Last >> $test
+        runTest httptest -url $1                                  | grep -v -e ^Date  -v -e ^Last  -v -e ^Via | tr '[:upper:]' '[:lower:]'  > $test
+        runTest httptest -url $1 -verb HEAD                       | grep -v -e ^Date  -v -e ^Last  -v -e ^Via | tr '[:upper:]' '[:lower:]' >> $test
+        runTest httptest -url $1 -header 'Range: bytes=200-1800'  | grep -v -e ^Date  -v -e ^Last  -v -e ^Via | tr '[:upper:]' '[:lower:]' >> $test
 
         # check results
         diffCheck $test $good 
@@ -37,8 +38,9 @@ httpIoTest()
     scheme=${arg:0:4}
 
     src=$(basename "$arg")
-    test=${src}.httpiotst
-    good=$datapath/${src}.httpiogd
+    filename=${src%.*}
+    test=${filename}.txt
+    good=$datapath/${filename}.txt
     dot=x
 
     if [ $scheme = http ]; then
@@ -56,7 +58,7 @@ httpIoTest()
 
     errors=0
 
-    httpTest_file="http://exiv2.nuditu.com/httpio0.jpg"
+    httpTest_file="http://exiv2.nuditu.com/httptest.jpg"
     httpIoTest_files="http://exiv2.nuditu.com/httpio0.jpg \
                       http://exiv2.nuditu.com/httpio1.jpg \
                       http://exiv2.nuditu.com/httpio2.jpg \
