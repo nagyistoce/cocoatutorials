@@ -24,7 +24,7 @@ httpTest()
         runTest httptest -url $1 -header 'Range: bytes=200-1800'  | grep -v -e ^Date  -v -e ^Last  -v -e ^Via | tr '[:upper:]' '[:lower:]' >> $test
 
         # check results
-        diffCheck $test $good 
+        diffCheck $test $good '--ascii'
         
     fi
     printf $dot
@@ -49,7 +49,7 @@ httpIoTest()
         runTest exifprint $1 > $test
     
         #check results
-        diffCheck $test $good
+        diffCheck $test $good '--ascii'
     fi
     printf $dot
 }
