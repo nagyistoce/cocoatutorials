@@ -142,6 +142,27 @@ static void flushBuffer(const char* buffer,size_t start,int& end,std::string& fi
     end = 0 ;
 }
 
+static Exiv2::dict_t stringToDict(const std::string& s)
+{
+    Exiv2::dict_t result;
+    std::string   token;
+
+    size_t i = 0;
+    while (i < s.length() )
+    {
+        if ( s[i] != ',' ) {
+            if ( s[i] != ' ' )
+                token += s[i];
+        } else {
+            result[token]=token;
+            token="";
+        }
+        i++;
+    }
+    result[token]=token;
+    return result;
+}
+
 static int makeNonBlocking(int sockfd)
 {
 #ifdef WIN32
@@ -181,7 +202,7 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
     const char* servername_p = servername;
     const char* port_p       = port      ;
     std::string url = std::string("http://") + request["server"] + request["page"];
-
+    
     // parse and change server if using a proxy
     const char* PROXI  = "HTTP_PROXY";
     const char* proxi  = "http_proxy";
@@ -189,15 +210,28 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
     const char* proxy  = getenv(proxi);
     bool        bProx  = PROXY || proxy;
     const char* prox   = bProx ? (proxy?proxy:PROXY):"";
-    Exiv2::Uri  Proxy =  Exiv2::Uri::Parse(prox);
+    Exiv2::Uri  Proxy  =  Exiv2::Uri::Parse(prox);
+
+    // find the dictionary of no_proxy servers
+    const char* NO_PROXI = "NO_PROXY";
+    const char* no_proxi = "no_proxy";
+    const char* NO_PROXY = getenv(NO_PROXI);
+    const char* no_proxy = getenv(no_proxi);
+    bool        bNoProxy = NO_PROXY||no_proxy;
+    std::string no_prox  = std::string(bNoProxy?(no_proxy?no_proxy:NO_PROXY):"");
+    Exiv2::dict_t noProxy= stringToDict(no_prox + ",localhost,127.0.0.1");
+
+    // if the server is on the no_proxy list ... ignore the proxy!
+    if ( noProxy.count(servername) ) bProx = false;
+    
 	if (  bProx ) {
 		servername_p = Proxy.Host.c_str();
 		port_p       = Proxy.Port.c_str();
         page         = url.c_str();
         std::string  p(proxy?proxi:PROXI);
-        std::cerr << p << '=' << prox << " page = " << page << std::endl;
+    //  std::cerr << p << '=' << prox << " page = " << page << std::endl;
 	}
-    if ( !port[0]   ) port   = "80";
+    if ( !port  [0] ) port   = "80";
     if ( !port_p[0] ) port_p = "80";
 	
     ////////////////////////////////////
