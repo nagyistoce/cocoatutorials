@@ -9,7 +9,7 @@
 #include <cassert>
 
 #include <jzon.h>
-#include <jzon.cpp>
+// #include <jzon.cpp>
 
 int main(int argc, char* const argv[])
 try {

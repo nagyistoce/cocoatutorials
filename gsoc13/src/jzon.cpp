@@ -922,13 +922,13 @@ namespace Jzon
 
 		for (Object::const_iterator it = node.begin(); it != node.end(); ++it)
 		{
-			const std::string &name = (*it).first;
-			const Node &value = (*it).second;
+			const std::string name = it.p->first;
+		//	const Node &value = (*it).second;
 
 			if (it != node.begin())
 				result += "," + fi->GetNewline();
 			result += fi->GetIndentation(level+1) + "\""+name+"\"" + ":" + fi->GetSpacing();
-			writeNode(value, level+1);
+			writeNode(*it.p->second, level+1);
 		}
 
 		result += fi->GetNewline() + fi->GetIndentation(level) + "}";

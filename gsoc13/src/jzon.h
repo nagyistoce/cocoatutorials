@@ -22,6 +22,8 @@ THE SOFTWARE.
 #ifndef Jzon_h__
 #define Jzon_h__
 
+#include <exiv2/exiv2.hpp>
+
 #include <string>
 #include <vector>
 #include <queue>
@@ -66,7 +68,7 @@ namespace Jzon
 	static const Format StandardFormat = { true, true, true, 1 };
 	static const Format NoFormat = { false, false, false, 0 };
 
-	class Node
+	class EXIV2API Node
 	{
 		friend class Object;
 		friend class Array;
@@ -117,7 +119,7 @@ namespace Jzon
 		virtual Node *GetCopy() const = 0;
 	};
 
-	class Value : public Node
+	class EXIV2API Value : public Node
 	{
 	public:
 		enum ValueType
@@ -195,7 +197,7 @@ namespace Jzon
 
 	static const Value null;
 
-	class Object : public Node
+	class EXIV2API Object : public Node
 	{
 	public:
 		class iterator : public std::iterator<std::input_iterator_tag, NamedNode>
@@ -210,9 +212,9 @@ namespace Jzon
 			bool operator==(const iterator &rhs) { return p == rhs.p; }
 			bool operator!=(const iterator &rhs) { return p != rhs.p; }
 
-			NamedNode operator*() { return NamedNode(p->first, *p->second); }
+			NamedNode operator*();//  { return NamedNode(p->first, *p->second); }
 
-		private:
+		public:
 			NamedNodePtr *p;
 		};
 		class const_iterator : public std::iterator<std::input_iterator_tag, const NamedNode>
@@ -227,9 +229,9 @@ namespace Jzon
 			bool operator==(const const_iterator &rhs) { return p == rhs.p; }
 			bool operator!=(const const_iterator &rhs) { return p != rhs.p; }
 
-			const NamedNode operator*() { return NamedNode(p->first, *p->second); }
+			const NamedNode operator*();//  { return NamedNode(p->first, *p->second); }
 
-		private:
+		public:
 			const NamedNodePtr *p;
 		};
 
@@ -363,7 +365,7 @@ namespace Jzon
 		std::string error;
 	};
 
-	class Writer
+	class EXIV2API Writer
 	{
 	public:
 		Writer(const Node &root, const Format &format = NoFormat);
