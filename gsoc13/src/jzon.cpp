@@ -19,12 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "Jzon.h"
+#include "jzon.h"
 
 #include <sstream>
 #include <fstream>
 #include <stack>
 #include <algorithm>
+#include <iostream>
 
 namespace Jzon
 {
@@ -74,6 +75,8 @@ namespace Jzon
 		char indentationChar;
 		std::string newline;
 		std::string spacing;
+        
+        friend class Writer;
 	};
 
 	void RemoveWhitespace(const std::string &json, std::string &freshJson)
@@ -253,6 +256,11 @@ namespace Jzon
 	{
 		Set(value);
 	}
+    
+	Value::Value(const Node* pNode)
+	{
+		Set(pNode);
+	}
 	Value::~Value()
 	{
 	}
@@ -391,6 +399,12 @@ namespace Jzon
 		else
 			valueStr = "false";
 		type = VT_BOOL;
+	}
+	void Value::Set(const Node* pNode)
+	{
+        valueStr    = "POINTER";
+        this->pNode = pNode ;
+		type        = VT_POINTER;
 	}
 
 	Value &Value::operator=(const Value &rhs)
@@ -568,6 +582,11 @@ namespace Jzon
 	Node::Type Object::GetType() const
 	{
 		return T_OBJECT;
+	}
+
+	void Object::Add(const std::string &name, Node* node)
+	{
+		children.push_back(std::make_pair(name, new Value(node)));
 	}
 
 	void Object::Add(const std::string &name, Node &node)
@@ -860,10 +879,13 @@ namespace Jzon
 	}
 
 
-	Writer::Writer(const Node &root, const Format &format) : fi(new FormatInterpreter), root(root)
+	Writer::Writer(const Node &root, const Format &format)
+    : fi(new FormatInterpreter)
+    , root(root)
 	{
 		SetFormat(format);
 	}
+    
 	Writer::~Writer()
 	{
 		delete fi;
@@ -874,10 +896,10 @@ namespace Jzon
 	{
 		fi->SetFormat(format);
 	}
-	void Writer::Write()
+	void Writer::Write(const unsigned int level)
 	{
 		result.clear();
-		writeNode(root, 0);
+		writeNode(root, level);
 	}
 
 	const std::string &Writer::GetResult() const
@@ -889,9 +911,9 @@ namespace Jzon
 	{
 		switch (node.GetType())
 		{
-		case Node::T_OBJECT : writeObject(node.AsObject(), level); break;
-		case Node::T_ARRAY  : writeArray(node.AsArray(), level);   break;
-		case Node::T_VALUE  : writeValue(node.AsValue());          break;
+		case Node::T_OBJECT : writeObject(node.AsObject(),level); break;
+		case Node::T_ARRAY  : writeArray (node.AsArray(), level); break;
+		case Node::T_VALUE  : writeValue (node.AsValue(), level); break;
 		}
 	}
 	void Writer::writeObject(const Object &node, unsigned int level)
@@ -927,11 +949,23 @@ namespace Jzon
 
 		result += fi->GetNewline() + fi->GetIndentation(level) + "]";
 	}
-	void Writer::writeValue(const Value &node)
+	void Writer::writeValue(const Value &node,unsigned int level)
 	{
 		if (node.IsString())
 		{
 			result += "\""+Value::EscapeString(node.ToString())+"\"";
+		}
+		else if (node.IsPointer())
+		{
+            bool  bRecursion = level > 100 ;
+            // TODO: prevent recursion
+            if ( !bRecursion ) {
+                Writer writer(*node.pNode,this->fi->format);
+                writer.Write(level);
+                result += writer.GetResult();
+            } else {
+                result += "RECURSION";
+            }
 		}
 		else
 		{

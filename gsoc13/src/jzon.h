@@ -121,11 +121,11 @@ namespace Jzon
 	{
 	public:
 		enum ValueType
-		{
-			VT_NULL,
-			VT_STRING,
-			VT_NUMBER,
-			VT_BOOL
+		{   VT_NULL
+        ,   VT_STRING
+        ,   VT_NUMBER
+        ,   VT_BOOL
+        ,   VT_POINTER
 		};
 
 		Value();
@@ -137,7 +137,8 @@ namespace Jzon
 		Value(const int value);
 		Value(const float value);
 		Value(const double value);
-		Value(const bool value);
+		Value(const bool   value);
+        Value(const Node*  pNode);
 		virtual ~Value();
 
 		virtual Type GetType() const;
@@ -145,6 +146,7 @@ namespace Jzon
 
 		virtual inline bool IsNull() const { return (type == VT_NULL); }
 		virtual inline bool IsString() const { return (type == VT_STRING); }
+        virtual inline bool IsPointer() const { return (type == VT_POINTER); }
 		virtual inline bool IsNumber() const { return (type == VT_NUMBER); }
 		virtual inline bool IsBool() const { return (type == VT_BOOL); }
 
@@ -163,6 +165,7 @@ namespace Jzon
 		void Set(const float value);
 		void Set(const double value);
 		void Set(const bool value);
+        void Set(const Node* pNode);
 
 		Value &operator=(const Value &rhs);
 		Value &operator=(const Node &rhs);
@@ -179,12 +182,15 @@ namespace Jzon
 		static std::string EscapeString(const std::string &value);
 		static std::string UnescapeString(const std::string &value);
 
+    private:
+        const Node* pNode;
+        friend class Writer;
 	protected:
 		virtual Node *GetCopy() const;
 
 	private:
 		std::string valueStr;
-		ValueType type;
+		ValueType   type;
 	};
 
 	static const Value null;
@@ -234,8 +240,9 @@ namespace Jzon
 
 		virtual Type GetType() const;
 
-		void Add(const std::string &name, Node &node);
-		void Add(const std::string &name, Value node);
+		void Add(const std::string &name, Node* pNode);
+		void Add(const std::string &name, Node  &node);
+		void Add(const std::string &name, Value  node);
 		void Remove(const std::string &name);
 		void Clear();
 
@@ -363,21 +370,20 @@ namespace Jzon
 		~Writer();
 
 		void SetFormat(const Format &format);
-		void Write();
+		void Write(const unsigned int level=0);
 
 		const std::string &GetResult() const;
 
 	private:
-		void writeNode(const Node &node, unsigned int level);
+		void writeNode  (const Node &node, unsigned int level);
 		void writeObject(const Object &node, unsigned int level);
-		void writeArray(const Array &node, unsigned int level);
-		void writeValue(const Value &node);
+		void writeArray (const Array &node, unsigned int level);
+		void writeValue (const Value &node, unsigned int level);
 
 		std::string result;
-
-		class FormatInterpreter *fi;
-
-		const Node &root;
+		class FormatInterpreter* fi;
+		const Node& root;
+        const Node* pParent;
 
 		Writer &operator=(const Writer&);
 	};
