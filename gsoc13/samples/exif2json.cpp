@@ -40,9 +40,12 @@ Jzon::Object* objectForKey(std::string Key,jsonDict_t& jsonDict,std::string& nam
     return result;
 }
 
-void push(Jzon::Object* json,const std::string& key,ExifData::const_iterator i)
+// ExifData::const_iterator i
+template <class T>
+void push(Jzon::Object* json,const std::string& key,T i)
 {
     if ( json ) switch ( i->typeId() ) {
+        case Exiv2::xmpText:
         case Exiv2::asciiString : 
         case Exiv2::string:
         case Exiv2::comment:
@@ -81,11 +84,11 @@ void push(Jzon::Object* json,const std::string& key,ExifData::const_iterator i)
         case Exiv2::undefined:
         case Exiv2::tiffIfd:
         case Exiv2::directory:
-        case Exiv2::xmpText:
         case Exiv2::xmpAlt:
         case Exiv2::xmpBag:
         case Exiv2::xmpSeq:
         case Exiv2::langAlt:
+             if ( key != "MakerNote") json->Add(key,i->value().toString());
         break;
     }
 }
@@ -105,18 +108,18 @@ try {
     image->readMetadata();
         
 
-	Exiv2::ExifData &exifData = image->exifData();
-    if (exifData.empty()) {
-        std::string error(argv[1]);
-        error += ": No Exif data found in the file";
-        throw Exiv2::Error(1, error);
-    }
+//    if (exifData.empty()) {
+//        std::string error(argv[1]);
+//        error += ": No Exif data found in the file";
+//        throw Exiv2::Error(1, error);
+//    }
         
     Jzon::Object root;
     root.Add("path", path);
     
     jsonDict_t jsonDict;
 
+	Exiv2::ExifData &exifData = image->exifData();
     for ( ExifData::const_iterator i = exifData.begin(); i != exifData.end() ; ++i ) {
         //cout << "typeId = " << i->typeId() 
         //     << " "         << i->key()
@@ -129,14 +132,19 @@ try {
     }
 
 
-	//Exiv2::XmpData  &xmpData  = image->xmpData();
-	//Exiv2::IptcData &iptcData = image->iptcData();
-    //for (Exiv2::IptcData::const_iterator i = iptcData.begin(); i != iptcData.end(); ++i) {
-    //    iptc.Add(i->key(),i->value().toString());
-    //}
-    //for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != xmpData.end(); ++i) {
-    //    xmp.Add(i->key(),i->value().toString());
-    //}
+	Exiv2::IptcData &iptcData = image->iptcData();
+    for (Exiv2::IptcData::const_iterator i = iptcData.begin(); i != iptcData.end(); ++i) {
+        std::string key ;
+        Jzon::Object* json = objectForKey(i->key(),jsonDict,key,&root);
+        push(json,key,i);
+    }
+
+	Exiv2::XmpData  &xmpData  = image->xmpData();
+    for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != xmpData.end(); ++i) {
+        std::string key ;
+        Jzon::Object* json = objectForKey(i->key(),jsonDict,key,&root);
+        push(json,key,i);
+    }
         
     Jzon::Writer writer(root,Jzon::StandardFormat);
     writer.Write();
