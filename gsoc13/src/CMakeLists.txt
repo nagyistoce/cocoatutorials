@@ -55,6 +55,7 @@ SET( LIBEXIV2_HDR         asfvideo.hpp
                           iptc.hpp
                           jp2image.hpp
                           jpgimage.hpp
+                          jzon.h
                           matroskavideo.hpp
                           metadatum.hpp
                           mrwimage.hpp
@@ -99,6 +100,7 @@ SET( LIBEXIV2_SRC         asfvideo.cpp
                           iptc.cpp
                           jp2image.cpp
                           jpgimage.cpp
+                          jzon.cpp
                           makernote.cpp
                           matroskavideo.cpp
                           metadatum.cpp
