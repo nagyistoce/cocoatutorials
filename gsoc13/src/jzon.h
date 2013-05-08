@@ -255,7 +255,7 @@ namespace Jzon
 
 		virtual bool Has(const std::string &name) const;
 		virtual size_t GetCount() const;
-		virtual Node &Get(const std::string &name) const;
+		// virtual Node &Get(const std::string &name) const;
 
 	protected:
 		virtual Node *GetCopy() const;
@@ -321,7 +321,7 @@ namespace Jzon
 		const_iterator end() const;
 
 		virtual size_t GetCount() const;
-		virtual Node &Get(size_t index) const;
+		// virtual Node &Get(size_t index) const;
 
 	protected:
 		virtual Node *GetCopy() const;

@@ -44,12 +44,17 @@ Jzon::Object* objectForKey(std::string Key,jsonDict_t& jsonDict,std::string& nam
 template <class T>
 void push(Jzon::Object* json,const std::string& key,T i)
 {
-    if ( json ) switch ( i->typeId() ) {
+    if ( !json )  return ;
+    std::string value = i->value().toString();
+
+//  std::cout << key << " , " << i->typeId() << std::endl;
+
+    switch ( i->typeId() ) {
         case Exiv2::xmpText:
         case Exiv2::asciiString : 
         case Exiv2::string:
         case Exiv2::comment:
-             json->Add(key,i->value().toString());
+             json->Add(key,value);
         break;
 
         case Exiv2::unsignedByte:
@@ -88,7 +93,14 @@ void push(Jzon::Object* json,const std::string& key,T i)
         case Exiv2::xmpBag:
         case Exiv2::xmpSeq:
         case Exiv2::langAlt:
-             if ( key != "MakerNote") json->Add(key,i->value().toString());
+             // http://dev.exiv2.org/boards/3/topics/1367#message-1373
+             if ( key == "UserComment" ) {
+                size_t pos  = value.find('\0') ;
+             	if (   pos != string::npos )
+             	    value = value.substr(0,pos);
+             }
+
+             if ( key != "MakerNote") json->Add(key,value);
         break;
     }
 }
@@ -108,11 +120,11 @@ try {
     image->readMetadata();
         
 
-//    if (exifData.empty()) {
+//  if (exifData.empty()) {
 //        std::string error(argv[1]);
 //        error += ": No Exif data found in the file";
 //        throw Exiv2::Error(1, error);
-//    }
+//  }
         
     Jzon::Object root;
     root.Add("path", path);
