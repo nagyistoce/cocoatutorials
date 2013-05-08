@@ -3,13 +3,92 @@
 // Sample program to print the Exif metadata in JSON format
 
 #include <exiv2/exiv2.hpp>
+#include <jzon.h>
 
 #include <iostream>
 #include <iomanip>
 #include <cassert>
+#include <string>
 
-#include <jzon.h>
-// #include <jzon.cpp>
+typedef std::map<std::string,Jzon::Object*> jsonDict_t;
+typedef jsonDict_t::iterator                jsonDict_i;
+
+using namespace std;
+using namespace Jzon;
+using namespace Exiv2;
+
+Jzon::Object* objectForKey(std::string Key,jsonDict_t& jsonDict,std::string& name,Jzon::Object* root)
+{
+    char p = '.';
+    Jzon::Object* result = NULL;
+    if ( Key.find(p) != string::npos ) {
+        size_t      l = Key.find_last_of(p);
+        std::string k = Key.substr(0,l);
+        name          = Key.substr(l+1);
+        if ( !jsonDict.count(k) ) {
+            result = jsonDict[k]=new Jzon::Object;
+            std::string   x;
+            Jzon::Object* parent = objectForKey(k,jsonDict,x,root);
+            if ( parent )
+                parent->Add(x,jsonDict[k]);
+            else
+                root->Add(k,jsonDict[k]);
+        }
+        result = jsonDict[k];
+    }
+    // cout << "return Key,name = " << Key << "," << name << " result = " << result << endl;
+    return result;
+}
+
+void push(Jzon::Object* json,const std::string& key,ExifData::const_iterator i)
+{
+    if ( json ) switch ( i->typeId() ) {
+        case Exiv2::asciiString : 
+        case Exiv2::string:
+        case Exiv2::comment:
+             json->Add(key,i->value().toString());
+        break;
+
+        case Exiv2::unsignedByte:
+        case Exiv2::unsignedShort:
+        case Exiv2::unsignedLong:
+        case Exiv2::signedByte:
+        case Exiv2::signedShort:
+        case Exiv2::signedLong:
+             json->Add(key,(int)i->value().toLong());
+        break;
+        
+        case Exiv2::tiffFloat:
+        case Exiv2::tiffDouble:
+             json->Add(key,i->value().toFloat());
+        break;
+
+        case Exiv2::unsignedRational:
+        case Exiv2::signedRational: {
+             Jzon::Array arr;
+             Rational rat = i->value().toRational();
+             arr.Add (rat.first );
+             arr.Add (rat.second);
+             json->Add(key,arr);
+        } break;
+
+        case Exiv2::date:
+        case Exiv2::time:
+             json->Add(key,i->value().toString());
+        break;
+
+        default:
+        case Exiv2::undefined:
+        case Exiv2::tiffIfd:
+        case Exiv2::directory:
+        case Exiv2::xmpText:
+        case Exiv2::xmpAlt:
+        case Exiv2::xmpBag:
+        case Exiv2::xmpSeq:
+        case Exiv2::langAlt:
+        break;
+    }
+}
 
 int main(int argc, char* const argv[])
 try {
@@ -17,69 +96,52 @@ try {
     if (argc != 2) {
         std::cout << "Usage: " << argv[0] << " file\n";
         return 1;
-        }
-        const char* path=argv[1];
+    }
+    
+    const char* path=argv[1];
         
-        Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(path);
-        assert(image.get() != 0);
-        image->readMetadata();
+    Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(path);
+    assert(image.get() != 0);
+    image->readMetadata();
         
-        Exiv2::XmpData  &xmpData  = image->xmpData();
-        Exiv2::IptcData &iptcData = image->iptcData();
-        Exiv2::ExifData &exifData = image->exifData();
-        if (exifData.empty()) {
-            std::string error(argv[1]);
-            error += ": No Exif data found in the file";
-            throw Exiv2::Error(1, error);
-        }
+
+	Exiv2::ExifData &exifData = image->exifData();
+    if (exifData.empty()) {
+        std::string error(argv[1]);
+        error += ": No Exif data found in the file";
+        throw Exiv2::Error(1, error);
+    }
         
-        Jzon::Object root;
-#if 1
-        root.Add("path", path);
-        Jzon::Object     iptc;
-        Jzon::Object     exif;
-        Jzon::Object     xmp;
-        root.Add("iptc",&iptc);
-        root.Add("exif",&exif);
-        root.Add("xmp" ,&xmp);
-        for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != exifData.end(); ++i) {
-            exif.Add(i->key(),i->value().toString());
-        }
-        for (Exiv2::IptcData::const_iterator i = iptcData.begin(); i != iptcData.end(); ++i) {
-            iptc.Add(i->key(),i->value().toString());
-        }
-        for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != xmpData.end(); ++i) {
-            xmp.Add(i->key(),i->value().toString());
-        }
-#else
-        root.Add("name", "value");
-        root.Add("number", 20);
-        root.Add("anothernumber", 15.3);
-        root.Add("stuff", true);
+    Jzon::Object root;
+    root.Add("path", path);
+    
+    jsonDict_t jsonDict;
+
+    for ( ExifData::const_iterator i = exifData.begin(); i != exifData.end() ; ++i ) {
+        //cout << "typeId = " << i->typeId() 
+        //     << " "         << i->key()
+        //     << ":"         << i->value() 
+        //     << std::endl
+        //     ;
+        std::string key ;
+        Jzon::Object* json = objectForKey(i->key(),jsonDict,key,&root);
+        push(json,key,i);
+    }
+
+
+	//Exiv2::XmpData  &xmpData  = image->xmpData();
+	//Exiv2::IptcData &iptcData = image->iptcData();
+    //for (Exiv2::IptcData::const_iterator i = iptcData.begin(); i != iptcData.end(); ++i) {
+    //    iptc.Add(i->key(),i->value().toString());
+    //}
+    //for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != xmpData.end(); ++i) {
+    //    xmp.Add(i->key(),i->value().toString());
+    //}
         
-        Jzon::Array listOfStuff;
-        listOfStuff.Add("json");
-        listOfStuff.Add("more stuff");
-        listOfStuff.Add(Jzon::null);
-        listOfStuff.Add(false);
-        root.Add("listOfStuff", listOfStuff);
-        
-        root.Add("age",Jzon::Value(Jzon::Value::VT_NUMBER,"62.4"));
-        
-        Jzon::Object iptc;
-        Jzon::Object exif;
-        root.Add("iptc",&iptc);
-        root.Add("exif",&exif);
-        
-        iptc.Add("Comment","you know");
-        exif.Add("Exif.Image","very good image");
-        exif.Add("Exif.Resolution",200);
-#endif
-        
-        Jzon::Writer writer(root,Jzon::StandardFormat);
-        writer.Write();
-        std::cout << writer.GetResult() << std::endl;
-        return 0;
+    Jzon::Writer writer(root,Jzon::StandardFormat);
+    writer.Write();
+    std::cout << writer.GetResult() << std::endl;
+    return 0;
 }
         
 //catch (std::exception& e) {

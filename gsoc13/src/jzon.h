@@ -108,10 +108,10 @@ namespace Jzon
 		virtual double ToDouble() const { throw TypeException(); }
 		virtual bool ToBool() const { throw TypeException(); }
 
-		virtual bool Has(const std::string &name) const { throw TypeException(); }
+		virtual bool Has(const std::string& /*name */) const { throw TypeException(); }
 		virtual size_t GetCount() const { return 0; }
-		virtual Node &Get(const std::string &name) const { throw TypeException(); }
-		virtual Node &Get(size_t index) const { throw TypeException(); }
+		virtual Node &Get(const std::string& /*name*/) const { throw TypeException(); }
+		virtual Node &Get(size_t /*index */) const { throw TypeException(); }
 
 		static Type DetermineType(const std::string &json);
 
@@ -265,7 +265,7 @@ namespace Jzon
 		ChildList children;
 	};
 
-	class Array : public Node
+	class EXIV2API Array : public Node
 	{
 	public:
 		class iterator : public std::iterator<std::input_iterator_tag, Node>
@@ -331,7 +331,7 @@ namespace Jzon
 		ChildList children;
 	};
 
-	class FileWriter
+	class EXIV2API FileWriter
 	{
 	public:
 		FileWriter(const std::string &filename);
@@ -345,7 +345,7 @@ namespace Jzon
 		std::string filename;
 	};
 
-	class FileReader
+	class EXIV2API FileReader
 	{
 	public:
 		FileReader(const std::string &filename);
@@ -390,7 +390,7 @@ namespace Jzon
 		Writer &operator=(const Writer&);
 	};
 
-	class Parser
+	class EXIV2API Parser
 	{
 	public:
 		Parser(Node &root);
