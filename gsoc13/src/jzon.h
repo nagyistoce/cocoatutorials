@@ -127,7 +127,6 @@ namespace Jzon
         ,   VT_STRING
         ,   VT_NUMBER
         ,   VT_BOOL
-        ,   VT_POINTER
 		};
 
 		Value();
@@ -148,7 +147,6 @@ namespace Jzon
 
 		virtual inline bool IsNull() const { return (type == VT_NULL); }
 		virtual inline bool IsString() const { return (type == VT_STRING); }
-        virtual inline bool IsPointer() const { return (type == VT_POINTER); }
 		virtual inline bool IsNumber() const { return (type == VT_NUMBER); }
 		virtual inline bool IsBool() const { return (type == VT_BOOL); }
 
@@ -184,9 +182,6 @@ namespace Jzon
 		static std::string EscapeString(const std::string &value);
 		static std::string UnescapeString(const std::string &value);
 
-    private:
-        const Node* pNode;
-        friend class Writer;
 	protected:
 		virtual Node *GetCopy() const;
 
@@ -380,7 +375,7 @@ namespace Jzon
 		void writeNode  (const Node &node, unsigned int level);
 		void writeObject(const Object &node, unsigned int level);
 		void writeArray (const Array &node, unsigned int level);
-		void writeValue (const Value &node, unsigned int level);
+		void writeValue (const Value &node);
 
 		std::string result;
 		class FormatInterpreter* fi;

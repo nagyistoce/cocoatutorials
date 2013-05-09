@@ -75,8 +75,6 @@ namespace Jzon
 		char indentationChar;
 		std::string newline;
 		std::string spacing;
-        
-        friend class Writer;
 	};
 
 	void RemoveWhitespace(const std::string &json, std::string &freshJson)
@@ -399,12 +397,6 @@ namespace Jzon
 		else
 			valueStr = "false";
 		type = VT_BOOL;
-	}
-	void Value::Set(const Node* pNode)
-	{
-        valueStr    = "POINTER";
-        this->pNode = pNode ;
-		type        = VT_POINTER;
 	}
 
 	Value &Value::operator=(const Value &rhs)
@@ -913,7 +905,7 @@ namespace Jzon
 		{
 		case Node::T_OBJECT : writeObject(node.AsObject(),level); break;
 		case Node::T_ARRAY  : writeArray (node.AsArray(), level); break;
-		case Node::T_VALUE  : writeValue (node.AsValue(), level); break;
+		case Node::T_VALUE  : writeValue (node.AsValue()); break;
 		}
 	}
 	void Writer::writeObject(const Object &node, unsigned int level)
@@ -949,23 +941,11 @@ namespace Jzon
 
 		result += fi->GetNewline() + fi->GetIndentation(level) + "]";
 	}
-	void Writer::writeValue(const Value &node,unsigned int level)
+	void Writer::writeValue(const Value &node)
 	{
 		if (node.IsString())
 		{
 			result += "\""+Value::EscapeString(node.ToString())+"\"";
-		}
-		else if (node.IsPointer())
-		{
-            bool  bRecursion = level > 100 ;
-            // TODO: prevent recursion
-            if ( !bRecursion ) {
-                Writer writer(*node.pNode,this->fi->format);
-                writer.Write(level);
-                result += writer.GetResult();
-            } else {
-                result += "RECURSION";
-            }
 		}
 		else
 		{
