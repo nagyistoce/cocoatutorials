@@ -17,34 +17,48 @@ using namespace std;
 using namespace Jzon;
 using namespace Exiv2;
 
-Jzon::Object* objectForKey(std::string Key,jsonDict_t& jsonDict,std::string& name,Jzon::Object* root)
-{
-    char p = '.';
-    Jzon::Object* result = NULL;
-    if ( Key.find(p) != string::npos ) {
-        size_t      l = Key.find_last_of(p);
-        std::string k = Key.substr(0,l);
-        name          = Key.substr(l+1);
-        if ( !jsonDict.count(k) ) {
-            result = jsonDict[k]=new Jzon::Object;
-            std::string   x;
-            Jzon::Object* parent = objectForKey(k,jsonDict,x,root);
-            if ( parent )
-                parent->Add(x,jsonDict[k]);
-            else
-                root->Add(k,jsonDict[k]);
-        }
-        result = jsonDict[k];
+// http://stackoverflow.com/questions/236129/splitting-a-string-in-c
+static std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
     }
-    // cout << "return Key,name = " << Key << "," << name << " result = " << result << endl;
-    return result;
+    return elems;
+}
+
+Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
+{
+    std::vector<std::string> keys ;
+    split(Key,'.',keys);
+    size_t l = keys.size();
+    name     = keys[keys.size()-1];
+    
+    static Jzon::Object object;
+    if (  !root.Has(keys[0]) ) root.Add(keys[0],object);
+    
+    // this is horrible
+    if ( l > 2 ) {
+      size_t i = 0 ;
+      Jzon::Object&                          r2 = (Jzon::Object&) root.Get(keys[i++]);
+      if ( !r2.Has(keys[i]))                 r2.Add(keys[i],object);
+      if ( l == i+2 ) return (Jzon::Object&) r2.Get(keys[i]) ;
+      
+      Jzon::Object&                          r3 = (Jzon::Object&) r2.Get(keys[i++]);
+      if ( !r3.Has(keys[i]))                 r3.Add(keys[i],object);
+      if ( l == i+2 ) return (Jzon::Object&) r3.Get(keys[i]) ;
+
+      Jzon::Object&                          r4 = (Jzon::Object&) r3.Get(keys[i++]);
+      if ( !r3.Has(keys[i]))                 r4.Add(keys[i],object);
+      if ( l == i+2 ) return (Jzon::Object&) r4.Get(keys[i]) ;
+    }
+    return object;
 }
 
 // ExifData::const_iterator i
 template <class T>
-void push(Jzon::Object* json,const std::string& key,T i)
+void push(Jzon::Object& json,const std::string& key,T i)
 {
-    if ( !json )  return ;
     std::string value = i->value().toString();
 
 //  std::cout << key << " , " << i->typeId() << std::endl;
@@ -54,7 +68,7 @@ void push(Jzon::Object* json,const std::string& key,T i)
         case Exiv2::asciiString : 
         case Exiv2::string:
         case Exiv2::comment:
-             json->Add(key,value);
+             json.Add(key,value);
         break;
 
         case Exiv2::unsignedByte:
@@ -63,12 +77,12 @@ void push(Jzon::Object* json,const std::string& key,T i)
         case Exiv2::signedByte:
         case Exiv2::signedShort:
         case Exiv2::signedLong:
-             json->Add(key,(int)i->value().toLong());
+             json.Add(key,(int)i->value().toLong());
         break;
         
         case Exiv2::tiffFloat:
         case Exiv2::tiffDouble:
-             json->Add(key,i->value().toFloat());
+             json.Add(key,i->value().toFloat());
         break;
 
         case Exiv2::unsignedRational:
@@ -77,12 +91,12 @@ void push(Jzon::Object* json,const std::string& key,T i)
              Rational rat = i->value().toRational();
              arr.Add (rat.first );
              arr.Add (rat.second);
-             json->Add(key,arr);
+             json.Add(key,arr);
         } break;
 
         case Exiv2::date:
         case Exiv2::time:
-             json->Add(key,i->value().toString());
+             json.Add(key,i->value().toString());
         break;
 
         default:
@@ -100,7 +114,7 @@ void push(Jzon::Object* json,const std::string& key,T i)
              	    value = value.substr(0,pos);
              }
 
-             if ( key != "MakerNote") json->Add(key,value);
+             if ( key != "MakerNote") json.Add(key,value);
         break;
     }
 }
@@ -119,43 +133,26 @@ try {
     assert(image.get() != 0);
     image->readMetadata();
         
-
-//  if (exifData.empty()) {
-//        std::string error(argv[1]);
-//        error += ": No Exif data found in the file";
-//        throw Exiv2::Error(1, error);
-//  }
         
     Jzon::Object root;
     root.Add("path", path);
     
-    jsonDict_t jsonDict;
-
 	Exiv2::ExifData &exifData = image->exifData();
     for ( ExifData::const_iterator i = exifData.begin(); i != exifData.end() ; ++i ) {
-        //cout << "typeId = " << i->typeId() 
-        //     << " "         << i->key()
-        //     << ":"         << i->value() 
-        //     << std::endl
-        //     ;
-        std::string key ;
-        Jzon::Object* json = objectForKey(i->key(),jsonDict,key,&root);
-        push(json,key,i);
+        std::string   key ;
+        push(objectForKey(i->key(),key,root),key,i);
     }
-
 
 	Exiv2::IptcData &iptcData = image->iptcData();
     for (Exiv2::IptcData::const_iterator i = iptcData.begin(); i != iptcData.end(); ++i) {
         std::string key ;
-        Jzon::Object* json = objectForKey(i->key(),jsonDict,key,&root);
-        push(json,key,i);
+        push(objectForKey(i->key(),key,root),key,i);
     }
 
 	Exiv2::XmpData  &xmpData  = image->xmpData();
     for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != xmpData.end(); ++i) {
         std::string key ;
-        Jzon::Object* json = objectForKey(i->key(),jsonDict,key,&root);
-        push(json,key,i);
+        push(objectForKey(i->key(),key,root),key,i);
     }
         
     Jzon::Writer writer(root,Jzon::StandardFormat);
