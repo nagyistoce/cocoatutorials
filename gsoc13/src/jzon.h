@@ -139,7 +139,6 @@ namespace Jzon
 		Value(const float value);
 		Value(const double value);
 		Value(const bool   value);
-        Value(const Node*  pNode);
 		virtual ~Value();
 
 		virtual Type GetType() const;
@@ -165,7 +164,6 @@ namespace Jzon
 		void Set(const float value);
 		void Set(const double value);
 		void Set(const bool value);
-        void Set(const Node* pNode);
 
 		Value &operator=(const Value &rhs);
 		Value &operator=(const Node &rhs);
@@ -237,7 +235,6 @@ namespace Jzon
 
 		virtual Type GetType() const;
 
-		void Add(const std::string &name, Node* pNode);
 		void Add(const std::string &name, Node  &node);
 		void Add(const std::string &name, Value  node);
 		void Remove(const std::string &name);
@@ -367,24 +364,25 @@ namespace Jzon
 		~Writer();
 
 		void SetFormat(const Format &format);
-		void Write(const unsigned int level=0);
+		void Write();
 
 		const std::string &GetResult() const;
 
 	private:
-		void writeNode  (const Node &node, unsigned int level);
+		void writeNode(const Node &node, unsigned int level);
 		void writeObject(const Object &node, unsigned int level);
-		void writeArray (const Array &node, unsigned int level);
-		void writeValue (const Value &node);
+		void writeArray(const Array &node, unsigned int level);
+		void writeValue(const Value &node);
 
 		std::string result;
-		class FormatInterpreter* fi;
-		const Node& root;
-        const Node* pParent;
+
+		class FormatInterpreter *fi;
+
+		const Node &root;
 
 		Writer &operator=(const Writer&);
 	};
-
+	
 	class EXIV2API Parser
 	{
 	public:

@@ -254,11 +254,6 @@ namespace Jzon
 	{
 		Set(value);
 	}
-    
-	Value::Value(const Node* pNode)
-	{
-		Set(pNode);
-	}
 	Value::~Value()
 	{
 	}
@@ -576,11 +571,6 @@ namespace Jzon
 		return T_OBJECT;
 	}
 
-	void Object::Add(const std::string &name, Node* node)
-	{
-		children.push_back(std::make_pair(name, new Value(node)));
-	}
-
 	void Object::Add(const std::string &name, Node &node)
 	{
 		children.push_back(std::make_pair(name, node.GetCopy()));
@@ -871,13 +861,10 @@ namespace Jzon
 	}
 
 
-	Writer::Writer(const Node &root, const Format &format)
-    : fi(new FormatInterpreter)
-    , root(root)
+	Writer::Writer(const Node &root, const Format &format) : fi(new FormatInterpreter), root(root)
 	{
 		SetFormat(format);
 	}
-    
 	Writer::~Writer()
 	{
 		delete fi;
@@ -888,10 +875,10 @@ namespace Jzon
 	{
 		fi->SetFormat(format);
 	}
-	void Writer::Write(const unsigned int level)
+	void Writer::Write()
 	{
 		result.clear();
-		writeNode(root, level);
+		writeNode(root, 0);
 	}
 
 	const std::string &Writer::GetResult() const
@@ -903,9 +890,9 @@ namespace Jzon
 	{
 		switch (node.GetType())
 		{
-		case Node::T_OBJECT : writeObject(node.AsObject(),level); break;
-		case Node::T_ARRAY  : writeArray (node.AsArray(), level); break;
-		case Node::T_VALUE  : writeValue (node.AsValue()); break;
+		case Node::T_OBJECT : writeObject(node.AsObject(), level); break;
+		case Node::T_ARRAY  : writeArray(node.AsArray(), level);   break;
+		case Node::T_VALUE  : writeValue(node.AsValue());          break;
 		}
 	}
 	void Writer::writeObject(const Object &node, unsigned int level)
