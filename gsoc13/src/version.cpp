@@ -27,7 +27,7 @@
  */
 // *****************************************************************************
 #include "rcsid_int.hpp"
-EXIV2_RCSID("@(#) $Id: version.cpp 2951 2012-11-20 03:55:41Z robinwmills $")
+EXIV2_RCSID("@(#) $Id$")
 
 // *****************************************************************************
 // included header files
@@ -238,7 +238,7 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     os << "version="  << __VERSION__            << endl;
 	os << "date="     << __DATE__               << endl;
 	os << "time="     << __TIME__               << endl;
-    os << "$Id$"      << endl;
+    os << "Id=$Id$"   << endl;
 
 	if ( libs.begin() != libs.end() ) {
 		os << "executable=" << *libs.begin() << endl;
