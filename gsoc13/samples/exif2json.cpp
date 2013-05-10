@@ -18,21 +18,20 @@ using namespace Jzon;
 using namespace Exiv2;
 
 // http://stackoverflow.com/questions/236129/splitting-a-string-in-c
-static std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+static size_t split(const std::string &s, char delim, std::vector<std::string> &elems) {
     std::stringstream ss(s);
     std::string item;
     while (std::getline(ss, item, delim)) {
         elems.push_back(item);
     }
-    return elems;
+    return elems.size();
 }
 
 Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
 {
     static Jzon::Object object;
     std::vector<std::string> keys ;
-    split(Key,'.',keys);
-    size_t l = keys.size();
+    size_t l = split(Key,'.',keys);
     if   ( l == 0 || l > 5 ) return object; // maybe we should throw
     
     name     = keys[l-1];
@@ -46,12 +45,12 @@ Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
     if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
     if ( k == w ) return (Jzon::Object&) r2.Get(keys[k]) ;
       
-    Jzon::Object&                          r3 = (Jzon::Object&) r2.Get(keys[k++]);
-    if ( !r3.Has(keys[k]))                 r3.Add(keys[k],object);
+    Jzon::Object&                        r3 = (Jzon::Object&) r2.Get(keys[k++]);
+    if ( !r3.Has(keys[k]))               r3.Add(keys[k],object);
     if ( k == w ) return (Jzon::Object&) r3.Get(keys[k]) ;
 
-    Jzon::Object&                          r4 = (Jzon::Object&) r3.Get(keys[k++]);
-    if ( !r3.Has(keys[k]))                 r4.Add(keys[k],object);
+    Jzon::Object&                        r4 = (Jzon::Object&) r3.Get(keys[k++]);
+    if ( !r3.Has(keys[k]))               r4.Add(keys[k],object);
     if ( k == w ) return (Jzon::Object&) r4.Get(keys[k]) ;
 
     return object;
