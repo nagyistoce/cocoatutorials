@@ -46,9 +46,8 @@ Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
     // walk the path of keys
     size_t  k = 1 ;
     while ( k < w ) {
-        if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
-        if ( k == w ) return (Jzon::Object&) r2.Get(keys[k]) ;
-        r2 = (Jzon::Object&) r2.Get(keys[k++]);
+        if ( !r2.Has(keys[k])) r2.Add(keys[k],object);
+        r2 = (Jzon::Object&)   r2.Get(keys[k++]);
     }
 
     return r2 ;
