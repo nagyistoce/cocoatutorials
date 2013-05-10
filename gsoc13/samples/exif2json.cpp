@@ -1,5 +1,5 @@
 // ***************************************************************** -*- C++ -*-
-// exifprint.cpp, $Rev$
+// exifprint.cpp, $Id$
 // Sample program to print the Exif metadata in JSON format
 
 #include <exiv2/exiv2.hpp>
@@ -15,10 +15,6 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-
-typedef std::map<std::string,Jzon::Object*> jsonDict_t;
-typedef jsonDict_t::iterator                jsonDict_i;
 
 using namespace std;
 using namespace Jzon;
