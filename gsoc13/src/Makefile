@@ -62,7 +62,7 @@ include $(top_srcdir)/config/config.mk
 CCHDR =  exiv2.hpp             \
          exv_conf.h            \
          exv_msvc.h            \
-         jzon.h                \
+         Jzon.h                \
          version.hpp
 
 # Add library C++ source files to this list
@@ -86,7 +86,7 @@ CCSRC =  asfvideo.cpp          \
 	 iptc.cpp              \
 	 jp2image.cpp          \
 	 jpgimage.cpp          \
-	 jzon.cpp              \
+	 Jzon.cpp              \
 	 makernote.cpp         \
 	 matroskavideo.cpp     \
 	 metadatum.cpp         \

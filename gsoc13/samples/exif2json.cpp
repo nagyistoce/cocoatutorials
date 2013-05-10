@@ -3,7 +3,7 @@
 // Sample program to print the Exif metadata in JSON format
 
 #include <exiv2/exiv2.hpp>
-#include <jzon.h>
+#include <Jzon.h>
 
 #include <iostream>
 #include <iomanip>
