@@ -205,10 +205,11 @@ namespace Jzon
 			bool operator==(const iterator &rhs) { return p == rhs.p; }
 			bool operator!=(const iterator &rhs) { return p != rhs.p; }
 
-			NamedNode operator*();//  { return NamedNode(p->first, *p->second); }
-
-		public:
-			NamedNodePtr *p;
+			NamedNodePtr operator*() { return *p; }
+ 
+ 		private:
+ 			NamedNodePtr *p;
+		    friend class Writer;
 		};
 		class const_iterator : public std::iterator<std::input_iterator_tag, const NamedNode>
 		{
@@ -222,10 +223,11 @@ namespace Jzon
 			bool operator==(const const_iterator &rhs) { return p == rhs.p; }
 			bool operator!=(const const_iterator &rhs) { return p != rhs.p; }
 
-			const NamedNode operator*();//  { return NamedNode(p->first, *p->second); }
-
-		public:
-			const NamedNodePtr *p;
+			NamedNodePtr operator*() { return *p; }
+ 
+ 		private:
+ 			const NamedNodePtr *p;
+		    friend class Writer;
 		};
 
 		Object();

@@ -901,7 +901,7 @@ namespace Jzon
 		for (Object::const_iterator it = node.begin(); it != node.end(); ++it)
 		{
 			const std::string name = it.p->first;
-		//	const Node &value = (*it).second;
+		    const Node &value = *(*it).second;
 
 			if (it != node.begin())
 				result += "," + fi->GetNewline();
