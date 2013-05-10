@@ -29,29 +29,31 @@ static std::vector<std::string> &split(const std::string &s, char delim, std::ve
 
 Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
 {
+    static Jzon::Object object;
     std::vector<std::string> keys ;
     split(Key,'.',keys);
     size_t l = keys.size();
-    name     = keys[keys.size()-1];
+    if   ( l == 0 || l > 5 ) return object; // maybe we should throw
     
-    static Jzon::Object object;
+    name     = keys[l-1];
+    size_t w = l-2; // how far to walk
+    
     if (  !root.Has(keys[0]) ) root.Add(keys[0],object);
     
-    // this is horrible
-    if ( l > 2 ) {
-      size_t i = 0 ;
-      Jzon::Object&                          r2 = (Jzon::Object&) root.Get(keys[i++]);
-      if ( !r2.Has(keys[i]))                 r2.Add(keys[i],object);
-      if ( l == i+2 ) return (Jzon::Object&) r2.Get(keys[i]) ;
+    // walk the path of keys
+    size_t k = 0 ;
+    Jzon::Object&                        r2 = (Jzon::Object&) root.Get(keys[k++]);
+    if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
+    if ( k == w ) return (Jzon::Object&) r2.Get(keys[k]) ;
       
-      Jzon::Object&                          r3 = (Jzon::Object&) r2.Get(keys[i++]);
-      if ( !r3.Has(keys[i]))                 r3.Add(keys[i],object);
-      if ( l == i+2 ) return (Jzon::Object&) r3.Get(keys[i]) ;
+    Jzon::Object&                          r3 = (Jzon::Object&) r2.Get(keys[k++]);
+    if ( !r3.Has(keys[k]))                 r3.Add(keys[k],object);
+    if ( k == w ) return (Jzon::Object&) r3.Get(keys[k]) ;
 
-      Jzon::Object&                          r4 = (Jzon::Object&) r3.Get(keys[i++]);
-      if ( !r3.Has(keys[i]))                 r4.Add(keys[i],object);
-      if ( l == i+2 ) return (Jzon::Object&) r4.Get(keys[i]) ;
-    }
+    Jzon::Object&                          r4 = (Jzon::Object&) r3.Get(keys[k++]);
+    if ( !r3.Has(keys[k]))                 r4.Add(keys[k],object);
+    if ( k == w ) return (Jzon::Object&) r4.Get(keys[k]) ;
+
     return object;
 }
 
