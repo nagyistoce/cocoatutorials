@@ -11,7 +11,17 @@
 #include <string>
 
 #include <stdlib.h>
+#ifdef   _MSC_VER
+#include <windows.h>
+#define  PATH_MAX 512
+const char* realpath(const char* file,char* path)
+{
+	GetFullPathName(file,PATH_MAX,path,NULL);
+	return path;
+}
+#else
 #include <unistd.h>
+#endif
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -120,15 +130,13 @@ void fileSystemPush(const char* path,Jzon::Node& nfs)
 {
     Jzon::Object& fs = (Jzon::Object&) nfs;
     fs.Add("path",path);
-
-#if defined(__linux__) || defined(__APPLE__)
     char resolved_path[PATH_MAX];
     fs.Add("realpath",realpath(path,resolved_path));
-    
-    struct stat buf;
+
+	struct stat buf;
     memset(&buf,0,sizeof(buf));
     stat(path,&buf);
-    
+
     fs.Add("st_dev"    ,(int) buf.st_dev    ); /* ID of device containing file    */
     fs.Add("st_ino"    ,(int) buf.st_ino    ); /* inode number                    */
     fs.Add("st_mode"   ,(int) buf.st_mode   ); /* protection                      */
@@ -137,13 +145,19 @@ void fileSystemPush(const char* path,Jzon::Node& nfs)
     fs.Add("st_gid"    ,(int) buf.st_gid    ); /* group ID of owner               */
     fs.Add("st_rdev"   ,(int) buf.st_rdev   ); /* device ID (if special file)     */
     fs.Add("st_size"   ,(int) buf.st_size   ); /* total size, in bytes            */
-    fs.Add("st_blksize",(int) buf.st_blksize); /* blocksize for file system I/O   */
-    fs.Add("st_blocks" ,(int) buf.st_blocks ); /* number of 512B blocks allocated */
     fs.Add("st_atime"  ,(int) buf.st_atime  ); /* time of last access             */
     fs.Add("st_mtime"  ,(int) buf.st_mtime  ); /* time of last modification       */
     fs.Add("st_ctime"  ,(int) buf.st_ctime  ); /* time of last status change      */
-#endif
 
+#ifdef _MSC_VER
+	size_t blksize     = 1024;
+	size_t blocks      = (buf.st_size+blksize-1)/blksize;
+#else
+    size_t blksize     = buf.st_blksize;
+    size_t blocks      = buf.st_blocks ;
+#endif    
+    fs.Add("st_blksize",(int) blksize       ); /* blocksize for file system I/O   */
+    fs.Add("st_blocks" ,(int) blocks        ); /* number of 512B blocks allocated */
 }
 
 int main(int argc, char* const argv[])
