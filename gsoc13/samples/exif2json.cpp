@@ -56,25 +56,25 @@ Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
     // this is horrible  References are pointers that don't work properly!
     if ( !r1.Has(keys[k]) )             r1.Add(keys[k],object);
     Jzon::Object& r2 = (Jzon::Object&)  r1.Get(keys[k]);
-    if  ( l == 2 ) return r2; k++;
+    if  ( l == 2 ) return r2;
     
-    if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
+    if ( !r2.Has(keys[++k]))             r2.Add(keys[k],object);
     Jzon::Object&   r3 = (Jzon::Object&) r2.Get(keys[k]);
-    if  ( l == 3 ) return r3; k++;
+    if  ( l == 3 ) return r3;
     
-    if ( !r3.Has(keys[k]))               r3.Add(keys[k],object);
+    if ( !r3.Has(keys[++k]))             r3.Add(keys[k],object);
     Jzon::Object&   r4 = (Jzon::Object&) r3.Get(keys[k]);
-    if  ( l == 4 ) return r4; k++;
+    if  ( l == 4 ) return r4;
     
-    if ( !r4.Has(keys[k]))               r4.Add(keys[k],object);
+    if ( !r4.Has(keys[++k]))             r4.Add(keys[k],object);
     Jzon::Object&   r5 = (Jzon::Object&) r4.Get(keys[k]);
-    if  ( l == 5 ) return r5; k++;
+    if  ( l == 5 ) return r5;
     
-    if ( !r5.Has(keys[k]))               r5.Add(keys[k],object);
+    if ( !r5.Has(keys[++k]))             r5.Add(keys[k],object);
     Jzon::Object&   r6 = (Jzon::Object&) r5.Get(keys[k]);
-    if  ( l == 6 ) return r6; k++;
+    if  ( l == 6 ) return r6;
     
-    if ( !r6.Has(keys[k]))               r6.Add(keys[k],object);
+    if ( !r6.Has(keys[++k]))             r6.Add(keys[k],object);
     Jzon::Object&   r7 = (Jzon::Object&) r6.Get(keys[k]);
     if  ( l == 7 ) return r7;
 
@@ -215,13 +215,14 @@ try {
         std::string key ;
         push(objectForKey(i->key(),key,root),key,i);
     }
-    
+/*
+    This is only for testing long paths    
     {
     	ExifData::const_iterator i = exifData.begin();
     	std::string key;
     	push(objectForKey("This.Is.A.Rather.Long.Path.Key",key,root),key,i);
     }
-        
+*/        
     Jzon::Writer writer(root,Jzon::StandardFormat);
     writer.Write();
     std::cout << writer.GetResult() << std::endl;
