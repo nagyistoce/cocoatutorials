@@ -10,6 +10,13 @@
 #include <cassert>
 #include <string>
 
+#include <stdlib.h>
+#include <unistd.h>
+#include <limits.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+
 typedef std::map<std::string,Jzon::Object*> jsonDict_t;
 typedef jsonDict_t::iterator                jsonDict_i;
 
@@ -32,28 +39,23 @@ Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
     static Jzon::Object object;
     std::vector<std::string> keys ;
     size_t l = split(Key,'.',keys);
-    if   ( l == 0 || l > 5 ) return object; // maybe we should throw
+    if   ( l == 0 || l > 50 ) return object; // maybe we should throw
     
     name     = keys[l-1];
     size_t w = l-2; // how far to walk
     
-    if (  !root.Has(keys[0]) ) root.Add(keys[0],object);
+    if ( !root.Has(keys[0]) )          root.Add(keys[0],object);
+    Jzon::Object& r2 = (Jzon::Object&) root.Get(keys[0]);
     
     // walk the path of keys
-    size_t k = 0 ;
-    Jzon::Object&                        r2 = (Jzon::Object&) root.Get(keys[k++]);
-    if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
-    if ( k == w ) return (Jzon::Object&) r2.Get(keys[k]) ;
-      
-    Jzon::Object&                        r3 = (Jzon::Object&) r2.Get(keys[k++]);
-    if ( !r3.Has(keys[k]))               r3.Add(keys[k],object);
-    if ( k == w ) return (Jzon::Object&) r3.Get(keys[k]) ;
+    size_t  k = 1 ;
+    while ( k < w ) {
+        if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
+        if ( k == w ) return (Jzon::Object&) r2.Get(keys[k]) ;
+        r2 = (Jzon::Object&) r2.Get(keys[k++]);
+    }
 
-    Jzon::Object&                        r4 = (Jzon::Object&) r3.Get(keys[k++]);
-    if ( !r3.Has(keys[k]))               r4.Add(keys[k],object);
-    if ( k == w ) return (Jzon::Object&) r4.Get(keys[k]) ;
-
-    return object;
+    return r2 ;
 }
 
 // ExifData::const_iterator i
@@ -61,8 +63,6 @@ template <class T>
 void push(Jzon::Object& json,const std::string& key,T i)
 {
     std::string value = i->value().toString();
-
-//  std::cout << key << " , " << i->typeId() << std::endl;
 
     switch ( i->typeId() ) {
         case Exiv2::xmpText:
@@ -120,6 +120,36 @@ void push(Jzon::Object& json,const std::string& key,T i)
     }
 }
 
+void fileSystemPush(const char* path,Jzon::Node& nfs)
+{
+    Jzon::Object& fs = (Jzon::Object&) nfs;
+    fs.Add("path",path);
+
+#if defined(__linux__)
+    char resolved_path[PATH_MAX];
+    fs.Add("realpath",realpath(path,resolved_path));
+    
+    struct stat buf;
+    memset(&buf,0,sizeof(buf));
+    stat(path,&buf);
+    
+    fs.Add("st_dev"    ,(int) buf.st_dev    ); /* ID of device containing file    */
+    fs.Add("st_ino"    ,(int) buf.st_ino    ); /* inode number                    */
+    fs.Add("st_mode"   ,(int) buf.st_mode   ); /* protection                      */
+    fs.Add("st_nlink"  ,(int) buf.st_nlink  ); /* number of hard links            */
+    fs.Add("st_uid"    ,(int) buf.st_uid    ); /* user ID of owner                */
+    fs.Add("st_gid"    ,(int) buf.st_gid    ); /* group ID of owner               */
+    fs.Add("st_rdev"   ,(int) buf.st_rdev   ); /* device ID (if special file)     */
+    fs.Add("st_size"   ,(int) buf.st_size   ); /* total size, in bytes            */
+    fs.Add("st_blksize",(int) buf.st_blksize); /* blocksize for file system I/O   */
+    fs.Add("st_blocks" ,(int) buf.st_blocks ); /* number of 512B blocks allocated */
+    fs.Add("st_atime"  ,(int) buf.st_atime  ); /* time of last access             */
+    fs.Add("st_mtime"  ,(int) buf.st_mtime  ); /* time of last modification       */
+    fs.Add("st_ctime"  ,(int) buf.st_ctime  ); /* time of last status change      */
+#endif
+
+}
+
 int main(int argc, char* const argv[])
 try {
     
@@ -134,9 +164,12 @@ try {
     assert(image.get() != 0);
     image->readMetadata();
         
-        
     Jzon::Object root;
-    root.Add("path", path);
+
+    const char*    FS="FS";
+    Jzon::Object      fs  ;
+    root.Add      (FS,fs) ;
+    fileSystemPush(path,root.Get(FS));
     
 	Exiv2::ExifData &exifData = image->exifData();
     for ( ExifData::const_iterator i = exifData.begin(); i != exifData.end() ; ++i ) {
