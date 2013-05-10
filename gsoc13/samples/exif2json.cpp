@@ -44,24 +44,41 @@ static size_t split(const std::string& s, char delim, std::vector<std::string>& 
 Jzon::Object& objectForKey(std::string Key,std::string& name,Jzon::Object& root)
 {
     static Jzon::Object object;
+    
     std::vector<std::string> keys ;
     size_t l = split(Key,'.',keys);
-    if   ( l == 0 || l > 50 ) return object; // maybe we should throw
+    if   ( l < 3 || l > 7 ) return object; // maybe we should throw
     
     name     = keys[l-1];
-    size_t w = l-2; // how far to walk
+    size_t k = 0;
+    Jzon::Object& r1 = root;
     
-    if ( !root.Has(keys[0]) )          root.Add(keys[0],object);
-    Jzon::Object& r2 = (Jzon::Object&) root.Get(keys[0]);
+    // this is horrible  References are pointers that don't work properly!
+    if ( !r1.Has(keys[k]) )             r1.Add(keys[k],object);
+    Jzon::Object& r2 = (Jzon::Object&)  r1.Get(keys[k]);
+    if  ( l == 2 ) return r2; k++;
     
-    // walk the path of keys
-    size_t  k = 1 ;
-    while ( k < w ) {
-        if ( !r2.Has(keys[k])) r2.Add(keys[k],object);
-        r2 = (Jzon::Object&)   r2.Get(keys[k++]);
-    }
+    if ( !r2.Has(keys[k]))               r2.Add(keys[k],object);
+    Jzon::Object&   r3 = (Jzon::Object&) r2.Get(keys[k]);
+    if  ( l == 3 ) return r3; k++;
+    
+    if ( !r3.Has(keys[k]))               r3.Add(keys[k],object);
+    Jzon::Object&   r4 = (Jzon::Object&) r3.Get(keys[k]);
+    if  ( l == 4 ) return r4; k++;
+    
+    if ( !r4.Has(keys[k]))               r4.Add(keys[k],object);
+    Jzon::Object&   r5 = (Jzon::Object&) r4.Get(keys[k]);
+    if  ( l == 5 ) return r5; k++;
+    
+    if ( !r5.Has(keys[k]))               r5.Add(keys[k],object);
+    Jzon::Object&   r6 = (Jzon::Object&) r5.Get(keys[k]);
+    if  ( l == 6 ) return r6; k++;
+    
+    if ( !r6.Has(keys[k]))               r6.Add(keys[k],object);
+    Jzon::Object&   r7 = (Jzon::Object&) r6.Get(keys[k]);
+    if  ( l == 7 ) return r7;
 
-    return r2 ;
+    return object;
 }
 
 // ExifData::const_iterator i
@@ -197,6 +214,12 @@ try {
     for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != xmpData.end(); ++i) {
         std::string key ;
         push(objectForKey(i->key(),key,root),key,i);
+    }
+    
+    {
+    	ExifData::const_iterator i = exifData.begin();
+    	std::string key;
+    	push(objectForKey("This.Is.A.Rather.Long.Path.Key",key,root),key,i);
     }
         
     Jzon::Writer writer(root,Jzon::StandardFormat);
