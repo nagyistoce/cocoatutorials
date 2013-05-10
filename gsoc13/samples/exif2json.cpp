@@ -1,5 +1,5 @@
 // ***************************************************************** -*- C++ -*-
-// exifprint.cpp, $Rev: 2286 $
+// exifprint.cpp, $Rev$
 // Sample program to print the Exif metadata in JSON format
 
 #include <exiv2/exiv2.hpp>
@@ -125,7 +125,7 @@ void fileSystemPush(const char* path,Jzon::Node& nfs)
     Jzon::Object& fs = (Jzon::Object&) nfs;
     fs.Add("path",path);
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__APPLE__)
     char resolved_path[PATH_MAX];
     fs.Add("realpath",realpath(path,resolved_path));
     
