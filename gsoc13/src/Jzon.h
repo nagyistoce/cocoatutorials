@@ -22,14 +22,14 @@ THE SOFTWARE.
 #ifndef Jzon_h__
 #define Jzon_h__
 
-#ifdef    _WINDLL
-# ifndef  JzonAPI
+#ifndef   JzonAPI
+# ifdef   _WINDLL
 #  define JzonAPI __declspec(dllimport)
+# elif defined(__GNUC__) && (__GNUC__ >= 4)
+#  define JzonAPI __attribute__ ((visibility("default")))
+# else
+#  define JzonAPI
 # endif
-#endif
-
-#ifndef JzonAPI
-#define JzonAPI
 #endif
 
 #include <string>
