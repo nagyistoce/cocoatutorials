@@ -55,6 +55,9 @@ int main(int argc,const char** argv)
     cout << endl;
 
     for ( Exiv2::dict_i it = response.begin() ; it != response.end() ; it++ ) {
+        // don't show request header
+        if (it->first ==  "requestheaders") continue;
+
         cout << it->first << " -> ";
 
         if ( it->first ==  "body") {

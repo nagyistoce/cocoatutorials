@@ -394,8 +394,34 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
  */
 #include <curl/curl.h>
 
-// callback function for curl to write the output
-static int writer(char *data, size_t size, size_t nmemb, std::string *writerData) {
+// callback function for curl to write the header output
+static int writerHeader(char *buffer, size_t size, size_t nmemb, Exiv2::dict_t *response) {
+    if (buffer == NULL) return 0;
+
+    // try to parse response headers like EXIV2_HTTP
+    int length = strlen(buffer);
+    while(length > 0 && buffer[length-1] == '\r' || buffer[length-1] == '\n') length--;
+    if (length) {
+        buffer[length] = '\0';
+        char* h = buffer;
+        char  C = ':' ;
+        char* c = strchr(h,C);
+        if (!c) {
+            std::string value(buffer);
+            (*response)[""] = value;
+        } else {
+            std::string key(h);
+            std::string value(c+1);
+            key   = key.substr(0,c-h);
+            (*response)[key]=value;
+        }
+    }
+
+    return size * nmemb;
+}
+
+// callback function for curl to write the body output
+static int writerBody(char *data, size_t size, size_t nmemb, std::string *writerData) {
   if (writerData == NULL) return 0;
   writerData->append(data, size*nmemb);
   return size * nmemb;
@@ -420,8 +446,9 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors) {
     } else {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str()); // set URL to get
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L); // no progress meter please
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer); // send all data to this function
-        curl_easy_setopt(curl, CURLOPT_WRITEHEADER, &response["responseHeaders"]);
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, writerHeader);
+        curl_easy_setopt(curl, CURLOPT_WRITEHEADER, &response);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writerBody); // send all body data to this function
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response["body"]);
 
         //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1); // for debug only
