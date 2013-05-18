@@ -151,6 +151,45 @@ AC_ARG_ENABLE(xmp,
     USE_XMP_TOOLKIT=$enableval, USE_XMP_TOOLKIT=yes)
 AC_MSG_RESULT($USE_XMP_TOOLKIT)
 
+# libcurl option might change flags, so we save them initially
+_cppflags="${CPPFLAGS}"
+_ldflags="${LDFLAGS}"
+
+AC_ARG_WITH(curl,
+[  --with-curl[[=DIR]]    use libcurl in DIR],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    CURL_DIR=$withval
+    CPPFLAGS="${CPPFLAGS} -I$withval/include"
+    LDFLAGS="${LDFLAGS} -L$withval/lib"
+  fi
+])
+
+USE_CURL=
+if test "$with_curl" != "no"; then
+    # Check for libcurl library
+    found_curl=yes
+    CURL_CPPFLAGS=
+    CURL_LDFLAGS=
+    CURL_LIBS=
+    AC_CHECK_HEADERS(curl/curl.h,
+        AC_CHECK_LIB(curl, curl_easy_init,[
+            USE_CURL=yes
+            AC_DEFINE([USE_CURL], [1], [Use libcurl library])
+            CURL_LIBS="-lcurl"
+            if test "x${CURL_DIR}" != "x"; then
+                CURL_CPPFLAGS="-I${CURL_DIR}/include"
+                CURL_LDFLAGS="-L${CURL_DIR}/lib"
+            fi],[found_curl=no]),[found_curl=no])
+    if test "$found_curl" = "no"; then
+        AC_MSG_ERROR(either specify a valid curl installation with --with-curl=DIR or disable libcurl support with --disable-curl)
+    fi
+    AC_SUBST(CURL_CPPFLAGS)
+    AC_SUBST(CURL_LDFLAGS)
+    AC_SUBST(CURL_LIBS)
+fi
+CPPFLAGS=${_cppflags}
+LDFLAGS=${_ldflags}
+
 # expat option might change flags, so we save them initially
 _cppflags="${CPPFLAGS}"
 _ldflags="${LDFLAGS}"
@@ -276,6 +315,17 @@ yes) echo "-- XMP metadata support........... YES" ;;
      echo "files are installed and use --with-expat=DIR if it is in a"
      echo "non-standard location. You can get Expat from"
      echo "http://expat.sourceforge.net/"
+     echo "" ;;
+esac
+
+case "$USE_CURL" in
+yes) echo "-- Using Lib Curl................. YES" ;;
+*)   echo "-- Using Lib Curl................. NO"
+     echo ""
+     echo "Libcurl is required for HttpIo in basicIo.cpp. Make sure the Curl header"
+     echo "files are installed and use --with-curl=DIR if it is in a"
+     echo "non-standard location. You can get Curl from"
+     echo "http://curl.haxx.se/libcurl/"
      echo "" ;;
 esac
 

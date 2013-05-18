@@ -1,13 +1,16 @@
 /*
  * http.cpp
  */
-#include "http.hpp"
 
-#ifndef EXIV2_HTTP
-#define EXIV2_HTTP 0
+// included header files
+
+#ifndef EXV_USE_CURL
+#define EXV_USE_CURL 0
 #endif
 
-#if EXIV2_HTTP == 1
+#include "http.hpp"
+
+#if EXV_USE_CURL == 0
 /**********************
  * Using EXIV2_HTTP
  **********************
@@ -389,7 +392,7 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
 ////
 #else
 /**********************
- * Using LIBCURL_HTTP
+ * Using LIBCURL
  **********************
  */
 #include <curl/curl.h>

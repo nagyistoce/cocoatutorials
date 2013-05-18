@@ -105,6 +105,16 @@ else
         endif
 endif
 
+# Libcurl need for httpIO if it's selected
+CURL_CPPFLAGS = @CURL_CPPFLAGS@
+CURL_LDFLAGS = @CURL_LDFLAGS@
+CURL_LIBS = @CURL_LIBS@
+ifdef CURL_LIBS
+       CPPFLAGS += @CURL_CPPFLAGS@
+       LDFLAGS += @CURL_LDFLAGS@
+       LIBS += @CURL_LIBS@
+endif      
+
 # Expat library needed to compile the XMP Toolkit
 EXPAT_LDFLAGS = @EXPAT_LDFLAGS@
 EXPAT_CPPFLAGS = @EXPAT_CPPFLAGS@
