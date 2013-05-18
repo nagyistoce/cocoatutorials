@@ -147,6 +147,12 @@ dir() {
 			else 
 				$list $(dirname "$1")/$(basename "$1")/*
 			fi
+		elif [ "$1" = /od ]; then
+		    shift
+		    eval dirod $*
+		elif [ "$1" = /os ]; then
+		    shift
+		    eval diros $*
 		else
 			$list "$@"
 		fi
@@ -454,4 +460,22 @@ cd ~/
 export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 # Finished adapting your PATH environment variable for use with MacPorts.
 
+
+
+##
+# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2012-11-02_at_21:07:59
+##
+
+# MacPorts Installer addition on 2012-11-02_at_21:07:59: adding an appropriate PATH variable for use with MacPorts.
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+
+##
+# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2013-05-17_at_13:58:40
+##
+
+# MacPorts Installer addition on 2013-05-17_at_13:58:40: adding an appropriate PATH variable for use with MacPorts.
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+# Finished adapting your PATH environment variable for use with MacPorts.
 

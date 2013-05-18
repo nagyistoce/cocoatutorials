@@ -1,0 +1,21 @@
+#!/bin/bash
+
+##
+# emulate Linux command ps2pdf on the Mac
+# ps2pdf  [options...] {input.[e]ps|-} [output.pdf|-]
+#
+##
+
+input=$1
+output=$2
+options=''
+
+if [ "$input" == "-" ]; then
+    input=''
+	options=-i
+fi
+
+pstopdf $input -o $output $options
+
+# That's all Folks
+##
