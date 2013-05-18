@@ -197,8 +197,11 @@ SET_TARGET_PROPERTIES( exiv2lib PROPERTIES
 if ( MSVC ) 
     source_group("Header Files" FILES ${LIBEXIV2_HDR} )
     TARGET_LINK_LIBRARIES( exiv2lib ${EXPAT_LIBRARIES} )
+    source_group("Header Files" FILES ${LIBCURL_HDR} )
+    TARGET_LINK_LIBRARIES( exiv2lib ${CURL_LIBRARIES} )
 else()
     TARGET_LINK_LIBRARIES( exiv2lib dl ${EXPAT_LIBRARIES} )
+    TARGET_LINK_LIBRARIES( exiv2lib dl ${CURL_LIBRARIES} )
 endif()
 
 if( EXIV2_ENABLE_LIBXMP )
@@ -251,6 +254,19 @@ IF (MSVC )
 	    )
 	endif()
 ENDIF()
+
+##
+# copy curl dlls to output directory (TODO: rewrite for NMake)
+IF ( MSVC AND EXIV2_ENABLE_CURL )
+    get_filename_component(CURL_LIBRARY_DIR ${CURL_LIBRARY} PATH)
+    string(REGEX REPLACE "/" "\\\\" CURL_LIBRARY_DIR ${CURL_LIBRARY_DIR})
+    ADD_CUSTOM_COMMAND(
+      TARGET exiv2lib
+      POST_BUILD
+      COMMAND copy /y ${CURL_LIBRARY_DIR}\\*.dll $(SolutionDir)\\bin\\${P_DIR}\\${T_DIR}\\$(ConfigurationName)
+    )
+ENDIF()
+INSTALL( TARGETS exiv2lib ${INSTALL_TARGET_STANDARD_ARGS} )
 
 ##
 # copy zlib and expat dlls to output directory (TODO: rewrite for NMake)

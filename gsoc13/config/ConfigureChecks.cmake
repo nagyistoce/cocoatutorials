@@ -55,6 +55,19 @@ IF( EXIV2_ENABLE_PNG )
     SET (HAVE_LIBZ ${ZLIB_FOUND})
 ENDIF( EXIV2_ENABLE_PNG )
 
+IF( EXIV2_ENABLE_CURL )
+    FIND_PACKAGE( CURL )
+    INCLUDE_DIRECTORIES( ${CURL_INCLUDE_DIR} )
+    # FindCURL.cmake doesn't check for REQUIRED flags - so we need to check ourselves
+    IF( MINGW OR UNIX )
+        IF (NOT CURL_FOUND)
+            MESSAGE(FATAL_ERROR "missing library curl required for HttpIo")
+        ELSE (NOT CURL_FOUND)
+            SET ( USE_CURL 1 )
+        ENDIF( NOT CURL_FOUND )
+    ENDIF( MINGW OR UNIX )
+ENDIF( EXIV2_ENABLE_CURL )
+
 IF (EXIV2_ENABLE_XMP)
     FIND_PACKAGE(EXPAT)
     INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIR})
@@ -226,6 +239,7 @@ SET( EXV_SYMBOLS ENABLE_NLS
                  HAVE_WCHAR_H
                  HAVE_XMP_TOOLKIT
                  HAVE__BOOL
+                 USE_CURL
                  PACKAGE
                  PACKAGE_BUGREPORT
                  PACKAGE_NAME
@@ -279,4 +293,5 @@ OptionOutput( "Nikon lens database:                " EXIV2_ENABLE_LENSDATA      
 OptionOutput( "Commercial build:                   " EXIV2_ENABLE_COMMERCIAL         )
 OptionOutput( "Build the unit tests:               " EXIV2_ENABLE_BUILD_SAMPLES      )
 OptionOutput( "Building translations files:        " EXIV2_ENABLE_BUILD_PO           )
+OptionOutput( "USE Libcurl for HttpIo:             " EXIV2_ENABLE_CURL               )
 MESSAGE( STATUS "------------------------------------------------------------------" )

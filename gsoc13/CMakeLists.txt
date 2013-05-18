@@ -51,6 +51,7 @@ OPTION( EXIV2_ENABLE_LENSDATA      "Build including lens data"                  
 OPTION( EXIV2_ENABLE_COMMERCIAL    "Build with the EXV_COMMERCIAL_VERSION symbol set"      OFF )
 OPTION( EXIV2_ENABLE_BUILD_SAMPLES "Build the unit tests"                                  ON  )
 OPTION( EXIV2_ENABLE_BUILD_PO      "Build translations files"                              OFF )
+OPTION( EXIV2_ENABLE_CURL          "USE Libcurl for HttpIo"                                ON  )
 
 IF( MINGW OR UNIX )
     ADD_DEFINITIONS(-Wall
@@ -72,6 +73,7 @@ if( MSVC )
 	
 	set(E expat-2.1.0)
 	set(Z zlib-1.2.7)
+    set(C curl-7.30.0)
 	
 	if( NOT IS_DIRECTORY ./../${E} )
 		set(OUT_OF_SOURCE 1)
@@ -83,6 +85,13 @@ if( MSVC )
         set(EXPAT_INCLUDE_DIR  ${CMAKE_SOURCE_DIR}/../${E}/lib)
     	include_directories( ${EXPAT_INCLUDE_DIR} msvc64\\include src\\include)
 	endif()
+
+    FIND_PACKAGE(CURL QUIET)
+    if ( NOT CURL_FOUND )
+        set(CURL_LIBRARY       ${CMAKE_SOURCE_DIR}/../${C}/$(ConfigurationName)/curl)
+        set(CURL_INCLUDE_DIR   ${CMAKE_SOURCE_DIR}/../${C})
+        include_directories( ${CURL_INCLUDE_DIR} msvc64\\include src\\include)
+    endif()
 	
 	FIND_PACKAGE(ZLIB QUIET)
     if ( NOT ZLIB_FOUND )
