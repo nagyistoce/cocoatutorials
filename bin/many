@@ -4,7 +4,7 @@
 #
 syntax()
 {
-	echo 'usage:' $0 '--{print|html|editor|viewer}+ [man-options] man-page'
+	echo 'usage:' $0 '--{nocache|uncache|print|html|editor|viewer}+ [man-options] man-page'
 	echo 'eg:   ' $0 printf        
 	echo '      ' $0 3 printf
 	echo '      ' $0 --html gcc
@@ -21,6 +21,7 @@ editor=3
 viewer=4
 pop="_pop_"
 mode=$html
+unset nocache
 
 if [ `uname` == Linux ]; then
 	mode=$editor
@@ -31,17 +32,25 @@ setMode()
 	mode=$1
 	opt="$pop"
 }
+setUncache()
+{
+    nocache=1
+	opt="$pop"
+}
 
-opt=$1
-case $opt in
-	-p|--print)  		setMode $print  ;;
-	-h|--html)   		setMode $html   ;;
-	-e|--editor) 		setMode $editor ;;
-	-v|--viewer|--view)	setMode $viewer ;;
-esac
-if [ "$opt" == "$pop" ]; then
-	shift
-fi
+opt="$pop"
+while [ "$opt" == "$pop" ]; do
+    opt=$1
+    case $opt in
+	    -p|--print)  		setMode $print  ;;
+	    -h|--html)   		setMode $html   ;;
+	    -e|--editor) 		setMode $editor ;;
+	    -v|--viewer|--view)	setMode $viewer ;;
+	    -n|--nocache)       setUncache      ;;
+	    -u|--uncache)       setUncache      ;;
+    esac
+    if [ "$opt" == "$pop" ]; then shift ; fi
+done
 
 temp=/tmp
 # ##
@@ -60,6 +69,10 @@ fi
 if [ $mode == $print ]; then
 	ps="$temp/$page.ps"
 	pdf="$temp/$page.pdf"
+	if [ ! -z $nocache ]; then
+	    rm -rf $ps
+	    rm -rf $pdf
+	fi
 
 	man "$@" 2>&1 > /dev/null
 	status=$?
@@ -94,6 +107,7 @@ if [ $mode == $print ]; then
 
 elif [ $mode == $html ]; then
 
+
 	##
 	# kill the old txt and html files
 	page=${!#}
@@ -102,17 +116,15 @@ elif [ $mode == $html ]; then
 	
 	f=$temp/$cached.txt
 	h=$temp/$cached.html
-	rm -rf $f $h
+    if [ ! -z $nocache ]; then
+        rm -rf $f $h
+	fi
 
 	##
 	# is there a file called ~/bin/man<page>.html
 	m=~/bin/man$page.html 
 	
 	if [ ! -e $m ]; then
-		# write out a few blank lines (otherwise man2html gets a little confused!)
-		for i in a b c d e f g h i j k l m ;do
-			echo >> $f
-		done
 		# get the man page
 		man $* >> $f
 		s=$?
@@ -132,7 +144,7 @@ elif [ $mode == $html ]; then
 		#
 		# if we've found it, format and display
 		if [ $s -eq 0 ]; then
-			man2html -compress < $f > $h && open $h
+			man2html -compress < $f | sed -e 's/\<BODY\>/\<body style="background:lightskyblue;"\>/' > $h && open $h
 		fi
 	else
 		cp   $m $h
