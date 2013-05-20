@@ -9,10 +9,6 @@
 # include "exv_conf.h"
 #endif
 
-#ifndef EXV_USE_CURL
-#define EXV_USE_CURL 0
-#endif
-
 #include "http.hpp"
 
 #if EXV_USE_CURL == 0
@@ -408,7 +404,7 @@ static int writerHeader(char *buffer, size_t size, size_t nmemb, Exiv2::dict_t *
 
     // try to parse response headers like EXIV2_HTTP
     int length = strlen(buffer);
-    while(length > 0 && buffer[length-1] == '\r' || buffer[length-1] == '\n') length--;
+    while(length > 0 && ((buffer[length-1] == '\r') || (buffer[length-1] == '\n')) ) length--;
     if (length) {
         buffer[length] = '\0';
         char* h = buffer;

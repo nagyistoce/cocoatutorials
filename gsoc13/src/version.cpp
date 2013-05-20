@@ -238,6 +238,7 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     os << "version="  << __VERSION__            << endl;
     os << "date="     << __DATE__               << endl;
     os << "time="     << __TIME__               << endl;
+    os << "curl="     << EXV_USE_CURL           << endl;
     os << "id="       << "$Id$" << endl;
 
     if ( libs.begin() != libs.end() ) {

@@ -27,6 +27,10 @@ namespace Exiv2 {
     };
 }
 
+#ifndef EXV_USE_CURL
+#define EXV_USE_CURL 0
+#endif
+
 #endif
 
 
