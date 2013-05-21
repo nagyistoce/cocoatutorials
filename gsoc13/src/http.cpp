@@ -484,7 +484,9 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors) {
             errors = curl_easy_strerror(res);
             result = -1;
         } else {
-            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &result); // get HTTP return code
+            long foo;
+            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &foo); // get HTTP return code
+            result = (int) foo;    
         }
     }
 
