@@ -2,16 +2,16 @@
 /*!
   @file    exv_msvc.h
   @brief   Configuration settings for MSVC
-  @version $Rev: 2934 $
+  @version $Rev: 2320 $
   @author  Andreas Huggel (ahu)
            <a href="mailto:ahuggel@gmx.net">ahuggel@gmx.net</a>
   @date    07-Feb-04, ahu: created
            26-Feb-05, ahu: renamed and moved to src directory
  */
 
-/* Todo: The PACKAGE_* defines should be generated */
-
-#ifdef _MSC_VER
+#ifdef  _MSC_VER
+#ifndef _EXV_MSVC_H_
+#define _EXV_MSVC_H_
 
 #if _MSC_VER >= 1600
 // stdint.h was introduced with DevStudio 2010
@@ -24,9 +24,9 @@
 #elif  _MSC_VER >= 1500
 #define MSDEV_2008    1
 #elif  _MSC_VER >= 1400
-#define MSDEV_2005	  1
+#define MSDEV_2005    1
 #else
-#define MSDEV_2003	  1
+#define MSDEV_2003    1
 #endif
 
 /* Define to 1 if you have the <process.h> header file. */
@@ -82,6 +82,10 @@ typedef int pid_t;
 /* Define to 1 if you have the Adobe XMP Toolkit. */
 #define EXV_HAVE_XMP_TOOLKIT 1
 
+/* Define as 1 if you want to use curl to perform http I/O */
+#define EXV_USE_CURL 0
+// #pragma message("Setting default for EXV_USE_CURL")
+
 /* File path seperator */
 #define EXV_SEPERATOR_STR "\\"
 #define EXV_SEPERATOR_CHR '\\'
@@ -136,4 +140,5 @@ typedef int pid_t;
 # pragma warning(disable : 4996)
 #endif
 
-#endif /* _MSC_VER */
+#endif /* _EXV_MSVC_H_ */
+#endif /* _MSC_VER     */

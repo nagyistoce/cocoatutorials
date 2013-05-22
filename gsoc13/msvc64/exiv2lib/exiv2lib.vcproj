@@ -950,6 +950,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\Jzon.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\makernote.hpp"
 				>
 			</File>

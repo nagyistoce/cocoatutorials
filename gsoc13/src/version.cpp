@@ -30,18 +30,12 @@
 EXIV2_RCSID("@(#) $Id$")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
 
 #if defined(__CYGWIN__)
 #include <windows.h>
 #endif
 
-#include "version.hpp"
+#include <exiv2/exiv2.hpp>
 
 // + standard includes
 #include <iomanip>

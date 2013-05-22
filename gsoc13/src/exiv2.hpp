@@ -29,6 +29,13 @@
 #ifndef EXIV2_HPP_
 #define EXIV2_HPP_
 
+// included header files
+#ifdef _MSC_VER
+# include "exv_msvc.h"
+#else
+# include "exv_conf.h"
+#endif
+
 // *****************************************************************************
 // included header files
 #include "basicio.hpp"

@@ -2,32 +2,32 @@
  * http.cpp
  */
 
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
-
-#include "http.hpp"
-
-#if EXV_USE_CURL == 0
-/**********************
- * Using EXIV2_HTTP
- **********************
- */
-#ifdef  _MSC_VER
-#pragma comment(lib, "ws2_32.lib")
-#endif
-
-#define SLEEP       1000
-#define SNOOZE         0
+#include <exiv2/exiv2.hpp>
 
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <string.h>
+
+#ifdef  _MSC_VER
+#pragma comment(lib, "ws2_32.lib")
+#endif
+
+#if EXV_USE_CURL == 0
+
+#ifdef  _MSC_VER
+#pragma message("Using exiv2 http support")
+#endif
+
+/**********************
+ * Using EXIV2_HTTP
+ **********************
+ */
+#define SLEEP       1000
+#define SNOOZE         0
+
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #define __MINGW__
@@ -390,13 +390,24 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
     response["body"]=file;
     return result;
 }
+
 ////
 #else
+
 /**********************
  * Using LIBCURL
  **********************
  */
 #include <curl/curl.h>
+
+#ifdef    _MSC_VER
+# pragma message("Using curl http support")
+# ifdef   _WINDLL
+#  pragma comment(lib, "curldll.lib")
+# else
+#  pragma comment(lib, "curl.lib")
+# endif
+#endif
 
 // callback function for curl to write the header output
 static int writerHeader(char *buffer, size_t size, size_t nmemb, Exiv2::dict_t *response) {
