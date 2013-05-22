@@ -2,6 +2,7 @@
  * http.cpp
  */
 
+#include "exv_conf.h"
 #include <exiv2/exiv2.hpp>
 
 #include <sys/types.h>

@@ -32,8 +32,8 @@
 #ifndef VERSION_HPP_
 #define VERSION_HPP_
 
-// *****************************************************************************
-// included header files
+#include "exv_conf.h"
+
 // + standard includes
 #include <string>
 

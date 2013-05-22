@@ -30,12 +30,7 @@
 EXIV2_RCSID("@(#) $Id: exif.cpp 2775 2012-07-10 04:45:42Z robinwmills $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
 #include "exif.hpp"
 #include "metadatum.hpp"

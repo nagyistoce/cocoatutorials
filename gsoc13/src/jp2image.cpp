@@ -34,12 +34,7 @@ EXIV2_RCSID("@(#) $Id: jp2image.cpp 2879 2012-09-18 07:17:59Z robinwmills $")
 //#define DEBUG 1
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 #include "jp2image.hpp"
 #include "tiffimage.hpp"
 #include "image.hpp"

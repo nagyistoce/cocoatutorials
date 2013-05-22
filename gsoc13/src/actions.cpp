@@ -30,12 +30,7 @@
 EXIV2_RCSID("@(#) $Id: actions.cpp 2857 2012-08-25 13:47:06Z robinwmills $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
 #ifndef EXV_HAVE_TIMEGM
 # include "timegm.h"

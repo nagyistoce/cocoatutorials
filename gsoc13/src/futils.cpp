@@ -30,13 +30,7 @@
 EXIV2_RCSID("@(#) $Id: futils.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
-
+#include "exv_conf.h"
 #include "futils.hpp"
 
 // + standard includes

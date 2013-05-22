@@ -33,13 +33,7 @@
 EXIV2_RCSID("@(#) $Id: image.cpp 2891 2012-10-06 10:03:54Z ahuggel $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
-
+#include "exv_conf.h"
 #include "image.hpp"
 #include "error.hpp"
 #include "futils.hpp"
