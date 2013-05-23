@@ -35,12 +35,8 @@ EXIV2_RCSID("@(#) $Id$")
 #include <windows.h>
 #endif
 
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
+#include "http.hpp"
 
 #include "version.hpp"
 
