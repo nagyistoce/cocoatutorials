@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include <algorithm>    // find
+#include <algorithm>
 
 #include <exiv2/exiv2.hpp>
 

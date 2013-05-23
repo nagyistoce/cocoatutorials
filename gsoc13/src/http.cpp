@@ -1,3 +1,24 @@
+// ********************************************************* -*- C++ -*-
+/*
+ * Copyright (C) 2004-2013 Andreas Huggel <ahuggel@gmx.net>
+ *
+ * This program is part of the Exiv2 distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
+ */
+
 /*
  * http.cpp
  */
@@ -178,7 +199,7 @@ static Exiv2::dict_t stringToDict(const std::string& s)
 
 static int makeNonBlocking(int sockfd)
 {
-#ifdef WIN32
+#ifdef   WIN32
   ULONG  ioctl_opt = 1;
   return ioctlsocket(sockfd, FIONBIO, &ioctl_opt);
 #else
@@ -193,7 +214,7 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
     if ( !request.count("header") ) request["header" ] = ""   ;
     if ( !request.count("version")) request["version"] = "1.0";
     if ( !request.count("port")   ) request["port"   ] = ""   ;
-    
+
     std::string file;
     errors     = "";
     int result = 0;
@@ -211,11 +232,11 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
     const char* header     = request["header" ].c_str();
     const char* version    = request["version"].c_str();
     const char* port       = request["port"   ].c_str();
-    
+
     const char* servername_p = servername;
     const char* port_p       = port      ;
     std::string url = std::string("http://") + request["server"] + request["page"];
-    
+
     // parse and change server if using a proxy
     const char* PROXI  = "HTTP_PROXY";
     const char* proxi  = "http_proxy";
@@ -236,17 +257,17 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
 
     // if the server is on the no_proxy list ... ignore the proxy!
     if ( noProxy.count(servername) ) bProx = false;
-    
-	if (  bProx ) {
-		servername_p = Proxy.Host.c_str();
-		port_p       = Proxy.Port.c_str();
+
+    if (  bProx ) {
+        servername_p = Proxy.Host.c_str();
+        port_p       = Proxy.Port.c_str();
         page         = url.c_str();
         std::string  p(proxy?proxi:PROXI);
     //  std::cerr << p << '=' << prox << " page = " << page << std::endl;
-	}
+    }
     if ( !port  [0] ) port   = "80";
     if ( !port_p[0] ) port_p = "80";
-	
+
     ////////////////////////////////////
     // open the socket
     int     sockfd = (int) socket(AF_INET , SOCK_STREAM,IPPROTO_TCP) ;
@@ -272,7 +293,7 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
         if ( !host )  return error("no such host",servername_p,NULL,0);
         memcpy(&serv_addr.sin_addr,host->h_addr,sizeof(serv_addr.sin_addr));
     }
-    
+
     makeNonBlocking(sockfd) ;
 
     ////////////////////////////////////
@@ -401,22 +422,19 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
  */
 #include <curl/curl.h>
 
-#ifdef    _MSC_VER
+#ifdef   _MSC_VER
 # pragma message("Using curl http support")
-# ifdef   _WINDLL
-#  pragma comment(lib, "curldll.lib")
-# else
-#  pragma comment(lib, "curl.lib")
-# endif
+# pragma comment(lib, "wldap32.lib")
 #endif
 
 // callback function for curl to write the header output
-static int writerHeader(char *buffer, size_t size, size_t nmemb, Exiv2::dict_t *response) {
+static size_t writerHeader(char *buffer, size_t size, size_t nmemb, Exiv2::dict_t *response)
+{
     if (buffer == NULL) return 0;
 
-    // try to parse response headers like EXIV2_HTTP
-    int length = strlen(buffer);
-    while(length > 0 && ((buffer[length-1] == '\r') || (buffer[length-1] == '\n')) ) length--;
+    // parse response headers (similar to the code above for EXIV2_HTTP)
+    size_t length = strlen(buffer);
+    while (length > 0 && ((buffer[length-1] == '\r') || (buffer[length-1] == '\n')) ) length--;
     if (length) {
         buffer[length] = '\0';
         char* h = buffer;
@@ -437,13 +455,15 @@ static int writerHeader(char *buffer, size_t size, size_t nmemb, Exiv2::dict_t *
 }
 
 // callback function for curl to write the body output
-static int writerBody(char *data, size_t size, size_t nmemb, std::string *writerData) {
-  if (writerData == NULL) return 0;
-  writerData->append(data, size*nmemb);
-  return size * nmemb;
+static size_t writerBody(char *data, size_t size, size_t nmemb, std::string *writerData)
+{
+    if (writerData == NULL) return 0;
+    writerData->append(data, size*nmemb);
+    return size * nmemb;
 }
 
-int Exiv2::http(dict_t& request,dict_t& response,std::string& errors) {
+int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
+{
     if ( !request.count("verb")   ) request["verb"   ] = "GET";
     if ( !request.count("header") ) request["header" ] = ""   ;
     if ( !request.count("version")) request["version"] = "1.0";
@@ -498,7 +518,7 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors) {
         } else {
             long foo;
             curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &foo); // get HTTP return code
-            result = (int) foo;    
+            result = (int) foo;
         }
     }
 

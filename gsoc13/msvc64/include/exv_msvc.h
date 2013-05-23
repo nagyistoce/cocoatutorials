@@ -83,8 +83,11 @@ typedef int pid_t;
 #define EXV_HAVE_XMP_TOOLKIT 1
 
 /* Define as 1 if you want to use curl to perform http I/O */
-#define EXV_USE_CURL 0
-// #pragma message("Setting default for EXV_USE_CURL")
+#define EXV_USE_CURL 1
+/* Help out our buddy curl */
+#ifndef EXV_HAVE_DLL
+#define CURL_STATICLIB
+#endif
 
 /* File path seperator */
 #define EXV_SEPERATOR_STR "\\"

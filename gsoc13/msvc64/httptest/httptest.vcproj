@@ -68,7 +68,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -155,7 +155,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -237,7 +237,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -321,7 +321,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -368,7 +368,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="copy the dlls"
-				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;"
+				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -411,7 +411,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -456,7 +456,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="copy the dlls"
-				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;"
+				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -501,7 +501,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -546,7 +546,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="copy the dlls"
-				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;"
+				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -589,7 +589,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"
@@ -634,7 +634,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="copy the dlls"
-				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;"
+				CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -678,7 +678,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"
