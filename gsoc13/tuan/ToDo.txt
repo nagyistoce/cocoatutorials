@@ -1,0 +1,33 @@
+013-05-11
+BVT: Now works on Cygwin on Desktop
+     Issue with Cygwin build failing on ass-windows referred to Robin for investigation
+
+2013-05-12
+BVT:     Working on Cygwin on Desktop and aws-windows
+libcurl: Build on Mac
+         Built sample apps
+         Linked http.cpp with libcurl and got HTTP/Get to work
+
+2013-05-13
+libcurl: Parse response headers for httpio when using lib curl
+	 Remove request header
+
+2013-05-14
+libcurl: Do testing, update httptest.txt
+
+
+2013-05-18 & 19
+libcurl: Makefiles, Cmakes
+	 Add options
+	 ./configure (using libcurl)
+	 ./configure --without-curl (using Exiv2:http)
+
+2013-05-20
+libcurl: Investigating the problem with Makefiles on Ubuntu
+
+2013-05-25 & 26
+RemoteIo: RemoteIo using lib curl, support http, ftp, https
+	  Add remoteio.sh
+
+2013-05-27 & 28 (plan)
+RemoteIo: Testing

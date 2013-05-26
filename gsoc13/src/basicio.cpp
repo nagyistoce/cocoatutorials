@@ -56,6 +56,9 @@ EXIV2_RCSID("@(#) $Id: basicio.cpp 2883 2012-09-21 15:43:19Z robinwmills $")
 #ifdef EXV_HAVE_UNISTD_H
 # include <unistd.h>                    // for getpid, stat
 #endif
+#if EXV_USE_CURL == 1
+#include <curl/curl.h>
+#endif
 
 // Platform specific headers for handling extended attributes (xattr)
 #if defined(__APPLE__)
@@ -1696,6 +1699,408 @@ namespace Exiv2 {
         return BasicIo::AutoPtr(new MemIo);
     }
 
+//////////
+#if EXV_USE_CURL == 1
+    //! Internal Pimpl structure of class RemoteIo.
+    class RemoteIo::Impl {
+    public:
+        //! Constructor
+        Impl(const std::string& path, size_t blockSize);
+#ifdef EXV_UNICODE_PATH
+        //! Constructor accepting a unicode path in an std::wstring
+        Impl(const std::wstring& wpath, size_t blockSize);
+#endif
+
+        // DATA
+        std::string  path_;             //!< (Standard) path
+#ifdef EXV_UNICODE_PATH
+        std::wstring wpath_;            //!< Unicode path
+#endif
+        size_t       blockSize_;        //!< Size of the block memory
+        bool*        blocksRead_;       //!< bool array of all blocks.
+
+        size_t       size_;             //!< The file size
+        long         sizeAlloced_;      //!< Size of the allocated memory = nBlocks * blockSize
+        byte*        data_;             //!< Pointer to the start of the memory area
+        long         idx_;              //!< Index into the memory area
+
+        bool         isMalloced_;       //!< Was the memory allocated?
+        bool         eof_;              //!< EOF indicator
+
+        // METHODS
+
+        long getFileLength(long &length);
+        long getDataByRange(const char* range, std::string& response);
+        /*!
+          @brief Populate the data form the block "lowBlock" to "highBlock".
+
+          @param lowBlock The index of block (from 0).
+          @param highBlock The index of block (from 0).
+          @return The value of the byte written if successful
+          @throw If there is any error when connecting the server.
+         */
+        long populateBlocks(size_t lowBlock, size_t highBlock);
+
+    private:
+        // NOT IMPLEMENTED
+        Impl(const Impl& rhs);                         //!< Copy constructor
+        Impl& operator=(const Impl& rhs);              //!< Assignment
+
+    }; // class HttpIo::Impl
+
+    RemoteIo::Impl::Impl(const std::string& url, size_t blockSize)
+        : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+    {
+    }
+#ifdef EXV_UNICODE_PATH
+    RemoteIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
+        : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+    {
+        std::string url;
+        url.assign(wurl.begin(), wurl.end());
+        path_ = url;
+    }
+#endif
+
+    long RemoteIo::Impl::getFileLength(long &length)
+    {
+        CURL *curl = curl_easy_init();
+        long returnCode;
+        length = 0;
+
+        if(!curl) {
+            throw Error(1, "Uable to init libcurl.");
+        } else {
+            std::string response;
+            curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
+            curl_easy_setopt(curl, CURLOPT_NOBODY, 1); // HEAD
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+            /* Perform the request, res will get the return code */
+            CURLcode res = curl_easy_perform(curl);
+            if(res != CURLE_OK) { // error happends
+                throw Error(1, curl_easy_strerror(res));
+            } else {
+                // get return code
+                curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &returnCode); // get code
+
+                // get length
+                double temp;
+                curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &temp); // return -1 if unknown
+                length = (long) temp;
+            }
+
+            /* always cleanup */
+            //curl_easy_cleanup(curl);
+        }
+
+        return returnCode;
+    }
+
+    long RemoteIo::Impl::getDataByRange(const char* range, std::string& response)
+    {
+        CURL *curl = curl_easy_init();
+        long code = -1;
+
+        if(!curl) {
+            throw Error(1, "Uable to init libcurl.");
+        } else {
+            curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L); // no progress meter please
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+            if (strcmp(range, ""))
+                curl_easy_setopt(curl, CURLOPT_RANGE, range);
+
+            /* Perform the request, res will get the return code */
+            CURLcode res = curl_easy_perform(curl);
+
+            if(res != CURLE_OK) {
+                throw Error(1, curl_easy_strerror(res));
+            } else {
+                curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &code); // get code
+            }
+            /* always cleanup */
+            curl_easy_cleanup(curl);
+        }
+
+        return code;
+    }
+
+    long RemoteIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
+    {
+        assert(isMalloced_);
+
+        // optimize: ignore all true blocks on left & right sides.
+        while(blocksRead_[lowBlock]  && lowBlock  < highBlock) lowBlock++;
+        while(blocksRead_[highBlock] && highBlock >  lowBlock) highBlock--;
+
+        size_t rcount = 0;
+        if (!blocksRead_[highBlock])
+        {
+            // read from server
+            std::string data;
+            std::string error;
+            std::stringstream ss;
+            ss << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1);
+            std::string range = ss.str();
+
+            long statusCode = getDataByRange(range.c_str(), data);
+            if (statusCode >= 400) {
+                ss << "Libcurl returns error code " << statusCode;
+                error = ss.str();
+                throw Error(1, error);
+            }
+
+            rcount = (long)data.length();
+
+            if (rcount == size_) {
+                // doesn't support Range
+                std::memcpy(data_, (byte*)data.c_str(), rcount);
+                size_t nBlocks = (size_ + blockSize_ - 1) / blockSize_;
+                ::memset(blocksRead_, true, nBlocks);
+            } else {
+                std::memcpy(&data_[lowBlock * blockSize_], (byte*)data.c_str(), rcount);
+                ::memset(&blocksRead_[lowBlock], true, highBlock - lowBlock + 1);
+            }
+        }
+
+        return (long) rcount;
+    }
+
+    RemoteIo::RemoteIo(const std::string& url, size_t blockSize)
+        : p_(new Impl(url, blockSize))
+    {
+    }
+
+#ifdef EXV_UNICODE_PATH
+    RemoteIo::RemoteIo(const std::wstring& wurl, size_t blockSize)
+        : p_(new Impl(wurl, blockSize))
+    {
+    }
+#endif
+
+    RemoteIo::~RemoteIo()
+    {
+        close();
+        delete p_;
+    }
+
+    int RemoteIo::open()
+    {
+        // flush data & reset the IO position
+        close();
+
+        int returnCode = 0;
+        long length = 0;
+        std::stringstream ss;
+        std::string error;
+        long statusCode = p_->getFileLength(length);
+        if (statusCode >= 400) {
+            ss << "Libcurl returns error code " << statusCode;
+            error = ss.str();
+            throw Error(1, error);
+        } else {
+            if (length == -1) { // don't support HEAD
+                std::string data;
+                std::string range = "";
+                statusCode = p_->getDataByRange(range.c_str(), data);
+                if (statusCode >= 400) {
+                    ss << "Libcurl returns error code " << statusCode;
+                    error = ss.str();
+                    throw Error(1, error);
+                } else {
+                    p_->size_ = (size_t) data.length();
+                    size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                    p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
+                    p_->blocksRead_ = new bool[nBlocks];
+                    ::memset(p_->blocksRead_, false, nBlocks);
+                    p_->isMalloced_ = true;
+
+                    std::memcpy(p_->data_, (byte*)data.c_str(), p_->size_);
+                    ::memset(p_->blocksRead_, true, nBlocks);
+                }
+            } else if (length == 0) {
+                returnCode = 1; // file size = 0
+            } else {
+                p_->size_ = (size_t) length;
+                size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
+                p_->blocksRead_ = new bool[nBlocks];
+                ::memset(p_->blocksRead_, false, nBlocks);
+                p_->isMalloced_ = true;
+            }
+        }
+        return returnCode;
+    }
+
+    int RemoteIo::close()
+    {
+        if (p_->isMalloced_) {
+            if (p_->data_) std::free(p_->data_);
+            if (p_->blocksRead_) delete[] p_->blocksRead_;
+            p_->size_ = 0;
+            p_->eof_ = false;
+            p_->isMalloced_ = false;
+        }
+        return 0;
+    }
+
+    long RemoteIo::write(const byte* /* unused data*/, long /* unused wcount*/)
+    {
+        return 0;
+    }
+
+    long RemoteIo::write(BasicIo& /* unused src*/)
+    {
+        return 0;
+    }
+
+    int RemoteIo::putb(byte /*unused data*/)
+    {
+        return 0;
+    }
+
+    DataBuf RemoteIo::read(long rcount)
+    {
+        DataBuf buf(rcount);
+        long readCount = read(buf.pData_, buf.size_);
+        buf.size_ = readCount;
+        return buf;
+    }
+
+    long RemoteIo::read(byte* buf, long rcount)
+    {
+        assert(p_->isMalloced_);
+        if (p_->eof_) return EOF;
+
+        size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
+        size_t lowBlock  =  p_->idx_         /p_->blockSize_;
+        size_t highBlock = (p_->idx_ + allow)/p_->blockSize_;
+
+        // connect to server & load the blocks if it's necessary (blocks are false).
+        p_->populateBlocks(lowBlock, highBlock);
+
+        std::memcpy(buf, &p_->data_[p_->idx_], allow);
+        p_->idx_ += (long) allow;
+        if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
+
+        return (long) allow;
+    }
+
+    int RemoteIo::getb()
+    {
+        assert(p_->isMalloced_);
+        if (p_->idx_ == (long)p_->size_) {
+            p_->eof_ = true;
+            return EOF;
+        }
+
+        size_t expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
+        // connect to server & load the blocks if it's necessary (blocks are false).
+        p_->populateBlocks(expectedBlock, expectedBlock);
+
+        return p_->data_[p_->idx_++];
+    }
+
+    void RemoteIo::transfer(BasicIo& /*unused src*/)
+    {
+        throw Error(1);
+    }
+
+#if defined(_MSC_VER)
+    int RemoteIo::seek( uint64_t offset, Position pos )
+    {
+        assert(p_->isMalloced_);
+        uint64_t newIdx = 0;
+
+        switch (pos) {
+            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+            case BasicIo::beg: newIdx = offset; break;
+            case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
+
+        if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
+        p_->idx_ = static_cast<long>(newIdx);   //not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
+        p_->eof_ = false;
+        return 0;
+    }
+#else
+    int RemoteIo::seek(long offset, Position pos)
+    {
+        assert(p_->isMalloced_);
+        long newIdx = 0;
+
+        switch (pos) {
+            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+            case BasicIo::beg: newIdx = offset; break;
+            case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
+
+        if (newIdx < 0 || newIdx > (long) p_->size_) return 1;
+        p_->idx_ = newIdx;
+        p_->eof_ = false;
+        return 0;
+    }
+#endif
+
+    byte* RemoteIo::mmap(bool /*isWriteable*/)
+    {
+        return p_->data_;
+    }
+
+    int RemoteIo::munmap()
+    {
+        return 0;
+    }
+
+    long RemoteIo::tell() const
+    {
+        return p_->idx_;
+    }
+
+    long RemoteIo::size() const
+    {
+        return (long) p_->size_;
+    }
+
+    bool RemoteIo::isopen() const
+    {
+        return p_->isMalloced_;
+    }
+
+    int RemoteIo::error() const
+    {
+        return 0;
+    }
+
+    bool RemoteIo::eof() const
+    {
+        return p_->eof_;
+    }
+
+    std::string RemoteIo::path() const
+    {
+        return p_->path_;
+    }
+
+#ifdef EXV_UNICODE_PATH
+    std::wstring RemoteIo::wpath() const
+    {
+        return p_->wpath_;
+    }
+#endif
+
+    BasicIo::AutoPtr RemoteIo::temporary() const
+    {
+        return BasicIo::AutoPtr(new MemIo);
+    }
+#endif
+
     // *************************************************************************
     // free functions
 
@@ -1775,6 +2180,15 @@ namespace Exiv2 {
              pos += replace.length();
         }
         return subject;
+    }
+#endif
+#if EXV_USE_CURL == 1
+    int curlWriter(char *data, size_t size, size_t nmemb,
+                      std::string *writerData)
+    {
+      if (writerData == NULL) return 0;
+      writerData->append(data, size*nmemb);
+      return size * nmemb;
     }
 #endif
 }                                       // namespace Exiv2

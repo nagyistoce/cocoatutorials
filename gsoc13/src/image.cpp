@@ -414,9 +414,14 @@ namespace Exiv2 {
 	{
 		if (path.compare("-") == 0) {
             return BasicIo::AutoPtr(new StdinIo());
-        } else if(path.find("http://") == 0) {
-            return BasicIo::AutoPtr(new HttpIo(path));
         } else {
+#if EXV_USE_CURL == 1
+            if(path.find("http://") == 0 || path.find("ftp://") == 0 || path.find("https://") == 0)
+                return BasicIo::AutoPtr(new RemoteIo(path));
+#else
+            if(path.find("http://") == 0) return BasicIo::AutoPtr(new HttpIo(path));
+#endif
+
 			return BasicIo::AutoPtr(new FileIo(path));
 		}
 	}
