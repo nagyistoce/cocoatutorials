@@ -29,5 +29,8 @@ libcurl: Investigating the problem with Makefiles on Ubuntu
 RemoteIo: RemoteIo using lib curl, support http, ftp, https
 	  Add remoteio.sh
 
-2013-05-27 & 28 (plan)
+2013-05-27
+RemoteIo: Optimization (don't reload the size of file, don't clear data when close())
+
+2013-05-27&28 (plan)
 RemoteIo: Testing

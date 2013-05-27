@@ -56,7 +56,7 @@ RemoteIoTest()
     for i in $remoteIoTest_files; do RemoteIoTest $i; done
 
     if [ $errors -eq 0 ]; then
-        printf 'All test cases passed'
+        printf '\nAll test cases passed\n'
     else
         printf "\n---------------------------------------------------------\n"
         echo $errors '\nremoteIo failed!'

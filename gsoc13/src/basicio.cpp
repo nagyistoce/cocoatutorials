@@ -1726,7 +1726,7 @@ namespace Exiv2 {
 
         bool         isMalloced_;       //!< Was the memory allocated?
         bool         eof_;              //!< EOF indicator
-
+        CURL*        curl;              //!< libcurl pointer
         // METHODS
 
         long getFileLength(long &length);
@@ -1752,6 +1752,11 @@ namespace Exiv2 {
         : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
           sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
     {
+        // init curl pointer
+        curl = curl_easy_init();
+        if(!curl) {
+            throw Error(1, "Uable to init libcurl.");
+        }
     }
 #ifdef EXV_UNICODE_PATH
     RemoteIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
@@ -1761,40 +1766,39 @@ namespace Exiv2 {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
         path_ = url;
+
+        // init curl pointer
+        curl = curl_easy_init();
+        if(!curl) {
+            throw Error(1, "Uable to init libcurl.");
+        }
     }
 #endif
 
     long RemoteIo::Impl::getFileLength(long &length)
     {
-        CURL *curl = curl_easy_init();
         long returnCode;
         length = 0;
 
-        if(!curl) {
-            throw Error(1, "Uable to init libcurl.");
+        curl_easy_reset(curl); // reset all options
+        std::string response;
+        curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1); // HEAD
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        /* Perform the request, res will get the return code */
+        CURLcode res = curl_easy_perform(curl);
+        if(res != CURLE_OK) { // error happends
+            throw Error(1, curl_easy_strerror(res));
         } else {
-            std::string response;
-            curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
-            curl_easy_setopt(curl, CURLOPT_NOBODY, 1); // HEAD
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+            // get return code
+            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &returnCode); // get code
 
-            /* Perform the request, res will get the return code */
-            CURLcode res = curl_easy_perform(curl);
-            if(res != CURLE_OK) { // error happends
-                throw Error(1, curl_easy_strerror(res));
-            } else {
-                // get return code
-                curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &returnCode); // get code
-
-                // get length
-                double temp;
-                curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &temp); // return -1 if unknown
-                length = (long) temp;
-            }
-
-            /* always cleanup */
-            //curl_easy_cleanup(curl);
+            // get length
+            double temp;
+            curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &temp); // return -1 if unknown
+            length = (long) temp;
         }
 
         return returnCode;
@@ -1802,30 +1806,24 @@ namespace Exiv2 {
 
     long RemoteIo::Impl::getDataByRange(const char* range, std::string& response)
     {
-        CURL *curl = curl_easy_init();
         long code = -1;
 
-        if(!curl) {
-            throw Error(1, "Uable to init libcurl.");
+        curl_easy_reset(curl); // reset all options
+        curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L); // no progress meter please
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        if (strcmp(range, ""))
+            curl_easy_setopt(curl, CURLOPT_RANGE, range);
+
+        /* Perform the request, res will get the return code */
+        CURLcode res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            throw Error(1, curl_easy_strerror(res));
         } else {
-            curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
-            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L); // no progress meter please
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-
-            if (strcmp(range, ""))
-                curl_easy_setopt(curl, CURLOPT_RANGE, range);
-
-            /* Perform the request, res will get the return code */
-            CURLcode res = curl_easy_perform(curl);
-
-            if(res != CURLE_OK) {
-                throw Error(1, curl_easy_strerror(res));
-            } else {
-                curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &code); // get code
-            }
-            /* always cleanup */
-            curl_easy_cleanup(curl);
+            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &code); // get code
         }
 
         return code;
@@ -1887,52 +1885,56 @@ namespace Exiv2 {
     RemoteIo::~RemoteIo()
     {
         close();
+        if (p_->data_) std::free(p_->data_);
+        if (p_->blocksRead_) delete[] p_->blocksRead_;
         delete p_;
+        curl_easy_cleanup(p_->curl);
     }
 
     int RemoteIo::open()
     {
         // flush data & reset the IO position
         close();
-
         int returnCode = 0;
-        long length = 0;
-        std::stringstream ss;
-        std::string error;
-        long statusCode = p_->getFileLength(length);
-        if (statusCode >= 400) {
-            ss << "Libcurl returns error code " << statusCode;
-            error = ss.str();
-            throw Error(1, error);
-        } else {
-            if (length == -1) { // don't support HEAD
-                std::string data;
-                std::string range = "";
-                statusCode = p_->getDataByRange(range.c_str(), data);
-                if (statusCode >= 400) {
-                    ss << "Libcurl returns error code " << statusCode;
-                    error = ss.str();
-                    throw Error(1, error);
+        if (p_->isMalloced_ == false) {
+            long length = 0;
+            std::stringstream ss;
+            std::string error;
+            long statusCode = p_->getFileLength(length);
+            if (statusCode >= 400) {
+                ss << "Libcurl returns error code " << statusCode;
+                error = ss.str();
+                throw Error(1, error);
+            } else {
+                if (length == -1) { // don't support HEAD
+                    std::string data;
+                    std::string range = "";
+                    statusCode = p_->getDataByRange(range.c_str(), data);
+                    if (statusCode >= 400) {
+                        ss << "Libcurl returns error code " << statusCode;
+                        error = ss.str();
+                        throw Error(1, error);
+                    } else {
+                        p_->size_ = (size_t) data.length();
+                        size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                        p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
+                        p_->blocksRead_ = new bool[nBlocks];
+                        ::memset(p_->blocksRead_, false, nBlocks);
+                        p_->isMalloced_ = true;
+
+                        std::memcpy(p_->data_, (byte*)data.c_str(), p_->size_);
+                        ::memset(p_->blocksRead_, true, nBlocks);
+                    }
+                } else if (length == 0) {
+                    returnCode = 1; // file size = 0
                 } else {
-                    p_->size_ = (size_t) data.length();
+                    p_->size_ = (size_t) length;
                     size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
                     p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
                     p_->blocksRead_ = new bool[nBlocks];
                     ::memset(p_->blocksRead_, false, nBlocks);
                     p_->isMalloced_ = true;
-
-                    std::memcpy(p_->data_, (byte*)data.c_str(), p_->size_);
-                    ::memset(p_->blocksRead_, true, nBlocks);
                 }
-            } else if (length == 0) {
-                returnCode = 1; // file size = 0
-            } else {
-                p_->size_ = (size_t) length;
-                size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-                p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
-                p_->blocksRead_ = new bool[nBlocks];
-                ::memset(p_->blocksRead_, false, nBlocks);
-                p_->isMalloced_ = true;
             }
         }
         return returnCode;
@@ -1941,11 +1943,8 @@ namespace Exiv2 {
     int RemoteIo::close()
     {
         if (p_->isMalloced_) {
-            if (p_->data_) std::free(p_->data_);
-            if (p_->blocksRead_) delete[] p_->blocksRead_;
-            p_->size_ = 0;
             p_->eof_ = false;
-            p_->isMalloced_ = false;
+            p_->idx_ = 0;
         }
         return 0;
     }
