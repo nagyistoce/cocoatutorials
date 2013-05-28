@@ -1,4 +1,4 @@
-013-05-11
+2013-05-11
 BVT: Now works on Cygwin on Desktop
      Issue with Cygwin build failing on ass-windows referred to Robin for investigation
 
@@ -32,5 +32,8 @@ RemoteIo: RemoteIo using lib curl, support http, ftp, https
 2013-05-27
 RemoteIo: Optimization (don't reload the size of file, don't clear data when close())
 
-2013-05-27&28 (plan)
-RemoteIo: Testing
+2013-05-28
+Nothing, happy with GSoC Result
+
+2013-05-29:
+RemoteIo: investigate Libcurl FTP Range, try to keep the connection alive.
