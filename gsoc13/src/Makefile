@@ -243,9 +243,9 @@ $(EXIV2BIN): lib $(EXIV2OBJ) $(EXIV2COBJ)
 install-header:
 	$(INSTALL_DIRS) $(DESTDIR)$(incdir)
 	@list='$(HDR)'; for p in $$list; do \
-	    if test -f $$p; then \
-	        echo "$(INSTALL_DATA) $$p $(DESTDIR)$(incdir)/$$p"; \
-	        $(INSTALL_DATA) $$p $(DESTDIR)$(incdir)/$$p; \
+	    if test -f ../include/exiv2/$$p; then \
+	        echo "$(INSTALL_DATA) ../include/exiv2/$$p $(DESTDIR)$(incdir)/$$p"; \
+	              $(INSTALL_DATA) ../include/exiv2/$$p $(DESTDIR)$(incdir)/$$p; \
 	    else :; fi; \
 	done
 
