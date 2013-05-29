@@ -219,9 +219,9 @@ ifdef DEP_TRACKING
 endif
 
 # Be sure to rewrite exv_conf.h before compiling anything
-$(SRC): exv_conf.h
+$(SRC): ../include/exiv2/exv_conf.h
 
-exv_conf.h: $(top_srcdir)/config/config.h
+../include/exiv2/exv_conf.h: $(top_srcdir)/config/config.h
 	LC_ALL=C sed 's/#define \([A-Z]\)/#define EXV_\1/; s/#undef \([A-Z]\)/#undef EXV_\1/' < $< > $@
 
 $(LIBTOOL): $(LIBTOOL_DEPS)
@@ -295,7 +295,7 @@ mostlyclean:
 	$(RM) core
 	$(RM) $(CCSRC:.cpp=.ii)
 	$(RM) lib
-	$(RM) exv_conf.h
+	$(RM) include/exiv2/exv_conf.h
 	$(RM) $(CCSRC:%.cpp=.libs/%.d) $(CSRC:%.c=.libs/%.d)
 	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) )
 

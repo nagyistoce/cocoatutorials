@@ -111,7 +111,7 @@ samples: $(BINARY) $(OTHER)
 
 $(BINOBJ): %.o: %.cpp
 	@if [ -z `which $(PKGCONFIG)`  ]; then echo $(BAR) $'\\n***' utility $(PKGCONFIG) not available $'***\n'$(BAR) ; exit 42 ; fi
-	$(COMPILE.cc) -I../src -o $@ $<
+	$(COMPILE.cc) -I../include/exiv2 -o $@ $<
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
 
@@ -136,16 +136,16 @@ relink: binclean samples
 
 # link expat directly to geotag
 geotag : geotag.cpp
-	$(COMPILE.cc) -I../src -o $@.o $<
+	$(COMPILE.cc) -I../include/exiv2 -o $@.o $<
 	$(LIBTOOL)  --mode=link $(LINK.cc) -lexpat $@.o -o ../bin/$@ 
 
 # link applications which require utils.cpp support
 metacopy: metacopy.cpp ../src/utils.o
-	$(COMPILE.cc) -I../src -o $@.o $<
+	$(COMPILE.cc) -I../include/exiv2 -o $@.o $<
 	$(LIBTOOL)  --mode=link $(LINK.cc) $@.o ../src/utils.o -o ../bin/$@
 
 path-test: path-test.cpp ../src/utils.o
-	$(COMPILE.cc) -I../src -o $@.o $<
+	$(COMPILE.cc) -I../include/exiv2 -o $@.o $<
 	$(LIBTOOL)  --mode=link $(LINK.cc) $@.o ../src/utils.o -o ../bin/$@
 
 # Remove binaries, e.g., to relink them

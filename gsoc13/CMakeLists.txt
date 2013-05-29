@@ -16,12 +16,12 @@ endif(APPLE)
 
 ##
 # Running cmake in a tree in which we have run ./configure ; make 
-# creates src/exv_conf.h which conflicts with cmake's own exv_conf.h
+# creates include/exiv2/exv_conf.h which conflicts with cmake's own exv_conf.h
 # This causes incorrect compilation and linking errors.
 #
 # It's OK to delete this as it will be recreated on demand by <exiv2-dir>/Makefile
-if( EXISTS "${CMAKE_SOURCE_DIR}/src/exv_conf.h"  )
-    file(REMOVE "${CMAKE_SOURCE_DIR}/src/exv_conf.h")
+if( EXISTS "${CMAKE_SOURCE_DIR}/include/exiv2/exv_conf.h"  )
+    file(REMOVE "${CMAKE_SOURCE_DIR}/include/exiv2/exv_conf.h")
 endif()
 ##
 
@@ -64,6 +64,7 @@ IF( MINGW OR UNIX )
                    )
 ENDIF( MINGW OR UNIX )
 
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/include/   ${CMAKE_SOURCE_DIR}/include/exiv2/)
 
 if( MSVC )
 	include(CMake_msvc.txt)
@@ -180,7 +181,7 @@ ENDIF( EXIV2_ENABLE_BUILD_PO )
 IF( NOT MSVC )
     # Issue #722: out of source builds compiled against standard include files such as /usr/local/lib/include/exiv2
     # do not use CREATE_SYMLINK or CMAKE_CAN_SYMLINK as they don't work on CYGWIN
-	EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}         COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
+	# EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}         COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
   IF( EXIV2_ENABLE_BUILD_SAMPLES )
 	EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/samples COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
   ENDIF( EXIV2_ENABLE_BUILD_SAMPLES )
