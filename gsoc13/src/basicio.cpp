@@ -1711,6 +1711,10 @@ namespace Exiv2 {
         Impl(const std::wstring& wpath, size_t blockSize);
 #endif
 
+        // Enumerations
+        //! Protocols
+        enum Protocols { pHttp, pFtp, pHttps };
+
         // DATA
         std::string  path_;             //!< (Standard) path
 #ifdef EXV_UNICODE_PATH
@@ -1727,6 +1731,8 @@ namespace Exiv2 {
         bool         isMalloced_;       //!< Was the memory allocated?
         bool         eof_;              //!< EOF indicator
         CURL*        curl;              //!< libcurl pointer
+
+        Protocols    protocol_;             //!< protocols
         // METHODS
 
         long getFileLength(long &length);
@@ -1757,6 +1763,17 @@ namespace Exiv2 {
         if(!curl) {
             throw Error(1, "Uable to init libcurl.");
         }
+
+        // find the protocols
+        if (path_.find("http://") == 0) protocol_ = pHttp;
+        else if (path_.find("ftp://") == 0) protocol_ = pFtp;
+        else if (path_.find("https://") == 0) protocol_ = pHttps;
+
+        // if users don't set the blockSize_ value
+        if (blockSize_ == 0) {
+            if (protocol_ == pFtp) blockSize_ = 102400;
+            else blockSize_ = 1024;
+        }
     }
 #ifdef EXV_UNICODE_PATH
     RemoteIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
@@ -1772,6 +1789,17 @@ namespace Exiv2 {
         if(!curl) {
             throw Error(1, "Uable to init libcurl.");
         }
+
+        // find the protocols
+        if (path_.find("http://") == 0) protocol_ = pHttp;
+        else if (path_.find("ftp://") == 0) protocol_ = pFtp;
+        else if (path_.find("https://") == 0) protocol_ = pHttps;
+
+        // if users don't set the blockSize_ value
+        if (blockSize_ == 0) {
+            if (protocol_ == pFtp) blockSize_ = 102400;
+            else blockSize_ = 1024;
+        }
     }
 #endif
 
@@ -1786,6 +1814,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl, CURLOPT_NOBODY, 1); // HEAD
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1); // debugging mode
 
         /* Perform the request, res will get the return code */
         CURLcode res = curl_easy_perform(curl);
@@ -1813,6 +1842,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L); // no progress meter please
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1); // debugging mode
 
         if (strcmp(range, ""))
             curl_easy_setopt(curl, CURLOPT_RANGE, range);

@@ -63,7 +63,7 @@ namespace Exiv2 {
     bool fileExists(const std::string& path, bool ct)
     {
 		// special case: accept "-" (means stdin)
-        if (path.compare("-") == 0 || path.find("http://") == 0) {
+        if (path.compare("-") == 0 || path.find("http://") == 0 || path.find("ftp://") == 0 || path.find("https://") == 0) {
 			return true;
         }
 
@@ -78,7 +78,7 @@ namespace Exiv2 {
     bool fileExists(const std::wstring& wpath, bool ct)
     {
 		// special case: accept "-" (means stdin)
-        if (wpath.compare(L"-") == 0 || wpath.find(L"http://") == 0) {
+        if (wpath.compare(L"-") == 0 || wpath.find(L"http://") == 0 || wpath.find(L"ftp://") == 0 || wpath.find(L"https://") == 0) {
 			return true;
         }
 

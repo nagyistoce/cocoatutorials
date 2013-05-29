@@ -983,14 +983,14 @@ namespace Exiv2 {
             @param path The url of files.
             @param blockSize The size of block map.
          */
-        RemoteIo(const std::string& url, size_t blockSize = 1024);
+        RemoteIo(const std::string& url, size_t blockSize = 0);
 #ifdef EXV_UNICODE_PATH
         /*!
           @brief Like HttpIo(const std::string& path, size_t blockSize = 1024) but accepts an
               unicode path in an std::wstring.
           @note This constructor is only available on Windows.
          */
-        RemoteIo(const std::wstring& wurl, size_t blockSize = 1024);
+        RemoteIo(const std::wstring& wurl, size_t blockSize = 0);
 #endif
         //! Destructor. Releases all managed memory
         ~RemoteIo();

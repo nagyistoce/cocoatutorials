@@ -430,9 +430,14 @@ namespace Exiv2 {
 	{
 		if (wpath.compare(L"-") == 0) {
             return BasicIo::AutoPtr(new StdinIo());
-        } else if(wpath.find(L"http://") == 0) {
-            return BasicIo::AutoPtr(new HttpIo(wpath));
         } else {
+#if EXV_USE_CURL == 1
+            if(wpath.find(L"http://") == 0 || wpath.find(L"ftp://") == 0 || wpath.find(L"https://") == 0)
+                return BasicIo::AutoPtr(new RemoteIo(wpath));
+#else
+            if(wpath.find(L"http://") == 0) return BasicIo::AutoPtr(new HttpIo(wpath));
+#endif
+
 			return BasicIo::AutoPtr(new FileIo(wpath));
 		}
 	}

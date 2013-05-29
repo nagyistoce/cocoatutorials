@@ -36,4 +36,9 @@ RemoteIo: Optimization (don't reload the size of file, don't clear data when clo
 Nothing, happy with GSoC Result
 
 2013-05-29:
-RemoteIo: investigate Libcurl FTP Range, try to keep the connection alive.
+RemoteIo: investigate Libcurl FTP Range.
+	  Default block size for FTP is set to 100k, other protocols still keeps at 1K.
+
+2013-05-30:
+RemoteIo: Testing, refactor the code.
+
