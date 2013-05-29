@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BUILD_GETOPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,7 +68,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -130,7 +130,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BUILD_GETOPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -155,7 +155,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -215,7 +215,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_NDEBUG;_CONSOLE;BUILD_GETOPT"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="true"
@@ -237,7 +237,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalOptions="/NODEFAULTLIB:MSVCRT"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -299,7 +300,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_NDEBUG;_CONSOLE;BUILD_GETOPT"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="true"
@@ -321,7 +322,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -385,7 +386,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BUILD_GETOPT;EXV_HAVE_DLL;EXV_HAVE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -411,7 +412,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -474,7 +475,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BUILD_GETOPT;EXV_HAVE_DLL;EXV_HAVE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -501,7 +502,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -563,7 +564,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_NDEBUG;_CONSOLE;BUILD_GETOPT;EXV_HAVE_DLL;EXV_HAVE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -589,7 +590,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"
@@ -652,7 +653,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;"
+				AdditionalIncludeDirectories="../include;../../include;../../include/exiv2;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.1.0/lib;../../../zlib-1.2.7;../../../curl-7.30.0/include;"
 				PreprocessorDefinitions="WIN32;_NDEBUG;_CONSOLE;BUILD_GETOPT;EXV_HAVE_DLL;EXV_HAVE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -678,7 +679,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib"
+				AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"

@@ -2212,7 +2212,7 @@ namespace Exiv2 {
     }
 #endif
 #if EXV_USE_CURL == 1
-    int curlWriter(char *data, size_t size, size_t nmemb,
+    size_t curlWriter(char *data, size_t size, size_t nmemb,
                       std::string *writerData)
     {
       if (writerData == NULL) return 0;

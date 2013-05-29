@@ -1195,7 +1195,7 @@ namespace Exiv2 {
     /*!
      * @brief The callback function is called by libcurl to write the data
      */
-    EXIV2API int curlWriter(char *data, size_t size, size_t nmemb,
+    EXIV2API size_t curlWriter(char *data, size_t size, size_t nmemb,
                       std::string *writerData);
 #endif
 }                                       // namespace Exiv2

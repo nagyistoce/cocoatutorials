@@ -6,7 +6,7 @@ exiv2\msvc64\ReadMe.txt
 | the msvc   environment only builds 32bit                  |
 +-----------------------------------------------------------+
 
-Updated: 2013-05-22 
+Updated: 2013-05-29 
 
 Robin Mills
 http://clanmills.com
@@ -55,7 +55,7 @@ T A B L E  o f  C O N T E N T S
      2010-12-05  10:05    <DIR>             exiv2                <--- this tree
      2012-05-04  23:35    <DIR>             expat-2.1.0          <--- "vanilla" expat 2.1.0 source tree
      2012-05-04  23:35    <DIR>             zlib-1.2.7           <--- "vanilla" zlib  1.2.7 source tree
-     2010-12-02  20:58    <DIR>             curl-7.30.0          <--- "vanilla" curl  7.30.0.2.3 source tree
+     2010-12-02  20:58    <DIR>             curl-7.30.0          <--- "vanilla" curl 7.30.0 source tree
      2010-12-02  21:06    <DIR>             expat-2.0.1 OPTIONAL <--- "vanilla" expat 2.0.1 source tree
      2010-12-02  20:58    <DIR>             zlib-1.2.5  OPTIONAL <--- "vanilla" zlib  1.2.5 source tree
      2010-12-02  20:58    <DIR>             zlib-1.2.3  OPTIONAL <--- "vanilla" zlib  1.2.3 source tree
@@ -69,16 +69,16 @@ T A B L E  o f  C O N T E N T S
 1.3  Open exiv2\msvc64\exiv2.sln
      Projects are zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc...
      Build/Batch build...  Select All, Build
-     - 29 projects      (zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc)
-     x 2 Platforms      (x64|Win32)
-     x 4 Configurations (Debug|Release|DebugDLL|ReleaseDLL)
-     = 29x2x4 = 232 builds.
+     35 projects      (zlib, expat, xmpsdk, curl, exiv2lib, exiv2, addmoddel etc)
+     x2 Platforms      (x64|Win32)
+     x4 Configurations (Debug|Release|DebugDLL|ReleaseDLL)
+     = 35x2x4 = 280 builds.
 
      If you haven't installed the x64 compiler, don't select the 64 bit configurations!
      You may have to hand-edit the vcproj and sln files to hide the 64 bit information.
      See the notes about Visual Studio Express for more information about this.
 
-     Build time is 20 minutes on a 2.2GHz Duo Core and consumes 3.0 gBytes of disk space.
+     Build time is 30 minutes on a 2.2GHz Duo Core and consumes 3.0 gBytes of disk space.
 
 1.4  What is built
      The DLL builds use the DLL version of the C runtime libraries
@@ -98,9 +98,9 @@ T A B L E  o f  C O N T E N T S
       Directory of c:\gnu
      2010-12-05  10:05    <DIR>             exiv2                <--- this tree
      2012-05-04  23:35    <DIR>             expat-2.1.0          <--- "vanilla" expat 2.1.0 source tree
-     2010-12-02  21:06    <DIR>             expat-2.0.1          <--- "vanilla" expat 2.0.1 source tree
-     2010-12-02  20:58    <DIR>             zlib-1.2.7           <--- "vanilla" zlib 1.2.7 source tree
-     2010-12-02  20:58    <DIR>             zlib-1.2.3 OPTIONAL  <--- "vanilla" zlib 1.2.3 source tree
+     2010-12-02  21:06    <DIR>             expat-2.0.1 OPTIONAL <--- "vanilla" expat 2.0.1 source tree
+     2010-12-02  20:58    <DIR>             zlib-1.2.7           <--- "vanilla"  zlib 1.2.7 source tree
+     2010-12-02  20:58    <DIR>             zlib-1.2.3  OPTIONAL <--- "vanilla"  zlib 1.2.3 source tree
      c:\gnu>
      Please see exiv2\msvc\README-MSVC.txt for information about obtaining zlib-1.2.3
 
@@ -164,9 +164,9 @@ T A B L E  o f  C O N T E N T S
      curl-7.30.0 is also fragmented in its VC versions and 64 bit support.
      
      I have created build environments for zlib, expat and curl within exiv2/msvc64.
-     I don't include the source code for zlib or expat - only the build environment.
+     I don't provide source code for zlib, expat or curl - only the build environment.
      
-     You are expected to install the "vanilla" expat and zlib libraries
+     You are expected to install "vanilla" expat, zlib and curl libraries
      in a directory at the same level as exiv2.
      I personally always build in the directory c:\gnu,
      however the name/location/spaces of the build directory are all irrelevant,
