@@ -1,10 +1,10 @@
 exiv2\msvc64\ReadMe.txt
 -----------------------
 
-+-----------------------------------------------------------+
-| the msvc64 environment can build 32bit and 64bit binaries |
-| the msvc   environment only builds 32bit                  |
-+-----------------------------------------------------------+
++----------------------------------------------------------------+
+| the msvc64 environment can  build  32bit and/or 64bit binaries |
+| the msvc   environment only builds 32bit                       |
++----------------------------------------------------------------+
 
 Updated: 2013-05-29 
 
@@ -67,9 +67,9 @@ T A B L E  o f  C O N T E N T S
      curl-7.30.0 is available from http://curl.haxx.se/download.html
 
 1.3  Open exiv2\msvc64\exiv2.sln
-     Projects are zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc...
+     Projects are zlib, expat, xmpsdk, curl, exiv2lib, exiv2, addmoddel etc...
      Build/Batch build...  Select All, Build
-     35 projects      (zlib, expat, xmpsdk, curl, exiv2lib, exiv2, addmoddel etc)
+     35 projects       (zlib, expat, xmpsdk, curl, exiv2lib, exiv2, addmoddel etc)
      x2 Platforms      (x64|Win32)
      x4 Configurations (Debug|Release|DebugDLL|ReleaseDLL)
      = 35x2x4 = 280 builds.
@@ -78,7 +78,7 @@ T A B L E  o f  C O N T E N T S
      You may have to hand-edit the vcproj and sln files to hide the 64 bit information.
      See the notes about Visual Studio Express for more information about this.
 
-     Build time is 30 minutes on a 2.2GHz Duo Core and consumes 3.0 gBytes of disk space.
+     Build time is about 60 minutes on a 2.2GHz Duo Core and consumes 4.0 gBytes of disk space.
 
 1.4  What is built
      The DLL builds use the DLL version of the C runtime libraries
