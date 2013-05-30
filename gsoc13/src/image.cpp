@@ -416,12 +416,10 @@ namespace Exiv2 {
             return BasicIo::AutoPtr(new StdinIo());
         } else {
 #if EXV_USE_CURL == 1
-            if(path.find("http://") == 0 || path.find("ftp://") == 0 || path.find("https://") == 0)
-                return BasicIo::AutoPtr(new RemoteIo(path));
+            if(fileProtocol(path))          return BasicIo::AutoPtr(new RemoteIo(path));
 #else
-            if(path.find("http://") == 0) return BasicIo::AutoPtr(new HttpIo(path));
+            if(fileProtocol(path) == pHttp) return BasicIo::AutoPtr(new HttpIo(path));
 #endif
-
 			return BasicIo::AutoPtr(new FileIo(path));
 		}
 	}
@@ -432,12 +430,10 @@ namespace Exiv2 {
             return BasicIo::AutoPtr(new StdinIo());
         } else {
 #if EXV_USE_CURL == 1
-            if(wpath.find(L"http://") == 0 || wpath.find(L"ftp://") == 0 || wpath.find(L"https://") == 0)
-                return BasicIo::AutoPtr(new RemoteIo(wpath));
+            if(fileProtocol(wpath))          return BasicIo::AutoPtr(new RemoteIo(wpath));
 #else
-            if(wpath.find(L"http://") == 0) return BasicIo::AutoPtr(new HttpIo(wpath));
+            if(fileProtocol(wpath) == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
 #endif
-
 			return BasicIo::AutoPtr(new FileIo(wpath));
 		}
 	}

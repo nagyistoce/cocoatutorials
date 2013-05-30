@@ -51,6 +51,7 @@ SET( LIBEXIV2_HDR         ../include/exiv2/asfvideo.hpp
                           ../include/exiv2/futils.hpp
                           ../include/exiv2/gifimage.hpp
                           ../include/exiv2/http.hpp
+                          ../include/exiv2/remote.hpp
                           ../include/exiv2/image.hpp
                           ../include/exiv2/iptc.hpp
                           ../include/exiv2/jp2image.hpp
@@ -96,6 +97,7 @@ SET( LIBEXIV2_SRC         asfvideo.cpp
                           fujimn.cpp
                           gifimage.cpp
                           http.cpp
+                          remote.cpp
                           image.cpp
                           iptc.cpp
                           jp2image.cpp

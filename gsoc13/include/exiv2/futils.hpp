@@ -40,14 +40,37 @@
 
 // + standard includes
 #include <string>
+#include <map>
 
 // *********************************************************************
 // namespace extensions
 namespace Exiv2 {
 
+    /*!
+       @brief The Protocol enum and the map to hold the strings
+     */
+    enum Protocol { pFile = 0, pHttp, pFtp, pHttps};
+    typedef std::map<std::string,Protocol>           protDict_t;
+    typedef std::map<std::string,Protocol>::iterator protDict_i;
+#ifdef EXV_UNICODE_PATH
+    typedef std::map<std::wstring,Protocol> wprotDict_t;
+    typedef std::map<std::wstring,Protocol>::iterator wprotDict_i;
+#endif
 // *********************************************************************
 // free functions
-
+    /*!
+      @brief Return the protocol of the path
+      @param path the path of file to detect the protocol
+      @return the protocol of the path
+     */
+    EXIV2API Protocol fileProtocol(const std::string& path);
+#ifdef EXV_UNICODE_PATH
+    /*!
+      @brief Like fileProtocol() but accepts a unicode path in an std::wstring.
+      @note This function is only available on Windows.
+     */
+    EXIV2API Protocol fileProtocol(const std::wstring& wpath);
+#endif
     /*!
       @brief Test if a file exists.
 
@@ -73,6 +96,19 @@ namespace Exiv2 {
              See %strerror(3).
      */
     EXIV2API std::string strError();
+
+    // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+    class Uri
+    {
+    public:
+        std::string QueryString;
+        std::string Path;
+        std::string Protocol;
+        std::string Host;
+        std::string Port;
+
+        static Uri EXIV2API Parse(const std::string &uri);
+    };
 
 }                                       // namespace Exiv2
 

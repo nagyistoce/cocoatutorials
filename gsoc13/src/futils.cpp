@@ -59,11 +59,42 @@ namespace Exiv2 {
 
 // *****************************************************************************
 // free functions
-
+    Protocol fileProtocol(const std::string& path) {
+        Protocol result = pFile ;
+        static Exiv2::protDict_t protDict;
+        if (!protDict.size()) {
+             protDict["http://"]  = pHttp;
+             protDict["ftp://"]   = pFtp;
+             protDict["https://"] = pHttps;
+        }
+        for (Exiv2::protDict_i it = protDict.begin(); it != protDict.end(); it++) {
+            if (path.find(it->first) == 0)
+                 result = it->second;
+        }
+        return result;
+    }
+#ifdef EXV_UNICODE_PATH
+    Protocol fileProtocol(const std::wstring& wpath) {
+        Protocol result = pFile ;
+        static wprotDict_t protDict;
+        if (!protDict.size()) {
+             prodDict[L"http://"]  = pHttp;
+             prodDict[L"ftp://"]   = pFtp;
+             prodDict[L"https://"] = pHttps;
+        }
+        for (wprotDict_i it = protDict.begin(); it != protDict.end(); it++) {
+            if (wpath.find(it->first) == 0) {
+                 result = it->second;
+                 break;
+            }
+        }
+        return result;
+    }
+#endif
     bool fileExists(const std::string& path, bool ct)
     {
 		// special case: accept "-" (means stdin)
-        if (path.compare("-") == 0 || path.find("http://") == 0 || path.find("ftp://") == 0 || path.find("https://") == 0) {
+        if (path.compare("-") == 0 || fileProtocol(path)) {
 			return true;
         }
 
@@ -78,7 +109,7 @@ namespace Exiv2 {
     bool fileExists(const std::wstring& wpath, bool ct)
     {
 		// special case: accept "-" (means stdin)
-        if (wpath.compare(L"-") == 0 || wpath.find(L"http://") == 0 || wpath.find(L"ftp://") == 0 || wpath.find(L"https://") == 0) {
+        if (wpath.compare(L"-") == 0 || fileProtocol(wpath)) {
 			return true;
         }
 
@@ -114,5 +145,65 @@ namespace Exiv2 {
         os << " (errno = " << error << ")";
         return os.str();
     } // strError
+    // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+    Uri Uri::Parse(const std::string &uri)
+    {
+        Uri result;
 
+        typedef std::string::const_iterator iterator_t;
+
+        if ( !uri.length() )  return result;
+
+        iterator_t uriEnd = uri.end();
+
+        // get query start
+        iterator_t queryStart = std::find(uri.begin(), uriEnd, '?');
+
+        // protocol
+        iterator_t protocolStart = uri.begin();
+        iterator_t protocolEnd   = std::find(protocolStart, uriEnd, ':');            //"://");
+
+        if (protocolEnd != uriEnd)
+        {
+            std::string prot = &*(protocolEnd);
+            if ((prot.length() > 3) && (prot.substr(0, 3) == "://"))
+            {
+                result.Protocol = std::string(protocolStart, protocolEnd);
+                protocolEnd += 3;   //      ://
+            }
+            else
+                protocolEnd = uri.begin();  // no protocol
+        }
+        else
+            protocolEnd = uri.begin();  // no protocol
+
+        // host
+        iterator_t hostStart = protocolEnd;
+        iterator_t pathStart = std::find(hostStart, uriEnd, '/');  // get pathStart
+
+        iterator_t hostEnd = std::find(protocolEnd,
+            (pathStart != uriEnd) ? pathStart : queryStart,
+            ':');  // check for port
+
+        result.Host = std::string(hostStart, hostEnd);
+
+        // port
+        if ((hostEnd != uriEnd) && ((&*(hostEnd))[0] == ':'))  // we have a port
+        {
+            hostEnd++;
+            iterator_t portEnd = (pathStart != uriEnd) ? pathStart : queryStart;
+            result.Port = std::string(hostEnd, portEnd);
+        }
+        if ( !result.Port.length() && result.Protocol == "http" ) result.Port = "80";
+
+        // path
+        if (pathStart != uriEnd)
+            result.Path = std::string(pathStart, queryStart);
+
+        // query
+        if (queryStart != uriEnd)
+            result.QueryString = std::string(queryStart, uri.end());
+
+        return result;
+    }   // Parse
 }                                       // namespace Exiv2

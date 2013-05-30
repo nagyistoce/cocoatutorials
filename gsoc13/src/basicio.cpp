@@ -58,6 +58,7 @@ EXIV2_RCSID("@(#) $Id: basicio.cpp 2883 2012-09-21 15:43:19Z robinwmills $")
 #endif
 #if EXV_USE_CURL == 1
 #include <curl/curl.h>
+#include "remote.hpp"
 #endif
 
 // Platform specific headers for handling extended attributes (xattr)
@@ -1711,10 +1712,6 @@ namespace Exiv2 {
         Impl(const std::wstring& wpath, size_t blockSize);
 #endif
 
-        // Enumerations
-        //! Protocols
-        enum Protocols { pHttp, pFtp, pHttps };
-
         // DATA
         std::string  path_;             //!< (Standard) path
 #ifdef EXV_UNICODE_PATH
@@ -1730,13 +1727,11 @@ namespace Exiv2 {
 
         bool         isMalloced_;       //!< Was the memory allocated?
         bool         eof_;              //!< EOF indicator
-        CURL*        curl;              //!< libcurl pointer
+        CURL*        curl_;             //!< libcurl pointer
 
-        Protocols    protocol_;             //!< protocols
+        Protocol    protocol_;             //!< protocols
         // METHODS
 
-        long getFileLength(long &length);
-        long getDataByRange(const char* range, std::string& response);
         /*!
           @brief Populate the data form the block "lowBlock" to "highBlock".
 
@@ -1756,18 +1751,13 @@ namespace Exiv2 {
 
     RemoteIo::Impl::Impl(const std::string& url, size_t blockSize)
         : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
-          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false), protocol_(fileProtocol(url))
     {
         // init curl pointer
-        curl = curl_easy_init();
-        if(!curl) {
+        curl_ = curl_easy_init();
+        if(!curl_) {
             throw Error(1, "Uable to init libcurl.");
         }
-
-        // find the protocols
-        if (path_.find("http://") == 0) protocol_ = pHttp;
-        else if (path_.find("ftp://") == 0) protocol_ = pFtp;
-        else if (path_.find("https://") == 0) protocol_ = pHttps;
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
@@ -1778,22 +1768,17 @@ namespace Exiv2 {
 #ifdef EXV_UNICODE_PATH
     RemoteIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
         : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
-          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false), protocol_(fileProtocol(wurl))
     {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
         path_ = url;
 
         // init curl pointer
-        curl = curl_easy_init();
-        if(!curl) {
+        curl_ = curl_easy_init();
+        if(!curl_) {
             throw Error(1, "Uable to init libcurl.");
         }
-
-        // find the protocols
-        if (path_.find("http://") == 0) protocol_ = pHttp;
-        else if (path_.find("ftp://") == 0) protocol_ = pFtp;
-        else if (path_.find("https://") == 0) protocol_ = pHttps;
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
@@ -1802,62 +1787,6 @@ namespace Exiv2 {
         }
     }
 #endif
-
-    long RemoteIo::Impl::getFileLength(long &length)
-    {
-        long returnCode;
-        length = 0;
-
-        curl_easy_reset(curl); // reset all options
-        std::string response;
-        curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
-        curl_easy_setopt(curl, CURLOPT_NOBODY, 1); // HEAD
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1); // debugging mode
-
-        /* Perform the request, res will get the return code */
-        CURLcode res = curl_easy_perform(curl);
-        if(res != CURLE_OK) { // error happends
-            throw Error(1, curl_easy_strerror(res));
-        } else {
-            // get return code
-            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &returnCode); // get code
-
-            // get length
-            double temp;
-            curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &temp); // return -1 if unknown
-            length = (long) temp;
-        }
-
-        return returnCode;
-    }
-
-    long RemoteIo::Impl::getDataByRange(const char* range, std::string& response)
-    {
-        long code = -1;
-
-        curl_easy_reset(curl); // reset all options
-        curl_easy_setopt(curl, CURLOPT_URL, path_.c_str());
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L); // no progress meter please
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1); // debugging mode
-
-        if (strcmp(range, ""))
-            curl_easy_setopt(curl, CURLOPT_RANGE, range);
-
-        /* Perform the request, res will get the return code */
-        CURLcode res = curl_easy_perform(curl);
-
-        if(res != CURLE_OK) {
-            throw Error(1, curl_easy_strerror(res));
-        } else {
-            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &code); // get code
-        }
-
-        return code;
-    }
 
     long RemoteIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
     {
@@ -1877,7 +1806,7 @@ namespace Exiv2 {
             ss << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1);
             std::string range = ss.str();
 
-            long statusCode = getDataByRange(range.c_str(), data);
+            long statusCode = remoteDataByRange(curl_, path_, range.c_str(), data);
             if (statusCode >= 400) {
                 ss << "Libcurl returns error code " << statusCode;
                 error = ss.str();
@@ -1918,7 +1847,7 @@ namespace Exiv2 {
         if (p_->data_) std::free(p_->data_);
         if (p_->blocksRead_) delete[] p_->blocksRead_;
         delete p_;
-        curl_easy_cleanup(p_->curl);
+        curl_easy_cleanup(p_->curl_);
     }
 
     int RemoteIo::open()
@@ -1930,7 +1859,7 @@ namespace Exiv2 {
             long length = 0;
             std::stringstream ss;
             std::string error;
-            long statusCode = p_->getFileLength(length);
+            long statusCode = remoteFileLength(p_->curl_, p_->path_, length);
             if (statusCode >= 400) {
                 ss << "Libcurl returns error code " << statusCode;
                 error = ss.str();
@@ -1939,7 +1868,7 @@ namespace Exiv2 {
                 if (length == -1) { // don't support HEAD
                     std::string data;
                     std::string range = "";
-                    statusCode = p_->getDataByRange(range.c_str(), data);
+                    statusCode = remoteDataByRange(p_->curl_, p_->path_, range.c_str(), data);
                     if (statusCode >= 400) {
                         ss << "Libcurl returns error code " << statusCode;
                         error = ss.str();
@@ -2211,13 +2140,5 @@ namespace Exiv2 {
         return subject;
     }
 #endif
-#if EXV_USE_CURL == 1
-    size_t curlWriter(char *data, size_t size, size_t nmemb,
-                      std::string *writerData)
-    {
-      if (writerData == NULL) return 0;
-      writerData->append(data, size*nmemb);
-      return size * nmemb;
-    }
-#endif
+
 }                                       // namespace Exiv2
