@@ -9,8 +9,8 @@
 ##
 # Issue:#857.  Use g++ instead of c++ (clang) compiler to eliminate warnings
 if (APPLE)
-	set(CMAKE_C_COMPILER gcc)
-	set(CMAKE_CXX_COMPILER g++)
+    set(CMAKE_C_COMPILER gcc)
+    set(CMAKE_CXX_COMPILER g++)
 endif(APPLE)
 ##
 
@@ -64,62 +64,66 @@ IF( MINGW OR UNIX )
                    )
 ENDIF( MINGW OR UNIX )
 
-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/include/   ${CMAKE_SOURCE_DIR}/include/exiv2/)
+INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/include/  ${CMAKE_SOURCE_DIR}/include/exiv2/)
 
 if( MSVC )
-	include(CMake_msvc.txt)
-	msvc_runtime_report()
-	msvc_runtime_configure(${EXIV2_ENABLE_SHARED})
-	msvc_runtime_report()
-	
-	set(E expat-2.1.0)
-	set(Z zlib-1.2.7)
+
+    # cmake_policy(SET CMP0008)
+    
+    include(CMake_msvc.txt)
+    msvc_runtime_report()
+    msvc_runtime_configure(${EXIV2_ENABLE_SHARED})
+    msvc_runtime_report()
+    
+    set(E expat-2.1.0)
+    set(Z zlib-1.2.7)
     set(C curl-7.30.0)
-	
-	if( NOT IS_DIRECTORY ./../${E} )
-		set(OUT_OF_SOURCE 1)
-	endif()
-	
+    
+    if( NOT IS_DIRECTORY ./../${E} )
+        set(OUT_OF_SOURCE 1)
+    endif()
+    
     # link dependent libraries
+    # FIND_PACKAGE(EXPAT)
     if ( NOT EXPAT_LIBRARY  )
         set(EXPAT_LIBRARY      ${CMAKE_SOURCE_DIR}/../${E}/$(ConfigurationName)/expat)
         set(EXPAT_INCLUDE_DIR  ${CMAKE_SOURCE_DIR}/../${E}/lib)
-    	include_directories( ${EXPAT_INCLUDE_DIR} msvc64\\include src\\include)
-	endif()
+        include_directories( ${EXPAT_INCLUDE_DIR})
+    endif()
 
-    FIND_PACKAGE(CURL QUIET)
+    # FIND_PACKAGE(CURL)
     if ( NOT CURL_FOUND )
         set(CURL_LIBRARY       ${CMAKE_SOURCE_DIR}/../${C}/$(ConfigurationName)/curl)
         set(CURL_INCLUDE_DIR   ${CMAKE_SOURCE_DIR}/../${C})
-        include_directories( ${CURL_INCLUDE_DIR} msvc64\\include src\\include)
+        include_directories( ${CURL_INCLUDE_DIR})
     endif()
-	
-	FIND_PACKAGE(ZLIB QUIET)
+    
+    # FIND_PACKAGE(ZLIB QUIET)
     if ( NOT ZLIB_FOUND )
         set(ZLIB_LIBRARY       ${CMAKE_SOURCE_DIR}/../${Z}/$(ConfigurationName)/zlib)
         set(ZLIB_INCLUDE_DIR   ${CMAKE_SOURCE_DIR}/../${Z})
+        include_directories(${ZLIB_INCLUDE_DIR})
     endif()
-    include_directories(${ZLIB_INCLUDE_DIR})
-	
-	if ( EXIV2_ENABLE_SHARED )
-	    add_library(${E} SHARED IMPORTED)
-	    add_library(${Z} SHARED IMPORTED)
-	endif()
+    
+    if ( EXIV2_ENABLE_SHARED )
+        add_library(${E} SHARED IMPORTED)
+        add_library(${Z} SHARED IMPORTED)
+    endif()
 
-	##
+    ##
     # Set the output directory
     # x64/Win32
     if( CMAKE_SIZEOF_VOID_P MATCHES 8 )
         SET( P_DIR x64)
     else()
-	    set( P_DIR Win32 )
+        set( P_DIR Win32 )
     endif()
 
     # DLL/static build
     if( EXIV2_ENABLE_SHARED )
         set( T_DIR Dynamic )
     else()
-	    set( T_DIR Static)
+        set( T_DIR Static)
     endif()
 
     set(B_DIR ${PROJECT_BINARY_DIR}/bin/${P_DIR}/${T_DIR})
@@ -129,8 +133,8 @@ if( MSVC )
 endif( MSVC )
 
 IF( EXIV2_ENABLE_XMP )
-	SET( HAVE_XMP_TOOLKIT ON )
-	SET( XMPLIB "do" )
+    SET( HAVE_XMP_TOOLKIT ON )
+    SET( XMPLIB "do" )
 ENDIF( EXIV2_ENABLE_XMP )
 
 INCLUDE( config/ConfigureChecks.cmake )
@@ -181,13 +185,13 @@ ENDIF( EXIV2_ENABLE_BUILD_PO )
 IF( NOT MSVC )
     # Issue #722: out of source builds compiled against standard include files such as /usr/local/lib/include/exiv2
     # do not use CREATE_SYMLINK or CMAKE_CAN_SYMLINK as they don't work on CYGWIN
-	# EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}         COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
+    # EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}         COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
   IF( EXIV2_ENABLE_BUILD_SAMPLES )
-	EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/samples COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
+    EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/samples COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
   ENDIF( EXIV2_ENABLE_BUILD_SAMPLES )
 
   IF( EXIV2_ENABLE_BUILD_PO )
-	EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/po      COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
+    EXECUTE_PROCESS( WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/po      COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/src exiv2)
   ENDIF( EXIV2_ENABLE_BUILD_PO )
 ENDIF()
 

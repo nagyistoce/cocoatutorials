@@ -7,7 +7,7 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 if ( NOT MSVC )
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
 
 # Private headers which are only needed for the library itself
@@ -187,10 +187,10 @@ msvc_runtime_configure(${EXIV2_ENABLE_SHARED})
 ADD_LIBRARY( exiv2lib ${STATIC_FLAG} ${LIBEXIV2_SRC} ${LIBEXIV2_HDR} )
 
 SET_TARGET_PROPERTIES( exiv2lib PROPERTIES
-	VERSION       ${GENERIC_LIB_VERSION}
-	SOVERSION     ${GENERIC_LIB_SOVERSION}
-	DEFINE_SYMBOL EXV_BUILDING_LIB
-	OUTPUT_NAME   exiv2
+    VERSION       ${GENERIC_LIB_VERSION}
+    SOVERSION     ${GENERIC_LIB_SOVERSION}
+    DEFINE_SYMBOL EXV_BUILDING_LIB
+    OUTPUT_NAME   exiv2
 )
 
 if ( MSVC ) 
@@ -210,17 +210,17 @@ if( EXIV2_ENABLE_LIBXMP )
 ENDIF()
 
 IF( EXIV2_ENABLE_PNG )
-	IF( ZLIB_FOUND )
-		IF( MSVC )
-			if ( EXIV2_ENABLE_SHARED )		
-				TARGET_LINK_LIBRARIES( exiv2lib optimized ${ZLIB_LIBRARIES} debug ${ZLIB_LIBRARIES}d )
-			else()
-				TARGET_LINK_LIBRARIES( exiv2lib optimized zlibstatic.lib debug zlibstaticd.lib )
-			endif()
-		ELSE()
-			TARGET_LINK_LIBRARIES( exiv2lib ${ZLIB_LIBRARIES} )
-		ENDIF()
-	ENDIF()
+    IF( ZLIB_FOUND )
+        IF( MSVC )
+            if ( EXIV2_ENABLE_SHARED )      
+                TARGET_LINK_LIBRARIES( exiv2lib optimized ${ZLIB_LIBRARIES} debug ${ZLIB_LIBRARIES}d )
+            else()
+                TARGET_LINK_LIBRARIES( exiv2lib optimized zlibstatic.lib debug zlibstaticd.lib )
+            endif()
+        ELSE()
+            TARGET_LINK_LIBRARIES( exiv2lib ${ZLIB_LIBRARIES} )
+        ENDIF()
+    ENDIF()
 ENDIF()
 
 IF( EXIV2_ENABLE_NLS )
@@ -234,25 +234,6 @@ ENDIF( ICONV_FOUND )
 IF (CYGWIN)
     TARGET_LINK_LIBRARIES( exiv2lib psapi )
 ENDIF(CYGWIN)
-
-
-##
-# copy header files (TODO: rewrite for NMake)
-IF (MSVC )
-	if (OUT_OF_SOURCE) 
-	    ADD_CUSTOM_COMMAND(
-	      TARGET exiv2lib
-	      PRE_BUILD
-	      COMMAND set S=$(SolutionDir)..\\src\nset I=$(SolutionDir)include\nset E=%I%\\exiv2\nif NOT exist %I% mkdir %I%\nif NOT exist %E% mkdir %E%\ncopy /y %S%\\*.h %E%\ncopy /y %S%\\*.hpp %E%
-	    )
-	else()
-	    ADD_CUSTOM_COMMAND(
-	      TARGET exiv2lib
-	      PRE_BUILD
-	      COMMAND set S=$(SolutionDir)src\nset I=$(SolutionDir)include\nset E=%I%\\exiv2\nif NOT exist %I% mkdir %I%\nif NOT exist %E% mkdir %E%\ncopy /y %S%\\*.h %E%\ncopy /y %S%\\*.hpp %E%
-	    )
-	endif()
-ENDIF()
 
 ##
 # copy curl dlls to output directory (TODO: rewrite for NMake)

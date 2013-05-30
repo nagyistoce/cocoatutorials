@@ -40,6 +40,7 @@ THE SOFTWARE.
 
 namespace Jzon
 {
+	# pragma warning(disable : 4251)
 	template<typename T1, typename T2>
 	struct Pair
 	{
