@@ -49,17 +49,22 @@ RemoteIoTest()
                       ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio8.jpg \
                       ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio9.jpg"
 
-    
-    #Tests for remoteIo
-    echo 
-    printf 'remoteIo   '
-    for i in $remoteIoTest_files; do RemoteIoTest $i; done
+    USE_CURL=$("$bin"/exiv2 -v -V | grep ^curl= | sed s/curl=//)
+    if [ "$USE_CURL" -eq "1" ]; then
+      #Tests for remoteIo
+      echo 
+      printf 'remoteIo   '
+      for i in $remoteIoTest_files; do RemoteIoTest $i; done
 
-    if [ $errors -eq 0 ]; then
-        printf '\nAll test cases passed\n'
+      if [ $errors -eq 0 ]; then
+          printf '\nAll test cases passed\n'
+      else
+          printf "\n---------------------------------------------------------\n"
+          echo $errors '\nremoteIo failed!'
+      fi
     else
-        printf "\n---------------------------------------------------------\n"
-        echo $errors '\nremoteIo failed!'
+      #Skip remoteIo test cases
+      printf '\nCurl is not used. Skip remoteio test cases.\n'
     fi
 )
 

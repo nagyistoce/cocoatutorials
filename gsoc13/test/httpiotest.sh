@@ -83,7 +83,7 @@ httpIoTest()
         for i in $httpIoTest_files; do httpIoTest $i; done
 
         if [ $errors -eq 0 ]; then
-            echo 'All test cases passed'
+            printf '\nAll test cases passed\n'
         else
             printf "\n---------------------------------------------------------\n"
             echo $errors 'httpIo failed!'

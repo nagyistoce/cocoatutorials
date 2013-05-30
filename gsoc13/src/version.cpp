@@ -89,7 +89,9 @@ typedef string_v::iterator  string_i;
 #ifndef _MAX_PATH
 #define _MAX_PATH 512
 #endif
-
+#ifndef EXV_USE_CURL
+#define EXV_USE_CURL 0
+#endif
 
 // platform specific support for dumpLibraryInfo
 #if defined(WIN32)
