@@ -59,14 +59,14 @@ include $(top_srcdir)/config/config.mk
 # Source files
 
 # Add standalone C++ header files to this list
-CCHDR =  exiv2.hpp             \
-         exv_conf.h            \
-         exv_msvc.h            \
-         Jzon.h                \
+CCHDR =  exiv2.hpp         \
+         exv_conf.h        \
+         exv_msvc.h        \
+         Jzon.h            \
          version.hpp
 
 # Add library C++ source files to this list
-CCSRC =  asfvideo.cpp          \
+CCSRC =  asfvideo.cpp      \
 	 basicio.cpp           \
 	 bmpimage.cpp          \
 	 canonmn.cpp           \
@@ -130,8 +130,8 @@ endif
 
 # Source files for the Exiv2 application
 EXIV2MAIN = exiv2.cpp
-EXIV2SRC  = actions.cpp       \
-	    utils.cpp
+EXIV2SRC  = actions.cpp    \
+	        utils.cpp
 # C source files for the Exiv2 application
 ifndef HAVE_TIMEGM
 EXIVCSRC  = localtime.c
@@ -151,31 +151,40 @@ SHELL = /bin/sh
 .PRECIOUS: %.cpp
 
 CPPFLAGS += $(CURL_CPPFLAGS) $(XMPSDK_CPPFLAGS)
-LDFLAGS += $(CURL_LDFLAGS) $(EXPAT_LDFLAGS) $(XMPSDK_LDFLAGS)
-LIBS += $(CURL_LIBS) $(EXPAT_LIBS) $(XMPSDK_LIBS)
+LDFLAGS  += $(CURL_LDFLAGS) $(EXPAT_LDFLAGS) $(XMPSDK_LDFLAGS)
+LIBS     += $(CURL_LIBS) $(EXPAT_LIBS) $(XMPSDK_LIBS)
 
 # Generic variables
 CCHDR := $(CCHDR) $(CCSRC:.cpp=.hpp)
-CCOBJ = $(CCSRC:.cpp=.o)
+CCOBJ  = $(CCSRC:.cpp=.o)
 CCLOBJ = $(CCSRC:.cpp=.lo)
 
-COBJ = $(CSRC:.c=.o)
-CLOBJ = $(CSRC:.c=.lo)
+COBJ   = $(CSRC:.c=.o)
+CLOBJ  = $(CSRC:.c=.lo)
 
-SRC = $(CCSRC) $(CSRC)
-HDR = $(CCHDR)
-OBJ = $(CCOBJ) $(COBJ)
-LOBJ = $(CCLOBJ) $(CLOBJ)
+SRC    = $(CCSRC) $(CSRC)
+HDR    = $(CCHDR)
+OBJ    = $(CCOBJ) $(COBJ)
+LOBJ   = $(CCLOBJ) $(CLOBJ)
 
-EXIV2OBJ = $(EXIV2MAIN:.cpp=.o) $(EXIV2SRC:.cpp=.o)
+EXIV2OBJ  = $(EXIV2MAIN:.cpp=.o) $(EXIV2SRC:.cpp=.o)
 EXIV2COBJ = $(EXIVCSRC:.c=.o)
-EXIV2BIN = $(EXIV2MAIN:.cpp=)
-EXIV2EXE = $(EXIV2MAIN:.cpp=$(EXEEXT))
+EXIV2BIN  = $(EXIV2MAIN:.cpp=)
+EXIV2EXE  = $(EXIV2MAIN:.cpp=$(EXEEXT))
+
+# httptest application
+HTTPTEST  = httptest.cpp
+HTTPTOBJ  = $(HTTPTEST:.cpp=.o) $(HTTPTSRC:.cpp=.o)
+HTTPTBIN  = $(HTTPTEST:.cpp=)
+HTTPTEXE  = $(HTTPTEST:.cpp=$(EXEEXT))
 
 ifdef DEP_TRACKING
-DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d) $(CSRC:%.c=$(DEPDIR)/%.d) \
-      $(BINSRC:%.cpp=$(DEPDIR)/%.d) \
-      $(EXIV2MAIN:%.cpp=$(DEPDIR)/%.d) $(EXIV2SRC:%.cpp=$(DEPDIR)/%.d) \
+DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d)     \
+      $(CSRC:%.c=$(DEPDIR)/%.d)        \
+      $(BINSRC:%.cpp=$(DEPDIR)/%.d)    \
+      $(EXIV2MAIN:%.cpp=$(DEPDIR)/%.d) \
+      $(EXIV2SRC:%.cpp=$(DEPDIR)/%.d)  \
+      $(HTTPTEST:%.cpp=$(DEPDIR)/%.d)  \
       $(EXIVCSRC:%.c=$(DEPDIR)/%.d)
 
 endif
@@ -193,6 +202,11 @@ $(COBJ): %.o: %.c
 	@$(POSTDEPEND)
 
 $(EXIV2OBJ): %.o: %.cpp
+	$(COMPILE.cc) -o $@ $<
+	@$(MAKEDEPEND)
+	@$(POSTDEPEND)
+
+$(HTTPTOBJ): %.o: %.cpp
 	$(COMPILE.cc) -o $@ $<
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
@@ -227,7 +241,7 @@ $(SRC): ../include/exiv2/exv_conf.h
 $(LIBTOOL): $(LIBTOOL_DEPS)
 	$(SHELL) $(top_srcdir)/config.status --recheck
 
-bin: lib $(EXIV2BIN)
+bin: lib $(EXIV2BIN) $(HTTPTBIN)
 
 lib: $(OBJ)
 	$(LIBTOOL) --mode=link $(LINK.cc) -o $(LIBRARY) $(LOBJ) -rpath $(libdir) -version-info $(EXIV2_LTVERSION) $(LIBS)
@@ -239,6 +253,10 @@ $(BINARY): %: %.o lib
 $(EXIV2BIN): lib $(EXIV2OBJ) $(EXIV2COBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
 	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(EXIV2OBJ) $(EXIV2COBJ) -rpath $(libdir)
+
+$(HTTPTBIN): lib $(HTTPTOBJ) $(HTTPCOBJ)
+	mkdir -pv ../bin 2>&1 > /dev/null
+	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(HTTPTOBJ) -rpath $(libdir)
 
 install-header:
 	$(INSTALL_DIRS) $(DESTDIR)$(incdir)
@@ -289,7 +307,7 @@ ctags:
 #	ctags-exuberant --extra=+q *
 
 check:
-	@echo "No checks available for this library."
+	@echo "No checks available for this library - or $ make tests"
 
 mostlyclean:
 	$(RM) core
@@ -297,7 +315,7 @@ mostlyclean:
 	$(RM) lib
 	$(RM) include/exiv2/exv_conf.h
 	$(RM) $(CCSRC:%.cpp=.libs/%.d) $(CSRC:%.c=.libs/%.d)
-	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) )
+	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(HTTPTOBJ) )
 
 clean: mostlyclean
 	@$(LIBTOOL) --mode=clean $(RM) $(LIBRARY)

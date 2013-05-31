@@ -49,7 +49,6 @@ BVT:      Now works on Cygwin on Desktop
 -------------------------------------------------------------------------------------
 
 TODO: Robin
-R2:       Get make to build bin/.libs/httptest and bin/.libs/remotetest [See T2]
 R3:       Think about how to get the metadata at the end of a BIG file.
 
 TODO: Tuan
@@ -66,7 +65,8 @@ R2/T2     (no, not R2D2 - he was in StarWars)
 
 Completed tasks
 ---------------
-R1[DONE]: Document/explain getopt_long
+R1:[DONE] Document/explain getopt_long
+R2:[DONE] Get make to build bin/.libs/httptest and bin/.libs/remotetest [See T2]
 
 # That's all Folks!
 ##

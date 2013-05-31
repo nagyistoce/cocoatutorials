@@ -161,6 +161,8 @@ SET( EXIV2_SRC            exiv2.cpp
                           actions.cpp
                           utils.cpp
 )
+# httptest application
+SET( HTTPTEST             httptest.cpp)
 
 ##
 # modify source lists to suit environment
@@ -273,6 +275,11 @@ INSTALL( TARGETS exiv2lib ${INSTALL_TARGET_STANDARD_ARGS} )
 ADD_EXECUTABLE( exiv2 ${EXIV2_SRC} )
 TARGET_LINK_LIBRARIES( exiv2 exiv2lib )
 INSTALL( TARGETS exiv2 ${INSTALL_TARGET_STANDARD_ARGS} )
+
+# ******************************************************************************
+# httptest application
+ADD_EXECUTABLE( httptest ${HTTPTEST} )
+TARGET_LINK_LIBRARIES( httptest exiv2lib )
 
 # ******************************************************************************
 # Headers

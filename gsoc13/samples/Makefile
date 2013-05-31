@@ -61,7 +61,6 @@ BINSRC = addmoddel.cpp        \
          exifdata-test.cpp    \
          exifprint.cpp        \
          exif2json.cpp        \
-         httptest.cpp         \
          iotest.cpp           \
          iptceasy.cpp         \
          iptcprint.cpp        \
@@ -94,7 +93,7 @@ BAR='****************************************'
 .PRECIOUS: %.cpp
 
 CPPFLAGS := `pkg-config exiv2 --cflags`
-LDFLAGS := `pkg-config exiv2 --libs`
+LDFLAGS  := `pkg-config exiv2 --libs`
 
 BINOBJ = $(BINSRC:.cpp=.o)
 BINARY = $(BINSRC:.cpp=)
