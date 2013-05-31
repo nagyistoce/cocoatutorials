@@ -1711,10 +1711,6 @@ namespace Exiv2 {
         Impl(const std::wstring& wpath, size_t blockSize);
 #endif
 
-        // Enumerations
-        //! Protocols
-        enum Protocols { pHttp, pFtp, pHttps };
-
         // DATA
         std::string  path_;             //!< (Standard) path
 #ifdef EXV_UNICODE_PATH
@@ -1730,9 +1726,9 @@ namespace Exiv2 {
 
         bool         isMalloced_;       //!< Was the memory allocated?
         bool         eof_;              //!< EOF indicator
-        CURL*        curl_;              //!< libcurl pointer
+        CURL*        curl_;             //!< libcurl pointer
 
-        Protocols    protocol_;             //!< protocols
+        Protocol    protocol_;          //!< protocols
         // METHODS
 
         long getFileLength(long &length);
