@@ -207,7 +207,9 @@ endif()
 
 if( EXIV2_ENABLE_LIBXMP )
     ADD_DEPENDENCIES( exiv2lib xmp )
-    LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH}/$(ConfigurationName))
+    if  ( MSVC ) 
+        LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH}/$(ConfigurationName))
+    endif(MSVC)
     TARGET_LINK_LIBRARIES( exiv2lib xmp )
 ENDIF()
 
