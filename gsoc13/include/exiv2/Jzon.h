@@ -40,7 +40,10 @@ THE SOFTWARE.
 
 namespace Jzon
 {
+    #ifdef _MSC_VER
 	# pragma warning(disable : 4251)
+	#endif
+	
 	template<typename T1, typename T2>
 	struct Pair
 	{
