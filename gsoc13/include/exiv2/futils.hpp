@@ -49,7 +49,7 @@ namespace Exiv2 {
     /*!
        @brief The Protocol enum and the map to hold the strings
      */
-    enum Protocol { pFile = 0, pHttp, pFtp, pHttps};
+    enum Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp};
     typedef std::map<std::string,Protocol>           protDict_t;
     typedef std::map<std::string,Protocol>::iterator protDict_i;
 #ifdef EXV_UNICODE_PATH

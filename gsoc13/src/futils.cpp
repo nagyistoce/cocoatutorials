@@ -67,6 +67,7 @@ namespace Exiv2 {
              protDict["http://"]  = pHttp;
              protDict["ftp://"]   = pFtp;
              protDict["https://"] = pHttps;
+             protDict["sftp://"]  = pSftp;
         }
         for (Exiv2::protDict_i it = protDict.begin(); it != protDict.end(); it++) {
             if (path.find(it->first) == 0)
@@ -82,6 +83,7 @@ namespace Exiv2 {
              prodDict[L"http://"]  = pHttp;
              prodDict[L"ftp://"]   = pFtp;
              prodDict[L"https://"] = pHttps;
+             prodDict[L"sftp://"]  = pSftp;
         }
         for (wprotDict_i it = protDict.begin(); it != protDict.end(); it++) {
             if (wpath.find(it->first) == 0) {

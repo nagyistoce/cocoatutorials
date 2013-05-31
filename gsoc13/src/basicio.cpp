@@ -1728,7 +1728,7 @@ namespace Exiv2 {
         bool         eof_;              //!< EOF indicator
         CURL*        curl_;             //!< libcurl pointer
 
-        Protocol    protocol_;          //!< protocols
+        Protocol     protocol_;         //!< protocols
         // METHODS
 
         long getFileLength(long &length);
@@ -1752,18 +1752,13 @@ namespace Exiv2 {
 
     RemoteIo::Impl::Impl(const std::string& url, size_t blockSize)
         : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
-          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false), protocol_(fileProtocol(url))
     {
         // init curl pointer
         curl_ = curl_easy_init();
         if(!curl_) {
             throw Error(1, "Uable to init libcurl.");
         }
-
-        // find the protocols
-        if (path_.find("http://") == 0) protocol_ = pHttp;
-        else if (path_.find("ftp://") == 0) protocol_ = pFtp;
-        else if (path_.find("https://") == 0) protocol_ = pHttps;
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
@@ -1774,7 +1769,7 @@ namespace Exiv2 {
 #ifdef EXV_UNICODE_PATH
     RemoteIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
         : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
-          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false), protocol_(fileProtocol(wurl))
     {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
@@ -1785,11 +1780,6 @@ namespace Exiv2 {
         if(!curl_) {
             throw Error(1, "Uable to init libcurl.");
         }
-
-        // find the protocols
-        if (path_.find("http://") == 0) protocol_ = pHttp;
-        else if (path_.find("ftp://") == 0) protocol_ = pFtp;
-        else if (path_.find("https://") == 0) protocol_ = pHttps;
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
@@ -1811,7 +1801,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
-        // curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
+        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
 
         /* Perform the request, res will get the return code */
         CURLcode res = curl_easy_perform(curl_);
@@ -1840,7 +1830,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
-        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1); // debugging mode
+        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
 
         if (strcmp(range, ""))
             curl_easy_setopt(curl_, CURLOPT_RANGE, range);
@@ -1934,7 +1924,7 @@ namespace Exiv2 {
                 error = ss.str();
                 throw Error(1, error);
             } else {
-                if (length == -1) { // don't support HEAD
+                if (length <= 0) { // don't support HEAD
                     std::string data;
                     std::string range = "";
                     statusCode = p_->getDataByRange(range.c_str(), data);
