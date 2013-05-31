@@ -82,7 +82,6 @@ CCSRC =  asfvideo.cpp          \
 	 fujimn.cpp            \
 	 gifimage.cpp          \
 	 http.cpp              \
-	 remote.cpp            \
 	 image.cpp             \
 	 iptc.cpp              \
 	 jp2image.cpp          \

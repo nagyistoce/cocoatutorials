@@ -46,7 +46,7 @@ httpIoTest()
     if [ $scheme = http ]; then
         dot=.
         # run tests
-        runTest exifprint $1 > $test
+        runTest exifprint $1 "--nocurl" > $test
     
         #check results
         diffCheckAscii $test $good
@@ -59,16 +59,16 @@ httpIoTest()
     errors=0
 
     httpTest_file="http://exiv2.nuditu.com/httptest.jpg"
-    httpIoTest_files="http://exiv2.nuditu.com/httpio0.jpg \
-                      http://exiv2.nuditu.com/httpio1.jpg \
-                      http://exiv2.nuditu.com/httpio2.jpg \
-                      http://exiv2.nuditu.com/httpio3.jpg \
-                      http://exiv2.nuditu.com/httpio4.jpg \
-                      http://exiv2.nuditu.com/httpio5.jpg \
-                      http://exiv2.nuditu.com/httpio6.jpg \
-                      http://exiv2.nuditu.com/httpio7.jpg \
-                      http://exiv2.nuditu.com/httpio8.jpg \
-                      http://exiv2.nuditu.com/httpio9.jpg"
+    httpIoTest_files="http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg1.jpg \
+                      http://exiv2.nuditu.com/remoteImg2.jpg \
+                      http://exiv2.nuditu.com/remoteImg3.jpg \
+                      http://exiv2.nuditu.com/remoteImg4.jpg \
+                      http://exiv2.nuditu.com/remoteImg5.jpg \
+                      http://exiv2.nuditu.com/remoteImg6.jpg \
+                      http://exiv2.nuditu.com/remoteImg7.jpg \
+                      http://exiv2.nuditu.com/remoteImg8.jpg \
+                      http://exiv2.nuditu.com/remoteImg9.jpg"
 
     # httptest (basic sanity test)
     echo 

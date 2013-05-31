@@ -1,20 +1,27 @@
-2013-05-11
-BVT: Now works on Cygwin on Desktop
-     Issue with Cygwin build failing on ass-windows referred to Robin for investigation
+2013-05-31:
+RemoteIo: Testing, refactor the code.
 
-2013-05-12
-BVT:     Working on Cygwin on Desktop and aws-windows
-libcurl: Build on Mac
-         Built sample apps
-         Linked http.cpp with libcurl and got HTTP/Get to work
+2013-05-30:
+RemoteIo: Testing, refactor the code.
+	  Run-time switch.
+Setup the http, ftp, sftp server for Amazon ubuntu
 
-2013-05-13
-libcurl: Parse response headers for httpio when using lib curl
-	 Remove request header
+2013-05-29:
+RemoteIo: investigate Libcurl FTP Range.
+	  Default block size for FTP is set to 100k, other protocols still keeps at 1K.
 
-2013-05-14
-libcurl: Do testing, update httptest.txt
+2013-05-28
+Nothing, happy with GSoC Result
 
+2013-05-27
+RemoteIo: Optimization (don't reload the size of file, don't clear data when close())
+
+2013-05-25 & 26
+RemoteIo: RemoteIo using lib curl, support http, ftp, https
+	  Add remoteio.sh
+
+2013-05-20
+libcurl: Investigating the problem with Makefiles on Ubuntu
 
 2013-05-18 & 19
 libcurl: Makefiles, Cmakes
@@ -22,23 +29,27 @@ libcurl: Makefiles, Cmakes
 	 ./configure (using libcurl)
 	 ./configure --without-curl (using Exiv2:http)
 
-2013-05-20
-libcurl: Investigating the problem with Makefiles on Ubuntu
+2013-05-14
+libcurl: Do testing, update httptest.txt
 
-2013-05-25 & 26
-RemoteIo: RemoteIo using lib curl, support http, ftp, https
-	  Add remoteio.sh
+2013-05-13
+libcurl: Parse response headers for httpio when using lib curl
+	 Remove request header
 
-2013-05-27
-RemoteIo: Optimization (don't reload the size of file, don't clear data when close())
+2013-05-12
+BVT:     Working on Cygwin on Desktop and aws-windows
+libcurl: Build on Mac
+         Built sample apps
+         Linked http.cpp with libcurl and got HTTP/Get to work
 
-2013-05-28
-Nothing, happy with GSoC Result
+2013-05-11
+BVT: Now works on Cygwin on Desktop
+     Issue with Cygwin build failing on ass-windows referred to Robin for investigation
 
-2013-05-29:
-RemoteIo: investigate Libcurl FTP Range.
-	  Default block size for FTP is set to 100k, other protocols still keeps at 1K.
 
-2013-05-30:
-RemoteIo: Testing, refactor the code.
+TODO: Robin
+R1[DONE]: Document/explain getopt_long
+R2: Think about how to get the metadata at the end of a BIG file.
 
+TODO: Tuan
+T1: Investigate setting up the IIS on windows EC2

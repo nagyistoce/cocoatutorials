@@ -17,7 +17,7 @@ RemoteIoTest()
     good=$datapath/${filename}.txt
     dot=.
     # run tests
-    runTest exifprint $1 > $test
+    runTest exifprint $1 "--curl" > $test
     #check results
     diffCheckAscii $test $good
 
@@ -28,26 +28,36 @@ RemoteIoTest()
 
     errors=0
 
-    remoteIoTest_files="http://exiv2.nuditu.com/httpio0.jpg \
-                      http://exiv2.nuditu.com/httpio1.jpg \
-                      http://exiv2.nuditu.com/httpio2.jpg \
-                      http://exiv2.nuditu.com/httpio3.jpg \
-                      http://exiv2.nuditu.com/httpio4.jpg \
-                      http://exiv2.nuditu.com/httpio5.jpg \
-                      http://exiv2.nuditu.com/httpio6.jpg \
-                      http://exiv2.nuditu.com/httpio7.jpg \
-                      http://exiv2.nuditu.com/httpio8.jpg \
-                      http://exiv2.nuditu.com/httpio9.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio0.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio1.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio2.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio3.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio4.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio5.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio6.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio7.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio8.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/httpio9.jpg"
+    remoteIoTest_files="http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      http://exiv2.nuditu.com/remoteImg0.jpg \
+                      https://54.251.248.216/remoteImg0.jpg  \
+                      https://54.251.248.216/remoteImg1.jpg  \
+                      https://54.251.248.216/remoteImg2.jpg  \
+                      https://54.251.248.216/remoteImg3.jpg  \
+                      https://54.251.248.216/remoteImg4.jpg  \
+                      https://54.251.248.216/remoteImg5.jpg  \
+                      https://54.251.248.216/remoteImg6.jpg  \
+                      https://54.251.248.216/remoteImg7.jpg  \
+                      https://54.251.248.216/remoteImg8.jpg  \
+                      https://54.251.248.216/remoteImg9.jpg  \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
+                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg"
 
     USE_CURL=$("$bin"/exiv2 -v -V | grep ^curl= | sed s/curl=//)
     if [ "$USE_CURL" -eq "1" ]; then

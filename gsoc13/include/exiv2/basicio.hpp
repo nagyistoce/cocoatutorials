@@ -1191,6 +1191,11 @@ namespace Exiv2 {
     EXIV2API std::wstring ReplaceStringInPlace(std::wstring subject, const std::wstring& search,
                           const std::wstring& replace);
 #endif
-
+#if EXV_USE_CURL == 1
+    /*!
+      @brief The callback function is called by libcurl to write the data
+    */
+    EXIV2API size_t curlWriter(char *data, size_t size, size_t nmemb, std::string *writerData);
+#endif
 }                                       // namespace Exiv2
 #endif                                  // #ifndef BASICIO_HPP_
