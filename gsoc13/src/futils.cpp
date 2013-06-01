@@ -80,10 +80,10 @@ namespace Exiv2 {
         Protocol result = pFile ;
         static wprotDict_t protDict;
         if (!protDict.size()) {
-             prodDict[L"http://"]  = pHttp;
-             prodDict[L"ftp://"]   = pFtp;
-             prodDict[L"https://"] = pHttps;
-             prodDict[L"sftp://"]  = pSftp;
+             protDict[L"http://"]  = pHttp;
+             protDict[L"ftp://"]   = pFtp;
+             protDict[L"https://"] = pHttps;
+             protDict[L"sftp://"]  = pSftp;
         }
         for (wprotDict_i it = protDict.begin(); it != protDict.end(); it++) {
             if (wpath.find(it->first) == 0) {
