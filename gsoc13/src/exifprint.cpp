@@ -13,7 +13,7 @@ int main(int argc, char* const argv[])
 try {
 
     if (argc < 2) {
-        std::cout << "Usage: " << argv[0] << " file [--nocurl | --curl]\n";
+        std::cout << "Usage: " << argv[0] << " file {--nocurl | --curl}\n";
         return 1;
     }
 

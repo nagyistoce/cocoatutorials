@@ -54,6 +54,7 @@ R3:       Think about how to get the metadata at the end of a BIG file.
 TODO: Tuan
 T1:       Investigate setting up the IIS on windows EC2
 T2:       Add make testt to only run httpiotest.sh and remoteiotest.sh [See R2]
+T3:	  "Make doc"
 
 Notes about tasks
 -----------------
@@ -67,6 +68,7 @@ Completed tasks
 ---------------
 R1:[DONE] Document/explain getopt_long
 R2:[DONE] Get make to build bin/.libs/httptest and bin/.libs/remotetest [See T2]
+T2:[DONE] $ make; $ make testt
 
 # That's all Folks!
 ##

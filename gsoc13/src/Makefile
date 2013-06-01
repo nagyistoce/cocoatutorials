@@ -178,6 +178,12 @@ HTTPTOBJ  = $(HTTPTEST:.cpp=.o) $(HTTPTSRC:.cpp=.o)
 HTTPTBIN  = $(HTTPTEST:.cpp=)
 HTTPTEXE  = $(HTTPTEST:.cpp=$(EXEEXT))
 
+# exifprint application
+EXIFPRINT = exifprint.cpp
+EXIFPOBJ  = $(EXIFPRINT:.cpp=.o) $(EXIFPSRC:.cpp=.o)
+EXIFPBIN  = $(EXIFPRINT:.cpp=)
+EXIFPEXE  = $(EXIFPRINT:.cpp=$(EXEEXT))
+
 ifdef DEP_TRACKING
 DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d)     \
       $(CSRC:%.c=$(DEPDIR)/%.d)        \
@@ -185,6 +191,7 @@ DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d)     \
       $(EXIV2MAIN:%.cpp=$(DEPDIR)/%.d) \
       $(EXIV2SRC:%.cpp=$(DEPDIR)/%.d)  \
       $(HTTPTEST:%.cpp=$(DEPDIR)/%.d)  \
+      $(EXIFPRINT:%.cpp=$(DEPDIR)/%.d) \
       $(EXIVCSRC:%.c=$(DEPDIR)/%.d)
 
 endif
@@ -207,6 +214,11 @@ $(EXIV2OBJ): %.o: %.cpp
 	@$(POSTDEPEND)
 
 $(HTTPTOBJ): %.o: %.cpp
+	$(COMPILE.cc) -o $@ $<
+	@$(MAKEDEPEND)
+	@$(POSTDEPEND)
+
+$(EXIFPOBJ): %.o: %.cpp
 	$(COMPILE.cc) -o $@ $<
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
@@ -241,7 +253,7 @@ $(SRC): ../include/exiv2/exv_conf.h
 $(LIBTOOL): $(LIBTOOL_DEPS)
 	$(SHELL) $(top_srcdir)/config.status --recheck
 
-bin: lib $(EXIV2BIN) $(HTTPTBIN)
+bin: lib $(EXIV2BIN) $(HTTPTBIN) $(EXIFPBIN)
 
 lib: $(OBJ)
 	$(LIBTOOL) --mode=link $(LINK.cc) -o $(LIBRARY) $(LOBJ) -rpath $(libdir) -version-info $(EXIV2_LTVERSION) $(LIBS)
@@ -254,9 +266,13 @@ $(EXIV2BIN): lib $(EXIV2OBJ) $(EXIV2COBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
 	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(EXIV2OBJ) $(EXIV2COBJ) -rpath $(libdir)
 
-$(HTTPTBIN): lib $(HTTPTOBJ) $(HTTPCOBJ)
+$(HTTPTBIN): lib $(HTTPTOBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
 	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(HTTPTOBJ) -rpath $(libdir)
+
+$(EXIFPBIN): lib $(EXIFPOBJ)
+	mkdir -pv ../bin 2>&1 > /dev/null
+	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(EXIFPOBJ) -rpath $(libdir)
 
 install-header:
 	$(INSTALL_DIRS) $(DESTDIR)$(incdir)
@@ -315,7 +331,7 @@ mostlyclean:
 	$(RM) lib
 	$(RM) include/exiv2/exv_conf.h
 	$(RM) $(CCSRC:%.cpp=.libs/%.d) $(CSRC:%.c=.libs/%.d)
-	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(HTTPTOBJ) )
+	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(HTTPTOBJ) $(EXIFPOBJ) )
 
 clean: mostlyclean
 	@$(LIBTOOL) --mode=clean $(RM) $(LIBRARY)

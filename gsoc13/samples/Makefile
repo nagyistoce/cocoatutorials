@@ -59,7 +59,6 @@ BINSRC = addmoddel.cpp        \
          easyaccess-test.cpp  \
          exifcomment.cpp      \
          exifdata-test.cpp    \
-         exifprint.cpp        \
          exif2json.cpp        \
          iotest.cpp           \
          iptceasy.cpp         \

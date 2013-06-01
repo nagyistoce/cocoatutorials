@@ -79,6 +79,9 @@ teste:
 testv:
 	cd test && $(MAKE) testv
 
+testt:
+	cd test && $(MAKE) testt
+
 config:
 	cd config && $(MAKE) -f config.make $(MAKECMDGOALS)
 

@@ -70,8 +70,6 @@ TESTS = addmoddel.sh      \
         exifdata-test.sh  \
         exiv2-test.sh     \
         imagetest.sh      \
-        httpiotest.sh     \
-        remoteiotest.sh   \
         iotest.sh         \
         iptctest.sh       \
         modify-test.sh    \
@@ -85,6 +83,8 @@ TESTS = addmoddel.sh      \
         conversions.sh
 TESTV = video-test.sh
 TESTE = eps-test.sh    
+TESTT = httpiotest.sh     \
+        remoteiotest.sh
 
 tests:
 	cd .. ; make tests
@@ -113,6 +113,14 @@ testv:
 # TODO: download eps data on demand for 0.24 (similar to testv)
 teste:
 	@list='$(TESTE)'; for p in $$list; do \
+	    echo Running $$p ...; \
+	    ./$$p; \
+	done
+
+##
+# TODO: test httpIo and remoteIo
+testt:
+	@list='$(TESTT)'; for p in $$list; do \
 	    echo Running $$p ...; \
 	    ./$$p; \
 	done
