@@ -1,3 +1,9 @@
+2013-05-2:
+Update $make tests and $make testx
+
+2013-05-1:
+RemoteIo: Testing, refactor the code.
+
 2013-05-31:
 RemoteIo: Testing, refactor the code.
 
@@ -68,7 +74,7 @@ Completed tasks
 ---------------
 R1:[DONE] Document/explain getopt_long
 R2:[DONE] Get make to build bin/.libs/httptest and bin/.libs/remotetest [See T2]
-T2:[DONE] $ make; $ make testt
+T2:[DONE] $ make; $ make testx and $make tests
 
 # That's all Folks!
 ##
