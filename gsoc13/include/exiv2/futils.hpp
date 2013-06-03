@@ -59,6 +59,15 @@ namespace Exiv2 {
 // *********************************************************************
 // free functions
     /*!
+      @brief Encodes in base64 the data in in and puts the resulting string in out.
+      @param out_size size in bytes of the out string, it should be at least ((in_size + 2) / 3) * 4 + 1
+      @param in_size  size in bytes of the in buffer
+      @return the string containing the encoded data, or NULL in case of error.
+
+      @note copy from http://ffmpeg.org/doxygen/0.6/base64_8c-source.html
+      */
+    EXIV2API char* base64Encode(char* out, size_t out_size, const uint8_t* in, size_t in_size);
+    /*!
       @brief Return the protocol of the path
       @param path the path of file to detect the protocol
       @return the protocol of the path
