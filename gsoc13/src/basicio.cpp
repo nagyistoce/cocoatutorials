@@ -1318,7 +1318,7 @@ namespace Exiv2 {
     StdinIo::~StdinIo() {
         if (isTemp_ && remove(tempFilePath_.c_str()) != 0) {
             // error when removing file
-            printf ("Warning: Unable to remove the temp file %s.\n", tempFilePath_.c_str());
+            // printf ("Warning: Unable to remove the temp file %s.\n", tempFilePath_.c_str());
         }
     }
 
@@ -1330,7 +1330,7 @@ namespace Exiv2 {
             // rename the file
             tempFilePath_ = path();
             if (rename(currentPath.c_str(), tempFilePath_.c_str()) != 0) {
-                printf("Warning: Failed to rename the temp file. \n");
+                // printf("Warning: Failed to rename the temp file. \n");
             }
             isTemp_ = false;
             // call super class method
@@ -1502,6 +1502,8 @@ namespace Exiv2 {
     HttpIo::~HttpIo()
     {
         close();
+        if (p_->data_) std::free(p_->data_);
+        if (p_->blocksRead_) delete[] p_->blocksRead_;
         delete p_;
     }
 
@@ -1511,27 +1513,29 @@ namespace Exiv2 {
         close();
 
         int returnCode = 0;
-        dict_t response;
-        dict_t request(p_->hostInfo_);
-        std::string errors;
-        request["verb"] = "HEAD";
-        int statusCode = http(request, response, errors);
-        if (statusCode < 0) {
-            returnCode = 1; // unable to connect
-        } else if (statusCode >= 400) {
-            returnCode = 2; // file not found
-        } else if (errors.compare("") != 0) {
-            returnCode = 3; //
-        } else {
-            p_->size_ = atol(response["Content-Length"].c_str());
-            if (p_->size_ == 0) {
-                returnCode = 4; // file is empty
+        if (p_->isMalloced_ == false) {
+            dict_t response;
+            dict_t request(p_->hostInfo_);
+            std::string errors;
+            request["verb"] = "HEAD";
+            int statusCode = http(request, response, errors);
+            if (statusCode < 0) {
+                returnCode = 1; // unable to connect
+            } else if (statusCode >= 400) {
+                returnCode = 2; // file not found
+            } else if (errors.compare("") != 0) {
+                returnCode = 3; //
             } else {
-                size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-                p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
-                p_->blocksRead_ = new bool[nBlocks];
-                ::memset(p_->blocksRead_, false, nBlocks);
-                p_->isMalloced_ = true;
+                p_->size_ = atol(response["Content-Length"].c_str());
+                if (p_->size_ == 0) {
+                    returnCode = 4; // file is empty
+                } else {
+                    size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                    p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
+                    p_->blocksRead_ = new bool[nBlocks];
+                    ::memset(p_->blocksRead_, false, nBlocks);
+                    p_->isMalloced_ = true;
+                }
             }
         }
         return returnCode;
@@ -1540,11 +1544,8 @@ namespace Exiv2 {
     int HttpIo::close()
     {
         if (p_->isMalloced_) {
-            if (p_->data_) std::free(p_->data_);
-            if (p_->blocksRead_) delete[] p_->blocksRead_;
-            p_->size_ = 0;
             p_->eof_ = false;
-            p_->isMalloced_ = false;
+            p_->idx_ = 0;
         }
         return 0;
     }
