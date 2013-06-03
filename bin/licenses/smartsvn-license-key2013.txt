@@ -1,0 +1,7 @@
+Name=Robin Mills
+Address=400 N First St #311, San Jose, 95112-8061, US
+Email=robin@clanmills.com
+LicenseCount=1
+FreeUpdatesUntil=2014-06-14
+SupportUntil=2014-06-14
+Key=1P0-1SSyh-<U9rz-VuDAS-D0EUo-km4HF-23IgB-lqKyv-PPA<v
