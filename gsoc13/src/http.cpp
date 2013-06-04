@@ -34,10 +34,6 @@
 #include <string.h>
 
 #ifdef  _MSC_VER
-#pragma comment(lib, "ws2_32.lib")
-#endif
-
-#ifdef  _MSC_VER
 #pragma message("Using exiv2 http support")
 #endif
 

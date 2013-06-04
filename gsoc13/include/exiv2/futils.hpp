@@ -34,6 +34,7 @@
 // included header files
 #ifdef _MSC_VER
 # include "exv_msvc.h"
+# include <types.hpp>
 #else
 # include "exv_conf.h"
 #endif
@@ -41,9 +42,7 @@
 #ifdef EXV_HAVE_STDINT_H
 # include <stdint.h>                     // for uint8_t
 #endif
-#if !defined(UINT_MAX) && (defined(__linux__) || defined(__CYGWIN__))
-# include <limits.h>
-#endif
+#include <limits.h>						 // for UINT_MAX
 
 // + standard includes
 #include <string>

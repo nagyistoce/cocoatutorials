@@ -31,7 +31,6 @@ EXIV2_RCSID("@(#) $Id: futils.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 
 // *****************************************************************************
 #include "exv_conf.h"
-#include "futils.hpp"
 
 // + standard includes
 #include <sys/types.h>
@@ -43,6 +42,7 @@ EXIV2_RCSID("@(#) $Id: futils.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 # include <unistd.h>                     // for stat()
 #endif
 
+#include "futils.hpp"
 #include <cerrno>
 #include <sstream>
 #include <cstring>
@@ -60,7 +60,7 @@ namespace Exiv2 {
 
 // *****************************************************************************
 // free functions
-    static const uint8_t map2[] = {
+	static const uint8_t map2[] = {
         0x3e, 0xff, 0xff, 0xff, 0x3f, 0x34, 0x35, 0x36,
         0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0xff,
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x01,
