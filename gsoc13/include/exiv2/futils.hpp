@@ -42,7 +42,7 @@
 # include <stdint.h>                     // for uint8_t
 #endif
 #if !defined(UINT_MAX) && defined(__linux__)
-# include <zconf.h>
+# include <limits.h>
 #endif
 
 // + standard includes
