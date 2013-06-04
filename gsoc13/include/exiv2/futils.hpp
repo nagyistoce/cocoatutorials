@@ -38,6 +38,13 @@
 # include "exv_conf.h"
 #endif
 
+#ifdef EXV_HAVE_STDINT_H
+# include <stdint.h>                     // for uint8_t
+#endif
+#if !defined(UINT_MAX) && defined(__linux__)
+# include <zconf.h>
+#endif
+
 // + standard includes
 #include <string>
 #include <map>
