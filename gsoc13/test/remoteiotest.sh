@@ -70,7 +70,7 @@ RemoteIoTest()
                       sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg9.jpg"
 
     USE_CURL=$("$bin"/exiv2 -v -V | grep ^curl= | sed s/curl=//)
-    if [ "$USE_CURL" -eq "1" ]; then
+    if [ "$USE_CURL" == "1" ]; then
       #Tests for remoteIo
       echo 
       printf 'remoteIo   '
