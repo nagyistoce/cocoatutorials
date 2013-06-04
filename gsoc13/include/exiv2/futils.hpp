@@ -41,7 +41,7 @@
 #ifdef EXV_HAVE_STDINT_H
 # include <stdint.h>                     // for uint8_t
 #endif
-#if !defined(UINT_MAX) && defined(__linux__)
+#if !defined(UINT_MAX) && (defined(__linux__) || defined(__CYGWIN__))
 # include <limits.h>
 #endif
 
