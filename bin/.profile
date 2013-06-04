@@ -348,8 +348,11 @@ if [ $PLATFORM == linux ]; then
 	alias open=xdg-open
 	alias shellx=open
 	alias start=open
-	export JAVA_HOME=/usr/lib/java/jre1.7.0
-	export PATH=$PATH:/usr/lib/java/jre1.7.0/bin/
+#	export PATH=$PATH:/usr/lib/java/jre1.7.0/bin/
+	export JAVA_HOME=/usr/local/java/jdk1.7.0_21
+	export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+	JRE_HOME=/usr/local/java/jre1.7.0_21
+	PATH=$PATH:$HOME/bin:$JRE_HOME/bin
 fi
 
 # hieroglyphics
