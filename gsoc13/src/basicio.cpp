@@ -1855,11 +1855,15 @@ namespace Exiv2 {
         long code = -1;
 
         curl_easy_reset(curl_); // reset all options
-        curl_easy_setopt(curl_, CURLOPT_URL, "http://exiv2.nuditu.com/exiv2.php");
         curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
         //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
         size_t found = path_.find_last_of("/\\");
         std::string filename = path_.substr(found+1);
+        std::string url = path_.substr(0, found+1);
+        std::stringstream ss;
+        ss << url << "exiv2.php";
+        std::string postUrl = ss.str();
+        curl_easy_setopt(curl_, CURLOPT_URL, postUrl.c_str());
 
         // encode base64
         size_t encodeLength = ((size + 2) / 3) * 4 + 1;
@@ -1870,7 +1874,7 @@ namespace Exiv2 {
         delete[] encodeData;
 
         // create the post data
-        std::stringstream ss;
+        ss.str("");
         ss << "filename="   << filename << "&"
            << "at="         << at       << "&"
            << "type="       << type     << "&"
