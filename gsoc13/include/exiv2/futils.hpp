@@ -64,15 +64,18 @@ namespace Exiv2 {
 #endif
 // *********************************************************************
 // free functions
+    // URL Encoding from http://www.geekhideout.com/urlcode.shtml
+    EXIV2API char to_hex(char code);
+    EXIV2API char* urlencode(char* str);
     /*!
-      @brief Encodes in base64 the data in in and puts the resulting string in out.
-      @param out_size size in bytes of the out string, it should be at least ((in_size + 2) / 3) * 4 + 1
-      @param in_size  size in bytes of the in buffer
+      @brief Encodes in base64 the data in data_buf and puts the resulting string in result.
+      @param resultSize size in bytes of the out string, it should be at least ((dataLength + 2) / 3) * 4 + 1
+      @param dataLength size in bytes of the in buffer
       @return the string containing the encoded data, or NULL in case of error.
 
-      @note copy from http://ffmpeg.org/doxygen/0.6/base64_8c-source.html
+      @note From http://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
       */
-    EXIV2API char* base64Encode(char* out, size_t out_size, const uint8_t* in, size_t in_size);
+    EXIV2API int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize);
     /*!
       @brief Return the protocol of the path
       @param path the path of file to detect the protocol

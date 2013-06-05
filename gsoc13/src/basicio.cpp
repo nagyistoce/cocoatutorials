@@ -1576,7 +1576,7 @@ namespace Exiv2 {
     long HttpIo::read(byte* buf, long rcount)
     {
         assert(p_->isMalloced_);
-        if (p_->eof_) return EOF;
+        if (p_->eof_) return 0;
 
         size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
         size_t lowBlock  =  p_->idx_         /p_->blockSize_;
@@ -1705,6 +1705,7 @@ namespace Exiv2 {
     //! Internal Pimpl structure of class RemoteIo.
     class RemoteIo::Impl {
     public:
+        enum remoWriteType {rReplace, rAdd};
         //! Constructor
         Impl(const std::string& path, size_t blockSize);
 #ifdef EXV_UNICODE_PATH
@@ -1734,6 +1735,7 @@ namespace Exiv2 {
 
         long getFileLength(long &length);
         long getDataByRange(const char* range, std::string& response);
+        long httpPost(const byte* data, size_t size, long at, remoWriteType type);
         /*!
           @brief Populate the data form the block "lowBlock" to "highBlock".
 
@@ -1836,6 +1838,46 @@ namespace Exiv2 {
         if (strcmp(range, ""))
             curl_easy_setopt(curl_, CURLOPT_RANGE, range);
 
+        /* Perform the request, res will get the return code */
+        CURLcode res = curl_easy_perform(curl_);
+
+        if(res != CURLE_OK) {
+            throw Error(1, curl_easy_strerror(res));
+        } else {
+            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
+        }
+
+        return code;
+    }
+
+    long RemoteIo::Impl::httpPost(const byte* data, size_t size, long at, remoWriteType type)
+    {
+        long code = -1;
+
+        curl_easy_reset(curl_); // reset all options
+        curl_easy_setopt(curl_, CURLOPT_URL, "http://exiv2.nuditu.com/exiv2.php");
+        curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
+        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
+        size_t found = path_.find_last_of("/\\");
+        std::string filename = path_.substr(found+1);
+
+        // encode base64
+        size_t encodeLength = ((size + 2) / 3) * 4 + 1;
+        char* encodeData = new char[encodeLength];
+        base64encode(data, size, encodeData, encodeLength);
+        // url encode
+        char* urlencodeData = urlencode(encodeData);
+        delete[] encodeData;
+
+        // create the post data
+        std::stringstream ss;
+        ss << "filename="   << filename << "&"
+           << "at="         << at       << "&"
+           << "type="       << type     << "&"
+           << "data="       << urlencodeData;
+        std::string postData = ss.str();
+        delete[] urlencodeData;
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, postData.c_str());
         /* Perform the request, res will get the return code */
         CURLcode res = curl_easy_perform(curl_);
 
@@ -1973,9 +2015,25 @@ namespace Exiv2 {
         return 0;
     }
 
-    long RemoteIo::write(BasicIo& /* unused src*/)
+    long RemoteIo::write(BasicIo& src)
     {
-        return 0;
+        assert(p_->isMalloced_);
+        if (!src.isopen()) return 0;
+
+        byte buf[102400];
+        long readCount = 0;
+        long writeCount = 0;
+        long writeTotal = 0;
+        while ((readCount = src.read(buf, sizeof(buf)))) {
+            p_->httpPost(buf, readCount, writeTotal, RemoteIo::Impl::rReplace);
+            writeTotal += writeCount = readCount;
+            if (writeCount != readCount) {
+                // try to reset back to where write stopped
+                src.seek(writeCount-readCount, BasicIo::cur);
+                break;
+            }
+        }
+        return writeTotal;
     }
 
     int RemoteIo::putb(byte /*unused data*/)
@@ -1994,7 +2052,7 @@ namespace Exiv2 {
     long RemoteIo::read(byte* buf, long rcount)
     {
         assert(p_->isMalloced_);
-        if (p_->eof_) return EOF;
+        if (p_->eof_) return 0;
 
         size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
         size_t lowBlock  =  p_->idx_         /p_->blockSize_;
@@ -2002,7 +2060,6 @@ namespace Exiv2 {
 
         // connect to server & load the blocks if it's necessary (blocks are false).
         p_->populateBlocks(lowBlock, highBlock);
-
         std::memcpy(buf, &p_->data_[p_->idx_], allow);
         p_->idx_ += (long) allow;
         if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
@@ -2025,9 +2082,13 @@ namespace Exiv2 {
         return p_->data_[p_->idx_++];
     }
 
-    void RemoteIo::transfer(BasicIo& /*unused src*/)
+    void RemoteIo::transfer(BasicIo& src)
     {
-        throw Error(1);
+        if (src.open() != 0) {
+            throw Error(1, "unable to open src when transferring");
+        }
+        write(src);
+        src.close();
     }
 
 #if defined(_MSC_VER)

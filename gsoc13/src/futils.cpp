@@ -60,41 +60,99 @@ namespace Exiv2 {
 
 // *****************************************************************************
 // free functions
-	static const uint8_t map2[] = {
-        0x3e, 0xff, 0xff, 0xff, 0x3f, 0x34, 0x35, 0x36,
-        0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x01,
-        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-        0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11,
-        0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x1a, 0x1b,
-        0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23,
-        0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
-        0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
-    };
-    char* base64Encode(char* out, size_t out_size, const uint8_t* in, size_t in_size) {
-        static const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        char *ret, *dst;
-        unsigned i_bits = 0;
-        size_t i_shift = 0;
-        size_t bytes_remaining = in_size;
+    char to_hex(char code) {
+        static char hex[] = "0123456789abcdef";
+        return hex[code & 15];
+    }
 
-        if (in_size >= UINT_MAX / 4 || out_size < (in_size+2) / 3 * 4 + 1)
-            return NULL;
-        ret = dst = out;
-        while (bytes_remaining) {
-            i_bits = (i_bits << 8) + *in++;
-            bytes_remaining--;
-            i_shift += 8;
-            do {
-                *dst++ = b64[(i_bits << 6 >> i_shift) & 0x3f];
-                i_shift -= 6;
-            } while (i_shift > 6 || (bytes_remaining == 0 && i_shift > 0));
+    char* urlencode(char* str) {
+        char* pstr = str;
+        char* buf = (char*)malloc(strlen(str) * 3 + 1);
+        char* pbuf = buf;
+        while (*pstr) {
+            if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
+                *pbuf++ = *pstr;
+            else if (*pstr == ' ')
+                *pbuf++ = '+';
+            else
+                *pbuf++ = '%', *pbuf++ = to_hex(*pstr >> 4), *pbuf++ = to_hex(*pstr & 15);
+            pstr++;
         }
-        while ((dst - ret) & 3) *dst++ = '=';
-        *dst = '\0';
+        *pbuf = '\0';
+        return buf;
+    }
+    int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize) {
+        const char base64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        const uint8_t* data = (const uint8_t*)data_buf;
+        size_t resultIndex = 0;
+        size_t x;
+        uint32_t n = 0;
+        int padCount = dataLength % 3;
+        uint8_t n0, n1, n2, n3;
 
-        return ret;
+        /* increment over the length of the string, three characters at a time */
+        for (x = 0; x < dataLength; x += 3)
+        {
+            /* these three 8-bit (ASCII) characters become one 24-bit number */
+            n = data[x] << 16;
+
+            if((x+1) < dataLength)
+                n += data[x+1] << 8;
+
+            if((x+2) < dataLength)
+                n += data[x+2];
+
+            /* this 24-bit number gets separated into four 6-bit numbers */
+            n0 = (uint8_t)(n >> 18) & 63;
+            n1 = (uint8_t)(n >> 12) & 63;
+            n2 = (uint8_t)(n >> 6) & 63;
+            n3 = (uint8_t)n & 63;
+
+            /*
+            * if we have one byte available, then its encoding is spread
+            * out over two characters
+            */
+            if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
+            result[resultIndex++] = base64chars[n0];
+            if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
+            result[resultIndex++] = base64chars[n1];
+
+            /*
+            * if we have only two bytes available, then their encoding is
+            * spread out over three chars
+            */
+            if((x+1) < dataLength)
+            {
+                if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
+                result[resultIndex++] = base64chars[n2];
+            }
+
+            /*
+            * if we have all three bytes available, then their encoding is spread
+            * out over four characters
+            */
+            if((x+2) < dataLength)
+            {
+                if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
+                result[resultIndex++] = base64chars[n3];
+            }
+        }
+
+        /*
+        * create and add padding that is required if we did not have a multiple of 3
+        * number of characters available
+        */
+        if (padCount > 0)
+        {
+            for (; padCount < 3; padCount++)
+            {
+                if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
+                result[resultIndex++] = '=';
+            }
+        }
+        if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
+        result[resultIndex] = 0;
+        return 1;   /* indicate success */
     }
 
     Protocol fileProtocol(const std::string& path) {
