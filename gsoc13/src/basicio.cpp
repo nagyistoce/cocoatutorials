@@ -1864,6 +1864,7 @@ namespace Exiv2 {
         ss << url << "exiv2.php";
         std::string postUrl = ss.str();
         curl_easy_setopt(curl_, CURLOPT_URL, postUrl.c_str());
+        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
 
         // encode base64
         size_t encodeLength = ((size + 2) / 3) * 4 + 1;
