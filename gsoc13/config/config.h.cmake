@@ -194,15 +194,16 @@ typedef int pid_t;
 /* Define to `unsigned' if <sys/types.h> does not define. */
 #cmakedefine size_t
 
-#if defined __CYGWIN32__ && !defined __CYGWIN__
+#if defined(__CYGWIN32__) && !defined(__CYGWIN__)
    /* For backwards compatibility with Cygwin b19 and
       earlier, we define __CYGWIN__ here, so that
       we can rely on checking just for that macro. */
 #define __CYGWIN__  __CYGWIN32__
+#define EXV_HAVE_GXXCLASSVISIBILITY
 #endif
      
 /* File path seperator */
-#if defined WIN32 && !defined __CYGWIN__
+#if defined(WIN32) && !defined(__CYGWIN__)
 #define EXV_SEPERATOR_STR "\\"
 #define EXV_SEPERATOR_CHR '\\'
 #else
@@ -211,7 +212,7 @@ typedef int pid_t;
 #endif
 
 /* Shared library support, see http://gcc.gnu.org/wiki/Visibility */
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 # define EXV_IMPORT __declspec(dllimport)
 # define EXV_EXPORT __declspec(dllexport)
 # define EXV_DLLLOCAL
