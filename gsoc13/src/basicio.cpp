@@ -1705,7 +1705,6 @@ namespace Exiv2 {
     //! Internal Pimpl structure of class RemoteIo.
     class RemoteIo::Impl {
     public:
-        enum remoWriteType {rReplace, rAdd};
         //! Constructor
         Impl(const std::string& path, size_t blockSize);
 #ifdef EXV_UNICODE_PATH
@@ -1735,7 +1734,7 @@ namespace Exiv2 {
 
         long getFileLength(long &length);
         long getDataByRange(const char* range, std::string& response);
-        long httpPost(const byte* data, size_t size, long at, remoWriteType type);
+        long httpPost(const byte* data, size_t size, long from, long to);
         /*!
           @brief Populate the data form the block "lowBlock" to "highBlock".
 
@@ -1850,8 +1849,9 @@ namespace Exiv2 {
         return code;
     }
 
-    long RemoteIo::Impl::httpPost(const byte* data, size_t size, long at, remoWriteType type)
+    long RemoteIo::Impl::httpPost(const byte* data, size_t size, long from, long to)
     {
+        //printf("RemoteIo::Impl::httpPost post %ld bytes to server (filesize = %ld)\n", size, (long)size_);
         long code = -1;
 
         curl_easy_reset(curl_); // reset all options
@@ -1877,8 +1877,8 @@ namespace Exiv2 {
         // create the post data
         ss.str("");
         ss << "filename="   << filename << "&"
-           << "at="         << at       << "&"
-           << "type="       << type     << "&"
+           << "from="       << from     << "&"
+           << "to="         << to       << "&"
            << "data="       << urlencodeData;
         std::string postData = ss.str();
         delete[] urlencodeData;
@@ -2025,20 +2025,59 @@ namespace Exiv2 {
         assert(p_->isMalloced_);
         if (!src.isopen()) return 0;
 
-        byte buf[102400];
-        long readCount = 0;
-        long writeCount = 0;
-        long writeTotal = 0;
-        while ((readCount = src.read(buf, sizeof(buf)))) {
-            p_->httpPost(buf, readCount, writeTotal, RemoteIo::Impl::rReplace);
-            writeTotal += writeCount = readCount;
-            if (writeCount != readCount) {
-                // try to reset back to where write stopped
-                src.seek(writeCount-readCount, BasicIo::cur);
-                break;
+        // Find $from position
+        src.seek(0, BasicIo::beg);
+        long left = -1, right = -1, blockIndex = 0, i = 0, readCount = 0;
+        byte buf[10240];
+        long bufSize = sizeof(buf);
+
+        if (src.size() < 10240 || p_->size_ < 10240) {
+            left = 0;
+            right = 0;
+        } else {
+            i = 0;
+            while ((left == -1) && (readCount = src.read(buf, bufSize))) {
+                for (;(i - blockIndex*bufSize < readCount) && (i < p_->size_) && (left == -1); i++) {
+                    if (buf[i - blockIndex*bufSize] != p_->data_[i]) {
+                        left = i;
+                    }
+                }
+                blockIndex++;
+            }
+            if (left == -1) {
+                left = i;
+                right = 0;
+            } else {
+                // Find $to position
+                blockIndex = 0;
+                i = 0;
+                src.seek(-1*bufSize, BasicIo::end);
+                while (right == -1 && (readCount = src.read(buf, bufSize))) {
+                    for (;i - blockIndex*bufSize < readCount && i < p_->size_ && right == -1; i++) {
+                        if (buf[blockIndex*bufSize+readCount -1 - i] != p_->data_[p_->size_-1-i]) {
+                            right = i;
+                        }
+                    }
+
+                    // move cursor
+                    if (src.size() - i < bufSize) {
+                        src.seek(0, BasicIo::beg);
+                    } else {
+                        src.seek(-1*i-bufSize, BasicIo::end);
+                    }
+                    blockIndex++;
+                }
+
             }
         }
-        return writeTotal;
+
+        long dataSize = src.size() - left - right;
+        byte* data = (byte*) std::malloc(dataSize);
+        src.seek(left, BasicIo::beg);
+        src.read(data, dataSize);
+        p_->httpPost(data, dataSize, left, p_->size_ - right);
+        if (data) std::free(data);
+        return src.size();
     }
 
     int RemoteIo::putb(byte /*unused data*/)
