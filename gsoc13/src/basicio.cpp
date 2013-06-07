@@ -1824,6 +1824,7 @@ namespace Exiv2 {
 
     long RemoteIo::Impl::getDataByRange(const char* range, std::string& response)
     {
+        //printf("RemoteIo::Impl::getDataByRange %s\n", range);
         long code = -1;
 
         curl_easy_reset(curl_); // reset all options
@@ -1984,6 +1985,9 @@ namespace Exiv2 {
                         p_->size_ = (size_t) data.length();
                         size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
                         p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
+                        if(!p_->data_) {
+                            throw Error(1, "Unable to allocate the memory for image data.");
+                        }
                         p_->blocksRead_ = new bool[nBlocks];
                         ::memset(p_->blocksRead_, false, nBlocks);
                         p_->isMalloced_ = true;
@@ -2028,16 +2032,16 @@ namespace Exiv2 {
         // Find $from position
         src.seek(0, BasicIo::beg);
         long left = -1, right = -1, blockIndex = 0, i = 0, readCount = 0;
-        byte buf[10240];
+        byte buf[1024];
         long bufSize = sizeof(buf);
 
-        if (src.size() < 10240 || p_->size_ < 10240) {
+        if ((src.size() < bufSize) || ((long)p_->size_ < bufSize)) {
             left = 0;
             right = 0;
         } else {
             i = 0;
             while ((left == -1) && (readCount = src.read(buf, bufSize))) {
-                for (;(i - blockIndex*bufSize < readCount) && (i < p_->size_) && (left == -1); i++) {
+                for (;(i - blockIndex*bufSize < readCount) && (i < (long)p_->size_) && (left == -1); i++) {
                     if (buf[i - blockIndex*bufSize] != p_->data_[i]) {
                         left = i;
                     }
@@ -2053,7 +2057,7 @@ namespace Exiv2 {
                 i = 0;
                 src.seek(-1*bufSize, BasicIo::end);
                 while (right == -1 && (readCount = src.read(buf, bufSize))) {
-                    for (;i - blockIndex*bufSize < readCount && i < p_->size_ && right == -1; i++) {
+                    for (;i - blockIndex*bufSize < readCount && i < (long)p_->size_ && right == -1; i++) {
                         if (buf[blockIndex*bufSize+readCount -1 - i] != p_->data_[p_->size_-1-i]) {
                             right = i;
                         }
@@ -2222,6 +2226,14 @@ namespace Exiv2 {
     {
         return BasicIo::AutoPtr(new MemIo);
     }
+
+    void RemoteIo::populateFakeData()
+    {
+        assert(p_->isMalloced_);
+        size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+        ::memset(p_->blocksRead_, true, nBlocks);
+    }
+
 #endif
 
     // *************************************************************************

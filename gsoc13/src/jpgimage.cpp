@@ -820,6 +820,8 @@ namespace Exiv2 {
             ++count;
         }
 
+        Exiv2::RemoteIo* remoteIo = dynamic_cast<Exiv2::RemoteIo*>(io_.get());
+        if (remoteIo != NULL) remoteIo->populateFakeData();
         // Copy rest of the Io
         io_->seek(-2, BasicIo::cur);
         buf.alloc(4096);
