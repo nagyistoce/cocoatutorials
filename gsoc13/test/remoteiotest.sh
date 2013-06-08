@@ -26,65 +26,88 @@ RemoteIoTest()
 
 (   cd "$testdir"
 
+    # check environmental variable
+    if [ -z $EXIV2_AWSUBUNTU_HOST ]; then
+        echo "***" do not know host for AWSUBUNTU "***"
+        exit 1
+    fi
+    if [ -z $EXIV2_AWSUBUNTU_USERNAME ]; then
+        echo "***" do not know username for AWSUBUNTU "***"
+        exit 1
+    fi
+    if [ -z $EXIV2_AWSUBUNTU_PASSWORD ]; then
+        echo "***" do not know password for AWSUBUNTU "***"
+        exit 1
+    fi
+
     errors=0
-
-    remoteIoTest_files="http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg0.jpg \
-                      https://54.251.248.216/remoteImg0.jpg  \
-                      https://54.251.248.216/remoteImg1.jpg  \
-                      https://54.251.248.216/remoteImg2.jpg  \
-                      https://54.251.248.216/remoteImg3.jpg  \
-                      https://54.251.248.216/remoteImg4.jpg  \
-                      https://54.251.248.216/remoteImg5.jpg  \
-                      https://54.251.248.216/remoteImg6.jpg  \
-                      https://54.251.248.216/remoteImg7.jpg  \
-                      https://54.251.248.216/remoteImg8.jpg  \
-                      https://54.251.248.216/remoteImg9.jpg  \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg0.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg1.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg2.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg3.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg4.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg5.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg6.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg7.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg8.jpg \
-                      ftp://exiv2%40nuditu.com:2943026@nuditu.com/remoteImg9.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg0.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg1.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg2.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg3.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg4.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg5.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg6.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg7.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg8.jpg \
-                      sftp://ubuntu:p%40ssw0rd@54.251.248.216/home/ubuntu/www/remoteImg9.jpg"
-
-    USE_CURL=$("$bin"/exiv2 -v -V | grep ^curl= | sed s/curl=//)
-    if [ "$USE_CURL" == "1" ]; then
-      #Tests for remoteIo
-      echo 
-      printf 'remoteIo   '
-      for i in $remoteIoTest_files; do RemoteIoTest $i; done
-
-      if [ $errors -eq 0 ]; then
-          printf '\nAll test cases passed\n'
-      else
-          printf "\n---------------------------------------------------------\n"
-          echo $errors ' remoteIo failed!'
-      fi
+    files+=(remoteImg{0..9}.jpg)
+    USE_CURL=$("$bin"/exiv2 -v -V | grep ^curlprotocols= | sed s/curlprotocols=//)
+    if [ "$USE_CURL" == "" ]; then
+        #Skip remoteIo test cases
+        echo 'Curl is not used. Skip remoteio test cases.'
     else
-      #Skip remoteIo test cases
-      printf '\nCurl is not used. Skip remoteio test cases.\n'
+        echo 'RemoteIo'
+        # HTTP protocol
+        if [[ "$USE_CURL" == *http* ]]; then
+            errors=0
+            printf 'HTTP  '
+            for name in ${files[@]}; do
+                RemoteIoTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+            done
+            if [ $errors -eq 0 ]; then
+                printf '\nAll test cases passed\n'
+            else
+                echo $errors ' test cases failed!'
+            fi
+        else
+            echo 'Curl doesnt support HTTP'
+        fi
+
+        if [[ "$USE_CURL" == *https* ]]; then
+            errors=0
+            printf 'HTTPS '
+            for name in ${files[@]}; do
+                RemoteIoTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
+            done
+            if [ $errors -eq 0 ]; then
+                printf '\nAll test cases passed\n'
+            else
+                echo $errors ' test cases failed!'
+            fi
+        else
+            echo 'Curl doesnt support HTTPS'
+        fi
+
+        if [[ "$USE_CURL" == *ftp* ]]; then
+            errors=0
+            printf 'FTP   '
+            for name in ${files[@]}; do
+                RemoteIoTest "ftp://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/www/$name"
+            done
+            if [ $errors -eq 0 ]; then
+                printf '\nAll test cases passed\n'
+            else
+                echo $errors ' test cases failed!'
+            fi
+        else
+            echo 'Curl doesnt support FTP'
+        fi
+
+        if [[ "$USE_CURL" == *sftp* ]]; then
+            errors=0
+            printf 'SFTP  '
+            for name in ${files[@]}; do
+                RemoteIoTest "sftp://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$name"
+            done
+            if [ $errors -eq 0 ]; then
+                printf '\nAll test cases passed\n'
+            else
+                echo $errors ' test cases failed!'
+            fi
+        else
+            echo 'Curl doesnt support SFTP'
+        fi
     fi
 )
 

@@ -79,6 +79,9 @@ namespace Exiv2 {
 #include <string>
 #include <vector>
 #include <stdio.h>
+#if EXV_USE_CURL == 1
+#include <curl/curl.h>
+#endif
 using namespace std;
 typedef vector<string>      string_v;
 typedef string_v::iterator  string_i;
@@ -237,9 +240,15 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     os << "version="  << __VERSION__            << endl;
     os << "date="     << __DATE__               << endl;
     os << "time="     << __TIME__               << endl;
-    os << "curl="     << EXV_USE_CURL           << endl;
+#if EXV_USE_CURL == 1
+    curl_version_info_data* vinfo   =  curl_version_info(CURLVERSION_NOW);
+    os << "curlversion="            << vinfo->version      << endl;
+    os << "curlprotocols=";
+    for (int i = 0; vinfo->protocols[i]; i++)
+        os << vinfo->protocols[i] << " ";
+    os << endl;
+#endif
     os << "id="       << "$Id$" << endl;
-
     if ( libs.begin() != libs.end() ) {
         os << "executable=" << *libs.begin() << endl;
         for ( string_i lib = libs.begin()+1 ; lib != libs.end() ; lib++ )
