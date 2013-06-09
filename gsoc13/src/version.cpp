@@ -31,18 +31,27 @@ EXIV2_RCSID("@(#) $Id$")
 
 // *****************************************************************************
 
+#include "exv_conf.h"
+
+#ifndef EXV_USE_CURL
+#define EXV_USE_CURL 0
+#endif
+#if EXV_USE_CURL == 1
+#include <curl/curl.h>
+#endif
+
 #if defined(__CYGWIN__)
 #include <windows.h>
 #endif
 
-#include "exv_conf.h"
 #include "http.hpp"
-
 #include "version.hpp"
 
 // + standard includes
 #include <iomanip>
 #include <sstream>
+
+
 
 namespace Exiv2 {
     int versionNumber()
@@ -79,9 +88,6 @@ namespace Exiv2 {
 #include <string>
 #include <vector>
 #include <stdio.h>
-#if EXV_USE_CURL == 1
-#include <curl/curl.h>
-#endif
 using namespace std;
 typedef vector<string>      string_v;
 typedef string_v::iterator  string_i;
@@ -91,9 +97,6 @@ typedef string_v::iterator  string_i;
 #endif
 #ifndef _MAX_PATH
 #define _MAX_PATH 512
-#endif
-#ifndef EXV_USE_CURL
-#define EXV_USE_CURL 0
 #endif
 
 // platform specific support for dumpLibraryInfo
