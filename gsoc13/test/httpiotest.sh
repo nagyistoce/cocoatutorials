@@ -56,31 +56,27 @@ httpIoTest()
 
 (   cd "$testdir"
 
+    # check environmental variable
+    if [ -z $EXIV2_AWSUBUNTU_HOST ]; then
+        echo "***" please set the environmental variable EXIV2_AWSUBUNTU_HOST "***"
+        exit 1
+    fi
+
     errors=0
-
-    httpTest_file="http://exiv2.nuditu.com/httptest.jpg"
-    httpIoTest_files="http://exiv2.nuditu.com/remoteImg0.jpg \
-                      http://exiv2.nuditu.com/remoteImg1.jpg \
-                      http://exiv2.nuditu.com/remoteImg2.jpg \
-                      http://exiv2.nuditu.com/remoteImg3.jpg \
-                      http://exiv2.nuditu.com/remoteImg4.jpg \
-                      http://exiv2.nuditu.com/remoteImg5.jpg \
-                      http://exiv2.nuditu.com/remoteImg6.jpg \
-                      http://exiv2.nuditu.com/remoteImg7.jpg \
-                      http://exiv2.nuditu.com/remoteImg8.jpg \
-                      http://exiv2.nuditu.com/remoteImg9.jpg"
-
+    testfile="http://$EXIV2_AWSUBUNTU_HOST/httptest.jpg"
+    files+=(remoteImg{0..9}.jpg)
     # httptest (basic sanity test)
-    echo 
     printf 'httptest '
-    httpTest $httpTest_file
+    httpTest $testfile
     
     # httpIo (more files)
     if [ $errors -eq 0 ]; then
         #Tests for httpIo
         echo 
         printf 'httpIo   '
-        for i in $httpIoTest_files; do httpIoTest $i; done
+        for name in ${files[@]}; do
+            httpIoTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+        done
 
         if [ $errors -eq 0 ]; then
             printf '\nAll test cases passed\n'
