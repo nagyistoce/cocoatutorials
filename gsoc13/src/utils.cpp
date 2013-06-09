@@ -90,6 +90,8 @@ namespace Util {
     std::string dirname(const std::string& path)
     {
         if (path == "") return ".";
+        if (Exiv2::fileProtocol(path)) return "."; // for remote files
+
         // Strip trailing slashes or backslashes
         std::string p = path;
         while (   p.length() > 1

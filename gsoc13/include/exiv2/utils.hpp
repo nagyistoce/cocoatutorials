@@ -33,7 +33,7 @@
 // included header files
 // + standard includes
 #include <string>
-
+#include <futils.hpp>
 // *********************************************************************
 // namespace extensions
 /*!
