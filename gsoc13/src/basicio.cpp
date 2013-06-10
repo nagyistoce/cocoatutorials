@@ -292,12 +292,15 @@ namespace Exiv2 {
             if (::getxattr(src.p_->path_.c_str(), name, value, sizeof(value), 0, 0) != valueSize) {
                 throw Error(2, src.p_->path_, strError(), "getxattr");
             }
-#ifdef DEBUG
+// #906.  Mountain Lion 'sandbox' terminates the app when we call setxattr
+#ifndef __APPLE__
+#ifdef  DEBUG
             EXV_DEBUG << "Copying xattr \"" << name << "\" with value size " << valueSize << "\n";
 #endif
             if (::setxattr(path_.c_str(), name, value, valueSize, 0, 0) != 0) {
                 throw Error(2, path_, strError(), "setxattr");
             }
+#endif
         }
 #else
         // No xattr support for this platform.
