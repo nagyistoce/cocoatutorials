@@ -2079,7 +2079,7 @@ namespace Exiv2 {
         byte* data = (byte*) std::malloc(dataSize);
         src.seek(left, BasicIo::beg);
         src.read(data, dataSize);
-        p_->httpPost(data, dataSize, left, p_->size_ - right);
+        p_->httpPost(data, dataSize, left, (long) p_->size_ - right);
         if (data) std::free(data);
         return src.size();
     }

@@ -87,7 +87,7 @@ namespace Exiv2 {
         size_t resultIndex = 0;
         size_t x;
         uint32_t n = 0;
-        int padCount = dataLength % 3;
+        size_t padCount = dataLength % 3;
         uint8_t n0, n1, n2, n3;
 
         /* increment over the length of the string, three characters at a time */
