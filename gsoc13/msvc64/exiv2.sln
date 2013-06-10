@@ -119,12 +119,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmpsample", "xmpsample\xmps
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmpparser-test", "xmpparser-test\xmpparser-test.vcproj", "{85121FD0-01A1-49BA-B168-CC8D90F91A6F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{831EF580-92C8-4CA8-B0CE-3D906280A54D} = {831EF580-92C8-4CA8-B0CE-3D906280A54D}
 		{09877CF4-83B6-44FE-A2E2-629AA5C8093E} = {09877CF4-83B6-44FE-A2E2-629AA5C8093E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmpparse", "xmpparse\xmpparse.vcproj", "{1708EFC1-414E-4712-80A5-813A6F38814C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{09877CF4-83B6-44FE-A2E2-629AA5C8093E} = {09877CF4-83B6-44FE-A2E2-629AA5C8093E}
+		{831EF580-92C8-4CA8-B0CE-3D906280A54D} = {831EF580-92C8-4CA8-B0CE-3D906280A54D}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exifcomment", "exifcomment\exifcomment.vcproj", "{D291B6EF-986B-4222-ADA6-38A2EC2A56CE}"
