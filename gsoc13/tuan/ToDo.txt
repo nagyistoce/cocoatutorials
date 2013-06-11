@@ -1,3 +1,33 @@
+2013-05-10&11:
++ Implementing the http post write for HttpIo class
++ Investigating about ssh.
+
+2013-05-9:
++ Allow extract thumbnails, datasets into local files ... with RemoteIo (old bugs - I have just realized that)
++ Fix the curl_version_info in version.cpp on cygwin
++ Refactor remoteio.sh, httpio.sh.
++ Add test scripts for http post write access.
++ Build on different platforms:
+   + CMake, ./configure : OK on MAC
+   + CMake, ./configure : OK on AWS Ubuntu
+   + ./configure: OK on AWS Windows
+      CMake: running now
+   + msvs2010 : not tested
+
+2013-05-8:
++ Testing write access (HTTP POST), it works well with JPG images.
++ sftp is now ok on ubuntu aws machine.
++ Modifying remoteio.sh. Everything seemed OK until I realized that curl_version_info function gets problems on cygwin.
+
+2013-05-6 & 7:
+Implementing efficient version of HTTP POST.
+
+2013-05-5:
+Improve HTTP POST write access in remote
+
+2013-05-4:
+Investigate HTTP POST, first version of HTTP POST
+
 2013-05-3:
 Investigate HTTP POST
 
@@ -64,6 +94,9 @@ TODO: Tuan
 T1:       Investigate setting up the IIS on windows EC2
 T2:       Add make testt to only run httpiotest.sh and remoteiotest.sh [See R2]
 T3:	  "Make doc"
+T4:	  "HTTP POST" in Robin's code
+T5:	  Documenting the JPEG
+T6:	  SSH
 
 Notes about tasks
 -----------------
@@ -77,7 +110,9 @@ Completed tasks
 ---------------
 R1:[DONE] Document/explain getopt_long
 R2:[DONE] Get make to build bin/.libs/httptest and bin/.libs/remotetest [See T2]
+T1:[DONE]
 T2:[DONE] $ make; $ make testx and $make tests
+T4:[DONE]
 
 # That's all Folks!
 ##
