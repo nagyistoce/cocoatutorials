@@ -954,6 +954,8 @@ namespace Exiv2 {
          @return An instance of BasicIo
         */
        virtual BasicIo::AutoPtr temporary() const;
+
+       void populateFakeData();
        //@}
 
     private:

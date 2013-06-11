@@ -1406,8 +1406,8 @@ namespace Exiv2 {
           @return The value of the byte written if successful
           @throw If there is any error when connecting the server.
          */
+        long httpPost(const byte* data, size_t size, long from, long to);
         long populateBlocks(size_t lowBlock, size_t highBlock);
-
     private:
         // NOT IMPLEMENTED
         Impl(const Impl& rhs);                         //!< Copy constructor
@@ -1443,6 +1443,48 @@ namespace Exiv2 {
         hostInfo_["port"  ] = uri.Port;
     }
 #endif
+
+    long HttpIo::Impl::httpPost(const byte* data, size_t size, long from, long to)
+    {
+        //printf("HttpIo::Impl::httpPost post %ld bytes to server (filesize = %ld)\n", size, (long)size_);
+        dict_t response;
+        dict_t request(hostInfo_);
+        std::string errors;
+
+        size_t found = hostInfo_["page"].find_last_of("/\\");
+        std::string filename = hostInfo_["page"].substr(found+1);
+        std::string scriptpage = hostInfo_["page"].substr(0, found+1);
+        std::stringstream ss;
+        ss << scriptpage << "exiv2.php";
+        request["page"] = ss.str();
+        request["verb"] = "POST";
+
+        // encode base64
+        size_t encodeLength = ((size + 2) / 3) * 4 + 1;
+        char* encodeData = new char[encodeLength];
+        base64encode(data, size, encodeData, encodeLength);
+        // url encode
+        char* urlencodeData = urlencode(encodeData);
+        delete[] encodeData;
+
+        // create the post data
+        ss.str("");
+        ss << "filename="   << filename << "&"
+           << "from="       << from     << "&"
+           << "to="         << to       << "&"
+           << "data="       << urlencodeData;
+        std::string postData = ss.str();
+        delete[] urlencodeData;
+
+        // create the header
+        ss.str("");
+        ss << "Content-Length: " << postData.length()  << "\n"
+           << "Content-Type: application/x-www-form-urlencoded\n"
+           << "\n" << postData << "\r\n";
+        request["header"] = ss.str();
+
+        return (long)http(request, response, errors);
+    }
 
     long HttpIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
     {
@@ -1558,9 +1600,64 @@ namespace Exiv2 {
         return 0;
     }
 
-    long HttpIo::write(BasicIo& /* unused src*/)
+    long HttpIo::write(BasicIo& src)
     {
-        return 0;
+        assert(p_->isMalloced_);
+        if (!src.isopen()) return 0;
+
+        // Find $from position
+        src.seek(0, BasicIo::beg);
+        long left = -1, right = -1, blockIndex = 0, i = 0, readCount = 0;
+        byte buf[1024];
+        long bufSize = sizeof(buf);
+
+        if ((src.size() < bufSize) || ((long)p_->size_ < bufSize)) {
+            left = 0;
+            right = 0;
+        } else {
+            i = 0;
+            while ((left == -1) && (readCount = src.read(buf, bufSize))) {
+                for (;(i - blockIndex*bufSize < readCount) && (i < (long)p_->size_) && (left == -1); i++) {
+                    if (buf[i - blockIndex*bufSize] != p_->data_[i]) {
+                        left = i;
+                    }
+                }
+                blockIndex++;
+            }
+            if (left == -1) {
+                left = i;
+                right = 0;
+            } else {
+                // Find $to position
+                blockIndex = 0;
+                i = 0;
+                src.seek(-1*bufSize, BasicIo::end);
+                while (right == -1 && (readCount = src.read(buf, bufSize))) {
+                    for (;i - blockIndex*bufSize < readCount && i < (long)p_->size_ && right == -1; i++) {
+                        if (buf[blockIndex*bufSize+readCount -1 - i] != p_->data_[p_->size_-1-i]) {
+                            right = i;
+                        }
+                    }
+
+                    // move cursor
+                    if (src.size() - i < bufSize) {
+                        src.seek(0, BasicIo::beg);
+                    } else {
+                        src.seek(-1*i-bufSize, BasicIo::end);
+                    }
+                    blockIndex++;
+                }
+
+            }
+        }
+
+        long dataSize = src.size() - left - right;
+        byte* data = (byte*) std::malloc(dataSize);
+        src.seek(left, BasicIo::beg);
+        src.read(data, dataSize);
+        p_->httpPost(data, dataSize, left, (long) p_->size_ - right);
+        if (data) std::free(data);
+        return src.size();
     }
 
     int HttpIo::putb(byte /*unused data*/)
@@ -1610,9 +1707,13 @@ namespace Exiv2 {
         return p_->data_[p_->idx_++];
     }
 
-    void HttpIo::transfer(BasicIo& /*unused src*/)
+    void HttpIo::transfer(BasicIo& src)
     {
-        throw Error(1);
+        if (src.open() != 0) {
+            throw Error(1, "unable to open src when transferring");
+        }
+        write(src);
+        src.close();
     }
 
 #if defined(_MSC_VER)
@@ -1701,6 +1802,13 @@ namespace Exiv2 {
     BasicIo::AutoPtr HttpIo::temporary() const
     {
         return BasicIo::AutoPtr(new MemIo);
+    }
+
+    void HttpIo::populateFakeData()
+    {
+        assert(p_->isMalloced_);
+        size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+        ::memset(p_->blocksRead_, true, nBlocks);
     }
 
 //////////

@@ -819,9 +819,19 @@ namespace Exiv2 {
             if (marker < 0) throw Error(22);
             ++count;
         }
-
+#if EXV_USE_CURL == 1
         Exiv2::RemoteIo* remoteIo = dynamic_cast<Exiv2::RemoteIo*>(io_.get());
-        if (remoteIo != NULL) remoteIo->populateFakeData();
+        if (remoteIo != NULL) {
+            remoteIo->populateFakeData();
+        } else {
+            Exiv2::HttpIo* httpIo = dynamic_cast<Exiv2::HttpIo*>(io_.get());
+            if (httpIo != NULL) httpIo->populateFakeData();
+        }
+#else
+        Exiv2::HttpIo* httpIo = dynamic_cast<Exiv2::HttpIo*>(io_.get());
+        if (httpIo != NULL) httpIo->populateFakeData();
+#endif
+
         // Copy rest of the Io
         io_->seek(-2, BasicIo::cur);
         buf.alloc(4096);

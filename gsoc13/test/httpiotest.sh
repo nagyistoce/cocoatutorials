@@ -40,17 +40,18 @@ httpIoTest()
     src=$(basename "$arg")
     filename=${src%.*}
     test=${filename}.txt
-    good=$datapath/${filename}.txt
-    dot=x
-
-    if [ $scheme = http ]; then
-        dot=.
-        # run tests
-        runTest exifprint $1 "--nocurl" > $test
-    
-        #check results
-        diffCheckAscii $test $good
-    fi
+    good=$datapath/remoteio.txt
+    cmdadd=$datapath/cmdremoteadd.txt
+    cmddel=$datapath/cmdremotedel.txt
+    dot=.
+    # add/set metadata
+    runTest exiv2 "-m" $cmdadd $1
+    # print out the metadata
+    runTest exifprint $1 "--nocurl" > $test
+    # delete metadata
+    runTest exiv2 "-m" $cmddel $1
+    #check results
+    diffCheckAscii $test $good
     printf $dot
 }
 
@@ -64,7 +65,8 @@ httpIoTest()
 
     errors=0
     testfile="http://$EXIV2_AWSUBUNTU_HOST/httptest.jpg"
-    files+=(remoteImg{0..9}.jpg)
+    iopngfiles+=(remoteio{1..5}.png)
+    iojpgfiles+=(remoteio{6..10}.jpg)
     # httptest (basic sanity test)
     printf 'httptest '
     httpTest $testfile
@@ -74,10 +76,12 @@ httpIoTest()
         #Tests for httpIo
         echo 
         printf 'httpIo   '
-        for name in ${files[@]}; do
+        for name in ${iopngfiles[@]}; do
             httpIoTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
         done
-
+        for name in ${iojpgfiles[@]}; do
+            httpIoTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+        done
         if [ $errors -eq 0 ]; then
             printf '\nAll test cases passed\n'
         else
