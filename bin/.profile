@@ -435,6 +435,10 @@ fi
 if [ "$FACTORY" == "rmills-ubuntu" ]; then
 	export PHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
 	export QHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+	unset dir
+	export EXIV2_AWSUBUNTU_USERNAME=ubuntu
+	export EXIV2_AWSUBUNTU_PASSWORD=p@ssw0rd
+	export EXIV2_AWSUBUNTU_HOST=aws-ubuntu
 fi
 
 
