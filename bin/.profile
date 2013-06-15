@@ -4,15 +4,15 @@
 export HOST=`(hostname|cut -d. -f 1)`
 # If id command returns zero, you’ve root access.
 if [ "$USER" == "rootXXX" ]; then                # $(id -u) -eq 0 ];
-	# you are root, set yellow color prompt
-	# http://news.softpedia.com/news/How-to-Customize-the-Shell-Prompt-40033.shtml
-  	PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\] "
+    # you are root, set yellow color prompt
+    # http://news.softpedia.com/news/How-to-Customize-the-Shell-Prompt-40033.shtml
+    PS1="\\[\! $(tput setaf 3)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\] "
 fi
 
 # export PS1='\! $(tput setaf 3)\u@\h:\w$(tput sgr0) $ '
 if [ "$USER" == "rootYYY" ]; then
-#  	PS1="\\[\! $(tput setaf 2)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
-  	PS1='\! $(tput setaf 2)\u@\h:\w$(tput sgr0) # '
+#   PS1="\\[\! $(tput setaf 2)\\]\\u@\\h:\\w $\\[$(tput sgr0)\\] "
+    PS1='\! $(tput setaf 2)\u@\h:\w$(tput sgr0) # '
 fi
 
 # http://wiki.bash-hackers.org/scripting/debuggingtips
@@ -41,16 +41,16 @@ BIN=${HOME}/bin
 
 export PLATFORM=''
 if [ `uname` == Darwin  ]; then
-	PLATFORM=macosx
+    PLATFORM=macosx
 elif [ `uname -o` == Cygwin ]; then
-	PLATFORM=cygwin
+    PLATFORM=cygwin
 else
-	PLATFORM=linux
+    PLATFORM=linux
 fi
 
 export FACTORY=$(hostname)
 if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
-	FACTORY=novariant
+    FACTORY=novariant
 fi
 
 # export EBSREVISION=Dev
@@ -85,9 +85,9 @@ export PERLPATH=/Users/rmills/gnu/ImageMagick
 export PYTHONPATH="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:$PYTHONPATH"  
 export RUBYOPT=rubygems
 if [ ! -z $PERL5LIB ]; then
-	export PERL5LIB="$PERL5LIB:${BIN}"
+    export PERL5LIB="$PERL5LIB:${BIN}"
 else
-	export PERL5LIB="${BIN}"
+    export PERL5LIB="${BIN}"
 fi
 
 ##
@@ -103,10 +103,10 @@ export QHOTOS="$PHOTOS/../../NotDropbox/Photos"
 DropboxPhotos=/Volumes/Data/rmills/Dropbox/Photos
 NotDropboxPhotos=/Volumes/Data/rmills/NotDropbox/Photos
 if [ -e "$DropboxPhotos" ]; then 
-	export PHOTOS="$DropboxPhotos"
+    export PHOTOS="$DropboxPhotos"
 fi
 if [ -e "$NotDropboxPhotos" ]; then 
-	export QHOTOS="$NotDropboxPhotos"
+    export QHOTOS="$NotDropboxPhotos"
 fi
 
 ##
@@ -136,200 +136,200 @@ export ___="{} ;"
 ##
 # functions
 dir() {
-	list='ls -dlthpF'
-	if [ ${#*} -eq 0 ]; then
-		$list *
-	elif [ ${#*} -eq 1 ]; then
-		if [ -d "$1" ]; then
-# 			(pushd "$1">/dev/null;$list *)
-			if [ "$1" == '.' ]; then
-				$list
-			else 
-				$list $(dirname "$1")/$(basename "$1")/*
-			fi
-		elif [ "$1" = /od ]; then
-		    shift
-		    eval dirod $*
-		elif [ "$1" = /os ]; then
-		    shift
-		    eval diros $*
-		else
-			$list "$@"
-		fi
-	else
-		$list "$@"
-	fi
+    list='ls -dlthpF'
+    if [ ${#*} -eq 0 ]; then
+        $list *
+    elif [ ${#*} -eq 1 ]; then
+        if [ -d "$1" ]; then
+#           (pushd "$1">/dev/null;$list *)
+            if [ "$1" == '.' ]; then
+                $list
+            else 
+                $list $(dirname "$1")/$(basename "$1")/*
+            fi
+        elif [ "$1" = /od ]; then
+            shift
+            eval dirod $*
+        elif [ "$1" = /os ]; then
+            shift
+            eval diros $*
+        else
+            $list "$@"
+        fi
+    else
+        $list "$@"
+    fi
 }
 
 export HISTTIMEFORMAT="%T "
 history() { 
-	builtin history | tail -30
+    builtin history | tail -30
 }
 
 free() {
-  	df -h .
-# 	df -k . | tail -1 | cut -f4 -d ' '
+    df -h .
+#   df -k . | tail -1 | cut -f4 -d ' '
 }
 
 dirs() {
-	ls -ltpF $1 | grep "^d"
+    ls -ltpF $1 | grep "^d"
 }
 
 links() {
-	ls -altpF $1 | grep "^l"
-	# 
-	# for x in `(ls -F|grep @)`; do echo "${x::${#x}-1}" ; done
+    ls -altpF $1 | grep "^l"
+    # 
+    # for x in `(ls -F|grep @)`; do echo "${x::${#x}-1}" ; done
 }
 
 files() {
-	ls -altpF $1 | grep "^-"
+    ls -altpF $1 | grep "^-"
 }
 
 socks() {
-	ls -altpF $1 | grep "^s"
+    ls -altpF $1 | grep "^s"
 }
 
 
 diros() {
-	ls -ltF $* | sort --key=5 --numeric-sort
-#	ls -ltFp $* | tigersort +4 -n
+    ls -ltF $* | sort --key=5 --numeric-sort
+#   ls -ltFp $* | tigersort +4 -n
 }
 
 diron() {
-	ls -ltF $* | sort --key=9 --ignore-case
-#	ls -ltp $* | tigersort +8 -i
+    ls -ltF $* | sort --key=9 --ignore-case
+#   ls -ltp $* | tigersort +8 -i
 }
 
 hidden() {
-	ls -altpF $1 | grep " \."
+    ls -altpF $1 | grep " \."
 }
 
 crdir() {
-	dir="$@"
-	if [ $# -eq 1 ]; then
-		mkdir "$@"
-		cd    "$@"
-	elif [ $# -eq 0 ]; then
-		echo "*** give me an argument,buddy ***"
-	else
-		echo "*** too many arguments ***"
-	fi 
+    dir="$@"
+    if [ $# -eq 1 ]; then
+        mkdir "$@"
+        cd    "$@"
+    elif [ $# -eq 0 ]; then
+        echo "*** give me an argument,buddy ***"
+    else
+        echo "*** too many arguments ***"
+    fi 
 }
 alias crd=crdir
 
 to() {
-	##
-	# parse the arguments
-	target=""
-	error=0
-	cd=0
-	help=0
-	verbose=0
-	parse=1
-	args=()
-	for arg in "$@" ; do
-		target="$arg"
-		if [ $parse == 1 ]; then
-			# to lower case if more than 2 characters
-			if [ "${#arg}" -gt 2 ]; then
-				arg="$(echo $arg|perl -e 'print lc <>;')"
-			fi
-			case "$arg" in
-			  -n|--nocd)  	 cd=0   	;;
-			  -c|--cd)  	 cd=1   	;;
-			  -v|--verbose)  verbose=1	;;
-			 -\?|--help|-h)  help=1		;;
-			  --)            parse=0    ;;
-			  *)             parse=0 	; args+=("$target") ;;
-			esac
-		else
-			args+=("$target")
-		fi
-	done
-	
-	##
-	# report or bail
-	if [ ${#args} == 0 ]; then help=1; fi
-	if [ $help == 1 ]; then
-		echo "to [--[no]cd --help --verbose --] [command ...] filename"
-		error=1
-	fi
-	if [ $error == 1 ]; then return; fi
-	
-	unset args[${#args[@]}-1]		
-	argc=${#args}
-	if [ $verbose == 1 ]; then
-		echo args   = ${args[@]} "(argc = $argc)"
-		echo target = "$target" ;
-		echo cd     =  $cd
-	fi
-	
-	##
-	# pain over.  find possible targets
-	tmp=/tmp/2.tmp
-	find . -name "$target" -print > $tmp
-	count=$(wc -l $tmp | rev | sed -e "s/.* //" | rev)
+    ##
+    # parse the arguments
+    target=""
+    error=0
+    cd=0
+    help=0
+    verbose=0
+    parse=1
+    args=()
+    for arg in "$@" ; do
+        target="$arg"
+        if [ $parse == 1 ]; then
+            # to lower case if more than 2 characters
+            if [ "${#arg}" -gt 2 ]; then
+                arg="$(echo $arg|perl -e 'print lc <>;')"
+            fi
+            case "$arg" in
+              -n|--nocd)     cd=0       ;;
+              -c|--cd)       cd=1       ;;
+              -v|--verbose)  verbose=1  ;;
+             -\?|--help|-h)  help=1     ;;
+              --)            parse=0    ;;
+              *)             parse=0    ; args+=("$target") ;;
+            esac
+        else
+            args+=("$target")
+        fi
+    done
+    
+    ##
+    # report or bail
+    if [ ${#args} == 0 ]; then help=1; fi
+    if [ $help == 1 ]; then
+        echo "to [--[no]cd --help --verbose --] [command ...] filename"
+        error=1
+    fi
+    if [ $error == 1 ]; then return; fi
+    
+    unset args[${#args[@]}-1]       
+    argc=${#args}
+    if [ $verbose == 1 ]; then
+        echo args   = ${args[@]} "(argc = $argc)"
+        echo target = "$target" ;
+        echo cd     =  $cd
+    fi
+    
+    ##
+    # pain over.  find possible targets
+    tmp=/tmp/2.tmp
+    find . -name "$target" -print > $tmp
+    count=$(wc -l $tmp | rev | sed -e "s/.* //" | rev)
 
-	if [ "$count" == "1" ]; then
-		dir=$(cat "$tmp")
-		dir=$(dirname "$dir")
-		if [ $argc -gt 0 ]; then
-			if [ $cd == 1 ]; then
-				pushd "$dir"  >/dev/null
-				echo "$" cd "$dir" ";" "${args[@]}" "$target"
-				find . -name "$target" -print0 | xargs -0 "${args[@]}"
-				popd >/dev/null
-			else
-				echo ">" "${args[@]}" "$dir/$target"
-				find . -name "$target" -print0 | xargs -0 "${args[@]}"
-			fi
-		elif [ $argc -eq 0 ]; then
-			if [ -d "$dir/$target" ]; then
-				dir="$dir/$target"
-			fi
-			echo $ cd "$dir" 
-			cd "$dir" 
-		fi
-	elif [ "$count" == "0" ]; then
-		echo "*** NO file found ***"
-	else
-		echo "*** TOO Many files found ***"
-		cat $tmp
-	fi
+    if [ "$count" == "1" ]; then
+        dir=$(cat "$tmp")
+        dir=$(dirname "$dir")
+        if [ $argc -gt 0 ]; then
+            if [ $cd == 1 ]; then
+                pushd "$dir"  >/dev/null
+                echo "$" cd "$dir" ";" "${args[@]}" "$target"
+                find . -name "$target" -print0 | xargs -0 "${args[@]}"
+                popd >/dev/null
+            else
+                echo ">" "${args[@]}" "$dir/$target"
+                find . -name "$target" -print0 | xargs -0 "${args[@]}"
+            fi
+        elif [ $argc -eq 0 ]; then
+            if [ -d "$dir/$target" ]; then
+                dir="$dir/$target"
+            fi
+            echo $ cd "$dir" 
+            cd "$dir" 
+        fi
+    elif [ "$count" == "0" ]; then
+        echo "*** NO file found ***"
+    else
+        echo "*** TOO Many files found ***"
+        cat $tmp
+    fi
 }
 alias 2=to
 
 ##
 # set CE = editor of choice (obsolete)
 #if [ -z "$SSH_CLIENT" ]; then
-#	if   [ "$PLATFORM" == 'macosx' ]; then
-#		export CE=`which bbedit &>/dev/null`
-#		if [ -z "$CE" ]; then
-#			export CE=`which edit &>/dev/null`
-#		fi
-#	elif [ "$PLATFORM" == 'cygwin' ]; then
-#		CE='/cygdrive/c/Users/rmills/com/ce.exe'
-#	elif [ "$PLATFORM" == 'linux' ]; then
-#		export CE=`which kate`
-#		if [ ! -z "$CE" ]; then
-#			export CE="kate --use"
-#			export CE2="&>/dev/null &"
-#		fi		
-#	fi
+#   if   [ "$PLATFORM" == 'macosx' ]; then
+#       export CE=`which bbedit &>/dev/null`
+#       if [ -z "$CE" ]; then
+#           export CE=`which edit &>/dev/null`
+#       fi
+#   elif [ "$PLATFORM" == 'cygwin' ]; then
+#       CE='/cygdrive/c/Users/rmills/com/ce.exe'
+#   elif [ "$PLATFORM" == 'linux' ]; then
+#       export CE=`which kate`
+#       if [ ! -z "$CE" ]; then
+#           export CE="kate --use"
+#           export CE2="&>/dev/null &"
+#       fi      
+#   fi
 #fi
 #
 #if [ "$PLATFORM" == "macosx" ]; then
-#	export CE=bbedit
+#   export CE=bbedit
 #fi
 #
 #ce()
 #{
-#	$CE "$@" 2>/dev/null >/dev/null &
+#   $CE "$@" 2>/dev/null >/dev/null &
 #}
 
 # catch all - use good old vi!
 #if [ -z "$CE" ]; then
-#	export CE=vi
+#   export CE=vi
 #fi
 
 ##
@@ -345,14 +345,14 @@ alias shellx=open
 alias start=open
 
 if [ $PLATFORM == linux ]; then 
-	alias open=xdg-open
-	alias shellx=open
-	alias start=open
-#	export PATH=$PATH:/usr/lib/java/jre1.7.0/bin/
-	export JAVA_HOME=/usr/local/java/jdk1.7.0_21
-	export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
-	JRE_HOME=/usr/local/java/jre1.7.0_21
-	PATH=$PATH:$HOME/bin:$JRE_HOME/bin
+    alias open=xdg-open
+    alias shellx=open
+    alias start=open
+#   export PATH=$PATH:/usr/lib/java/jre1.7.0/bin/
+    export JAVA_HOME=/usr/local/java/jdk1.7.0_21
+    export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+    JRE_HOME=/usr/local/java/jre1.7.0_21
+    PATH=$PATH:$HOME/bin:$JRE_HOME/bin
 fi
 
 # hieroglyphics
@@ -394,16 +394,16 @@ mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
 # Function "remind" 
 remind() {
   # remindme - Searches a data file for matching lines, or shows the entire contents
-  #	of the data file if no argument is specified.
+  # of the data file if no argument is specified.
   rememberFile="${HOME}/bin/.remember"
   if [ $# -eq 0 ] ; then
-  	if [ -e "$rememberFile" ]; then
-  	  more "$rememberFile"
-  	else
-  	  echo "$rememberFile" does not exist
-  	fi
+    if [ -e "$rememberFile" ]; then
+      more "$rememberFile"
+    else
+      echo "$rememberFile" does not exist
+    fi
   else
-  	grep -i "$@" "$rememberFile" | ${PAGER:-more}
+    grep -i "$@" "$rememberFile" | ${PAGER:-more}
   fi
 }
 # Function "remember" 
@@ -421,38 +421,38 @@ remember() {
 ##
 # platform adjustments
 if [ "$PLATFORM" == "cygwin" ]; then
-	d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)
-	if [ -d "$d" ]; then
-		export "BOOST_ROOT=$d"
-	fi
+    d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)
+    if [ -d "$d" ]; then
+        export "BOOST_ROOT=$d"
+    fi
 fi
 
 if [ "$PLATFORM" == "macosx" ]; then
-	: export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
-	# export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH}:/opt/local/lib/"
+    : export DYLD_LIBRARY_PATH=/Users/rmills/boost_1_48_0/stage/lib:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+    # export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH}:/opt/local/lib/"
 fi
 
 if [ "$FACTORY" == "rmills-ubuntu" ]; then
-	export PHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
-	export QHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
-	unset dir
-	export EXIV2_AWSUBUNTU_USERNAME=ubuntu
-	export EXIV2_AWSUBUNTU_PASSWORD=p@ssw0rd
-	export EXIV2_AWSUBUNTU_HOST=aws-ubuntu
+    export PHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+    export QHOTOS=/Windows/Users/rmills/Documents/Dropbox/Photos
+    unset dir
 fi
 
+export EXIV2_AWSUBUNTU_USERNAME=ubuntu
+export EXIV2_AWSUBUNTU_PASSWORD=p@ssw0rd
+export EXIV2_AWSUBUNTU_HOST=aws-ubuntu
 
 ##
 # last minute adjustments for local machines
 if [ "$FACTORY" == "novariant" ]; then
-	export DISPLAY=:4.0
-	export "PATH=~/local/bin/:$PATH"
-	alias ll=dir
+    export DISPLAY=:4.0
+    export "PATH=~/local/bin/:$PATH"
+    alias ll=dir
     export UUT=192.168.116
 fi
 
 if [ "$FACTORY" == "rmills-imac" ]; then
-	export "PATH=/opt/subversion/bin:$PATH"
+    export "PATH=/opt/subversion/bin:$PATH"
 fi
 
 
