@@ -65,9 +65,13 @@ namespace Exiv2 {
         return hex[code & 15];
     }
 
+    char from_hex(char ch) {
+        return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
+    }
+
     char* urlencode(char* str) {
         char* pstr = str;
-        char* buf = (char*)malloc(strlen(str) * 3 + 1);
+        char* buf  = (char*)malloc(strlen(str) * 3 + 1);
         char* pbuf = buf;
         while (*pstr) {
             if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
@@ -81,6 +85,28 @@ namespace Exiv2 {
         *pbuf = '\0';
         return buf;
     }
+
+    char* urldecode(const char* str) {
+        const char* pstr = str;
+        char* buf  = (char*)malloc(strlen(str) + 1);
+        char* pbuf = buf;
+        while (*pstr) {
+            if (*pstr == '%') {
+                if (pstr[1] && pstr[2]) {
+                    *pbuf++ = from_hex(pstr[1]) << 4 | from_hex(pstr[2]);
+                    pstr += 2;
+                }
+            } else if (*pstr == '+') {
+                *pbuf++ = ' ';
+            } else {
+                *pbuf++ = *pstr;
+            }
+            pstr++;
+        }
+        *pbuf = '\0';
+        return buf;
+    }
+
     int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize) {
         const char base64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         const uint8_t* data = (const uint8_t*)data_buf;
@@ -163,6 +189,7 @@ namespace Exiv2 {
              protDict["ftp://"]   = pFtp;
              protDict["https://"] = pHttps;
              protDict["sftp://"]  = pSftp;
+             protDict["ssh://"]   = pSsh;
         }
         for (Exiv2::protDict_i it = protDict.begin(); it != protDict.end(); it++) {
             if (path.find(it->first) == 0)
@@ -275,11 +302,29 @@ namespace Exiv2 {
         else
             protocolEnd = uri.begin();  // no protocol
 
+        //username & password
+        iterator_t authStart = protocolEnd;
+        iterator_t authEnd = std::find(protocolEnd, uriEnd, '@');
+        if (authEnd != uriEnd) {
+            iterator_t userStart = authStart;
+            iterator_t userEnd   = std::find(authStart, authEnd, ':');
+            if (userEnd != authEnd) {
+                result.Username = std::string(userStart, userEnd);
+                userEnd++;
+                result.Password = std::string(userEnd, authEnd);
+            } else {
+                result.Username = std::string(authStart, authEnd);
+            }
+            authEnd++;
+        } else {
+          authEnd = protocolEnd;
+        }
+
         // host
-        iterator_t hostStart = protocolEnd;
+        iterator_t hostStart = authEnd;
         iterator_t pathStart = std::find(hostStart, uriEnd, '/');  // get pathStart
 
-        iterator_t hostEnd = std::find(protocolEnd,
+        iterator_t hostEnd = std::find(authEnd,
             (pathStart != uriEnd) ? pathStart : queryStart,
             ':');  // check for port
 

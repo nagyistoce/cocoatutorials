@@ -415,14 +415,20 @@ namespace Exiv2 {
 		if (path.compare("-") == 0) {
             return BasicIo::AutoPtr(new StdinIo());
         } else {
+            Protocol fProt = fileProtocol(path);
+#if EXV_USE_LIBSSH == 1
+            if (fProt == pSsh) {
+                return BasicIo::AutoPtr(new SshIo(path));
+            }
+#endif
 #if EXV_USE_CURL == 1
-            if (useCurl) {
-                if(fileProtocol(path)) return BasicIo::AutoPtr(new RemoteIo(path));
-            } else {
-                if(fileProtocol(path) == pHttp) return BasicIo::AutoPtr(new HttpIo(path));
+            if (useCurl && fProt && fProt != pSsh) {
+                return BasicIo::AutoPtr(new RemoteIo(path));
+            } else if(fProt == pHttp) {
+                return BasicIo::AutoPtr(new HttpIo(path));
             }
 #else
-            if (fileProtocol(path) == pHttp) return BasicIo::AutoPtr(new HttpIo(path));
+            if (fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(path));
 #endif
 			return BasicIo::AutoPtr(new FileIo(path));
 		}
@@ -433,14 +439,20 @@ namespace Exiv2 {
 		if (wpath.compare(L"-") == 0) {
             return BasicIo::AutoPtr(new StdinIo());
         } else {
+            Protocol fProt = fileProtocol(wpath);
+#if EXV_USE_LIBSSH == 1
+            if (fProt == pSsh) {
+                return BasicIo::AutoPtr(new SshIo(wpath));
+            }
+#endif
 #if EXV_USE_CURL == 1
-            if (useCurl) {
-                if (fileProtocol(wpath)) return BasicIo::AutoPtr(new RemoteIo(wpath));
-            } else {
-                if(fileProtocol(wpath) == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
+            if (useCurl && fProt && fProt != pSsh) {
+                return BasicIo::AutoPtr(new RemoteIo(wpath));
+            } else if(fProt == pHttp) {
+                return BasicIo::AutoPtr(new HttpIo(wpath));
             }
 #else
-            if(fileProtocol(wpath) == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
+            if(fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
 #endif
 			return BasicIo::AutoPtr(new FileIo(wpath));
 		}

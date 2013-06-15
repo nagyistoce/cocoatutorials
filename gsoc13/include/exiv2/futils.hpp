@@ -55,7 +55,7 @@ namespace Exiv2 {
     /*!
        @brief The Protocol enum and the map to hold the strings
      */
-    enum Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp};
+    enum Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
     typedef std::map<std::string,Protocol>           protDict_t;
     typedef std::map<std::string,Protocol>::iterator protDict_i;
 #ifdef EXV_UNICODE_PATH
@@ -66,7 +66,9 @@ namespace Exiv2 {
 // free functions
     // URL Encoding from http://www.geekhideout.com/urlcode.shtml
     EXIV2API char to_hex(char code);
+    EXIV2API char from_hex(char ch);
     EXIV2API char* urlencode(char* str);
+    EXIV2API char* urldecode(const char* str);
     /*!
       @brief Encodes in base64 the data in data_buf and puts the resulting string in result.
       @param resultSize size in bytes of the out string, it should be at least ((dataLength + 2) / 3) * 4 + 1
@@ -124,6 +126,8 @@ namespace Exiv2 {
         std::string Protocol;
         std::string Host;
         std::string Port;
+        std::string Username;
+        std::string Password;
 
         static Uri EXIV2API Parse(const std::string &uri);
     };

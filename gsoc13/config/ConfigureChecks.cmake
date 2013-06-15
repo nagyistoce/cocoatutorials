@@ -68,6 +68,19 @@ IF( EXIV2_ENABLE_CURL )
     ENDIF( MINGW OR UNIX )
 ENDIF( EXIV2_ENABLE_CURL )
 
+IF( EXIV2_ENABLE_LIBSSH )
+    FIND_PACKAGE( LIBSSH )
+    INCLUDE_DIRECTORIES( ${LIBSSH_INCLUDE_DIR} )
+    # FindCURL.cmake doesn't check for REQUIRED flags - so we need to check ourselves
+    IF( MINGW OR UNIX )
+        IF (NOT LIBSSH_FOUND)
+            MESSAGE(FATAL_ERROR "missing library libssh required for SshIo")
+        ELSE (NOT LIBSSH_FOUND)
+            SET ( USE_LIBSSH 1 )
+        ENDIF( NOT LIBSSH_FOUND )
+    ENDIF( MINGW OR UNIX )
+ENDIF( EXIV2_ENABLE_LIBSSH )
+
 IF (EXIV2_ENABLE_XMP)
     FIND_PACKAGE(EXPAT)
     INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIR})
@@ -240,6 +253,7 @@ SET( EXV_SYMBOLS ENABLE_NLS
                  HAVE_XMP_TOOLKIT
                  HAVE__BOOL
                  USE_CURL
+                 USE_LIBSSH
                  PACKAGE
                  PACKAGE_BUGREPORT
                  PACKAGE_NAME
@@ -294,4 +308,5 @@ OptionOutput( "Commercial build:                   " EXIV2_ENABLE_COMMERCIAL    
 OptionOutput( "Build the unit tests:               " EXIV2_ENABLE_BUILD_SAMPLES      )
 OptionOutput( "Building translations files:        " EXIV2_ENABLE_BUILD_PO           )
 OptionOutput( "USE Libcurl for HttpIo:             " EXIV2_ENABLE_CURL               )
+OptionOutput( "USE Libssh for SshIo:               " EXIV2_ENABLE_LIBSSH             )
 MESSAGE( STATUS "------------------------------------------------------------------" )

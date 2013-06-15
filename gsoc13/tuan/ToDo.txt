@@ -89,14 +89,17 @@ BVT:      Now works on Cygwin on Desktop
 
 TODO: Robin
 R3:       Think about how to get the metadata at the end of a BIG file.
+R4:       Http.cpp handles chunk response.
 
 TODO: Tuan
 T1:       Investigate setting up the IIS on windows EC2
 T2:       Add make testt to only run httpiotest.sh and remoteiotest.sh [See R2]
-T3:	  "Make doc"
-T4:	  "HTTP POST" in Robin's code
-T5:	  Documenting the JPEG
-T6:	  SSH
+T3:       "Make doc"
+T4:       "HTTP POST" in Robin's code
+T5:       Documenting the JPEG
+T6:       SSH
+T7:       add EXIV2_xxx environment strings in use
+T8:       refactor basicio.cpp (after everything else working and testable).
 
 Notes about tasks
 -----------------

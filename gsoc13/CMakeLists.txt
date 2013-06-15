@@ -52,6 +52,7 @@ OPTION( EXIV2_ENABLE_COMMERCIAL    "Build with the EXV_COMMERCIAL_VERSION symbol
 OPTION( EXIV2_ENABLE_BUILD_SAMPLES "Build the unit tests"                                  ON  )
 OPTION( EXIV2_ENABLE_BUILD_PO      "Build translations files"                              OFF )
 OPTION( EXIV2_ENABLE_CURL          "USE Libcurl for HttpIo"                                ON  )
+OPTION( EXIV2_ENABLE_LIBSSH        "USE Libssh for SshIo"                                  ON  )
 
 IF( MINGW OR UNIX )
     ADD_DEFINITIONS(-Wall
@@ -78,6 +79,7 @@ if( MSVC )
     set(E expat-2.1.0)
     set(Z zlib-1.2.7)
     set(C curl-7.30.0)
+    set(C libssh-0.5.0)   
     
     if( NOT IS_DIRECTORY ./../${E} )
         set(OUT_OF_SOURCE 1)
@@ -96,6 +98,13 @@ if( MSVC )
         set(CURL_LIBRARY       ${CMAKE_SOURCE_DIR}/../${C}/$(ConfigurationName)/curl)
         set(CURL_INCLUDE_DIR   ${CMAKE_SOURCE_DIR}/../${C})
         include_directories( ${CURL_INCLUDE_DIR})
+    endif()
+
+    # FIND_PACKAGE(LIBSSH)
+    if ( NOT LIBSSH_FOUND )
+        set(LIBSSH_LIBRARY       ${CMAKE_SOURCE_DIR}/../${C}/$(ConfigurationName)/libssh)
+        set(LIBSSH_INCLUDE_DIR   ${CMAKE_SOURCE_DIR}/../${C})
+        include_directories( ${LIBSSH_INCLUDE_DIR})
     endif()
     
     # FIND_PACKAGE(ZLIB QUIET)

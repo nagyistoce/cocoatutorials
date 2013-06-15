@@ -82,6 +82,7 @@ CCSRC =  asfvideo.cpp      \
 	 fujimn.cpp            \
 	 gifimage.cpp          \
 	 http.cpp              \
+	 ssh.cpp               \
 	 image.cpp             \
 	 iptc.cpp              \
 	 jp2image.cpp          \
@@ -150,9 +151,9 @@ SHELL = /bin/sh
 
 .PRECIOUS: %.cpp
 
-CPPFLAGS += $(CURL_CPPFLAGS) $(XMPSDK_CPPFLAGS)
-LDFLAGS  += $(CURL_LDFLAGS) $(EXPAT_LDFLAGS) $(XMPSDK_LDFLAGS)
-LIBS     += $(CURL_LIBS) $(EXPAT_LIBS) $(XMPSDK_LIBS)
+CPPFLAGS += $(LIBSSH_CPPFLAGS) $(CURL_CPPFLAGS) $(XMPSDK_CPPFLAGS)
+LDFLAGS  += $(LIBSSH_LDFLAGS) $(CURL_LDFLAGS) $(EXPAT_LDFLAGS) $(XMPSDK_LDFLAGS)
+LIBS     += $(LIBSSH_LIBS) $(CURL_LIBS) $(EXPAT_LIBS) $(XMPSDK_LIBS)
 
 # Generic variables
 CCHDR := $(CCHDR) $(CCSRC:.cpp=.hpp)

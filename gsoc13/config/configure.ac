@@ -190,6 +190,47 @@ fi
 CPPFLAGS=${_cppflags}
 LDFLAGS=${_ldflags}
 
+
+# libssh option might change flags, so we save them initially
+_cppflags="${CPPFLAGS}"
+_ldflags="${LDFLAGS}"
+
+AC_ARG_WITH(libssh,
+[  --with-libssh[[=DIR]]    use libssh in DIR],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    LIBSSH_DIR=$withval
+    CPPFLAGS="${CPPFLAGS} -I$withval/include"
+    LDFLAGS="${LDFLAGS} -L$withval/lib"
+  fi
+])
+
+USE_LIBSSH=
+if test "$with_libssh" != "no"; then
+    # Check for libssh library
+    found_libssh=yes
+    LIBSSH_CPPFLAGS=
+    LIBSSH_LDFLAGS=
+    LIBSSH_LIBS=
+    AC_CHECK_HEADERS(libssh/libssh.h,
+        AC_CHECK_LIB(ssh, ssh_new,[
+            USE_LIBSSH=yes
+            AC_DEFINE([USE_LIBSSH], [1], [Use libssh library])
+            LIBSSH_LIBS="-lssh"
+            if test "x${LIBSSH_DIR}" != "x"; then
+                LIBSSH_CPPFLAGS="-I${LIBSSH_DIR}/include"
+                LIBSSH_LDFLAGS="-L${LIBSSH_DIR}/lib"
+            fi],[found_libssh=no]),[found_libssh=no])
+    if test "$found_libssh" = "no"; then
+        AC_MSG_ERROR(either specify a valid libssh installation with --with-libssh=DIR or disable libssh support with --disable-libssh)
+    fi
+    AC_SUBST(LIBSSH_CPPFLAGS)
+    AC_SUBST(LIBSSH_LDFLAGS)
+    AC_SUBST(LIBSSH_LIBS)
+fi
+CPPFLAGS=${_cppflags}
+LDFLAGS=${_ldflags}
+
+
 # expat option might change flags, so we save them initially
 _cppflags="${CPPFLAGS}"
 _ldflags="${LDFLAGS}"
@@ -326,6 +367,17 @@ yes) echo "-- Using Lib Curl................. YES" ;;
      echo "files are installed and use --with-curl=DIR if it is in a"
      echo "non-standard location. You can get Curl from"
      echo "http://curl.haxx.se/libcurl/"
+     echo "" ;;
+esac
+
+case "$USE_LIBSSH" in
+yes) echo "-- Using Lib SSH................. YES" ;;
+*)   echo "-- Using Lib SSH................. NO"
+     echo ""
+     echo "Libssh is required for SshIo in basicIo.cpp. Make sure the libssh header"
+     echo "files are installed and use --with-libssh=DIR if it is in a"
+     echo "non-standard location. You can get libssh from"
+     echo "http://www.libssh.org/get-it/"
      echo "" ;;
 esac
 

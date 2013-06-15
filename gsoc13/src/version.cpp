@@ -33,6 +33,10 @@ EXIV2_RCSID("@(#) $Id$")
 
 #include "exv_conf.h"
 
+#ifndef EXV_USE_LIBSSH
+#define EXV_USE_LIBSSH 0
+#endif
+
 #ifndef EXV_USE_CURL
 #define EXV_USE_CURL 0
 #endif
@@ -243,6 +247,7 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     os << "version="  << __VERSION__            << endl;
     os << "date="     << __DATE__               << endl;
     os << "time="     << __TIME__               << endl;
+    os << "libssh="   << EXV_USE_LIBSSH         << endl;
 #if EXV_USE_CURL == 1
     curl_version_info_data* vinfo   =  curl_version_info(CURLVERSION_NOW);
     os << "curlversion="            << vinfo->version      << endl;

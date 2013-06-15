@@ -51,6 +51,7 @@ SET( LIBEXIV2_HDR         ../include/exiv2/asfvideo.hpp
                           ../include/exiv2/futils.hpp
                           ../include/exiv2/gifimage.hpp
                           ../include/exiv2/http.hpp
+                          ../include/exiv2/ssh.hpp
                           ../include/exiv2/image.hpp
                           ../include/exiv2/iptc.hpp
                           ../include/exiv2/jp2image.hpp
@@ -96,6 +97,7 @@ SET( LIBEXIV2_SRC         asfvideo.cpp
                           fujimn.cpp
                           gifimage.cpp
                           http.cpp
+                          ssh.cpp
                           image.cpp
                           iptc.cpp
                           jp2image.cpp
@@ -202,9 +204,12 @@ if ( MSVC )
     TARGET_LINK_LIBRARIES( exiv2lib ${EXPAT_LIBRARIES} )
     source_group("Header Files" FILES ${LIBCURL_HDR} )
     TARGET_LINK_LIBRARIES( exiv2lib ${CURL_LIBRARIES} )
+    source_group("Header Files" FILES ${LIBSSH_HDR} )
+    TARGET_LINK_LIBRARIES( exiv2lib ${LIBSSH_LIBRARIES} )
 else()
     TARGET_LINK_LIBRARIES( exiv2lib dl ${EXPAT_LIBRARIES} )
     TARGET_LINK_LIBRARIES( exiv2lib dl ${CURL_LIBRARIES} )
+    TARGET_LINK_LIBRARIES( exiv2lib dl ${LIBSSH_LIBRARIES} )
 endif()
 
 if( EXIV2_ENABLE_LIBXMP )
@@ -250,6 +255,19 @@ IF ( MSVC AND EXIV2_ENABLE_CURL )
       TARGET exiv2lib
       POST_BUILD
       COMMAND copy /y ${CURL_LIBRARY_DIR}\\*.dll $(SolutionDir)\\bin\\${P_DIR}\\${T_DIR}\\$(ConfigurationName)
+    )
+ENDIF()
+INSTALL( TARGETS exiv2lib ${INSTALL_TARGET_STANDARD_ARGS} )
+
+##
+# copy libssh dlls to output directory (TODO: rewrite for NMake)
+IF ( MSVC AND EXIV2_ENABLE_LIBSSH )
+    get_filename_component(LIBSSH_LIBRARY_DIR ${LIBSSH_LIBRARY} PATH)
+    string(REGEX REPLACE "/" "\\\\" LIBSSH_LIBRARY_DIR ${LIBSSH_LIBRARY_DIR})
+    ADD_CUSTOM_COMMAND(
+      TARGET exiv2lib
+      POST_BUILD
+      COMMAND copy /y ${LIBSSH_LIBRARY_DIR}\\*.dll $(SolutionDir)\\bin\\${P_DIR}\\${T_DIR}\\$(ConfigurationName)
     )
 ENDIF()
 INSTALL( TARGETS exiv2lib ${INSTALL_TARGET_STANDARD_ARGS} )

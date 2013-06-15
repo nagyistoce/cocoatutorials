@@ -59,6 +59,9 @@ EXIV2_RCSID("@(#) $Id: basicio.cpp 2883 2012-09-21 15:43:19Z robinwmills $")
 #if EXV_USE_CURL == 1
 #include <curl/curl.h>
 #endif
+#if EXV_USE_LIBSSH == 1
+#include "ssh.hpp"
+#endif
 
 // Platform specific headers for handling extended attributes (xattr)
 #if defined(__APPLE__)
@@ -1454,8 +1457,13 @@ namespace Exiv2 {
         size_t found = hostInfo_["page"].find_last_of("/\\");
         std::string filename = hostInfo_["page"].substr(found+1);
         std::string scriptpage = hostInfo_["page"].substr(0, found+1);
+
+        char* httpPostPath = getenv("EXIV2_HTTP_POST");
         std::stringstream ss;
-        ss << scriptpage << "exiv2.php";
+        if (httpPostPath)
+            ss << scriptpage << httpPostPath;
+        else
+            ss << scriptpage << "exiv2.php";
         request["page"] = ss.str();
         request["verb"] = "POST";
 
@@ -1843,7 +1851,7 @@ namespace Exiv2 {
         Protocol     protocol_;         //!< protocols
         // METHODS
 
-        long getFileLength(long &length);
+        long getFileLength(long& length);
         long getDataByRange(const char* range, std::string& response);
         long httpPost(const byte* data, size_t size, long from, long to);
         /*!
@@ -1902,7 +1910,7 @@ namespace Exiv2 {
     }
 #endif
 
-    long RemoteIo::Impl::getFileLength(long &length)
+    long RemoteIo::Impl::getFileLength(long& length)
     {
         long returnCode;
         length = 0;
@@ -2347,6 +2355,426 @@ namespace Exiv2 {
 
 #endif
 
+#if EXV_USE_LIBSSH == 1
+    //! Internal Pimpl structure of class SshIo.
+    class SshIo::Impl {
+    public:
+        //! Constructor
+        Impl(const std::string& path, size_t blockSize);
+#ifdef EXV_UNICODE_PATH
+        //! Constructor accepting a unicode path in an std::wstring
+        Impl(const std::wstring& wpath, size_t blockSize);
+#endif
+
+        // DATA
+        std::string  path_;             //!< (Standard) path
+#ifdef EXV_UNICODE_PATH
+        std::wstring wpath_;            //!< Unicode path
+#endif
+        size_t       blockSize_;        //!< Size of the block memory
+        bool*        blocksRead_;       //!< bool array of all blocks.
+        dict_t       hostInfo_;         //!< host information extracted from path
+
+        size_t       size_;             //!< The file size
+        long         sizeAlloced_;      //!< Size of the allocated memory = nBlocks * blockSize
+        byte*        data_;             //!< Pointer to the start of the memory area
+        long         idx_;              //!< Index into the memory area
+
+        bool         isMalloced_;       //!< Was the memory allocated?
+        bool         eof_;              //!< EOF indicator
+        SSH*         ssh_;              //!< SSH pointer
+
+        // METHODS
+        long getFileLength(long& length);
+        /*!
+          @brief Populate the data form the block "lowBlock" to "highBlock".
+
+          @param lowBlock The index of block (from 0).
+          @param highBlock The index of block (from 0).
+          @return The value of the byte written if successful
+          @throw If there is any error when connecting the server.
+         */
+        long populateBlocks(size_t lowBlock, size_t highBlock);
+    private:
+        // NOT IMPLEMENTED
+        Impl(const Impl& rhs);                         //!< Copy constructor
+        Impl& operator=(const Impl& rhs);              //!< Assignment
+
+    }; // class SshIo::Impl
+
+    SshIo::Impl::Impl(const std::string& url, size_t blockSize)
+        : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+    {
+        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+        hostInfo_["server"]     = uri.Host;
+        hostInfo_["page"  ]     = uri.Path;
+        hostInfo_["query" ]     = uri.QueryString;
+        hostInfo_["proto" ]     = uri.Protocol;
+        hostInfo_["port"  ]     = uri.Port;
+        hostInfo_["username"]   = uri.Username;
+        char* decodePass = urldecode(uri.Password.c_str());
+        hostInfo_["password"]   = std::string(decodePass);
+        delete decodePass;
+        // remove / at the beginning of the path
+        if (hostInfo_["page"][0] == '/') {
+            hostInfo_["page"] = hostInfo_["page"].substr(1);
+        }
+        ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
+    }
+#ifdef EXV_UNICODE_PATH
+    SshIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
+        : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
+          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+    {
+        std::string url;
+        url.assign(wurl.begin(), wurl.end());
+        path_ = url;
+
+        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+        hostInfo_["server"] = uri.Host;
+        hostInfo_["page"  ] = uri.Path;
+        hostInfo_["query" ] = uri.QueryString;
+        hostInfo_["proto" ] = uri.Protocol;
+        hostInfo_["port"  ] = uri.Port;
+        hostInfo_["username"  ] = uri.Username;
+        hostInfo_["password"  ] = uri.Password;
+        // remove / at the beginning of the path
+        if (hostInfo_["page"][0] == '/') {
+            hostInfo_["page"] = hostInfo_["page"].substr(1);
+        }
+        ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
+    }
+#endif
+
+    long SshIo::Impl::getFileLength(long& length)
+    {
+        long returnCode;
+        length = 0;
+
+        std::string response;
+        std::stringstream ss;
+        ss << "stat -c %s " << hostInfo_["page"];
+        std::string cmd = ss.str();
+        returnCode = (long)ssh_->RunCommand(cmd, &response);
+
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to get file length");
+        } else {
+            length = atol(response.c_str());
+        }
+        return returnCode;
+    }
+
+// ssh ubuntu@54.251.248.216 -i mykey.pem "dd if=www/sshtest.jpg ibs=100 skip=10 count=1 2>null"
+    long SshIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
+    {
+        assert(isMalloced_);
+
+        // optimize: ignore all true blocks on left & right sides.
+        while(blocksRead_[lowBlock]  && lowBlock  < highBlock) lowBlock++;
+        while(blocksRead_[highBlock] && highBlock >  lowBlock) highBlock--;
+
+        size_t rcount = 0;
+        if (!blocksRead_[highBlock])
+        {
+            long returnCode;
+
+            std::string response;
+            std::stringstream ss;
+            ss << "dd if=" << hostInfo_["page"]
+               << " ibs=" << blockSize_
+               << " skip=" << lowBlock
+               << " count=" << (highBlock - lowBlock) + 1<< " 2>null";
+            std::string cmd = ss.str();
+            returnCode = (long)ssh_->RunCommand(cmd, &response);
+            if (returnCode == -1) {
+                throw Error(1, "SSH: Unable to get range");
+            } else {
+                std::memcpy(&data_[lowBlock * blockSize_], (byte*)response.c_str(), response.length());
+                ::memset(&blocksRead_[lowBlock], true, highBlock - lowBlock + 1);
+                rcount = (long)response.length();
+            }
+        }
+        return (long) rcount;
+    }
+
+    SshIo::SshIo(const std::string& url, size_t blockSize)
+        : p_(new Impl(url, blockSize))
+    {
+    }
+
+#ifdef EXV_UNICODE_PATH
+    SshIo::SshIo(const std::wstring& wurl, size_t blockSize)
+        : p_(new Impl(wurl, blockSize))
+    {
+    }
+#endif
+
+    SshIo::~SshIo()
+    {
+        close();
+        if (p_->data_) std::free(p_->data_);
+        if (p_->blocksRead_) delete[] p_->blocksRead_;
+        if (p_->ssh_) delete p_->ssh_;
+        delete p_;
+    }
+
+    int SshIo::open()
+    {
+        // flush data & reset the IO position
+        close();
+
+        int returnCode = 0;
+        if (p_->isMalloced_ == false) {
+            long length;
+            long statusCode = p_->getFileLength(length);
+            if (statusCode != -1) {
+                p_->size_ = length;
+                if (p_->size_ == 0) {
+                    returnCode = 4; // file is empty
+                } else {
+                    size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+                    p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
+                    p_->blocksRead_ = new bool[nBlocks];
+                    ::memset(p_->blocksRead_, false, nBlocks);
+                    p_->isMalloced_ = true;
+                }
+            }
+        }
+        return returnCode;
+    }
+
+    int SshIo::close()
+    {
+        if (p_->isMalloced_) {
+            p_->eof_ = false;
+            p_->idx_ = 0;
+        }
+        return 0;
+    }
+
+    long SshIo::write(const byte* /* unused data*/, long /* unused wcount*/)
+    {
+        return 0;
+    }
+
+    long SshIo::write(BasicIo& /*unused src */)
+    {
+        /*
+        assert(p_->isMalloced_);
+        if (!src.isopen()) return 0;
+
+        // Find $from position
+        src.seek(0, BasicIo::beg);
+        long left = -1, right = -1, blockIndex = 0, i = 0, readCount = 0;
+        byte buf[1024];
+        long bufSize = sizeof(buf);
+
+        if ((src.size() < bufSize) || ((long)p_->size_ < bufSize)) {
+            left = 0;
+            right = 0;
+        } else {
+            i = 0;
+            while ((left == -1) && (readCount = src.read(buf, bufSize))) {
+                for (;(i - blockIndex*bufSize < readCount) && (i < (long)p_->size_) && (left == -1); i++) {
+                    if (buf[i - blockIndex*bufSize] != p_->data_[i]) {
+                        left = i;
+                    }
+                }
+                blockIndex++;
+            }
+            if (left == -1) {
+                left = i;
+                right = 0;
+            } else {
+                // Find $to position
+                blockIndex = 0;
+                i = 0;
+                src.seek(-1*bufSize, BasicIo::end);
+                while (right == -1 && (readCount = src.read(buf, bufSize))) {
+                    for (;i - blockIndex*bufSize < readCount && i < (long)p_->size_ && right == -1; i++) {
+                        if (buf[blockIndex*bufSize+readCount -1 - i] != p_->data_[p_->size_-1-i]) {
+                            right = i;
+                        }
+                    }
+
+                    // move cursor
+                    if (src.size() - i < bufSize) {
+                        src.seek(0, BasicIo::beg);
+                    } else {
+                        src.seek(-1*i-bufSize, BasicIo::end);
+                    }
+                    blockIndex++;
+                }
+
+            }
+        }
+
+        long dataSize = src.size() - left - right;
+        byte* data = (byte*) std::malloc(dataSize);
+        src.seek(left, BasicIo::beg);
+        src.read(data, dataSize);
+        p_->httpPost(data, dataSize, left, (long) p_->size_ - right);
+        if (data) std::free(data);
+        return src.size();
+        */
+        return 0;
+    }
+
+    int SshIo::putb(byte /*unused data*/)
+    {
+        return 0;
+    }
+
+    DataBuf SshIo::read(long rcount)
+    {
+        DataBuf buf(rcount);
+        long readCount = read(buf.pData_, buf.size_);
+        buf.size_ = readCount;
+        return buf;
+    }
+
+    long SshIo::read(byte* buf, long rcount)
+    {
+        assert(p_->isMalloced_);
+        if (p_->eof_) return 0;
+
+        size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
+        size_t lowBlock  =  p_->idx_         /p_->blockSize_;
+        size_t highBlock = (p_->idx_ + allow)/p_->blockSize_;
+
+        // connect to server & load the blocks if it's necessary (blocks are false).
+        p_->populateBlocks(lowBlock, highBlock);
+
+        std::memcpy(buf, &p_->data_[p_->idx_], allow);
+        p_->idx_ += (long) allow;
+        if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
+
+        return (long) allow;
+    }
+
+    int SshIo::getb()
+    {
+        assert(p_->isMalloced_);
+        if (p_->idx_ == (long)p_->size_) {
+            p_->eof_ = true;
+            return EOF;
+        }
+
+        size_t expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
+        // connect to server & load the blocks if it's necessary (blocks are false).
+        p_->populateBlocks(expectedBlock, expectedBlock);
+
+        return p_->data_[p_->idx_++];
+    }
+
+    void SshIo::transfer(BasicIo& src)
+    {
+        if (src.open() != 0) {
+            throw Error(1, "unable to open src when transferring");
+        }
+        write(src);
+        src.close();
+    }
+
+#if defined(_MSC_VER)
+    int SshIo::seek( uint64_t offset, Position pos )
+    {
+        assert(p_->isMalloced_);
+        uint64_t newIdx = 0;
+
+        switch (pos) {
+            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+            case BasicIo::beg: newIdx = offset; break;
+            case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
+
+        if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
+        p_->idx_ = static_cast<long>(newIdx);   //not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
+        p_->eof_ = false;
+        return 0;
+    }
+#else
+    int SshIo::seek(long offset, Position pos)
+    {
+        assert(p_->isMalloced_);
+        long newIdx = 0;
+
+        switch (pos) {
+            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
+            case BasicIo::beg: newIdx = offset; break;
+            case BasicIo::end: newIdx = p_->size_ + offset; break;
+        }
+
+        if (newIdx < 0 || newIdx > (long) p_->size_) return 1;
+        p_->idx_ = newIdx;
+        p_->eof_ = false;
+        return 0;
+    }
+#endif
+
+    byte* SshIo::mmap(bool /*isWriteable*/)
+    {
+        return p_->data_;
+    }
+
+    int SshIo::munmap()
+    {
+        return 0;
+    }
+
+    long SshIo::tell() const
+    {
+        return p_->idx_;
+    }
+
+    long SshIo::size() const
+    {
+        return (long) p_->size_;
+    }
+
+    bool SshIo::isopen() const
+    {
+        return p_->isMalloced_;
+    }
+
+    int SshIo::error() const
+    {
+        return 0;
+    }
+
+    bool SshIo::eof() const
+    {
+        return p_->eof_;
+    }
+
+    std::string SshIo::path() const
+    {
+        return p_->path_;
+    }
+
+#ifdef EXV_UNICODE_PATH
+    std::wstring SshIo::wpath() const
+    {
+        return p_->wpath_;
+    }
+#endif
+
+    BasicIo::AutoPtr SshIo::temporary() const
+    {
+        return BasicIo::AutoPtr(new MemIo);
+    }
+
+    void SshIo::populateFakeData()
+    {
+        assert(p_->isMalloced_);
+        size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+        ::memset(p_->blocksRead_, true, nBlocks);
+    }
+
+#endif
+
     // *************************************************************************
     // free functions
 
@@ -2429,8 +2857,8 @@ namespace Exiv2 {
     }
 #endif
 #if EXV_USE_CURL == 1
-    size_t curlWriter(char *data, size_t size, size_t nmemb,
-                      std::string *writerData)
+    size_t curlWriter(char* data, size_t size, size_t nmemb,
+                      std::string* writerData)
     {
       if (writerData == NULL) return 0;
       writerData->append(data, size*nmemb);
