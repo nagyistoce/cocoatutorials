@@ -440,7 +440,7 @@ fi
 
 export EXIV2_AWSUBUNTU_USERNAME=ubuntu
 export EXIV2_AWSUBUNTU_PASSWORD=p@ssw0rd
-export EXIV2_AWSUBUNTU_HOST=aws-ubuntu
+export EXIV2_AWSUBUNTU_HOST=54.251.248.216
 
 ##
 # last minute adjustments for local machines
