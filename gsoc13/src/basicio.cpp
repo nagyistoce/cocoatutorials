@@ -59,7 +59,7 @@ EXIV2_RCSID("@(#) $Id: basicio.cpp 2883 2012-09-21 15:43:19Z robinwmills $")
 #if EXV_USE_CURL == 1
 #include <curl/curl.h>
 #endif
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
 #include "ssh.hpp"
 #endif
 
@@ -2355,7 +2355,7 @@ namespace Exiv2 {
 
 #endif
 
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
     //! Internal Pimpl structure of class SshIo.
     class SshIo::Impl {
     public:

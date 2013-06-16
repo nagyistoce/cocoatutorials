@@ -1151,7 +1151,7 @@ namespace Exiv2 {
     }; // class RemoteIo
 #endif
 
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
     /*!
         @brief Provides Ssh IO by implementing the BasicIo.
     */

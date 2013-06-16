@@ -195,37 +195,37 @@ LDFLAGS=${_ldflags}
 _cppflags="${CPPFLAGS}"
 _ldflags="${LDFLAGS}"
 
-AC_ARG_WITH(libssh,
-[  --with-libssh[[=DIR]]    use libssh in DIR],[
+AC_ARG_WITH(ssh,
+[  --with-ssh[[=DIR]]    use libssh in DIR],[
   if test "$withval" != "no" -a "$withval" != "yes"; then
-    LIBSSH_DIR=$withval
+    SSH_DIR=$withval
     CPPFLAGS="${CPPFLAGS} -I$withval/include"
     LDFLAGS="${LDFLAGS} -L$withval/lib"
   fi
 ])
 
-USE_LIBSSH=
-if test "$with_libssh" != "no"; then
+USE_SSH=
+if test "$with_ssh" != "no"; then
     # Check for libssh library
-    found_libssh=yes
-    LIBSSH_CPPFLAGS=
-    LIBSSH_LDFLAGS=
-    LIBSSH_LIBS=
+    found_ssh=yes
+    SSH_CPPFLAGS=
+    SSH_LDFLAGS=
+    SSH_LIBS=
     AC_CHECK_HEADERS(libssh/libssh.h,
         AC_CHECK_LIB(ssh, ssh_new,[
-            USE_LIBSSH=yes
-            AC_DEFINE([USE_LIBSSH], [1], [Use libssh library])
-            LIBSSH_LIBS="-lssh"
-            if test "x${LIBSSH_DIR}" != "x"; then
-                LIBSSH_CPPFLAGS="-I${LIBSSH_DIR}/include"
-                LIBSSH_LDFLAGS="-L${LIBSSH_DIR}/lib"
-            fi],[found_libssh=no]),[found_libssh=no])
-    if test "$found_libssh" = "no"; then
-        AC_MSG_ERROR(either specify a valid libssh installation with --with-libssh=DIR or disable libssh support with --disable-libssh)
+            USE_SSH=yes
+            AC_DEFINE([USE_SSH], [1], [Use libssh library])
+            SSH_LIBS="-lssh"
+            if test "x${SSH_DIR}" != "x"; then
+                SSH_CPPFLAGS="-I${SSH_DIR}/include"
+                SSH_LDFLAGS="-L${SSH_DIR}/lib"
+            fi],[found_ssh=no]),[found_ssh=no])
+    if test "$found_ssh" = "no"; then
+        AC_MSG_ERROR(either specify a valid libssh installation with --with-ssh=DIR or disable libssh support with --disable-ssh)
     fi
-    AC_SUBST(LIBSSH_CPPFLAGS)
-    AC_SUBST(LIBSSH_LDFLAGS)
-    AC_SUBST(LIBSSH_LIBS)
+    AC_SUBST(SSH_CPPFLAGS)
+    AC_SUBST(SSH_LDFLAGS)
+    AC_SUBST(SSH_LIBS)
 fi
 CPPFLAGS=${_cppflags}
 LDFLAGS=${_ldflags}
@@ -370,12 +370,12 @@ yes) echo "-- Using Lib Curl................. YES" ;;
      echo "" ;;
 esac
 
-case "$USE_LIBSSH" in
+case "$USE_SSH" in
 yes) echo "-- Using Lib SSH................. YES" ;;
 *)   echo "-- Using Lib SSH................. NO"
      echo ""
      echo "Libssh is required for SshIo in basicIo.cpp. Make sure the libssh header"
-     echo "files are installed and use --with-libssh=DIR if it is in a"
+     echo "files are installed and use --with-ssh=DIR if it is in a"
      echo "non-standard location. You can get libssh from"
      echo "http://www.libssh.org/get-it/"
      echo "" ;;

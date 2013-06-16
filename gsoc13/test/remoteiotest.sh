@@ -98,10 +98,10 @@ RemoteIOTest()
             errors=0
             printf 'HTTPS IO '
             for name in ${iopngfiles[@]}; do
-                RemoteIOTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+                RemoteIOTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
             done
             for name in ${iojpgfiles[@]}; do
-                RemoteIOTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+                RemoteIOTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
             done
             if [ $errors -eq 0 ]; then
                 printf '\nAll test cases passed\n'

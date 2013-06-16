@@ -33,8 +33,8 @@ EXIV2_RCSID("@(#) $Id$")
 
 #include "exv_conf.h"
 
-#ifndef EXV_USE_LIBSSH
-#define EXV_USE_LIBSSH 0
+#ifndef EXV_USE_SSH
+#define EXV_USE_SSH 0
 #endif
 
 #ifndef EXV_USE_CURL
@@ -247,7 +247,7 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     os << "version="  << __VERSION__            << endl;
     os << "date="     << __DATE__               << endl;
     os << "time="     << __TIME__               << endl;
-    os << "libssh="   << EXV_USE_LIBSSH         << endl;
+    os << "ssh="      << EXV_USE_SSH            << endl;
 #if EXV_USE_CURL == 1
     curl_version_info_data* vinfo   =  curl_version_info(CURLVERSION_NOW);
     os << "curlversion="            << vinfo->version      << endl;
@@ -255,6 +255,8 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     for (int i = 0; vinfo->protocols[i]; i++)
         os << vinfo->protocols[i] << " ";
     os << endl;
+#else
+    os << "curl="     << EXV_USE_CURL          << endl;
 #endif
     os << "id="       << "$Id$" << endl;
     if ( libs.begin() != libs.end() ) {

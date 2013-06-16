@@ -416,7 +416,7 @@ namespace Exiv2 {
             return BasicIo::AutoPtr(new StdinIo());
         } else {
             Protocol fProt = fileProtocol(path);
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
             if (fProt == pSsh) {
                 return BasicIo::AutoPtr(new SshIo(path));
             }
@@ -440,7 +440,7 @@ namespace Exiv2 {
             return BasicIo::AutoPtr(new StdinIo());
         } else {
             Protocol fProt = fileProtocol(wpath);
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
             if (fProt == pSsh) {
                 return BasicIo::AutoPtr(new SshIo(wpath));
             }

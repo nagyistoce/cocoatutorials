@@ -1,5 +1,5 @@
 #include "ssh.hpp"
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
 // class member definitions
 namespace Exiv2 {
     SSH::SSH(const std::string& host, const std::string& user, const std::string& pass):host_(host),user_(user),pass_(pass) {

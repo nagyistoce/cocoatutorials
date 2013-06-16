@@ -204,12 +204,12 @@ if ( MSVC )
     TARGET_LINK_LIBRARIES( exiv2lib ${EXPAT_LIBRARIES} )
     source_group("Header Files" FILES ${LIBCURL_HDR} )
     TARGET_LINK_LIBRARIES( exiv2lib ${CURL_LIBRARIES} )
-    source_group("Header Files" FILES ${LIBSSH_HDR} )
-    TARGET_LINK_LIBRARIES( exiv2lib ${LIBSSH_LIBRARIES} )
+    source_group("Header Files" FILES ${SSH_HDR} )
+    TARGET_LINK_LIBRARIES( exiv2lib ${SSH_LIBRARIES} )
 else()
     TARGET_LINK_LIBRARIES( exiv2lib dl ${EXPAT_LIBRARIES} )
     TARGET_LINK_LIBRARIES( exiv2lib dl ${CURL_LIBRARIES} )
-    TARGET_LINK_LIBRARIES( exiv2lib dl ${LIBSSH_LIBRARIES} )
+    TARGET_LINK_LIBRARIES( exiv2lib dl ${SSH_LIBRARIES} )
 endif()
 
 if( EXIV2_ENABLE_LIBXMP )
@@ -261,13 +261,13 @@ INSTALL( TARGETS exiv2lib ${INSTALL_TARGET_STANDARD_ARGS} )
 
 ##
 # copy libssh dlls to output directory (TODO: rewrite for NMake)
-IF ( MSVC AND EXIV2_ENABLE_LIBSSH )
-    get_filename_component(LIBSSH_LIBRARY_DIR ${LIBSSH_LIBRARY} PATH)
-    string(REGEX REPLACE "/" "\\\\" LIBSSH_LIBRARY_DIR ${LIBSSH_LIBRARY_DIR})
+IF ( MSVC AND EXIV2_ENABLE_SSH )
+    get_filename_component(SSH_LIBRARY_DIR ${SSH_LIBRARY} PATH)
+    string(REGEX REPLACE "/" "\\\\" SSH_LIBRARY_DIR ${SSH_LIBRARY_DIR})
     ADD_CUSTOM_COMMAND(
       TARGET exiv2lib
       POST_BUILD
-      COMMAND copy /y ${LIBSSH_LIBRARY_DIR}\\*.dll $(SolutionDir)\\bin\\${P_DIR}\\${T_DIR}\\$(ConfigurationName)
+      COMMAND copy /y ${SSH_LIBRARY_DIR}\\*.dll $(SolutionDir)\\bin\\${P_DIR}\\${T_DIR}\\$(ConfigurationName)
     )
 ENDIF()
 INSTALL( TARGETS exiv2lib ${INSTALL_TARGET_STANDARD_ARGS} )

@@ -1,5 +1,5 @@
 #include "exv_conf.h"
-#if EXV_USE_LIBSSH == 1
+#if EXV_USE_SSH == 1
 #include <libssh/libssh.h>
 #include <string>
 #include "error.hpp"
