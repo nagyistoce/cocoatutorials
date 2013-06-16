@@ -439,7 +439,7 @@ if [ "$FACTORY" == "rmills-ubuntu" ]; then
 fi
 
 export EXIV2_AWSUBUNTU_USERNAME=ubuntu
-export EXIV2_AWSUBUNTU_PASSWORD=p@ssw0rd
+export EXIV2_AWSUBUNTU_PASSWORD=p%40ssw0rd
 export EXIV2_AWSUBUNTU_HOST=54.251.248.216
 
 ##
