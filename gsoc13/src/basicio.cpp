@@ -2073,8 +2073,8 @@ namespace Exiv2 {
         close();
         if (p_->data_) std::free(p_->data_);
         if (p_->blocksRead_) delete[] p_->blocksRead_;
-        delete p_;
         curl_easy_cleanup(p_->curl_);
+        delete p_;
     }
 
     int RemoteIo::open()
