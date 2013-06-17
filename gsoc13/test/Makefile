@@ -84,7 +84,8 @@ TESTS = exiv2-test.sh     \
         modify-test.sh    \
         preview-test.sh   \
         httpiotest.sh     \
-        remoteiotest.sh
+        remoteiotest.sh   \
+        sshiotest.sh
 
 testx:
 	cd .. ; make tests
