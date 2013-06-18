@@ -484,6 +484,26 @@ namespace Exiv2 {
         return true;
     }
 
+    bool equalsRiffTag(Exiv2::DataBuf& buf,const char arr[][5],int arraysize)
+    {
+        for (int i=0; i< arraysize; i++)
+        {
+            bool matched = true;
+            for(int j = 0; j < 4; j++ )
+            {
+                if(toupper(buf.pData_[j]) != arr[i][j])
+                {
+                    matched = false;
+                    break;
+                }
+            }
+            if(matched)
+            {
+                return true;
+            }
+        }
+    }
+
     enum streamTypeInfo {
         Audio = 1, MIDI, Text, Video
     };
@@ -561,8 +581,9 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     io_->read(chkId.pData_, bufMinSize);
     io_->read(chkSize.pData_, bufMinSize);
     io_->read(chkId.pData_, bufMinSize);
-    io_->read(chkSize.pData_, bufMinSize);
 
+    m_decodeMetaData = false;
+    decodeBlock();
     //TODO :implement write functionality
 
 }// RiffVideo::doWriteMetadata
@@ -598,6 +619,7 @@ void RiffVideo::readMetadata()
     io_->read(chkHeader.pData_, 4);
     xmpData_["Xmp.video.FileType"] = chkHeader.pData_;
 
+    m_decodeMetaData = true;
     decodeBlock();
 } // RiffVideo::readMetadata
 
@@ -634,10 +656,19 @@ void RiffVideo::tagDecoder()
         chkHeader.pData_[4] = '\0';
 
         io_->read(listSize.pData_, 4);
+        unsigned long listsize = Exiv2::getULong(listSize.pData_, littleEndian);
         io_->read(chkHeader.pData_, 4);
 
-        //to track position inside the list
-        unsigned long listend = io_->tell() + Exiv2::getULong(listSize.pData_, littleEndian);
+        ListChunk *tmpList = new ListChunk();
+        tmpList->m_listLocation = io_->tell() - 8;
+        tmpList->m_listSize = listsize;
+
+        m_riffFileSkeleton.m_lists.push_back(tmpList);
+
+        HeaderChunk *tmpHeaderChunk = new HeaderChunk();
+        memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
+
+        unsigned long listend = io_->tell() + listsize ;
 
         IoPosition position = PremitiveChunk;
         while( position == PremitiveChunk && io_->tell() < listend)
@@ -652,6 +683,16 @@ void RiffVideo::tagDecoder()
 
             unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
 
+            const char allPrimitiveFlags[][5]={"JUNK","AVIH","STRH","STRF","FMT ","STRN","STRD","IDIT"};
+
+            if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
+            {
+                PrimitiveChunk *tmpPremitiveChunk = new PrimitiveChunk();
+                memcpy((byte*)tmpPremitiveChunk->m_chunkId,(const byte*)chkId.pData_,5);
+                tmpPremitiveChunk->m_chunkLocation = io_->tell() - 8;
+                tmpPremitiveChunk->m_chunkSize = size;
+                tmpHeaderChunk->m_primitiveChunks.push_back(tmpPremitiveChunk);
+            }
             //to handle AVI file formats
             if(equalsRiffTag(chkId, "JUNK"))
             {
@@ -661,40 +702,28 @@ void RiffVideo::tagDecoder()
             else if(equalsRiffTag(chkId, "AVIH"))
             {
                 aviHeaderTagsHandler(size);
-                if (size % 2 != 0)
-                    io_->seek(1,BasicIo::cur);
             }
             else if(equalsRiffTag(chkId, "STRH"))
             {
                 streamHandler(size);
-                if (size % 2 != 0)
-                    io_->seek(1,BasicIo::cur);
             }
             else if(equalsRiffTag(chkId,"STRF") || equalsRiffTag(chkId, "FMT "))
             {
                 if(equalsRiffTag(chkId,"FMT "))
                     streamType_ = Audio;
                 streamFormatHandler(size);
-                if (size % 2 != 0)
-                    io_->seek(1,BasicIo::cur);
             }
             else if(equalsRiffTag(chkId, "STRN"))
             {
                 dateTimeOriginal(size, 1);
-                if (size % 2 != 0)
-                    io_->seek(1,BasicIo::cur);
             }
             else if(equalsRiffTag(chkId, "STRD"))
             {
                 streamDataTagHandler(size);
-                if (size % 2 != 0)
-                    io_->seek(1,BasicIo::cur);
             }
             else if(equalsRiffTag(chkId, "IDIT"))
             {
                 dateTimeOriginal(size);
-                if (size % 2 != 0)
-                    io_->seek(1,BasicIo::cur);
             }
             //add more else if to support more primitive chunks below if any
             //TODO:add indx support
@@ -749,7 +778,12 @@ void RiffVideo::tagDecoder()
                 unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
                 io_->seek(io_->tell()+size, BasicIo::cur);
             }
+            if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)) && (size % 2 != 0))
+            {
+                io_->seek(1,BasicIo::cur);
+            }
         }
+        m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
     }
 
     //AVIX can have JUNK chunk directly inside RIFF chunk

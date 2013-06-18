@@ -50,12 +50,71 @@ namespace ImageType {
 const int riff = 20; //!< Treating riff as an image type>
 }
 
+using namespace std;
 /*!
       @brief Class to access RIFF video files.
      */
 class EXIV2API RiffVideo:public Image
 {
 public:
+
+    //List, Header,Primitive and Junk chunks inside m_riffFileSkeleton reveal entire RIFF structure
+    class PrimitiveChunk
+    {
+    public:
+        PrimitiveChunk(){}
+        ~PrimitiveChunk(){}
+
+    public:
+        byte m_chunkId[5];
+        unsigned long m_chunkLocation;
+        unsigned long m_chunkSize;
+    };
+
+    class HeaderChunk
+    {
+    public:
+        HeaderChunk(){}
+        ~HeaderChunk(){}
+
+    public:
+        byte m_headerId[5];
+        vector<PrimitiveChunk*> m_primitiveChunks;
+    };
+
+    class ListChunk
+    {
+    public:
+        ListChunk(){}
+        ~ListChunk(){}
+
+    public:
+        unsigned long m_listSize;
+        unsigned long m_listLocation;
+    };
+
+    class OtherChunk
+    {
+    public:
+        OtherChunk(){}
+        ~OtherChunk(){}
+
+    public:
+        unsigned long m_otherSize;
+        unsigned long m_otherLocation;
+    };
+
+    class RiffMetaSkeleton
+    {
+    public:
+        RiffMetaSkeleton(){}
+        ~RiffMetaSkeleton(){}
+
+    public:
+        vector<ListChunk*> m_lists;
+        vector<HeaderChunk*> m_headerChunks;
+        vector<OtherChunk*> m_others;
+    };
 
     enum IoPosition
     {
@@ -210,6 +269,10 @@ private:
     bool continueTraversing_;
     //! Variable which stores current stream being processsed.
     int streamType_;
+    //! Variable to decide whether to decode the metadata or just reveal file structure (Lists inside RIFF)
+    bool m_decodeMetaData;
+    //!abstract metadata holding variable (its data about data about data!)
+    RiffMetaSkeleton m_riffFileSkeleton;
 
 }; //Class RiffVideo
 
