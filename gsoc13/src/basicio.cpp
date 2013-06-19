@@ -2479,7 +2479,7 @@ namespace Exiv2 {
     }
 
     long SshIo::Impl::update(const byte* data, size_t size, long from, long to) {
-        // printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
+        //printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
         assert(isMalloced_);
         long returnCode;
 
@@ -2514,7 +2514,7 @@ namespace Exiv2 {
 
         // copy head of file to temp
         ss.str("");
-        ss << "tail -c+" << to
+        ss << "tail -c+" << (to + 1)
            << " "   << hostInfo_["page"]
            << " >> "   << tempFile;
         cmd = ss.str();
