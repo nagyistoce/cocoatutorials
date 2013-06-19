@@ -22,7 +22,7 @@ namespace Exiv2 {
         }
     }
 
-    int SSH::RunCommand(const std::string& cmd, std::string* output) {
+    int SSH::runCommand(const std::string& cmd, std::string* output) {
         int rc;
         ssh_channel channel;
         channel = ssh_channel_new(session_);
@@ -47,6 +47,40 @@ namespace Exiv2 {
                 ssh_channel_free(channel);
             }
         }
+        return rc;
+    }
+
+    int SSH::scp(const std::string& filePath, const byte* data, size_t size) {
+        ssh_scp scp;
+        int rc;
+
+        size_t found = filePath.find_last_of("/\\");
+        std::string filename = filePath.substr(found+1);
+        std::string path = filePath.substr(0, found+1);
+
+        scp = ssh_scp_new(session_, SSH_SCP_WRITE, path.c_str());
+        if (scp == NULL) {
+            throw Error(1, ssh_get_error(session_));
+            rc = SSH_ERROR;
+        } else {
+            rc = ssh_scp_init(scp);
+            if (rc != SSH_OK) {
+                throw Error(1, ssh_get_error(session_));
+            } else {
+                rc = ssh_scp_push_file (scp, filename.c_str(), size, S_IRUSR |  S_IWUSR);
+                if (rc != SSH_OK) {
+                    throw Error(1, ssh_get_error(session_));
+                } else {
+                    rc = ssh_scp_write(scp, data, size);
+                    if (rc != SSH_OK) {
+                        throw Error(1, ssh_get_error(session_));
+                    }
+                }
+                ssh_scp_close(scp);
+            }
+            ssh_scp_free(scp);
+        }
+
         return rc;
     }
 

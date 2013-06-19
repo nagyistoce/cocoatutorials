@@ -1011,7 +1011,9 @@ namespace Exiv2 {
 
 #endif
 
+    void FileIo::populateFakeData() {
 
+    }
 
     //! Internal Pimpl structure of class MemIo.
     class MemIo::Impl {
@@ -1288,7 +1290,9 @@ namespace Exiv2 {
     }
 
 #endif
+    void MemIo::populateFakeData() {
 
+    }
 
 #if STDIN_MEMIO
     StdinIo::StdinIo()
@@ -1660,11 +1664,13 @@ namespace Exiv2 {
         }
 
         long dataSize = src.size() - left - right;
-        byte* data = (byte*) std::malloc(dataSize);
-        src.seek(left, BasicIo::beg);
-        src.read(data, dataSize);
-        p_->httpPost(data, dataSize, left, (long) p_->size_ - right);
-        if (data) std::free(data);
+        if (dataSize > 0) {
+            byte* data = (byte*) std::malloc(dataSize);
+            src.seek(left, BasicIo::beg);
+            src.read(data, dataSize);
+            p_->httpPost(data, (size_t)dataSize, left, (long) p_->size_ - right);
+            if (data) std::free(data);
+        }
         return src.size();
     }
 
@@ -2195,11 +2201,13 @@ namespace Exiv2 {
         }
 
         long dataSize = src.size() - left - right;
-        byte* data = (byte*) std::malloc(dataSize);
-        src.seek(left, BasicIo::beg);
-        src.read(data, dataSize);
-        p_->httpPost(data, dataSize, left, (long) p_->size_ - right);
-        if (data) std::free(data);
+        if (dataSize > 0) {
+            byte* data = (byte*) std::malloc(dataSize);
+            src.seek(left, BasicIo::beg);
+            src.read(data, dataSize);
+            p_->httpPost(data, (size_t)dataSize, left, (long) p_->size_ - right);
+            if (data) std::free(data);
+        }
         return src.size();
     }
 
@@ -2386,6 +2394,7 @@ namespace Exiv2 {
 
         // METHODS
         long getFileLength(long& length);
+        long update(const byte* data, size_t size, long from, long to);
         /*!
           @brief Populate the data form the block "lowBlock" to "highBlock".
 
@@ -2456,17 +2465,85 @@ namespace Exiv2 {
         std::stringstream ss;
         ss << "stat -c %s " << hostInfo_["page"];
         std::string cmd = ss.str();
-        returnCode = (long)ssh_->RunCommand(cmd, &response);
+        returnCode = (long)ssh_->runCommand(cmd, &response);
 
         if (returnCode == -1) {
             throw Error(1, "SSH: Unable to get file length");
         } else {
             length = atol(response.c_str());
         }
+
+        // printf("File size %ld, blocksize %ld\n", length, blockSize_);
+
         return returnCode;
     }
 
-// ssh ubuntu@54.251.248.216 -i mykey.pem "dd if=www/sshtest.jpg ibs=100 skip=10 count=1 2>null"
+    long SshIo::Impl::update(const byte* data, size_t size, long from, long to) {
+        // printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
+        assert(isMalloced_);
+        long returnCode;
+
+        std::string tempFile = hostInfo_["page"] + ".exiv2tmp";
+        std::string response;
+        std::stringstream ss;
+        // copy head of file to temp
+        ss << "head -c " << from
+           << " "   << hostInfo_["page"]
+           << " > " << tempFile;
+        std::string cmd = ss.str();
+        returnCode = (long)ssh_->runCommand(cmd, &response);
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to cope the head of file to temp");
+        }
+
+        // upload byte ranges to exiv2datatemp file
+        returnCode = (long)ssh_->scp(hostInfo_["page"] + ".exiv2datatemp", data, size);
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to copy file");
+        }
+
+        // copy exiv2datatemp to temp file
+        ss.str("");
+        ss << "cat " << hostInfo_["page"] + ".exiv2datatemp"
+           << " >> "   << tempFile;
+        cmd = ss.str();
+        returnCode = (long)ssh_->runCommand(cmd, &response);
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to copy the rest");
+        }
+
+        // copy head of file to temp
+        ss.str("");
+        ss << "tail -c+" << to
+           << " "   << hostInfo_["page"]
+           << " >> "   << tempFile;
+        cmd = ss.str();
+        returnCode = (long)ssh_->runCommand(cmd, &response);
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to copy the rest");
+        }
+
+        // mv temfile to file
+        ss.str("");
+        ss << "mv " << tempFile << " " << hostInfo_["page"];
+        cmd = ss.str();
+        returnCode = (long)ssh_->runCommand(cmd, &response);
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to copy the rest");
+        }
+
+        // remove exiv2datatemp
+        ss.str("");
+        ss << "rm " << hostInfo_["page"] + ".exiv2datatemp";
+        cmd = ss.str();
+        returnCode = (long)ssh_->runCommand(cmd, &response);
+        if (returnCode == -1) {
+            throw Error(1, "SSH: Unable to copy the rest");
+        }
+
+        return returnCode;
+    }
+
     long SshIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
     {
         assert(isMalloced_);
@@ -2478,16 +2555,16 @@ namespace Exiv2 {
         size_t rcount = 0;
         if (!blocksRead_[highBlock])
         {
+            //printf("populateBlocks lowBlock=%ld highBlock=%ld\n", lowBlock, highBlock);
             long returnCode;
-
             std::string response;
             std::stringstream ss;
             ss << "dd if=" << hostInfo_["page"]
                << " ibs=" << blockSize_
                << " skip=" << lowBlock
-               << " count=" << (highBlock - lowBlock) + 1<< " 2>null";
+               << " count=" << (highBlock - lowBlock) + 1<< " 2>/dev/null";
             std::string cmd = ss.str();
-            returnCode = (long)ssh_->RunCommand(cmd, &response);
+            returnCode = (long)ssh_->runCommand(cmd, &response);
             if (returnCode == -1) {
                 throw Error(1, "SSH: Unable to get range");
             } else {
@@ -2559,9 +2636,8 @@ namespace Exiv2 {
         return 0;
     }
 
-    long SshIo::write(BasicIo& /*unused src */)
+    long SshIo::write(BasicIo& src)
     {
-        /*
         assert(p_->isMalloced_);
         if (!src.isopen()) return 0;
 
@@ -2612,14 +2688,14 @@ namespace Exiv2 {
         }
 
         long dataSize = src.size() - left - right;
-        byte* data = (byte*) std::malloc(dataSize);
-        src.seek(left, BasicIo::beg);
-        src.read(data, dataSize);
-        p_->httpPost(data, dataSize, left, (long) p_->size_ - right);
-        if (data) std::free(data);
+        if (dataSize > 0) {
+            byte* data = (byte*) std::malloc(dataSize);
+            src.seek(left, BasicIo::beg);
+            src.read(data, dataSize);
+            p_->update(data, (size_t)dataSize, left, (long) p_->size_ - right);
+            if (data) std::free(data);
+        }
         return src.size();
-        */
-        return 0;
     }
 
     int SshIo::putb(byte /*unused data*/)

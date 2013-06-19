@@ -249,6 +249,8 @@ namespace Exiv2 {
           @throw Error In case of failure
          */
         virtual BasicIo::AutoPtr temporary() const = 0;
+
+        virtual void populateFakeData() = 0;
         //@}
 
     protected:
@@ -515,6 +517,8 @@ namespace Exiv2 {
           @throw Error If opening the temporary file fails
          */
         virtual BasicIo::AutoPtr temporary() const;
+
+        virtual void populateFakeData();
         //@}
 
     private:
@@ -712,6 +716,8 @@ namespace Exiv2 {
           @return An instance of BasicIo
          */
         virtual BasicIo::AutoPtr temporary() const;
+
+        virtual void populateFakeData();
         //@}
 
     private:
@@ -955,7 +961,7 @@ namespace Exiv2 {
         */
        virtual BasicIo::AutoPtr temporary() const;
 
-       void populateFakeData();
+       virtual void populateFakeData();
        //@}
 
     private:
@@ -1135,7 +1141,7 @@ namespace Exiv2 {
         */
        virtual BasicIo::AutoPtr temporary() const;
 
-       void populateFakeData();
+       virtual void populateFakeData();
        //@}
 
     private:
@@ -1316,7 +1322,7 @@ namespace Exiv2 {
             */
            virtual BasicIo::AutoPtr temporary() const;
 
-           void populateFakeData();
+           virtual void populateFakeData();
            //@}
 
         private:
