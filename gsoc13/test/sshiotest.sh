@@ -20,7 +20,7 @@ SshIOTest()
     # add/set metadata
     runTest exiv2 "-m" $cmdadd $1
     # print out the metadata
-    runTest exifprint $1 "--curl" > $test
+    runTest exifprint $1 > $test
     # delete metadata
     runTest exiv2 "-m" $cmddel $1
     #check results
