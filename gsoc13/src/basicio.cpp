@@ -1393,16 +1393,18 @@ namespace Exiv2 {
         std::wstring wpath_;            //!< Unicode path
 #endif
         size_t       blockSize_;        //!< Size of the block memory
-        bool*        blocksRead_;       //!< bool array of all blocks.
         dict_t       hostInfo_;         //!< host information extracted from path
-
+        BlockMap*    blocksMap_;
         size_t       size_;             //!< The file size
-        long         sizeAlloced_;      //!< Size of the allocated memory = nBlocks * blockSize
-        byte*        data_;             //!< Pointer to the start of the memory area
         long         idx_;              //!< Index into the memory area
 
         bool         isMalloced_;       //!< Was the memory allocated?
         bool         eof_;              //!< EOF indicator
+
+        //bool*        blocksRead_;       //!< bool array of all blocks.
+        //long         sizeAlloced_;      //!< Size of the allocated memory = nBlocks * blockSize
+        //byte*        data_;             //!< Pointer to the start of the memory area
+
 
         // METHODS
         /*!
@@ -1423,8 +1425,8 @@ namespace Exiv2 {
     }; // class HttpIo::Impl
 
     HttpIo::Impl::Impl(const std::string& url, size_t blockSize)
-        : path_(url), blockSize_(blockSize), blocksRead_(0), size_(0),
-          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+        : path_(url), blockSize_(blockSize), blocksMap_(0), size_(0),
+          idx_(0), isMalloced_(false), eof_(false)
     {
         Exiv2::Uri uri = Exiv2::Uri::Parse(url);
         hostInfo_["server"] = uri.Host;
@@ -1435,8 +1437,8 @@ namespace Exiv2 {
     }
 #ifdef EXV_UNICODE_PATH
     HttpIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
-        : wpath_(wurl), blockSize_(blockSize), blocksRead_(0), size_(0),
-          sizeAlloced_(0), data_(0), idx_(0), isMalloced_(false), eof_(false)
+        : wpath_(wurl), blockSize_(blockSize), blocksMap_(0), size_(0),
+          idx_(0), isMalloced_(false), eof_(false)
     {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
@@ -1453,7 +1455,6 @@ namespace Exiv2 {
 
     long HttpIo::Impl::httpPost(const byte* data, size_t size, long from, long to)
     {
-        //printf("HttpIo::Impl::httpPost post %ld bytes to server (filesize = %ld)\n", size, (long)size_);
         dict_t response;
         dict_t request(hostInfo_);
         std::string errors;
@@ -1503,11 +1504,11 @@ namespace Exiv2 {
         assert(isMalloced_);
 
         // optimize: ignore all true blocks on left & right sides.
-        while(blocksRead_[lowBlock]  && lowBlock  < highBlock) lowBlock++;
-        while(blocksRead_[highBlock] && highBlock >  lowBlock) highBlock--;
+        while(!blocksMap_[lowBlock].isInNone()  && lowBlock  < highBlock) lowBlock++;
+        while(!blocksMap_[highBlock].isInNone() && highBlock >  lowBlock) highBlock--;
 
         size_t rcount = 0;
-        if (!blocksRead_[highBlock])
+        if (blocksMap_[highBlock].isInNone())
         {
             // read from server
             dict_t response;
@@ -1529,15 +1530,18 @@ namespace Exiv2 {
             }
 
             rcount = (long)response["body"].length();
-
+            byte* source = (byte*)response["body"].c_str();
+            size_t remain = rcount, iBlock = lowBlock, totalRead = 0;
             if (rcount == size_) {
                 // doesn't support Range
-                std::memcpy(data_, (byte*)response["body"].c_str(), rcount);
-                size_t nBlocks = (size_ + blockSize_ - 1) / blockSize_;
-                ::memset(blocksRead_, true, nBlocks);
-            } else {
-                std::memcpy(&data_[lowBlock * blockSize_], (byte*)response["body"].c_str(), rcount);
-                ::memset(&blocksRead_[lowBlock], true, highBlock - lowBlock + 1);
+                iBlock = 0;
+            }
+            while (remain) {
+                size_t allow = EXV_MIN(remain, blockSize_);
+                blocksMap_[iBlock].populate(&source[totalRead], allow);
+                remain -= allow;
+                totalRead += allow;
+                iBlock++;
             }
         }
 
@@ -1559,8 +1563,7 @@ namespace Exiv2 {
     HttpIo::~HttpIo()
     {
         close();
-        if (p_->data_) std::free(p_->data_);
-        if (p_->blocksRead_) delete[] p_->blocksRead_;
+        if (p_->blocksMap_) delete[] p_->blocksMap_;
         delete p_;
     }
 
@@ -1588,9 +1591,7 @@ namespace Exiv2 {
                     returnCode = 4; // file is empty
                 } else {
                     size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-                    p_->data_       = (byte*) std::malloc(nBlocks * p_->blockSize_);
-                    p_->blocksRead_ = new bool[nBlocks];
-                    ::memset(p_->blocksRead_, false, nBlocks);
+                    p_->blocksMap_  = new BlockMap[nBlocks];
                     p_->isMalloced_ = true;
                 }
             }
@@ -1618,50 +1619,63 @@ namespace Exiv2 {
         if (!src.isopen()) return 0;
 
         // Find $from position
-        src.seek(0, BasicIo::beg);
-        long left = -1, right = -1, blockIndex = 0, i = 0, readCount = 0;
-        byte buf[1024];
-        long bufSize = sizeof(buf);
+        long left = 0, right = 0, blockIndex = 0, i = 0, readCount = 0, blockSize = 0;
+        byte* buf = (byte*) std::malloc(p_->blockSize_);
+        long nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
 
-        if ((src.size() < bufSize) || ((long)p_->size_ < bufSize)) {
-            left = 0;
-            right = 0;
-        } else {
-            i = 0;
-            while ((left == -1) && (readCount = src.read(buf, bufSize))) {
-                for (;(i - blockIndex*bufSize < readCount) && (i < (long)p_->size_) && (left == -1); i++) {
-                    if (buf[i - blockIndex*bufSize] != p_->data_[i]) {
-                        left = i;
+        // find left ----
+        src.seek(0, BasicIo::beg);
+        bool findDiff = false;
+        while (blockIndex < nBlocks && !src.eof() && !findDiff) {
+            blockSize = (long)p_->blocksMap_[blockIndex].getSize();
+            if (p_->blocksMap_[blockIndex].isKnown()) { // skip it
+                if (src.seek(blockSize, BasicIo::cur))
+                    findDiff = true;
+                else
+                    left += blockSize;
+            } else {
+                readCount = src.read(buf, blockSize);
+                byte* blockData = p_->blocksMap_[blockIndex].getData();
+                for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
+                    if (buf[i] != blockData[i]) {
+                        findDiff = true;
+                    } else {
+                        left++;
                     }
                 }
-                blockIndex++;
             }
-            if (left == -1) {
-                left = i;
-                right = 0;
+            blockIndex++;
+        }
+
+
+        // find right
+        findDiff = false;
+        blockIndex = nBlocks - 1;
+        blockSize = (long)p_->blocksMap_[blockIndex].getSize();
+        while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
+            if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
+                findDiff = true;
             } else {
-                // Find $to position
-                blockIndex = 0;
-                i = 0;
-                src.seek(-1*bufSize, BasicIo::end);
-                while (right == -1 && (readCount = src.read(buf, bufSize))) {
-                    for (;i - blockIndex*bufSize < readCount && i < (long)p_->size_ && right == -1; i++) {
-                        if (buf[blockIndex*bufSize+readCount -1 - i] != p_->data_[p_->size_-1-i]) {
-                            right = i;
+                if (p_->blocksMap_[blockIndex].isKnown()) { // skip
+                    right += blockSize;
+                } else {
+                    readCount = src.read(buf, blockSize);
+                    byte* blockData = p_->blocksMap_[blockIndex].getData();
+                    for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
+                        if (buf[readCount - i - 1] != blockData[blockSize - i - 1]) {
+                            findDiff = true;
+                        } else {
+                            right++;
                         }
                     }
-
-                    // move cursor
-                    if (src.size() - i < bufSize) {
-                        src.seek(0, BasicIo::beg);
-                    } else {
-                        src.seek(-1*i-bufSize, BasicIo::end);
-                    }
-                    blockIndex++;
                 }
-
             }
+            blockIndex--;
+            blockSize = (long)p_->blocksMap_[blockIndex].getSize();
         }
+
+        // free buf
+        if (buf) std::free(buf);
 
         long dataSize = src.size() - left - right;
         if (dataSize > 0) {
@@ -1671,6 +1685,8 @@ namespace Exiv2 {
             p_->httpPost(data, (size_t)dataSize, left, (long) p_->size_ - right);
             if (data) std::free(data);
         }
+
+
         return src.size();
     }
 
@@ -1699,11 +1715,33 @@ namespace Exiv2 {
         // connect to server & load the blocks if it's necessary (blocks are false).
         p_->populateBlocks(lowBlock, highBlock);
 
-        std::memcpy(buf, &p_->data_[p_->idx_], allow);
-        p_->idx_ += (long) allow;
+
+        byte* fakeData = (byte*) std::calloc(p_->blockSize_, sizeof(byte));
+        if (!fakeData) {
+            throw Error(1, "Unable to allocate data");
+        }
+
+        size_t iBlock = lowBlock;
+        size_t startPos = p_->idx_ - lowBlock*p_->blockSize_;
+        size_t totalRead = 0;
+        do {
+            byte* data = p_->blocksMap_[iBlock++].getData();
+            if (data == NULL)
+                data = fakeData;
+            size_t blockR = EXV_MIN(allow, p_->blockSize_ - startPos);
+            std::memcpy(&buf[totalRead], &data[startPos], blockR);
+            totalRead += blockR;
+            startPos = 0;
+            allow -= blockR;
+        } while(allow);
+
+        // free fake Data
+        if (fakeData) std::free(fakeData);
+
+        p_->idx_ += (long) totalRead;
         if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
 
-        return (long) allow;
+        return (long) totalRead;
     }
 
     int HttpIo::getb()
@@ -1718,7 +1756,8 @@ namespace Exiv2 {
         // connect to server & load the blocks if it's necessary (blocks are false).
         p_->populateBlocks(expectedBlock, expectedBlock);
 
-        return p_->data_[p_->idx_++];
+        byte* data = p_->blocksMap_[expectedBlock].getData();
+        return data[p_->idx_++ - expectedBlock*p_->blockSize_];
     }
 
     void HttpIo::transfer(BasicIo& src)
@@ -1768,7 +1807,7 @@ namespace Exiv2 {
 
     byte* HttpIo::mmap(bool /*isWriteable*/)
     {
-        return p_->data_;
+        return NULL;
     }
 
     int HttpIo::munmap()
@@ -1822,7 +1861,10 @@ namespace Exiv2 {
     {
         assert(p_->isMalloced_);
         size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-        ::memset(p_->blocksRead_, true, nBlocks);
+        for (size_t i = 0; i < nBlocks; i++) {
+            if (p_->blocksMap_[i].isInNone())
+                p_->blocksMap_[i].markKnown(p_->blockSize_);
+        }
     }
 
 //////////
@@ -1949,7 +1991,6 @@ namespace Exiv2 {
 
     long RemoteIo::Impl::getDataByRange(const char* range, std::string& response)
     {
-        //printf("RemoteIo::Impl::getDataByRange %s\n", range);
         long code = -1;
 
         curl_easy_reset(curl_); // reset all options

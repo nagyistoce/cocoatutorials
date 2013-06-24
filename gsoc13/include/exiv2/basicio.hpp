@@ -44,7 +44,6 @@
 #include <fstream>      // write the temporary file
 #include <fcntl.h>      // _O_BINARY in FileIo::FileIo
 #include <ctime>        // timestamp for the name of temporary file
-
 // *****************************************************************************
 // namespace extensions
 namespace Exiv2 {
@@ -797,6 +796,28 @@ namespace Exiv2 {
     }; // class StdinIo
 #endif
 
+    class EXIV2API BlockMap {
+    public:
+        enum blockType_e { bNone, bKnown, bMemory};
+        BlockMap() : type_(bNone), data_(NULL) {}
+        ~BlockMap() { if (data_) { std::free(data_); data_ = NULL; }}
+        void populate (byte* source, size_t num) {
+            size_ = num;
+            data_ = (byte*) std::malloc(size_);
+            std::memcpy(data_, source, size_);
+            type_ = bMemory;
+        }
+        void markKnown(size_t num) {type_ = bKnown; size_ = num;}
+        bool isInNone()  {return type_ == bNone;}
+        bool isInMem()  {return type_ == bMemory;}
+        bool isKnown()   {return type_ == bKnown;}
+        byte* getData()  {return data_;}
+        size_t getSize() {return size_;}
+    private:
+        blockType_e type_;
+        byte* data_;
+        size_t size_;
+    };
     /*!
         @brief Provides Http IO by implementing the BasicIo.
     */
