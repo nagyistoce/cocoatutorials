@@ -116,7 +116,7 @@ RemoteIOTest()
             errors=0
             printf 'FTP READ '
             for name in ${files[@]}; do
-                RemoteReadTest "ftp://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/www/$name"
+                RemoteReadTest "ftp://"$EXIV2_AWSUBUNTU_USERNAME"_ftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/$name"
             done
             if [ $errors -eq 0 ]; then
                 printf '\nAll test cases passed\n'
@@ -131,7 +131,7 @@ RemoteIOTest()
             errors=0
             printf 'SFTP READ '
             for name in ${files[@]}; do
-                RemoteReadTest "sftp://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$name"
+                RemoteReadTest "sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$name"
             done
             if [ $errors -eq 0 ]; then
                 printf '\nAll test cases passed\n'

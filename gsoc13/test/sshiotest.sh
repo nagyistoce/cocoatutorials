@@ -55,10 +55,10 @@ SshIOTest()
     else
         printf 'SSH IO '
         for name in ${iopngfiles[@]}; do
-            SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/www/$name"
+            SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"
         done
         for name in ${iojpgfiles[@]}; do
-            SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/www/$name"
+            SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"
         done
         if [ $errors -eq 0 ]; then
             printf '\nAll test cases passed\n'
