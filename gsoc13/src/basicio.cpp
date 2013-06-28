@@ -1619,9 +1619,14 @@ namespace Exiv2 {
         if (!src.isopen()) return 0;
 
         // Find $from position
-        long left = 0, right = 0, blockIndex = 0, i = 0, readCount = 0, blockSize = 0;
-        byte* buf = (byte*) std::malloc(p_->blockSize_);
-        long nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+        long   left       = 0;
+		long   right      = 0;
+		long   blockIndex = 0;
+		long   i          = 0;
+		long   readCount  = 0;
+		long   blockSize  = 0;
+        byte*  buf        = (byte*) std::malloc(p_->blockSize_);
+        long   nBlocks    = (long) ((p_->size_ + p_->blockSize_ - 1) / p_->blockSize_) ;
 
         // find left ----
         src.seek(0, BasicIo::beg);
@@ -1649,11 +1654,11 @@ namespace Exiv2 {
 
 
         // find right
-        findDiff = false;
+        findDiff   = false;
         blockIndex = nBlocks - 1;
-        blockSize = (long)p_->blocksMap_[blockIndex].getSize();
+        blockSize  = (long) p_->blocksMap_[blockIndex].getSize();
         while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
-            if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
+            if(src.seek(-1 * (blockSize + right), BasicIo::end)) { // -1 here is suspect
                 findDiff = true;
             } else {
                 if (p_->blocksMap_[blockIndex].isKnown()) { // skip
@@ -2195,9 +2200,14 @@ namespace Exiv2 {
         if (!src.isopen()) return 0;
 
         // Find $from position
-        long left = 0, right = 0, blockIndex = 0, i = 0, readCount = 0, blockSize = 0;
-        byte* buf = (byte*) std::malloc(p_->blockSize_);
-        long nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
+        long   left       = 0;
+		long   right      = 0;
+		long   blockIndex = 0;
+		long   i          = 0;
+		long   readCount  = 0;
+		long   blockSize  = 0;
+        byte*  buf        = (byte*) std::malloc(p_->blockSize_);
+        long   nBlocks    = (long) ((p_->size_ + p_->blockSize_ - 1) / p_->blockSize_);
 
         // find left ----
         src.seek(0, BasicIo::beg);
@@ -2225,9 +2235,9 @@ namespace Exiv2 {
 
 
         // find right
-        findDiff = false;
+        findDiff   = false;
         blockIndex = nBlocks - 1;
-        blockSize = (long)p_->blocksMap_[blockIndex].getSize();
+        blockSize  = (long)p_->blocksMap_[blockIndex].getSize();
         while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
          if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
              findDiff = true;
