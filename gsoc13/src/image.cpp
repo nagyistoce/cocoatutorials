@@ -423,7 +423,7 @@ namespace Exiv2 {
 #endif
 #if EXV_USE_CURL == 1
             if (useCurl && fProt && fProt != pSsh) {
-                return BasicIo::AutoPtr(new RemoteIo(path));
+                return BasicIo::AutoPtr(new CurlIo(path));
             } else if(fProt == pHttp) {
                 return BasicIo::AutoPtr(new HttpIo(path));
             }
@@ -447,7 +447,7 @@ namespace Exiv2 {
 #endif
 #if EXV_USE_CURL == 1
             if (useCurl && fProt && fProt != pSsh) {
-                return BasicIo::AutoPtr(new RemoteIo(wpath));
+                return BasicIo::AutoPtr(new CurlIo(wpath));
             } else if(fProt == pHttp) {
                 return BasicIo::AutoPtr(new HttpIo(wpath));
             }

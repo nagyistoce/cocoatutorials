@@ -1377,504 +1377,7 @@ namespace Exiv2 {
     }
 #endif
 
-    //! Internal Pimpl structure of class HttpIo.
-    class HttpIo::Impl {
-    public:
-        //! Constructor
-        Impl(const std::string& path, size_t blockSize);
-#ifdef EXV_UNICODE_PATH
-        //! Constructor accepting a unicode path in an std::wstring
-        Impl(const std::wstring& wpath, size_t blockSize);
-#endif
-
-        // DATA
-        std::string  path_;             //!< (Standard) path
-#ifdef EXV_UNICODE_PATH
-        std::wstring wpath_;            //!< Unicode path
-#endif
-        size_t       blockSize_;        //!< Size of the block memory
-        dict_t       hostInfo_;         //!< host information extracted from path
-        BlockMap*    blocksMap_;
-        size_t       size_;             //!< The file size
-        long         idx_;              //!< Index into the memory area
-
-        bool         isMalloced_;       //!< Was the memory allocated?
-        bool         eof_;              //!< EOF indicator
-
-        //bool*        blocksRead_;       //!< bool array of all blocks.
-        //long         sizeAlloced_;      //!< Size of the allocated memory = nBlocks * blockSize
-        //byte*        data_;             //!< Pointer to the start of the memory area
-
-
-        // METHODS
-        /*!
-          @brief Populate the data form the block "lowBlock" to "highBlock".
-
-          @param lowBlock The index of block (from 0).
-          @param highBlock The index of block (from 0).
-          @return The value of the byte written if successful
-          @throw If there is any error when connecting the server.
-         */
-        long httpPost(const byte* data, size_t size, long from, long to);
-        long populateBlocks(size_t lowBlock, size_t highBlock);
-    private:
-        // NOT IMPLEMENTED
-        Impl(const Impl& rhs);                         //!< Copy constructor
-        Impl& operator=(const Impl& rhs);              //!< Assignment
-
-    }; // class HttpIo::Impl
-
-    HttpIo::Impl::Impl(const std::string& url, size_t blockSize)
-        : path_(url), blockSize_(blockSize), blocksMap_(0), size_(0),
-          idx_(0), isMalloced_(false), eof_(false)
-    {
-        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-        hostInfo_["server"] = uri.Host;
-        hostInfo_["page"  ] = uri.Path;
-        hostInfo_["query" ] = uri.QueryString;
-        hostInfo_["proto" ] = uri.Protocol;
-        hostInfo_["port"  ] = uri.Port;
-    }
-#ifdef EXV_UNICODE_PATH
-    HttpIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
-        : wpath_(wurl), blockSize_(blockSize), blocksMap_(0), size_(0),
-          idx_(0), isMalloced_(false), eof_(false)
-    {
-        std::string url;
-        url.assign(wurl.begin(), wurl.end());
-        path_ = url;
-
-        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-        hostInfo_["server"] = uri.Host;
-        hostInfo_["page"  ] = uri.Path;
-        hostInfo_["query" ] = uri.QueryString;
-        hostInfo_["proto" ] = uri.Protocol;
-        hostInfo_["port"  ] = uri.Port;
-    }
-#endif
-
-    long HttpIo::Impl::httpPost(const byte* data, size_t size, long from, long to)
-    {
-        dict_t response;
-        dict_t request(hostInfo_);
-        std::string errors;
-
-        size_t found = hostInfo_["page"].find_last_of("/\\");
-        std::string filename = hostInfo_["page"].substr(found+1);
-        std::string scriptpage = hostInfo_["page"].substr(0, found+1);
-
-        char* httpPostPath = getenv("EXIV2_HTTP_POST");
-        std::stringstream ss;
-        if (httpPostPath)
-            ss << scriptpage << httpPostPath;
-        else
-            ss << scriptpage << "exiv2.php";
-        request["page"] = ss.str();
-        request["verb"] = "POST";
-
-        // encode base64
-        size_t encodeLength = ((size + 2) / 3) * 4 + 1;
-        char* encodeData = new char[encodeLength];
-        base64encode(data, size, encodeData, encodeLength);
-        // url encode
-        char* urlencodeData = urlencode(encodeData);
-        delete[] encodeData;
-
-        // create the post data
-        ss.str("");
-        ss << "filename="   << filename << "&"
-           << "from="       << from     << "&"
-           << "to="         << to       << "&"
-           << "data="       << urlencodeData;
-        std::string postData = ss.str();
-        delete[] urlencodeData;
-
-        // create the header
-        ss.str("");
-        ss << "Content-Length: " << postData.length()  << "\n"
-           << "Content-Type: application/x-www-form-urlencoded\n"
-           << "\n" << postData << "\r\n";
-        request["header"] = ss.str();
-
-        return (long)http(request, response, errors);
-    }
-
-    long HttpIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
-    {
-        assert(isMalloced_);
-
-        // optimize: ignore all true blocks on left & right sides.
-        while(!blocksMap_[lowBlock].isInNone()  && lowBlock  < highBlock) lowBlock++;
-        while(!blocksMap_[highBlock].isInNone() && highBlock >  lowBlock) highBlock--;
-
-        size_t rcount = 0;
-        if (blocksMap_[highBlock].isInNone())
-        {
-            // read from server
-            dict_t response;
-            dict_t request(hostInfo_);
-            std::string errors;
-            std::stringstream ss;
-            ss << "Range: bytes=" << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1) << "\r\n";
-            request["header"] = ss.str();
-
-            int statusCode = http(request, response, errors);
-            if (statusCode < 0) {
-                errors = "Unable to connect" + request["server"];
-                throw Error(1, errors);
-            } else if (statusCode >= 400) {
-                errors = response.begin()->second;
-                throw Error(1, errors);
-            } else if (errors.compare("") != 0) {
-                throw Error(1, errors);
-            }
-
-            rcount = (long)response["body"].length();
-            byte* source = (byte*)response["body"].c_str();
-            size_t remain = rcount, iBlock = lowBlock, totalRead = 0;
-            if (rcount == size_) {
-                // doesn't support Range
-                iBlock = 0;
-            }
-            while (remain) {
-                size_t allow = EXV_MIN(remain, blockSize_);
-                blocksMap_[iBlock].populate(&source[totalRead], allow);
-                remain -= allow;
-                totalRead += allow;
-                iBlock++;
-            }
-        }
-
-        return (long) rcount;
-    }
-
-    HttpIo::HttpIo(const std::string& url, size_t blockSize)
-        : p_(new Impl(url, blockSize))
-    {
-    }
-
-#ifdef EXV_UNICODE_PATH
-    HttpIo::HttpIo(const std::wstring& wurl, size_t blockSize)
-        : p_(new Impl(wurl, blockSize))
-    {
-    }
-#endif
-
-    HttpIo::~HttpIo()
-    {
-        close();
-        if (p_->blocksMap_) delete[] p_->blocksMap_;
-        delete p_;
-    }
-
-    int HttpIo::open()
-    {
-        // flush data & reset the IO position
-        close();
-
-        int returnCode = 0;
-        if (p_->isMalloced_ == false) {
-            dict_t response;
-            dict_t request(p_->hostInfo_);
-            std::string errors;
-            request["verb"] = "HEAD";
-            int statusCode = http(request, response, errors);
-            if (statusCode < 0) {
-                returnCode = 1; // unable to connect
-            } else if (statusCode >= 400) {
-                returnCode = 2; // file not found
-            } else if (errors.compare("") != 0) {
-                returnCode = 3; //
-            } else {
-                p_->size_ = atol(response["Content-Length"].c_str());
-                if (p_->size_ == 0) {
-                    returnCode = 4; // file is empty
-                } else {
-                    size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-                    p_->blocksMap_  = new BlockMap[nBlocks];
-                    p_->isMalloced_ = true;
-                }
-            }
-        }
-        return returnCode;
-    }
-
-    int HttpIo::close()
-    {
-        if (p_->isMalloced_) {
-            p_->eof_ = false;
-            p_->idx_ = 0;
-        }
-        return 0;
-    }
-
-    long HttpIo::write(const byte* /* unused data*/, long /* unused wcount*/)
-    {
-        return 0;
-    }
-
-    long HttpIo::write(BasicIo& src)
-    {
-        assert(p_->isMalloced_);
-        if (!src.isopen()) return 0;
-
-        // Find $from position
-        long   left       = 0;
-		long   right      = 0;
-		long   blockIndex = 0;
-		long   i          = 0;
-		long   readCount  = 0;
-		long   blockSize  = 0;
-        byte*  buf        = (byte*) std::malloc(p_->blockSize_);
-        long   nBlocks    = (long) ((p_->size_ + p_->blockSize_ - 1) / p_->blockSize_) ;
-
-        // find left ----
-        src.seek(0, BasicIo::beg);
-        bool findDiff = false;
-        while (blockIndex < nBlocks && !src.eof() && !findDiff) {
-            blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-            if (p_->blocksMap_[blockIndex].isKnown()) { // skip it
-                if (src.seek(blockSize, BasicIo::cur))
-                    findDiff = true;
-                else
-                    left += blockSize;
-            } else {
-                readCount = src.read(buf, blockSize);
-                byte* blockData = p_->blocksMap_[blockIndex].getData();
-                for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                    if (buf[i] != blockData[i]) {
-                        findDiff = true;
-                    } else {
-                        left++;
-                    }
-                }
-            }
-            blockIndex++;
-        }
-
-
-        // find right
-        findDiff   = false;
-        blockIndex = nBlocks - 1;
-        blockSize  = (long) p_->blocksMap_[blockIndex].getSize();
-        while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
-            if(src.seek(-1 * (blockSize + right), BasicIo::end)) { // -1 here is suspect
-                findDiff = true;
-            } else {
-                if (p_->blocksMap_[blockIndex].isKnown()) { // skip
-                    right += blockSize;
-                } else {
-                    readCount = src.read(buf, blockSize);
-                    byte* blockData = p_->blocksMap_[blockIndex].getData();
-                    for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                        if (buf[readCount - i - 1] != blockData[blockSize - i - 1]) {
-                            findDiff = true;
-                        } else {
-                            right++;
-                        }
-                    }
-                }
-            }
-            blockIndex--;
-            blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-        }
-
-        // free buf
-        if (buf) std::free(buf);
-
-        long dataSize = src.size() - left - right;
-        if (dataSize > 0) {
-            byte* data = (byte*) std::malloc(dataSize);
-            src.seek(left, BasicIo::beg);
-            src.read(data, dataSize);
-            p_->httpPost(data, (size_t)dataSize, left, (long) p_->size_ - right);
-            if (data) std::free(data);
-        }
-
-
-        return src.size();
-    }
-
-    int HttpIo::putb(byte /*unused data*/)
-    {
-        return 0;
-    }
-
-    DataBuf HttpIo::read(long rcount)
-    {
-        DataBuf buf(rcount);
-        long readCount = read(buf.pData_, buf.size_);
-        buf.size_ = readCount;
-        return buf;
-    }
-
-    long HttpIo::read(byte* buf, long rcount)
-    {
-        assert(p_->isMalloced_);
-        if (p_->eof_) return 0;
-
-        size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
-        size_t lowBlock  =  p_->idx_         /p_->blockSize_;
-        size_t highBlock = (p_->idx_ + allow)/p_->blockSize_;
-
-        // connect to server & load the blocks if it's necessary (blocks are false).
-        p_->populateBlocks(lowBlock, highBlock);
-
-
-        byte* fakeData = (byte*) std::calloc(p_->blockSize_, sizeof(byte));
-        if (!fakeData) {
-            throw Error(1, "Unable to allocate data");
-        }
-
-        size_t iBlock = lowBlock;
-        size_t startPos = p_->idx_ - lowBlock*p_->blockSize_;
-        size_t totalRead = 0;
-        do {
-            byte* data = p_->blocksMap_[iBlock++].getData();
-            if (data == NULL)
-                data = fakeData;
-            size_t blockR = EXV_MIN(allow, p_->blockSize_ - startPos);
-            std::memcpy(&buf[totalRead], &data[startPos], blockR);
-            totalRead += blockR;
-            startPos = 0;
-            allow -= blockR;
-        } while(allow);
-
-        // free fake Data
-        if (fakeData) std::free(fakeData);
-
-        p_->idx_ += (long) totalRead;
-        if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
-
-        return (long) totalRead;
-    }
-
-    int HttpIo::getb()
-    {
-        assert(p_->isMalloced_);
-        if (p_->idx_ == (long)p_->size_) {
-            p_->eof_ = true;
-            return EOF;
-        }
-
-        size_t expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
-        // connect to server & load the blocks if it's necessary (blocks are false).
-        p_->populateBlocks(expectedBlock, expectedBlock);
-
-        byte* data = p_->blocksMap_[expectedBlock].getData();
-        return data[p_->idx_++ - expectedBlock*p_->blockSize_];
-    }
-
-    void HttpIo::transfer(BasicIo& src)
-    {
-        if (src.open() != 0) {
-            throw Error(1, "unable to open src when transferring");
-        }
-        write(src);
-        src.close();
-    }
-
-#if defined(_MSC_VER)
-    int HttpIo::seek( uint64_t offset, Position pos )
-    {
-        assert(p_->isMalloced_);
-        uint64_t newIdx = 0;
-
-        switch (pos) {
-            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
-            case BasicIo::beg: newIdx = offset; break;
-            case BasicIo::end: newIdx = p_->size_ + offset; break;
-        }
-
-        if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
-        p_->idx_ = static_cast<long>(newIdx);   //not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
-        p_->eof_ = false;
-        return 0;
-    }
-#else
-    int HttpIo::seek(long offset, Position pos)
-    {
-        assert(p_->isMalloced_);
-        long newIdx = 0;
-
-        switch (pos) {
-            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
-            case BasicIo::beg: newIdx = offset; break;
-            case BasicIo::end: newIdx = p_->size_ + offset; break;
-        }
-
-        if (newIdx < 0 || newIdx > (long) p_->size_) return 1;
-        p_->idx_ = newIdx;
-        p_->eof_ = false;
-        return 0;
-    }
-#endif
-
-    byte* HttpIo::mmap(bool /*isWriteable*/)
-    {
-        return NULL;
-    }
-
-    int HttpIo::munmap()
-    {
-        return 0;
-    }
-
-    long HttpIo::tell() const
-    {
-        return p_->idx_;
-    }
-
-    long HttpIo::size() const
-    {
-        return (long) p_->size_;
-    }
-
-    bool HttpIo::isopen() const
-    {
-        return p_->isMalloced_;
-    }
-
-    int HttpIo::error() const
-    {
-        return 0;
-    }
-
-    bool HttpIo::eof() const
-    {
-        return p_->eof_;
-    }
-
-    std::string HttpIo::path() const
-    {
-        return p_->path_;
-    }
-
-#ifdef EXV_UNICODE_PATH
-    std::wstring HttpIo::wpath() const
-    {
-        return p_->wpath_;
-    }
-#endif
-
-    BasicIo::AutoPtr HttpIo::temporary() const
-    {
-        return BasicIo::AutoPtr(new MemIo);
-    }
-
-    void HttpIo::populateFakeData()
-    {
-        assert(p_->isMalloced_);
-        size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-        for (size_t i = 0; i < nBlocks; i++) {
-            if (p_->blocksMap_[i].isInNone())
-                p_->blocksMap_[i].markKnown(p_->blockSize_);
-        }
-    }
-
-//////////
-#if EXV_USE_CURL == 1
-    //! Internal Pimpl structure of class RemoteIo.
+    //! Internal Pimpl abstract structure of class RemoteIo.
     class RemoteIo::Impl {
     public:
         //! Constructor
@@ -1885,184 +1388,38 @@ namespace Exiv2 {
 #endif
 
         // DATA
-        std::string  path_;             //!< (Standard) path
+        std::string     path_;          //!< (Standard) path
 #ifdef EXV_UNICODE_PATH
-        std::wstring wpath_;            //!< Unicode path
+        std::wstring    wpath_;         //!< Unicode path
 #endif
-        size_t       blockSize_;        //!< Size of the block memory
-        BlockMap*    blocksMap_;
-        size_t       size_;             //!< The file size
-        long         idx_;              //!< Index into the memory area
+        size_t          blockSize_;     //!< Size of the block memory
+        BlockMap*       blocksMap_;
+        size_t          size_;          //!< The file size
+        long            idx_;           //!< Index into the memory area
+        bool            isMalloced_;    //!< Was the memory allocated?
+        bool            eof_;           //!< EOF indicator
+        Protocol        protocol_;      //!< protocols
 
-        bool         isMalloced_;       //!< Was the memory allocated?
-        bool         eof_;              //!< EOF indicator
-        CURL*        curl_;             //!< libcurl pointer
+        virtual long getFileLength(long& length) = 0;
+        virtual long getDataByRange(long lowBlock, long highBlock, std::string& response) = 0;
+        virtual long writeRemote(const byte* data, size_t size, long from, long to) = 0;
+        virtual long populateBlocks(size_t lowBlock, size_t highBlock);
+        virtual ~Impl();
 
-        Protocol     protocol_;         //!< protocols
-        // METHODS
-
-        long getFileLength(long& length);
-        long getDataByRange(const char* range, std::string& response);
-        long httpPost(const byte* data, size_t size, long from, long to);
-        /*!
-          @brief Populate the data form the block "lowBlock" to "highBlock".
-
-          @param lowBlock The index of block (from 0).
-          @param highBlock The index of block (from 0).
-          @return The value of the byte written if successful
-          @throw If there is any error when connecting the server.
-         */
-        long populateBlocks(size_t lowBlock, size_t highBlock);
-
-    private:
-        // NOT IMPLEMENTED
-        Impl(const Impl& rhs);                         //!< Copy constructor
-        Impl& operator=(const Impl& rhs);              //!< Assignment
-
-    }; // class HttpIo::Impl
+    }; // class RemoteIo::Impl
 
     RemoteIo::Impl::Impl(const std::string& url, size_t blockSize)
         : path_(url), blockSize_(blockSize), blocksMap_(0), size_(0),
           idx_(0), isMalloced_(false), eof_(false), protocol_(fileProtocol(url))
     {
-        // init curl pointer
-        curl_ = curl_easy_init();
-        if(!curl_) {
-            throw Error(1, "Uable to init libcurl.");
-        }
-
-        // if users don't set the blockSize_ value
-        if (blockSize_ == 0) {
-            if (protocol_ == pFtp) blockSize_ = 102400;
-            else blockSize_ = 1024;
-        }
     }
 #ifdef EXV_UNICODE_PATH
     RemoteIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
         : wpath_(wurl), blockSize_(blockSize), blocksMap_(0), size_(0),
           idx_(0), isMalloced_(false), eof_(false), protocol_(fileProtocol(wurl))
     {
-        std::string url;
-        url.assign(wurl.begin(), wurl.end());
-        path_ = url;
-
-        // init curl pointer
-        curl_ = curl_easy_init();
-        if(!curl_) {
-            throw Error(1, "Uable to init libcurl.");
-        }
-
-        // if users don't set the blockSize_ value
-        if (blockSize_ == 0) {
-            if (protocol_ == pFtp) blockSize_ = 102400;
-            else blockSize_ = 1024;
-        }
     }
 #endif
-
-    long RemoteIo::Impl::getFileLength(long& length)
-    {
-        long returnCode;
-        length = 0;
-
-        curl_easy_reset(curl_); // reset all options
-        std::string response;
-        curl_easy_setopt(curl_, CURLOPT_URL, path_.c_str());
-        curl_easy_setopt(curl_, CURLOPT_NOBODY, 1); // HEAD
-        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
-        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
-        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
-        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
-
-        /* Perform the request, res will get the return code */
-        CURLcode res = curl_easy_perform(curl_);
-        if(res != CURLE_OK) { // error happends
-            throw Error(1, curl_easy_strerror(res));
-        } else {
-            // get return code
-            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &returnCode); // get code
-
-            // get length
-            double temp;
-            curl_easy_getinfo(curl_, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &temp); // return -1 if unknown
-            length = (long) temp;
-        }
-
-        return returnCode;
-    }
-
-    long RemoteIo::Impl::getDataByRange(const char* range, std::string& response)
-    {
-        long code = -1;
-
-        curl_easy_reset(curl_); // reset all options
-        curl_easy_setopt(curl_, CURLOPT_URL, path_.c_str());
-        curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
-        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
-        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
-        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
-        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
-
-        if (strcmp(range, ""))
-            curl_easy_setopt(curl_, CURLOPT_RANGE, range);
-
-        /* Perform the request, res will get the return code */
-        CURLcode res = curl_easy_perform(curl_);
-
-        if(res != CURLE_OK) {
-            throw Error(1, curl_easy_strerror(res));
-        } else {
-            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
-        }
-
-        return code;
-    }
-
-    long RemoteIo::Impl::httpPost(const byte* data, size_t size, long from, long to)
-    {
-        //printf("RemoteIo::Impl::httpPost post %ld bytes to server (filesize = %ld)\n", size, (long)size_);
-        long code = -1;
-
-        curl_easy_reset(curl_); // reset all options
-        curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
-        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
-        size_t found = path_.find_last_of("/\\");
-        std::string filename = path_.substr(found+1);
-        std::string url = path_.substr(0, found+1);
-        std::stringstream ss;
-        ss << url << "exiv2.php";
-        std::string postUrl = ss.str();
-        curl_easy_setopt(curl_, CURLOPT_URL, postUrl.c_str());
-        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
-
-        // encode base64
-        size_t encodeLength = ((size + 2) / 3) * 4 + 1;
-        char* encodeData = new char[encodeLength];
-        base64encode(data, size, encodeData, encodeLength);
-        // url encode
-        char* urlencodeData = urlencode(encodeData);
-        delete[] encodeData;
-
-        // create the post data
-        ss.str("");
-        ss << "filename="   << filename << "&"
-           << "from="       << from     << "&"
-           << "to="         << to       << "&"
-           << "data="       << urlencodeData;
-        std::string postData = ss.str();
-        delete[] urlencodeData;
-        curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, postData.c_str());
-        /* Perform the request, res will get the return code */
-        CURLcode res = curl_easy_perform(curl_);
-
-        if(res != CURLE_OK) {
-            throw Error(1, curl_easy_strerror(res));
-        } else {
-            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
-        }
-
-        return code;
-    }
 
     long RemoteIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
     {
@@ -2075,16 +1432,12 @@ namespace Exiv2 {
         size_t rcount = 0;
         if (blocksMap_[highBlock].isInNone())
         {
-            // read from server
             std::string data;
-            std::string error;
             std::stringstream ss;
-            ss << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1);
-            std::string range = ss.str();
-
-            long statusCode = getDataByRange(range.c_str(), data);
+            std::string error;
+            long statusCode = getDataByRange(lowBlock, highBlock, data);
             if (statusCode >= 400) {
-                ss << "Libcurl returns error code " << statusCode;
+                ss << "RemoteIo returns error code " << statusCode;
                 error = ss.str();
                 throw Error(1, error);
             }
@@ -2108,24 +1461,14 @@ namespace Exiv2 {
         return (long) rcount;
     }
 
-    RemoteIo::RemoteIo(const std::string& url, size_t blockSize)
-        : p_(new Impl(url, blockSize))
-    {
+    RemoteIo::Impl::~Impl() {
+        if (blocksMap_) delete[] blocksMap_;
     }
-
-#ifdef EXV_UNICODE_PATH
-    RemoteIo::RemoteIo(const std::wstring& wurl, size_t blockSize)
-        : p_(new Impl(wurl, blockSize))
-    {
-    }
-#endif
 
     RemoteIo::~RemoteIo()
     {
         close();
-        if (p_->blocksMap_) delete[] p_->blocksMap_;
-        curl_easy_cleanup(p_->curl_);
-        delete p_;
+        if (p_) delete p_;
     }
 
     int RemoteIo::open()
@@ -2139,16 +1482,15 @@ namespace Exiv2 {
             std::string error;
             long statusCode = p_->getFileLength(length);
             if (statusCode >= 400) {
-                ss << "Libcurl returns error code " << statusCode;
+                ss << "Server returns error code " << statusCode;
                 error = ss.str();
                 throw Error(1, error);
             } else {
                 if (length <= 0) { // don't support HEAD
                     std::string data;
-                    std::string range = "";
-                    statusCode = p_->getDataByRange(range.c_str(), data);
+                    statusCode = p_->getDataByRange(-1, -1, data);
                     if (statusCode >= 400) {
-                        ss << "Libcurl returns error code " << statusCode;
+                        ss << "Server returns error code " << statusCode;
                         error = ss.str();
                         throw Error(1, error);
                     } else {
@@ -2166,11 +1508,10 @@ namespace Exiv2 {
                             iBlock++;
                         }
                     }
-                } else if (length == 0) {
-                    returnCode = 1; // file size = 0
+                } else if (length == 0) { // file is empty
+                    returnCode = 1;
                 } else {
                     p_->size_ = (size_t) length;
-
                     size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
                     p_->blocksMap_  = new BlockMap[nBlocks];
                     p_->isMalloced_ = true;
@@ -2200,14 +1541,14 @@ namespace Exiv2 {
         if (!src.isopen()) return 0;
 
         // Find $from position
-        long   left       = 0;
-		long   right      = 0;
-		long   blockIndex = 0;
-		long   i          = 0;
-		long   readCount  = 0;
-		long   blockSize  = 0;
-        byte*  buf        = (byte*) std::malloc(p_->blockSize_);
-        long   nBlocks    = (long) ((p_->size_ + p_->blockSize_ - 1) / p_->blockSize_);
+        long  left       = 0;
+        long  right      = 0;
+        long  blockIndex = 0;
+        long  i          = 0;
+        long  readCount  = 0;
+        long  blockSize  = 0;
+        byte* buf        = (byte*) std::malloc(p_->blockSize_);
+        long  nBlocks    = (long)((p_->size_ + p_->blockSize_ - 1) / p_->blockSize_);
 
         // find left ----
         src.seek(0, BasicIo::beg);
@@ -2235,9 +1576,9 @@ namespace Exiv2 {
 
 
         // find right
-        findDiff   = false;
-        blockIndex = nBlocks - 1;
-        blockSize  = (long)p_->blocksMap_[blockIndex].getSize();
+        findDiff    = false;
+        blockIndex  = nBlocks - 1;
+        blockSize   = (long)p_->blocksMap_[blockIndex].getSize();
         while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
          if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
              findDiff = true;
@@ -2268,7 +1609,7 @@ namespace Exiv2 {
             byte* data = (byte*) std::malloc(dataSize);
             src.seek(left, BasicIo::beg);
             src.read(data, dataSize);
-            p_->httpPost(data, (size_t)dataSize, left, (long) p_->size_ - right);
+            p_->writeRemote(data, (size_t)dataSize, left, (long) p_->size_ - right);
             if (data) std::free(data);
         }
         return src.size();
@@ -2449,56 +1790,368 @@ namespace Exiv2 {
         }
     }
 
-#endif
 
-#if EXV_USE_SSH == 1
-    //! Internal Pimpl structure of class SshIo.
-    class SshIo::Impl {
+    //! Internal Pimpl structure of class HttpIo.
+    class HttpIo::HttpImpl : public Impl  {
     public:
         //! Constructor
-        Impl(const std::string& path, size_t blockSize);
+        HttpImpl(const std::string&  path,  size_t blockSize);
 #ifdef EXV_UNICODE_PATH
         //! Constructor accepting a unicode path in an std::wstring
-        Impl(const std::wstring& wpath, size_t blockSize);
+        HttpImpl(const std::wstring& wpath, size_t blockSize);
 #endif
+        dict_t  hostInfo_;    //!< host information extracted from path
 
-        // DATA
-        std::string  path_;             //!< (Standard) path
-#ifdef EXV_UNICODE_PATH
-        std::wstring wpath_;            //!< Unicode path
-#endif
-        size_t       blockSize_;        //!< Size of the block memory
-        dict_t       hostInfo_;         //!< host information extracted from path
-        BlockMap*    blocksMap_;
-        size_t       size_;             //!< The file size
-        long         idx_;              //!< Index into the memory area
-
-        bool         isMalloced_;       //!< Was the memory allocated?
-        bool         eof_;              //!< EOF indicator
-        SSH*         ssh_;              //!< SSH pointer
-
-        // METHODS
         long getFileLength(long& length);
-        long update(const byte* data, size_t size, long from, long to);
-        /*!
-          @brief Populate the data form the block "lowBlock" to "highBlock".
-
-          @param lowBlock The index of block (from 0).
-          @param highBlock The index of block (from 0).
-          @return The value of the byte written if successful
-          @throw If there is any error when connecting the server.
-         */
-        long populateBlocks(size_t lowBlock, size_t highBlock);
-    private:
+        long getDataByRange(long lowBlock, long highBlock, std::string& response);
+        long writeRemote(const byte* data, size_t size, long from, long to);
+    protected:
         // NOT IMPLEMENTED
-        Impl(const Impl& rhs);                         //!< Copy constructor
-        Impl& operator=(const Impl& rhs);              //!< Assignment
+        HttpImpl(const HttpImpl& rhs); //!< Copy constructor
+        HttpImpl& operator=(const HttpImpl& rhs); //!< Assignment
+    }; // class HttpIo::HttpImpl
 
-    }; // class SshIo::Impl
+    HttpIo::HttpImpl::HttpImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
+    {
+        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+        hostInfo_["server"] = uri.Host;
+        hostInfo_["page"  ] = uri.Path;
+        hostInfo_["query" ] = uri.QueryString;
+        hostInfo_["proto" ] = uri.Protocol;
+        hostInfo_["port"  ] = uri.Port;
+    }
+#ifdef EXV_UNICODE_PATH
+    HttpIo::HttpImpl::HttpImpl(const std::wstring& wurl, size_t blockSize):Impl(url, blockSize)
+    {
+        std::string url;
+        url.assign(wurl.begin(), wurl.end());
+        path_ = url;
 
-    SshIo::Impl::Impl(const std::string& url, size_t blockSize)
-        : path_(url), blockSize_(blockSize), blocksMap_(0), size_(0),
-          idx_(0), isMalloced_(false), eof_(false)
+        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+        hostInfo_["server"] = uri.Host;
+        hostInfo_["page"  ] = uri.Path;
+        hostInfo_["query" ] = uri.QueryString;
+        hostInfo_["proto" ] = uri.Protocol;
+        hostInfo_["port"  ] = uri.Port;
+    }
+#endif
+
+    long HttpIo::HttpImpl::getFileLength(long& length)
+    {
+        dict_t response;
+        dict_t request(hostInfo_);
+        std::string errors;
+        request["verb"] = "HEAD";
+        long statusCode = (long)http(request, response, errors);
+        if (statusCode < 0 || statusCode >= 400 || errors.compare("") != 0) {
+            // error
+            length = 0;
+        } else {
+            length = atol(response["Content-Length"].c_str());
+        }
+        return statusCode;
+    }
+
+    long HttpIo::HttpImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
+    {
+        dict_t responseDic;
+        dict_t request(hostInfo_);
+        std::string errors;
+        if (lowBlock > -1 && highBlock > -1) {
+            // read from server
+            std::stringstream ss;
+            ss << "Range: bytes=" << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1) << "\r\n";
+            request["header"] = ss.str();
+        }
+
+        long code = (long)http(request, responseDic, errors);
+        response = responseDic["body"];
+        return code;
+    }
+
+    long HttpIo::HttpImpl::writeRemote(const byte* data, size_t size, long from, long to)
+    {
+        dict_t response;
+        dict_t request(hostInfo_);
+        std::string errors;
+
+        size_t found = hostInfo_["page"].find_last_of("/\\");
+        std::string filename = hostInfo_["page"].substr(found+1);
+        std::string scriptpage = hostInfo_["page"].substr(0, found+1);
+
+        char* httpPostPath = getenv("EXIV2_HTTP_POST");
+        std::stringstream ss;
+        if (httpPostPath)
+            ss << scriptpage << httpPostPath;
+        else
+            ss << scriptpage << "exiv2.php";
+        request["page"] = ss.str();
+        request["verb"] = "POST";
+
+        // encode base64
+        size_t encodeLength = ((size + 2) / 3) * 4 + 1;
+        char* encodeData = new char[encodeLength];
+        base64encode(data, size, encodeData, encodeLength);
+        // url encode
+        char* urlencodeData = urlencode(encodeData);
+        delete[] encodeData;
+
+        // create the post data
+        ss.str("");
+        ss << "filename="   << filename << "&"
+           << "from="       << from     << "&"
+           << "to="         << to       << "&"
+           << "data="       << urlencodeData;
+        std::string postData = ss.str();
+        delete[] urlencodeData;
+
+        // create the header
+        ss.str("");
+        ss << "Content-Length: " << postData.length()  << "\n"
+           << "Content-Type: application/x-www-form-urlencoded\n"
+           << "\n" << postData << "\r\n";
+        request["header"] = ss.str();
+
+        return (long)http(request, response, errors);
+    }
+    HttpIo::HttpIo(const std::string& url, size_t blockSize)
+    {
+        p_ = new HttpImpl(url, blockSize);
+    }
+#ifdef EXV_UNICODE_PATH
+    HttpIo::HttpIo(const std::wstring& wurl, size_t blockSize)
+    {
+         p_ = new HttpImpl(wurl, blockSize);
+    }
+#endif
+
+#if EXV_USE_CURL == 1
+    //! Internal Pimpl structure of class RemoteIo.
+    class CurlIo::CurlImpl : public Impl  {
+    public:
+        //! Constructor
+        CurlImpl(const std::string&  path, size_t blockSize);
+#ifdef EXV_UNICODE_PATH
+        //! Constructor accepting a unicode path in an std::wstring
+        CurlImpl(const std::wstring& wpath, size_t blockSize);
+#endif
+        CURL*        curl_;             //!< libcurl pointer
+
+        long getFileLength(long& length);
+        long getDataByRange(long lowBlock, long highBlock, std::string& response);
+        long writeRemote(const byte* data, size_t size, long from, long to);
+        ~CurlImpl();
+    protected:
+        // NOT IMPLEMENTED
+        CurlImpl(const CurlImpl& rhs); //!< Copy constructor
+        CurlImpl& operator=(const CurlImpl& rhs); //!< Assignment
+    }; // class RemoteIo::Impl
+
+    CurlIo::CurlImpl::CurlImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
+    {
+        // init curl pointer
+        curl_ = curl_easy_init();
+        if(!curl_) {
+            throw Error(1, "Uable to init libcurl.");
+        }
+
+        // if users don't set the blockSize_ value
+        if (blockSize_ == 0) {
+            if (protocol_ == pFtp) blockSize_ = 102400;
+            else blockSize_ = 1024;
+        }
+    }
+#ifdef EXV_UNICODE_PATH
+    CurlIo::CurlImpl::CurlImpl(const std::wstring& wurl, size_t blockSize):Impl(url, blockSize)
+    {
+        std::string url;
+        url.assign(wurl.begin(), wurl.end());
+        path_ = url;
+
+        // init curl pointer
+        curl_ = curl_easy_init();
+        if(!curl_) {
+            throw Error(1, "Uable to init libcurl.");
+        }
+
+        // if users don't set the blockSize_ value
+        if (blockSize_ == 0) {
+            if (protocol_ == pFtp) blockSize_ = 102400;
+            else blockSize_ = 1024;
+        }
+    }
+#endif
+
+    long CurlIo::CurlImpl::getFileLength(long& length)
+    {
+        long returnCode;
+        length = 0;
+
+        curl_easy_reset(curl_); // reset all options
+        std::string response;
+        curl_easy_setopt(curl_, CURLOPT_URL, path_.c_str());
+        curl_easy_setopt(curl_, CURLOPT_NOBODY, 1); // HEAD
+        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
+        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
+        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
+        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
+
+        /* Perform the request, res will get the return code */
+        CURLcode res = curl_easy_perform(curl_);
+        if(res != CURLE_OK) { // error happends
+            throw Error(1, curl_easy_strerror(res));
+        } else {
+            // get return code
+            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &returnCode); // get code
+
+            // get length
+            double temp;
+            curl_easy_getinfo(curl_, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &temp); // return -1 if unknown
+            length = (long) temp;
+        }
+
+        return returnCode;
+    }
+
+    long CurlIo::CurlImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
+    {
+        long code = -1;
+
+        curl_easy_reset(curl_); // reset all options
+        curl_easy_setopt(curl_, CURLOPT_URL, path_.c_str());
+        curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
+        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
+        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
+        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
+        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
+
+        if (lowBlock > -1 && highBlock> -1) {
+            std::stringstream ss;
+            ss << lowBlock * blockSize_  << "-" << ((highBlock + 1) * blockSize_ - 1);
+            std::string range = ss.str();
+            curl_easy_setopt(curl_, CURLOPT_RANGE, range.c_str());
+        }
+
+        /* Perform the request, res will get the return code */
+        CURLcode res = curl_easy_perform(curl_);
+
+        if(res != CURLE_OK) {
+            throw Error(1, curl_easy_strerror(res));
+        } else {
+            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
+        }
+
+        return code;
+    }
+
+    long CurlIo::CurlImpl::writeRemote(const byte* data, size_t size, long from, long to)
+    {
+        //printf("RemoteIo::Impl::httpPost post %ld bytes to server (filesize = %ld)\n", size, (long)size_);
+        long code = -1;
+
+        curl_easy_reset(curl_); // reset all options
+        curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
+        //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
+        size_t found = path_.find_last_of("/\\");
+        std::string filename = path_.substr(found+1);
+        std::string url = path_.substr(0, found+1);
+        std::stringstream ss;
+        ss << url << "exiv2.php";
+        std::string postUrl = ss.str();
+        curl_easy_setopt(curl_, CURLOPT_URL, postUrl.c_str());
+        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
+
+        // encode base64
+        size_t encodeLength = ((size + 2) / 3) * 4 + 1;
+        char* encodeData = new char[encodeLength];
+        base64encode(data, size, encodeData, encodeLength);
+        // url encode
+        char* urlencodeData = urlencode(encodeData);
+        delete[] encodeData;
+
+        // create the post data
+        ss.str("");
+        ss << "filename="   << filename << "&"
+           << "from="       << from     << "&"
+           << "to="         << to       << "&"
+           << "data="       << urlencodeData;
+        std::string postData = ss.str();
+        delete[] urlencodeData;
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, postData.c_str());
+        /* Perform the request, res will get the return code */
+        CURLcode res = curl_easy_perform(curl_);
+
+        if(res != CURLE_OK) {
+            throw Error(1, curl_easy_strerror(res));
+        } else {
+            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
+        }
+
+        return code;
+    }
+
+    CurlIo::CurlImpl::~CurlImpl() {
+        curl_easy_cleanup(curl_);
+    }
+
+    long CurlIo::write(const byte* data, long wcount)
+    {
+        if (p_->protocol_ == pHttp || p_->protocol_ == pHttps) {
+            return RemoteIo::write(data, wcount);
+        } else {
+            throw Error(1, "doesnt support write for this protocol.");
+            return 0;
+        }
+    }
+
+    long CurlIo::write(BasicIo& src)
+    {
+        if (p_->protocol_ == pHttp || p_->protocol_ == pHttps) {
+            return RemoteIo::write(src);
+        } else {
+            throw Error(1, "doesnt support write for this protocol.");
+            return 0;
+        }
+    }
+
+    CurlIo::CurlIo(const std::string& url, size_t blockSize)
+    {
+        p_ = new CurlImpl(url, blockSize);
+    }
+#ifdef EXV_UNICODE_PATH
+    CurlIo::CurlIo(const std::wstring& wurl, size_t blockSize)
+    {
+        p_ = new CurlImpl(url, blockSize);
+    }
+#endif
+
+#endif
+
+
+#if EXV_USE_SSH == 1
+    //! Internal Pimpl structure of class RemoteIo.
+    class SshIo::SshImpl : public Impl  {
+    public:
+        //! Constructor
+        SshImpl(const std::string&  path,  size_t blockSize);
+#ifdef EXV_UNICODE_PATH
+        //! Constructor accepting a unicode path in an std::wstring
+        SshImpl(const std::wstring& wpath, size_t blockSize);
+#endif
+        dict_t  hostInfo_;         //!< host information extracted from path
+        SSH*         ssh_;         //!< SSH pointer
+
+        long getFileLength(long& length);
+        long getDataByRange(long lowBlock, long highBlock, std::string& response);
+        long writeRemote(const byte* data, size_t size, long from, long to);
+        ~SshImpl();
+    protected:
+        // NOT IMPLEMENTED
+        SshImpl(const SshImpl& rhs); //!< Copy constructor
+        SshImpl& operator=(const SshImpl& rhs); //!< Assignment
+    }; // class RemoteIo::Impl
+
+    SshIo::SshImpl::SshImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
     {
         Exiv2::Uri uri = Exiv2::Uri::Parse(url);
         hostInfo_["server"]     = uri.Host;
@@ -2517,9 +2170,7 @@ namespace Exiv2 {
         ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
     }
 #ifdef EXV_UNICODE_PATH
-    SshIo::Impl::Impl(const std::wstring& wurl, size_t blockSize)
-        : wpath_(wurl), blockSize_(blockSize), blocksMap_(0), size_(0),
-          idx_(0), isMalloced_(false), eof_(false)
+    SshIo::SshImpl::SshImpl(const std::wstring& wurl, size_t blockSize):Impl(url, blockSize)
     {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
@@ -2541,7 +2192,7 @@ namespace Exiv2 {
     }
 #endif
 
-    long SshIo::Impl::getFileLength(long& length)
+    long SshIo::SshImpl::getFileLength(long& length)
     {
         long returnCode;
         length = 0;
@@ -2563,418 +2214,104 @@ namespace Exiv2 {
         return returnCode;
     }
 
-    long SshIo::Impl::update(const byte* data, size_t size, long from, long to) {
-        //printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
-        assert(isMalloced_);
-        long returnCode;
-
-        std::string tempFile = hostInfo_["page"] + ".exiv2tmp";
-        std::string response;
+    long SshIo::SshImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
+    {
         std::stringstream ss;
-        // copy head of file to temp
-        ss << "head -c " << from
-           << " "   << hostInfo_["page"]
-           << " > " << tempFile;
+        if (lowBlock > -1 && highBlock > -1) {
+            ss  << "dd if=" << hostInfo_["page"]
+                << " ibs=" << blockSize_
+                << " skip=" << lowBlock
+                << " count=" << (highBlock - lowBlock) + 1<< " 2>/dev/null";
+        } else {
+            ss  << "dd if=" << hostInfo_["page"]
+                << " ibs=" << blockSize_
+                << " 2>/dev/null";
+        }
         std::string cmd = ss.str();
-        returnCode = (long)ssh_->runCommand(cmd, &response);
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to cope the head of file to temp");
-        }
-
-        // upload byte ranges to exiv2datatemp file
-        returnCode = (long)ssh_->scp(hostInfo_["page"] + ".exiv2datatemp", data, size);
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to copy file");
-        }
-
-        // copy exiv2datatemp to temp file
-        ss.str("");
-        ss << "cat " << hostInfo_["page"] + ".exiv2datatemp"
-           << " >> "   << tempFile;
-        cmd = ss.str();
-        returnCode = (long)ssh_->runCommand(cmd, &response);
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to copy the rest");
-        }
-
-        // copy head of file to temp
-        ss.str("");
-        ss << "tail -c+" << (to + 1)
-           << " "   << hostInfo_["page"]
-           << " >> "   << tempFile;
-        cmd = ss.str();
-        returnCode = (long)ssh_->runCommand(cmd, &response);
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to copy the rest");
-        }
-
-        // mv temfile to file
-        ss.str("");
-        ss << "mv " << tempFile << " " << hostInfo_["page"];
-        cmd = ss.str();
-        returnCode = (long)ssh_->runCommand(cmd, &response);
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to copy the rest");
-        }
-
-        // remove exiv2datatemp
-        ss.str("");
-        ss << "rm " << hostInfo_["page"] + ".exiv2datatemp";
-        cmd = ss.str();
-        returnCode = (long)ssh_->runCommand(cmd, &response);
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to copy the rest");
-        }
-
-        return returnCode;
+        return (long)ssh_->runCommand(cmd, &response);
     }
 
-    long SshIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
+    long SshIo::SshImpl::writeRemote(const byte* data, size_t size, long from, long to)
     {
-        assert(isMalloced_);
+        //printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
+         assert(isMalloced_);
+         long returnCode;
 
-        // optimize: ignore all true blocks on left & right sides.
-       while(!blocksMap_[lowBlock].isInNone()  && lowBlock  < highBlock) lowBlock++;
-       while(!blocksMap_[highBlock].isInNone() && highBlock >  lowBlock) highBlock--;
+         std::string tempFile = hostInfo_["page"] + ".exiv2tmp";
+         std::string response;
+         std::stringstream ss;
+         // copy head of file to temp
+         ss << "head -c " << from
+            << " "   << hostInfo_["page"]
+            << " > " << tempFile;
+         std::string cmd = ss.str();
+         returnCode = (long)ssh_->runCommand(cmd, &response);
+         if (returnCode == -1) {
+             throw Error(1, "SSH: Unable to cope the head of file to temp");
+         }
 
-        size_t rcount = 0;
-        if (blocksMap_[highBlock].isInNone())
-        {
-            //printf("populateBlocks lowBlock=%ld highBlock=%ld\n", lowBlock, highBlock);
-            long returnCode;
-            std::string response;
-            std::stringstream ss;
-            ss << "dd if=" << hostInfo_["page"]
-               << " ibs=" << blockSize_
-               << " skip=" << lowBlock
-               << " count=" << (highBlock - lowBlock) + 1<< " 2>/dev/null";
-            std::string cmd = ss.str();
-            returnCode = (long)ssh_->runCommand(cmd, &response);
-            if (returnCode == -1) {
-                throw Error(1, "SSH: Unable to get range");
-            } else {
-                byte* source = (byte*)response.c_str();
-                size_t remain = response.length(), iBlock = lowBlock, totalRead = 0;
-                while (remain) {
-                    size_t allow = EXV_MIN(remain, blockSize_);
-                    blocksMap_[iBlock].populate(&source[totalRead], allow);
-                    remain -= allow;
-                    totalRead += allow;
-                    iBlock++;
-                }
-            }
-        }
-        return (long) rcount;
+         // upload byte ranges to exiv2datatemp file
+         returnCode = (long)ssh_->scp(hostInfo_["page"] + ".exiv2datatemp", data, size);
+         if (returnCode == -1) {
+             throw Error(1, "SSH: Unable to copy file");
+         }
+
+         // copy exiv2datatemp to temp file
+         ss.str("");
+         ss << "cat " << hostInfo_["page"] + ".exiv2datatemp"
+            << " >> "   << tempFile;
+         cmd = ss.str();
+         returnCode = (long)ssh_->runCommand(cmd, &response);
+         if (returnCode == -1) {
+             throw Error(1, "SSH: Unable to copy the rest");
+         }
+
+         // copy head of file to temp
+         ss.str("");
+         ss << "tail -c+" << (to + 1)
+            << " "   << hostInfo_["page"]
+            << " >> "   << tempFile;
+         cmd = ss.str();
+         returnCode = (long)ssh_->runCommand(cmd, &response);
+         if (returnCode == -1) {
+             throw Error(1, "SSH: Unable to copy the rest");
+         }
+
+         // mv temfile to file
+         ss.str("");
+         ss << "mv " << tempFile << " " << hostInfo_["page"];
+         cmd = ss.str();
+         returnCode = (long)ssh_->runCommand(cmd, &response);
+         if (returnCode == -1) {
+             throw Error(1, "SSH: Unable to copy the rest");
+         }
+
+         // remove exiv2datatemp
+         ss.str("");
+         ss << "rm " << hostInfo_["page"] + ".exiv2datatemp";
+         cmd = ss.str();
+         returnCode = (long)ssh_->runCommand(cmd, &response);
+         if (returnCode == -1) {
+             throw Error(1, "SSH: Unable to copy the rest");
+         }
+
+         return returnCode;
+    }
+
+    SshIo::SshImpl::~SshImpl() {
+        if (ssh_) delete ssh_;
     }
 
     SshIo::SshIo(const std::string& url, size_t blockSize)
-        : p_(new Impl(url, blockSize))
     {
+        p_ = new SshImpl(url, blockSize);
     }
-
 #ifdef EXV_UNICODE_PATH
     SshIo::SshIo(const std::wstring& wurl, size_t blockSize)
-        : p_(new Impl(wurl, blockSize))
     {
+        p_ = new SshImpl(url, blockSize);
     }
 #endif
-
-    SshIo::~SshIo()
-    {
-        close();
-        if (p_->blocksMap_) delete[] p_->blocksMap_;
-        if (p_->ssh_) delete p_->ssh_;
-        delete p_;
-    }
-
-    int SshIo::open()
-    {
-        // flush data & reset the IO position
-        close();
-
-        int returnCode = 0;
-        if (p_->isMalloced_ == false) {
-            long length;
-            long statusCode = p_->getFileLength(length);
-            if (statusCode != -1) {
-                p_->size_ = length;
-                if (p_->size_ == 0) {
-                    returnCode = 4; // file is empty
-                } else {
-                    p_->size_ = (size_t) length;
-                    size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-                    p_->blocksMap_  = new BlockMap[nBlocks];
-                    p_->isMalloced_ = true;
-                }
-            }
-        }
-        return returnCode;
-    }
-
-    int SshIo::close()
-    {
-        if (p_->isMalloced_) {
-            p_->eof_ = false;
-            p_->idx_ = 0;
-        }
-        return 0;
-    }
-
-    long SshIo::write(const byte* /* unused data*/, long /* unused wcount*/)
-    {
-        return 0;
-    }
-
-    long SshIo::write(BasicIo& src)
-    {
-        assert(p_->isMalloced_);
-        if (!src.isopen()) return 0;
-
-        // Find $from position
-        long left = 0, right = 0, blockIndex = 0, i = 0, readCount = 0, blockSize = 0;
-        byte* buf = (byte*) std::malloc(p_->blockSize_);
-        long nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-
-        // find left ----
-        src.seek(0, BasicIo::beg);
-        bool findDiff = false;
-        while (blockIndex < nBlocks && !src.eof() && !findDiff) {
-         blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-         if (p_->blocksMap_[blockIndex].isKnown()) { // skip it
-             if (src.seek(blockSize, BasicIo::cur))
-                 findDiff = true;
-             else
-                 left += blockSize;
-         } else {
-             readCount = src.read(buf, blockSize);
-             byte* blockData = p_->blocksMap_[blockIndex].getData();
-             for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                 if (buf[i] != blockData[i]) {
-                     findDiff = true;
-                 } else {
-                     left++;
-                 }
-             }
-         }
-         blockIndex++;
-        }
-
-
-        // find right
-        findDiff = false;
-        blockIndex = nBlocks - 1;
-        blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-        while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
-         if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
-             findDiff = true;
-         } else {
-             if (p_->blocksMap_[blockIndex].isKnown()) { // skip
-                 right += blockSize;
-             } else {
-                 readCount = src.read(buf, blockSize);
-                 byte* blockData = p_->blocksMap_[blockIndex].getData();
-                 for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                     if (buf[readCount - i - 1] != blockData[blockSize - i - 1]) {
-                         findDiff = true;
-                     } else {
-                         right++;
-                     }
-                 }
-             }
-         }
-         blockIndex--;
-         blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-        }
-
-        // free buf
-        if (buf) std::free(buf);
-
-        long dataSize = src.size() - left - right;
-        if (dataSize > 0) {
-            byte* data = (byte*) std::malloc(dataSize);
-            src.seek(left, BasicIo::beg);
-            src.read(data, dataSize);
-            p_->update(data, (size_t)dataSize, left, (long) p_->size_ - right);
-            if (data) std::free(data);
-        }
-        return src.size();
-    }
-
-    int SshIo::putb(byte /*unused data*/)
-    {
-        return 0;
-    }
-
-    DataBuf SshIo::read(long rcount)
-    {
-        DataBuf buf(rcount);
-        long readCount = read(buf.pData_, buf.size_);
-        buf.size_ = readCount;
-        return buf;
-    }
-
-    long SshIo::read(byte* buf, long rcount)
-    {
-        assert(p_->isMalloced_);
-        if (p_->eof_) return 0;
-
-        size_t allow     = EXV_MIN(rcount, (long)( p_->size_ - p_->idx_));
-        size_t lowBlock  =  p_->idx_         /p_->blockSize_;
-        size_t highBlock = (p_->idx_ + allow)/p_->blockSize_;
-
-        // connect to server & load the blocks if it's necessary (blocks are false).
-        p_->populateBlocks(lowBlock, highBlock);
-
-        byte* fakeData = (byte*) std::calloc(p_->blockSize_, sizeof(byte));
-        if (!fakeData) {
-            throw Error(1, "Unable to allocate data");
-        }
-
-        size_t iBlock = lowBlock;
-        size_t startPos = p_->idx_ - lowBlock*p_->blockSize_;
-        size_t totalRead = 0;
-        do {
-            byte* data = p_->blocksMap_[iBlock++].getData();
-            if (data == NULL)
-                data = fakeData;
-            size_t blockR = EXV_MIN(allow, p_->blockSize_ - startPos);
-            std::memcpy(&buf[totalRead], &data[startPos], blockR);
-            totalRead += blockR;
-            startPos = 0;
-            allow -= blockR;
-        } while(allow);
-
-        // free fake Data
-        if (fakeData) std::free(fakeData);
-
-        p_->idx_ += (long) totalRead;
-        if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
-
-        return (long) totalRead;
-    }
-
-    int SshIo::getb()
-    {
-        assert(p_->isMalloced_);
-        if (p_->idx_ == (long)p_->size_) {
-            p_->eof_ = true;
-            return EOF;
-        }
-
-        size_t expectedBlock = (p_->idx_ + 1)/p_->blockSize_;
-        // connect to server & load the blocks if it's necessary (blocks are false).
-        p_->populateBlocks(expectedBlock, expectedBlock);
-
-        byte* data = p_->blocksMap_[expectedBlock].getData();
-        return data[p_->idx_++ - expectedBlock*p_->blockSize_];
-    }
-
-    void SshIo::transfer(BasicIo& src)
-    {
-        if (src.open() != 0) {
-            throw Error(1, "unable to open src when transferring");
-        }
-        write(src);
-        src.close();
-    }
-
-#if defined(_MSC_VER)
-    int SshIo::seek( uint64_t offset, Position pos )
-    {
-        assert(p_->isMalloced_);
-        uint64_t newIdx = 0;
-
-        switch (pos) {
-            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
-            case BasicIo::beg: newIdx = offset; break;
-            case BasicIo::end: newIdx = p_->size_ + offset; break;
-        }
-
-        if ( /*newIdx < 0 || */ newIdx > static_cast<uint64_t>(p_->size_) ) return 1;
-        p_->idx_ = static_cast<long>(newIdx);   //not very sure about this. need more test!!    - note by Shawn  fly2xj@gmail.com //TODO
-        p_->eof_ = false;
-        return 0;
-    }
-#else
-    int SshIo::seek(long offset, Position pos)
-    {
-        assert(p_->isMalloced_);
-        long newIdx = 0;
-
-        switch (pos) {
-            case BasicIo::cur: newIdx = p_->idx_ + offset; break;
-            case BasicIo::beg: newIdx = offset; break;
-            case BasicIo::end: newIdx = p_->size_ + offset; break;
-        }
-
-        if (newIdx < 0 || newIdx > (long) p_->size_) return 1;
-        p_->idx_ = newIdx;
-        p_->eof_ = false;
-        return 0;
-    }
-#endif
-
-    byte* SshIo::mmap(bool /*isWriteable*/)
-    {
-        return NULL;
-    }
-
-    int SshIo::munmap()
-    {
-        return 0;
-    }
-
-    long SshIo::tell() const
-    {
-        return p_->idx_;
-    }
-
-    long SshIo::size() const
-    {
-        return (long) p_->size_;
-    }
-
-    bool SshIo::isopen() const
-    {
-        return p_->isMalloced_;
-    }
-
-    int SshIo::error() const
-    {
-        return 0;
-    }
-
-    bool SshIo::eof() const
-    {
-        return p_->eof_;
-    }
-
-    std::string SshIo::path() const
-    {
-        return p_->path_;
-    }
-
-#ifdef EXV_UNICODE_PATH
-    std::wstring SshIo::wpath() const
-    {
-        return p_->wpath_;
-    }
-#endif
-
-    BasicIo::AutoPtr SshIo::temporary() const
-    {
-        return BasicIo::AutoPtr(new MemIo);
-    }
-
-    void SshIo::populateFakeData()
-    {
-        assert(p_->isMalloced_);
-        size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
-        for (size_t i = 0; i < nBlocks; i++) {
-            if (p_->blocksMap_[i].isInNone())
-                p_->blocksMap_[i].markKnown(p_->blockSize_);
-        }
-    }
 
 #endif
 
