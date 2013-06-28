@@ -44,6 +44,7 @@
 #include <fstream>      // write the temporary file
 #include <fcntl.h>      // _O_BINARY in FileIo::FileIo
 #include <ctime>        // timestamp for the name of temporary file
+#include <cstring>      // std::memcpy
 // *****************************************************************************
 // namespace extensions
 namespace Exiv2 {
@@ -179,7 +180,7 @@ namespace Exiv2 {
 #if defined(_MSC_VER)
         virtual int seek(uint64_t offset, Position pos) = 0;
 #else
-		virtual int seek(long offset, Position pos) = 0;
+        virtual int seek(long offset, Position pos) = 0;
 #endif
 
         /*!
@@ -273,7 +274,7 @@ namespace Exiv2 {
         //! Constructor, takes a BasicIo reference
         IoCloser(BasicIo& bio) : bio_(bio) {}
         //! Destructor, closes the BasicIo reference
-        ~IoCloser() { close(); }
+        virtual ~IoCloser() { close(); }
         //@}
 
         //! @name Manipulators
@@ -443,7 +444,7 @@ namespace Exiv2 {
 #else
         virtual int seek(long offset, Position pos);
 #endif
-		/*!
+        /*!
           @brief Map the file into the process's address space. The file must be
                  open before mmap() is called. If the mapped area is writeable,
                  changes may not be written back to the underlying file until
@@ -549,8 +550,8 @@ namespace Exiv2 {
     public:
         //! @name Creators
         //@{
-		//! Default constructor that results in an empty object
-		MemIo();
+        //! Default constructor that results in an empty object
+        MemIo();
         /*!
           @brief Constructor that accepts a block of memory. A copy-on-write
               algorithm allows read operations directly from the original data
@@ -561,7 +562,7 @@ namespace Exiv2 {
          */
         MemIo(const byte* data, long size);
         //! Destructor. Releases all managed memory
-        ~MemIo();
+        virtual ~MemIo();
         //@}
 
         //! @name Manipulators
@@ -666,9 +667,9 @@ namespace Exiv2 {
 #if defined(_MSC_VER)
         virtual int seek(uint64_t offset, Position pos);
 #else
-		virtual int seek(long offset, Position pos);
+        virtual int seek(long offset, Position pos);
 #endif
-		/*!
+        /*!
           @brief Allow direct access to the underlying data buffer. The buffer
                  is not protected against write access in any way, the argument
                  is ignored.
@@ -798,10 +799,10 @@ namespace Exiv2 {
 
     class EXIV2API BlockMap {
     public:
-        enum blockType_e { bNone, bKnown, bMemory};
-        BlockMap() : type_(bNone), data_(NULL) {}
-        ~BlockMap() { if (data_) { std::free(data_); data_ = NULL; }}
-        void populate (byte* source, size_t num) {
+        enum  blockType_e { bNone, bKnown, bMemory};
+                 BlockMap() : type_(bNone), data_(NULL) {}
+        virtual ~BlockMap() { if (data_) { std::free(data_); data_ = NULL; }}
+        void    populate (byte* source, size_t num) {
             size_ = num;
             data_ = (byte*) std::malloc(size_);
             std::memcpy(data_, source, size_);
@@ -842,7 +843,7 @@ namespace Exiv2 {
         HttpIo(const std::wstring& wurl, size_t blockSize = 1024);
 #endif
         //! Destructor. Releases all managed memory
-        ~HttpIo();
+        virtual ~HttpIo();
         //@}
 
         //! @name Manipulators
@@ -1022,7 +1023,7 @@ namespace Exiv2 {
         RemoteIo(const std::wstring& wurl, size_t blockSize = 0);
 #endif
         //! Destructor. Releases all managed memory
-        ~RemoteIo();
+        virtual ~RemoteIo();
         //@}
 
         //! @name Manipulators
@@ -1203,7 +1204,7 @@ namespace Exiv2 {
             SshIo(const std::wstring& wurl, size_t blockSize = 1024);
     #endif
             //! Destructor. Releases all managed memory
-            ~SshIo();
+            virtual ~SshIo();
             //@}
 
             //! @name Manipulators
@@ -1388,14 +1389,14 @@ namespace Exiv2 {
      */
     EXIV2API long writeFile(const DataBuf& buf, const std::wstring& wpath);
 #endif
-	/*!
+    /*!
       @brief replace each substring of the subject that matches the given search string with the given replacement.
       @return the subject after replacing.
      */
     EXIV2API std::string ReplaceStringInPlace(std::string subject, const std::string& search,
                           const std::string& replace);
 #ifdef EXV_UNICODE_PATH
-	/*!
+    /*!
       @brief Like ReplaceStringInPlace() but accepts a unicode path in an std::wstring.
       @return the subject after replacing.
       @note This function is only available on Windows.
