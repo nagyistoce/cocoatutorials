@@ -42,12 +42,12 @@ RemoteIo: Testing, refactor the code.
 
 2013-05-30:
 RemoteIo: Testing, refactor the code.
-	      Run-time switch for http/curl
+          Run-time switch for http/curl
           Setup the http, ftp, sftp server for Amazon ubuntu
 
 2013-05-29:
 RemoteIo: investigate Libcurl FTP Range.
-	      Default block size for FTP is set to 100k, other protocols still keeps at 1K.
+          Default block size for FTP is set to 100k, other protocols still keeps at 1K.
 
 2013-05-28
           Nothing, happy with GSoC Result
@@ -57,23 +57,23 @@ RemoteIo: Optimization (don't reload the size of file, don't clear data when clo
 
 2013-05-25 & 26
 RemoteIo: RemoteIo using lib curl, support http, ftp, https
-	      Add remoteio.sh
+          Add remoteio.sh
 
 2013-05-20
 libcurl:  Investigating the problem with Makefiles on Ubuntu
 
 2013-05-18 & 19
 libcurl:  Makefiles, Cmakes
-	      Add options
-	      ./configure (using libcurl)
-	      ./configure --without-curl (using Exiv2:http)
+          Add options
+          ./configure (using libcurl)
+          ./configure --without-curl (using Exiv2:http)
 
 2013-05-14
 libcurl:  Do testing, update httptest.txt
 
 2013-05-13
 libcurl:  Parse response headers for httpio when using lib curl
-	      Remove request header
+          Remove request header
 
 2013-05-12
 BVT:      Working on Cygwin on Desktop and aws-windows
@@ -90,6 +90,10 @@ BVT:      Now works on Cygwin on Desktop
 TODO: Robin
 R3:       Think about how to get the metadata at the end of a BIG file.
 R4:       Http.cpp handles chunk response.
+R5:       msvc64/ssh support (and curl to use that for https and sftp)
+R6:       SVN trunk integration support (email already sent to Andreas)
+R7:       review (and change) MSC_VER seek(uint64_t..) to seek(int64_t...)
+R8:       set up server/account with sftp credentials which deny ssh access
 
 TODO: Tuan
 T1:       Investigate setting up the IIS on windows EC2
@@ -97,7 +101,7 @@ T2:       Add make testt to only run httpiotest.sh and remoteiotest.sh [See R2]
 T3:       "Make doc"
 T4:       "HTTP POST" in Robin's code
 T5:       Documenting the JPEG
-T6:       SSH
+T6:       SSH support (done) and documented on on Wiki (not yet)
 T7:       add EXIV2_xxx environment strings in use
 T8:       refactor basicio.cpp (after everything else working and testable).
 
