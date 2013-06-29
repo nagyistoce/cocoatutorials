@@ -857,7 +857,7 @@ namespace Exiv2 {
     }
 
 #if defined(_MSC_VER)
-    int FileIo::seek( uint64_t offset, Position pos )
+    int FileIo::seek( int64_t offset, Position pos )
     {
         assert(p_->fp_ != 0);
 
@@ -1171,7 +1171,7 @@ namespace Exiv2 {
     }
 
 #if defined(_MSC_VER)
-    int MemIo::seek( uint64_t offset, Position pos )
+    int MemIo::seek( int64_t offset, Position pos )
     {
         uint64_t newIdx = 0;
 
@@ -1435,7 +1435,7 @@ namespace Exiv2 {
             std::string data;
             std::stringstream ss;
             std::string error;
-            long statusCode = getDataByRange(lowBlock, highBlock, data);
+            long statusCode = getDataByRange( (long) lowBlock, (long) highBlock, data);
             if (statusCode >= 400) {
                 ss << "RemoteIo returns error code " << statusCode;
                 error = ss.str();
@@ -1693,7 +1693,7 @@ namespace Exiv2 {
     }
 
 #if defined(_MSC_VER)
-    int RemoteIo::seek( uint64_t offset, Position pos )
+    int RemoteIo::seek( int64_t offset, Position pos )
     {
         assert(p_->isMalloced_);
         uint64_t newIdx = 0;
@@ -1821,7 +1821,7 @@ namespace Exiv2 {
         hostInfo_["port"  ] = uri.Port;
     }
 #ifdef EXV_UNICODE_PATH
-    HttpIo::HttpImpl::HttpImpl(const std::wstring& wurl, size_t blockSize):Impl(url, blockSize)
+    HttpIo::HttpImpl::HttpImpl(const std::wstring& wurl, size_t blockSize):Impl(wurl, blockSize)
     {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
@@ -1962,7 +1962,7 @@ namespace Exiv2 {
         }
     }
 #ifdef EXV_UNICODE_PATH
-    CurlIo::CurlImpl::CurlImpl(const std::wstring& wurl, size_t blockSize):Impl(url, blockSize)
+    CurlIo::CurlImpl::CurlImpl(const std::wstring& wurl, size_t blockSize):Impl(wurl, blockSize)
     {
         std::string url;
         url.assign(wurl.begin(), wurl.end());
@@ -2121,7 +2121,7 @@ namespace Exiv2 {
 #ifdef EXV_UNICODE_PATH
     CurlIo::CurlIo(const std::wstring& wurl, size_t blockSize)
     {
-        p_ = new CurlImpl(url, blockSize);
+        p_ = new CurlImpl(wurl, blockSize);
     }
 #endif
 

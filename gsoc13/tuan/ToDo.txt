@@ -89,21 +89,35 @@ BVT:      Now works on Cygwin on Desktop
 
 TODO: Robin
 R3:       Think about how to get the metadata at the end of a BIG file.
-R4:       Http.cpp handles chunk response.
+R4:       Http.cpp to handle chunk response.
 R5:       msvc64/ssh support (and curl to use that for https and sftp)
 R6:       SVN trunk integration support (email already sent to Andreas)
-R7:       review (and change) MSC_VER seek(uint64_t..) to seek(int64_t...)
 R8:       set up server/account with sftp credentials which deny ssh access
 
+Robin plans to be in San Jose about 2013-07-12 through 2013-07-23 to work on:
+1         0-23.1 release of Exiv2 (to be done on a branch on dev.exiv2.org)
+2         msvc64 ssh support
+3         integrating gsoc13 to trunk and testing
+
+Robin will go to the UK for around 2013-07-23 until mid-October.
+1         will be staying at his home in England.
+2         will be in Scotland for a wedding on 2013-08-03
+          will visit friends and family for several days before and after wedding
+3         will take Mac Book and Sony Laptop (W7/Kubuntu) in England.
+
 TODO: Tuan
-T1:       Investigate setting up the IIS on windows EC2
-T2:       Add make testt to only run httpiotest.sh and remoteiotest.sh [See R2]
 T3:       "Make doc"
-T4:       "HTTP POST" in Robin's code
 T5:       Documenting the JPEG
 T6:       SSH support (done) and documented on on Wiki (not yet)
-T7:       add EXIV2_xxx environment strings in use
-T8:       refactor basicio.cpp (after everything else working and testable).
+T7:       document EXIV2_xxx environment strings in use
+T8:       Polish BVT (always lowest priority/background task)
+
+Plan agreed in 1-to-1 on 2013-06-29
+Week beginning:
+2013-07-01 More testing (and maybe a little refactoring)
+2013-07-08 Investigate Google Drive, Sky Drive, iCloud, AWS
+2013-07-15 Integrate cocoatutorials/gsoc13 to trunk on dev.exiv2.org
+2013-07-22 Documentation (make docs ; PNG ; JPG on Wiki)
 
 Notes about tasks
 -----------------
@@ -117,9 +131,11 @@ Completed tasks
 ---------------
 R1:[DONE] Document/explain getopt_long
 R2:[DONE] Get make to build bin/.libs/httptest and bin/.libs/remotetest [See T2]
-T1:[DONE]
+R7:[DONE] Review (and change) MSC_VER seek(uint64_t..) to seek(int64_t...)
+T1:[DONE] Investigate setting up the IIS on windows EC2
 T2:[DONE] $ make; $ make testx and $make tests
-T4:[DONE]
+T4:[DONE] "HTTP POST" in Robin's code
+T8:[DONE] Refactor basicio.cpp (after everything else working and testable).
 
 # That's all Folks!
 ##
