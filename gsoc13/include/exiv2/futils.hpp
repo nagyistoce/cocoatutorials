@@ -51,11 +51,11 @@
 // *********************************************************************
 // namespace extensions
 namespace Exiv2 {
-
+    enum  EnVar { envHTTPPOST = 0};
     /*!
        @brief The Protocol enum and the map to hold the strings
      */
-    enum Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
+    enum    Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
     typedef std::map<std::string,Protocol>           protDict_t;
     typedef std::map<std::string,Protocol>::iterator protDict_i;
 #ifdef EXV_UNICODE_PATH
@@ -64,6 +64,8 @@ namespace Exiv2 {
 #endif
 // *********************************************************************
 // free functions
+
+    EXIV2API std::string getEnv(EnVar var);
     // URL Encoding from http://www.geekhideout.com/urlcode.shtml
     EXIV2API char to_hex(char code);
     EXIV2API char from_hex(char ch);

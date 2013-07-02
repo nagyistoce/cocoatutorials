@@ -1400,10 +1400,10 @@ namespace Exiv2 {
         bool            eof_;           //!< EOF indicator
         Protocol        protocol_;      //!< protocols
 
-        virtual long getFileLength(long& length) = 0;
-        virtual long getDataByRange(long lowBlock, long highBlock, std::string& response) = 0;
-        virtual long writeRemote(const byte* data, size_t size, long from, long to) = 0;
-        virtual long populateBlocks(size_t lowBlock, size_t highBlock);
+        virtual long getFileLength(long& length) = 0; // return status code, length = -1 if the size isn't known
+        virtual long getDataByRange(long lowBlock, long highBlock, std::string& response) = 0; // return server code
+        virtual long writeRemote(const byte* data, size_t size, long from, long to) = 0; // return server code
+        virtual size_t populateBlocks(size_t lowBlock, size_t highBlock); // return no bytes populate
         virtual ~Impl();
 
     }; // class RemoteIo::Impl
@@ -1421,34 +1421,30 @@ namespace Exiv2 {
     }
 #endif
 
-    long RemoteIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
+    size_t RemoteIo::Impl::populateBlocks(size_t lowBlock, size_t highBlock)
     {
         assert(isMalloced_);
 
         // optimize: ignore all true blocks on left & right sides.
-        while(!blocksMap_[lowBlock].isInNone()  && lowBlock  < highBlock) lowBlock++;
-        while(!blocksMap_[highBlock].isInNone() && highBlock >  lowBlock) highBlock--;
+        while(!blocksMap_[lowBlock].isNone()  && lowBlock  < highBlock) lowBlock++;
+        while(!blocksMap_[highBlock].isNone() && highBlock > lowBlock)  highBlock--;
 
         size_t rcount = 0;
-        if (blocksMap_[highBlock].isInNone())
+        if (blocksMap_[highBlock].isNone())
         {
             std::string data;
-            std::stringstream ss;
-            std::string error;
-            long statusCode = getDataByRange( (long) lowBlock, (long) highBlock, data);
-            if (statusCode >= 400) {
-                ss << "RemoteIo returns error code " << statusCode;
-                error = ss.str();
-                throw Error(1, error);
+            long serverCode = getDataByRange( (long) lowBlock, (long) highBlock, data);
+            if (serverCode >= 400) {
+                throw Error(55, "Server", serverCode);
             }
-
-            rcount = (long)data.length();
+            rcount = (size_t)data.length();
+            if (rcount == 0) {
+                throw Error(1, "Data By Range is empty. Please check the permission.");
+            }
             byte* source = (byte*)data.c_str();
-            size_t remain = rcount, iBlock = lowBlock, totalRead = 0;
-            if (rcount == size_) {
-                // doesn't support Range
-                iBlock = 0;
-            }
+            size_t remain = rcount, totalRead = 0;
+            size_t iBlock = (rcount == size_) ? 0 : lowBlock;
+
             while (remain) {
                 size_t allow = EXV_MIN(remain, blockSize_);
                 blocksMap_[iBlock].populate(&source[totalRead], allow);
@@ -1458,7 +1454,7 @@ namespace Exiv2 {
             }
         }
 
-        return (long) rcount;
+        return rcount;
     }
 
     RemoteIo::Impl::~Impl() {
@@ -1478,27 +1474,23 @@ namespace Exiv2 {
         int returnCode = 0;
         if (p_->isMalloced_ == false) {
             long length = 0;
-            std::stringstream ss;
-            std::string error;
-            long statusCode = p_->getFileLength(length);
-            if (statusCode >= 400) {
-                ss << "Server returns error code " << statusCode;
-                error = ss.str();
-                throw Error(1, error);
+            long serverCode = p_->getFileLength(length);
+            if (serverCode >= 400 || serverCode < 0) {
+                returnCode = 1;
+                throw Error(55, "Server", serverCode);
             } else {
-                if (length <= 0) { // don't support HEAD
+                if (length < 0) { // don't support HEAD
                     std::string data;
-                    statusCode = p_->getDataByRange(-1, -1, data);
-                    if (statusCode >= 400) {
-                        ss << "Server returns error code " << statusCode;
-                        error = ss.str();
-                        throw Error(1, error);
+                    serverCode = p_->getDataByRange(-1, -1, data);
+                    if (serverCode >= 400 || serverCode < 0) {
+                        returnCode = 1;
+                        throw Error(55, "Server", serverCode);
                     } else {
                         p_->size_ = (size_t) data.length();
                         size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
                         p_->blocksMap_  = new BlockMap[nBlocks];
                         p_->isMalloced_ = true;
-                        byte* source = (byte*)(byte*)data.c_str();
+                        byte* source = (byte*)data.c_str();
                         size_t remain = p_->size_, iBlock = 0, totalRead = 0;
                         while (remain) {
                             size_t allow = EXV_MIN(remain, p_->blockSize_);
@@ -1554,24 +1546,24 @@ namespace Exiv2 {
         src.seek(0, BasicIo::beg);
         bool findDiff = false;
         while (blockIndex < nBlocks && !src.eof() && !findDiff) {
-         blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-         if (p_->blocksMap_[blockIndex].isKnown()) { // skip it
-             if (src.seek(blockSize, BasicIo::cur))
-                 findDiff = true;
-             else
-                 left += blockSize;
-         } else {
-             readCount = src.read(buf, blockSize);
-             byte* blockData = p_->blocksMap_[blockIndex].getData();
-             for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                 if (buf[i] != blockData[i]) {
-                     findDiff = true;
-                 } else {
-                     left++;
-                 }
-             }
-         }
-         blockIndex++;
+            blockSize = (long)p_->blocksMap_[blockIndex].getSize();
+            if (p_->blocksMap_[blockIndex].isKnown()) { // skip it
+                if (src.seek(blockSize, BasicIo::cur))
+                    findDiff = true;
+                else
+                    left += blockSize;
+            } else {
+                readCount = src.read(buf, blockSize);
+                byte* blockData = p_->blocksMap_[blockIndex].getData();
+                for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
+                    if (buf[i] != blockData[i]) {
+                        findDiff = true;
+                    } else {
+                        left++;
+                    }
+                }
+            }
+            blockIndex++;
         }
 
 
@@ -1580,25 +1572,25 @@ namespace Exiv2 {
         blockIndex  = nBlocks - 1;
         blockSize   = (long)p_->blocksMap_[blockIndex].getSize();
         while ((blockIndex + 1 > 0) && right < src.size() && !findDiff) {
-         if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
-             findDiff = true;
-         } else {
-             if (p_->blocksMap_[blockIndex].isKnown()) { // skip
-                 right += blockSize;
-             } else {
-                 readCount = src.read(buf, blockSize);
-                 byte* blockData = p_->blocksMap_[blockIndex].getData();
-                 for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                     if (buf[readCount - i - 1] != blockData[blockSize - i - 1]) {
-                         findDiff = true;
-                     } else {
-                         right++;
-                     }
-                 }
-             }
-         }
-         blockIndex--;
-         blockSize = (long)p_->blocksMap_[blockIndex].getSize();
+            if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
+                findDiff = true;
+            } else {
+                if (p_->blocksMap_[blockIndex].isKnown()) { // skip
+                    right += blockSize;
+                } else {
+                    readCount = src.read(buf, blockSize);
+                    byte* blockData = p_->blocksMap_[blockIndex].getData();
+                    for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
+                        if (buf[readCount - i - 1] != blockData[blockSize - i - 1]) {
+                            findDiff = true;
+                        } else {
+                            right++;
+                        }
+                    }
+                }
+            }
+            blockIndex--;
+            blockSize = (long)p_->blocksMap_[blockIndex].getSize();
         }
 
         // free buf
@@ -1649,8 +1641,7 @@ namespace Exiv2 {
         size_t totalRead = 0;
         do {
             byte* data = p_->blocksMap_[iBlock++].getData();
-            if (data == NULL)
-                data = fakeData;
+            if (data == NULL) data = fakeData;
             size_t blockR = EXV_MIN(allow, p_->blockSize_ - startPos);
             std::memcpy(&buf[totalRead], &data[startPos], blockR);
             totalRead += blockR;
@@ -1662,7 +1653,7 @@ namespace Exiv2 {
         if (fakeData) std::free(fakeData);
 
         p_->idx_ += (long) totalRead;
-        if (p_->idx_ == (long) p_->size_) p_->eof_ = true;
+        p_->eof_ = (p_->idx_ == (long) p_->size_);
 
         return (long) totalRead;
     }
@@ -1785,7 +1776,7 @@ namespace Exiv2 {
         assert(p_->isMalloced_);
         size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
         for (size_t i = 0; i < nBlocks; i++) {
-            if (p_->blocksMap_[i].isInNone())
+            if (p_->blocksMap_[i].isNone())
                 p_->blocksMap_[i].markKnown(p_->blockSize_);
         }
     }
@@ -1842,14 +1833,15 @@ namespace Exiv2 {
         dict_t request(hostInfo_);
         std::string errors;
         request["verb"] = "HEAD";
-        long statusCode = (long)http(request, response, errors);
-        if (statusCode < 0 || statusCode >= 400 || errors.compare("") != 0) {
+        long serverCode = (long)http(request, response, errors);
+        if (serverCode < 0 || serverCode >= 400 || errors.compare("") != 0) {
             // error
             length = 0;
         } else {
-            length = atol(response["Content-Length"].c_str());
+            dict_i lengthIter = response.find("Content-Length");
+            length = (lengthIter == response.end()) ? -1 : atol((lengthIter->second).c_str());
         }
-        return statusCode;
+        return serverCode;
     }
 
     long HttpIo::HttpImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
@@ -1864,9 +1856,9 @@ namespace Exiv2 {
             request["header"] = ss.str();
         }
 
-        long code = (long)http(request, responseDic, errors);
+        long serverCode = (long)http(request, responseDic, errors);
         response = responseDic["body"];
-        return code;
+        return serverCode;
     }
 
     long HttpIo::HttpImpl::writeRemote(const byte* data, size_t size, long from, long to)
@@ -1877,15 +1869,8 @@ namespace Exiv2 {
 
         size_t found = hostInfo_["page"].find_last_of("/\\");
         std::string filename = hostInfo_["page"].substr(found+1);
-        std::string scriptpage = hostInfo_["page"].substr(0, found+1);
 
-        char* httpPostPath = getenv("EXIV2_HTTP_POST");
-        std::stringstream ss;
-        if (httpPostPath)
-            ss << scriptpage << httpPostPath;
-        else
-            ss << scriptpage << "exiv2.php";
-        request["page"] = ss.str();
+        request["page"] = hostInfo_["page"].substr(0, found+1) + getEnv(envHTTPPOST);
         request["verb"] = "POST";
 
         // encode base64
@@ -1896,8 +1881,7 @@ namespace Exiv2 {
         char* urlencodeData = urlencode(encodeData);
         delete[] encodeData;
 
-        // create the post data
-        ss.str("");
+        std::stringstream ss;
         ss << "filename="   << filename << "&"
            << "from="       << from     << "&"
            << "to="         << to       << "&"
@@ -1957,8 +1941,7 @@ namespace Exiv2 {
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
-            if (protocol_ == pFtp) blockSize_ = 102400;
-            else blockSize_ = 1024;
+            blockSize_ = (protocol_ == pFtp) ? 102400 : 1024;
         }
     }
 #ifdef EXV_UNICODE_PATH
@@ -1976,8 +1959,7 @@ namespace Exiv2 {
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
-            if (protocol_ == pFtp) blockSize_ = 102400;
-            else blockSize_ = 1024;
+            blockSize_ = (protocol_ == pFtp) ? 102400 : 1024;
         }
     }
 #endif
@@ -2015,7 +1997,7 @@ namespace Exiv2 {
 
     long CurlIo::CurlImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
     {
-        long code = -1;
+        long serverCode = -1;
 
         curl_easy_reset(curl_); // reset all options
         curl_easy_setopt(curl_, CURLOPT_URL, path_.c_str());
@@ -2038,26 +2020,24 @@ namespace Exiv2 {
         if(res != CURLE_OK) {
             throw Error(1, curl_easy_strerror(res));
         } else {
-            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
+            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &serverCode); // get code
         }
 
-        return code;
+        return serverCode;
     }
 
     long CurlIo::CurlImpl::writeRemote(const byte* data, size_t size, long from, long to)
     {
         //printf("RemoteIo::Impl::httpPost post %ld bytes to server (filesize = %ld)\n", size, (long)size_);
-        long code = -1;
+        long serverCode = -1;
 
         curl_easy_reset(curl_); // reset all options
         curl_easy_setopt(curl_, CURLOPT_NOPROGRESS, 1L); // no progress meter please
         //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1);
         size_t found = path_.find_last_of("/\\");
         std::string filename = path_.substr(found+1);
-        std::string url = path_.substr(0, found+1);
-        std::stringstream ss;
-        ss << url << "exiv2.php";
-        std::string postUrl = ss.str();
+
+        std::string postUrl = path_.substr(0, found+1) + getEnv(envHTTPPOST);
         curl_easy_setopt(curl_, CURLOPT_URL, postUrl.c_str());
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
 
@@ -2068,15 +2048,14 @@ namespace Exiv2 {
         // url encode
         char* urlencodeData = urlencode(encodeData);
         delete[] encodeData;
-
-        // create the post data
-        ss.str("");
+        std::stringstream ss;
         ss << "filename="   << filename << "&"
            << "from="       << from     << "&"
            << "to="         << to       << "&"
            << "data="       << urlencodeData;
         std::string postData = ss.str();
         delete[] urlencodeData;
+
         curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, postData.c_str());
         /* Perform the request, res will get the return code */
         CURLcode res = curl_easy_perform(curl_);
@@ -2084,10 +2063,10 @@ namespace Exiv2 {
         if(res != CURLE_OK) {
             throw Error(1, curl_easy_strerror(res));
         } else {
-            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &code); // get code
+            curl_easy_getinfo (curl_, CURLINFO_RESPONSE_CODE, &serverCode); // get code
         }
 
-        return code;
+        return serverCode;
     }
 
     CurlIo::CurlImpl::~CurlImpl() {
@@ -2198,9 +2177,7 @@ namespace Exiv2 {
         length = 0;
 
         std::string response;
-        std::stringstream ss;
-        ss << "stat -c %s " << hostInfo_["page"];
-        std::string cmd = ss.str();
+        std::string cmd = "stat -c %s " + hostInfo_["page"];
         returnCode = (long)ssh_->runCommand(cmd, &response);
 
         if (returnCode == -1) {
@@ -2209,7 +2186,7 @@ namespace Exiv2 {
             length = atol(response.c_str());
         }
 
-        // printf("File size %ld, blocksize %ld\n", length, blockSize_);
+        //printf("File size %ld, blocksize %ld\n", length, blockSize_);
 
         return returnCode;
     }
@@ -2228,7 +2205,8 @@ namespace Exiv2 {
                 << " 2>/dev/null";
         }
         std::string cmd = ss.str();
-        return (long)ssh_->runCommand(cmd, &response);
+        long rCount = (long)ssh_->runCommand(cmd, &response);
+        return rCount;
     }
 
     long SshIo::SshImpl::writeRemote(const byte* data, size_t size, long from, long to)
@@ -2257,10 +2235,7 @@ namespace Exiv2 {
          }
 
          // copy exiv2datatemp to temp file
-         ss.str("");
-         ss << "cat " << hostInfo_["page"] + ".exiv2datatemp"
-            << " >> "   << tempFile;
-         cmd = ss.str();
+         cmd = "cat " + hostInfo_["page"] + ".exiv2datatemp >> " + tempFile;
          returnCode = (long)ssh_->runCommand(cmd, &response);
          if (returnCode == -1) {
              throw Error(1, "SSH: Unable to copy the rest");
@@ -2278,18 +2253,14 @@ namespace Exiv2 {
          }
 
          // mv temfile to file
-         ss.str("");
-         ss << "mv " << tempFile << " " << hostInfo_["page"];
-         cmd = ss.str();
+         cmd = "mv " + tempFile + " " + hostInfo_["page"];
          returnCode = (long)ssh_->runCommand(cmd, &response);
          if (returnCode == -1) {
              throw Error(1, "SSH: Unable to copy the rest");
          }
 
          // remove exiv2datatemp
-         ss.str("");
-         ss << "rm " << hostInfo_["page"] + ".exiv2datatemp";
-         cmd = ss.str();
+         cmd = "rm " + hostInfo_["page"] + ".exiv2datatemp";
          returnCode = (long)ssh_->runCommand(cmd, &response);
          if (returnCode == -1) {
              throw Error(1, "SSH: Unable to copy the rest");

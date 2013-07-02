@@ -57,9 +57,14 @@ extern int strerror_r(int errnum, char *buf, size_t n);
 #endif
 
 namespace Exiv2 {
-
+    const char* ENVARDEF[] = {"exiv2.php"};
+    const char* ENVARKEY[] = {"EXIV2_HTTP_POST"};
 // *****************************************************************************
 // free functions
+    std::string getEnv(EnVar var) {
+        return getenv(ENVARKEY[var]) ? getenv(ENVARKEY[var]) : ENVARDEF[var];
+    }
+
     char to_hex(char code) {
         static char hex[] = "0123456789abcdef";
         return hex[code & 15];

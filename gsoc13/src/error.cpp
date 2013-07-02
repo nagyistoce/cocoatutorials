@@ -108,6 +108,7 @@ namespace {
         { 52, N_("%1 has invalid XMP value type `%2'") }, // %1=key, %2=value type
 		{ 53, N_("Failed to read the data from stdin") },
 		{ 54, N_("Failed to convert cin to binary") },
+        { 55, N_("%1 returns the error code %2")}, // %1=objectname, %2=errorcode
     };
 
 }

@@ -814,7 +814,7 @@ namespace Exiv2 {
             type_ = bKnown;
             size_ = num;
         }
-        bool    isInNone()  {return type_ == bNone;}
+        bool    isNone()  {return type_ == bNone;}
         bool    isInMem ()  {return type_ == bMemory;}
         bool    isKnown ()  {return type_ == bKnown;}
         byte*   getData ()  {return data_;}
