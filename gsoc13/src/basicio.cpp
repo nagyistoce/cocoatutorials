@@ -1476,14 +1476,14 @@ namespace Exiv2 {
             long length = 0;
             long serverCode = p_->getFileLength(length);
             if (serverCode >= 400 || serverCode < 0) {
-                returnCode = 1;
+                //returnCode = 1;
                 throw Error(55, "Server", serverCode);
             } else {
                 if (length < 0) { // don't support HEAD
                     std::string data;
                     serverCode = p_->getDataByRange(-1, -1, data);
                     if (serverCode >= 400 || serverCode < 0) {
-                        returnCode = 1;
+                        //returnCode = 1;
                         throw Error(55, "Server", serverCode);
                     } else {
                         p_->size_ = (size_t) data.length();
@@ -1501,7 +1501,7 @@ namespace Exiv2 {
                         }
                     }
                 } else if (length == 0) { // file is empty
-                    returnCode = 1;
+                    throw Error(1, "the file length is 0");
                 } else {
                     p_->size_ = (size_t) length;
                     size_t nBlocks = (p_->size_ + p_->blockSize_ - 1) / p_->blockSize_;
@@ -1941,7 +1941,7 @@ namespace Exiv2 {
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
-            blockSize_ = (protocol_ == pFtp) ? 102400 : 1024;
+            blockSize_ = (protocol_ == pFtp || protocol_ == pSftp) ? 102400 : 1024;
         }
     }
 #ifdef EXV_UNICODE_PATH
@@ -1959,15 +1959,17 @@ namespace Exiv2 {
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
-            blockSize_ = (protocol_ == pFtp) ? 102400 : 1024;
+            blockSize_ = (protocol_ == pFtp || protocol_ == pSftp) ? 102400 : 1024;
         }
     }
 #endif
 
     long CurlIo::CurlImpl::getFileLength(long& length)
     {
-        long returnCode;
-        length = 0;
+        long returnCode = 200;
+        length = -1;
+
+        if (protocol_ == pSftp) return returnCode; // sftp doesnt support content-length
 
         curl_easy_reset(curl_); // reset all options
         std::string response;
@@ -1976,6 +1978,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
         //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
 
         /* Perform the request, res will get the return code */
@@ -2079,7 +2082,6 @@ namespace Exiv2 {
             return RemoteIo::write(data, wcount);
         } else {
             throw Error(1, "doesnt support write for this protocol.");
-            return 0;
         }
     }
 
@@ -2089,7 +2091,6 @@ namespace Exiv2 {
             return RemoteIo::write(src);
         } else {
             throw Error(1, "doesnt support write for this protocol.");
-            return 0;
         }
     }
 
