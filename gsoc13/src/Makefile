@@ -185,14 +185,21 @@ EXIFPOBJ  = $(EXIFPRINT:.cpp=.o) $(EXIFPSRC:.cpp=.o)
 EXIFPBIN  = $(EXIFPRINT:.cpp=)
 EXIFPEXE  = $(EXIFPRINT:.cpp=$(EXEEXT))
 
+# cmdfiletest application
+REMOTETEST  = remotetest.cpp
+REMOTETOBJ  = $(REMOTETEST:.cpp=.o) $(REMOTETSRC:.cpp=.o)
+REMOTETBIN  = $(REMOTETEST:.cpp=)
+REMOTETEXE  = $(REMOTETEST:.cpp=$(EXEEXT))
+
 ifdef DEP_TRACKING
-DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d)     \
-      $(CSRC:%.c=$(DEPDIR)/%.d)        \
-      $(BINSRC:%.cpp=$(DEPDIR)/%.d)    \
-      $(EXIV2MAIN:%.cpp=$(DEPDIR)/%.d) \
-      $(EXIV2SRC:%.cpp=$(DEPDIR)/%.d)  \
-      $(HTTPTEST:%.cpp=$(DEPDIR)/%.d)  \
-      $(EXIFPRINT:%.cpp=$(DEPDIR)/%.d) \
+DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d)      \
+      $(CSRC:%.c=$(DEPDIR)/%.d)         \
+      $(BINSRC:%.cpp=$(DEPDIR)/%.d)     \
+      $(EXIV2MAIN:%.cpp=$(DEPDIR)/%.d)  \
+      $(EXIV2SRC:%.cpp=$(DEPDIR)/%.d)   \
+      $(HTTPTEST:%.cpp=$(DEPDIR)/%.d)   \
+      $(EXIFPRINT:%.cpp=$(DEPDIR)/%.d)  \
+      $(REMOTETEST:%.cpp=$(DEPDIR)/%.d) \
       $(EXIVCSRC:%.c=$(DEPDIR)/%.d)
 
 endif
@@ -220,6 +227,11 @@ $(HTTPTOBJ): %.o: %.cpp
 	@$(POSTDEPEND)
 
 $(EXIFPOBJ): %.o: %.cpp
+	$(COMPILE.cc) -o $@ $<
+	@$(MAKEDEPEND)
+	@$(POSTDEPEND)
+
+$(REMOTETOBJ): %.o: %.cpp
 	$(COMPILE.cc) -o $@ $<
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
@@ -254,7 +266,7 @@ $(SRC): ../include/exiv2/exv_conf.h
 $(LIBTOOL): $(LIBTOOL_DEPS)
 	$(SHELL) $(top_srcdir)/config.status --recheck
 
-bin: lib $(EXIV2BIN) $(HTTPTBIN) $(EXIFPBIN)
+bin: lib $(EXIV2BIN) $(HTTPTBIN) $(EXIFPBIN) $(REMOTETBIN)
 
 lib: $(OBJ)
 	$(LIBTOOL) --mode=link $(LINK.cc) -o $(LIBRARY) $(LOBJ) -rpath $(libdir) -version-info $(EXIV2_LTVERSION) $(LIBS)
@@ -274,6 +286,10 @@ $(HTTPTBIN): lib $(HTTPTOBJ)
 $(EXIFPBIN): lib $(EXIFPOBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
 	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(EXIFPOBJ) -rpath $(libdir)
+
+$(REMOTETBIN): lib $(REMOTETOBJ)
+	mkdir -pv ../bin 2>&1 > /dev/null
+	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(REMOTETOBJ) -rpath $(libdir)
 
 install-header:
 	$(INSTALL_DIRS) $(DESTDIR)$(incdir)
@@ -332,7 +348,7 @@ mostlyclean:
 	$(RM) lib
 	$(RM) include/exiv2/exv_conf.h
 	$(RM) $(CCSRC:%.cpp=.libs/%.d) $(CSRC:%.c=.libs/%.d)
-	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(HTTPTOBJ) $(EXIFPOBJ) )
+	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(HTTPTOBJ) $(EXIFPOBJ) $(REMOTETOBJ) )
 
 clean: mostlyclean
 	@$(LIBTOOL) --mode=clean $(RM) $(LIBRARY)

@@ -35,15 +35,11 @@ RemoteIOTest()
     filename=${src%.*}
     test=${filename}.txt
     good=$datapath/remoteio.txt
-    cmdadd=$datapath/cmdremoteadd.txt
-    cmddel=$datapath/cmdremotedel.txt
     dot=.
-    # add/set metadata
-    runTest exiv2 "-m" $cmdadd $1
+
     # print out the metadata
-    runTest exifprint $1 "--curl" > $test
-    # delete metadata
-    runTest exiv2 "-m" $cmddel $1
+    runTest remotetest $1 "--curl" > $test
+
     #check results
     diffCheckAscii $test $good
 

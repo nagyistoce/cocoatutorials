@@ -167,6 +167,8 @@ SET( EXIV2_SRC            exiv2.cpp
 SET( HTTPTEST             httptest.cpp)
 # exifprint application
 SET( EXIFPRINT            exifprint.cpp)
+# cmdfiletest application
+SET( REMOTETEST           remotetest.cpp)
 
 ##
 # modify source lists to suit environment
@@ -307,6 +309,11 @@ TARGET_LINK_LIBRARIES( httptest exiv2lib )
 # exifprint application
 ADD_EXECUTABLE( exifprint ${EXIFPRINT} )
 TARGET_LINK_LIBRARIES( exifprint exiv2lib )
+
+# ******************************************************************************
+# remotetest application
+ADD_EXECUTABLE( remotetest ${REMOTETEST} )
+TARGET_LINK_LIBRARIES( remotetest exiv2lib )
 
 # ******************************************************************************
 # Headers

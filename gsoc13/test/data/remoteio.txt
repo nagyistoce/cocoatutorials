@@ -1,3 +1,5 @@
+Modify the metadata ...
+Print out the new metadata ...
 Exif.Image.Make                              0x010f Ascii       6  Canon
 Exif.Image.Software                          0x0131 Ascii       6  Exiv2
 Exif.Image.DateTime                          0x0132 Ascii      20  2013:06:09 14:30:30
@@ -30,4 +32,5 @@ Exif.CanonCs.AFPoint                         0x0013 Short       1  0
 Exif.CanonCs.ExposureProgram                 0x0014 Short       1  0
 Exif.CanonCs.0x0015                          0x0015 Short       1  0
 Exif.CanonCs.LensType                        0x0016 Short       1  65535
-Exif.Photo.UserComment                       0x9286 Ascii      12  Hello World
+Exif.Photo.UserComment                       0x9286 Undefined  19  Hello World
+Reset ...
