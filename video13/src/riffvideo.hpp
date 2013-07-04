@@ -262,6 +262,7 @@ private:
 
           @return 4 if opening or writing to the associated BasicIo fails
          */
+    unsigned long findChunkPosition(char chunkId[4]);
     EXV_DLLLOCAL void doWriteMetadata(BasicIo& outIo);
 
 private:
@@ -271,6 +272,8 @@ private:
     int streamType_;
     //! Variable to decide whether to decode the metadata or just reveal file structure (Lists inside RIFF)
     bool m_decodeMetaData;
+    //!variable to decide whether write metadata is possible or not (by default false)
+    bool m_modifyMetadata;
     //!abstract metadata holding variable (its data about data about data!)
     RiffMetaSkeleton m_riffFileSkeleton;
 
