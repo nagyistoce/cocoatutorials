@@ -541,6 +541,9 @@ namespace Exiv2 {
             xmpDone = true;
         }
 
+        //populate the fake data, only make sense for remoteio, httpio and sshio
+        io_->populateFakeData();
+
         // Copy remaining data
         long readSize = 0;
         while ((readSize=io_->read(lbuf.pData_, lbuf.size_))) {
