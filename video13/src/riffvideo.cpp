@@ -542,10 +542,11 @@ std::string RiffVideo::mimeType() const
     return "video/riff";
 }
 
-unsigned long RiffVideo::findChunkPosition(char chunkId[4])
+unsigned long RiffVideo::findChunkPosition(const char* chunkId)
 {
-    DataBuf chkId;
-    chkId.pData_[4] = 0;
+    DataBuf chkId((unsigned long)5);
+    chkId.pData_[4] = '\0';
+
     for (int i=0;i<m_riffFileSkeleton.m_headerChunks.size();i++)
     {
         for (int j=0;j<m_riffFileSkeleton.m_headerChunks[i]->m_primitiveChunks.size();j++)
@@ -612,13 +613,14 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     io_->read(chkSize.pData_, bufMinSize);
     io_->read(chkId.pData_, bufMinSize);
 
-    m_decodeMetaData = false;
-    decodeBlock();
+    m_decodeMetaData = true;
+    tagDecoder();
 
     //write metadata in order
     //find and move to avih position
-    long chunkPosition = findChunkPosition("AVIH");
-    outIo.seek(chunkPosition,BasicIo::beg);
+
+    unsigned long chunkPosition = findChunkPosition("AVIH");
+    outIo.seek(chunkPosition+4,BasicIo::beg);
 
     Exiv2::XmpKey frameRateKey = Exiv2::XmpKey("Xmp.video.MicroSecPerFrame");
     Exiv2::XmpKey maxDataRateKey = Exiv2::XmpKey("Xmp.video.MaxDataRate");
@@ -638,6 +640,7 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     {
         outIo.seek(4,BasicIo::cur);
     }
+
     if(!(xmpData_.findKey(maxDataRateKey) == xmpData_.end()))
     {
         byte *rawMaxDatarate;
@@ -650,6 +653,7 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     {
         outIo.seek(12,BasicIo::cur);
     }
+
     if(!(xmpData_.findKey(frameCountKey) == xmpData_.end()))
     {
         byte *rawFrameCount;
@@ -662,6 +666,7 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     {
         outIo.seek(8,BasicIo::cur);
     }
+
     if(!(xmpData_.findKey(streamCountKey) == xmpData_.end()))
     {
         byte *rawStreamCount;
@@ -695,7 +700,7 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
 
     //find and move to strh position
     chunkPosition = findChunkPosition("STRH");
-    outIo.seek(chunkPosition,BasicIo::beg);
+    outIo.seek(chunkPosition+4,BasicIo::beg);
 
     io_->seek(chunkPosition,BasicIo::beg);
     io_->read(chkId.pData_,bufMinSize);
@@ -917,7 +922,6 @@ void RiffVideo::readMetadata()
     io_->read(chkHeader.pData_, 4);
     xmpData_["Xmp.video.FileType"] = chkHeader.pData_;
 
-    cout << frameRate << "*********" << imageHeight_h << endl;
     m_decodeMetaData = true;
     decodeBlock();
 } // RiffVideo::readMetadata
@@ -1165,7 +1169,7 @@ void RiffVideo::dateTimeOriginal(long size, int i)
     const long bufMinSize = 100;
     DataBuf buf(bufMinSize);
     io_->read(buf.pData_, size);
-    cout << cur_pos << endl;    if(!i)
+    if(!i)
         xmpData_["Xmp.video.DateUT"] = buf.pData_;
     else
         xmpData_["Xmp.video.StreamName"] = buf.pData_;
