@@ -1547,20 +1547,14 @@ namespace Exiv2 {
         bool findDiff = false;
         while (blockIndex < nBlocks && !src.eof() && !findDiff) {
             blockSize = (long)p_->blocksMap_[blockIndex].getSize();
-            if (p_->blocksMap_[blockIndex].isKnown()) { // skip it
-                if (src.seek(blockSize, BasicIo::cur))
+            bool isFakeData = p_->blocksMap_[blockIndex].isKnown(); // fake data
+            readCount = src.read(buf, blockSize);
+            byte* blockData = p_->blocksMap_[blockIndex].getData();
+            for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
+                if ((!isFakeData && buf[i] != blockData[i]) || (isFakeData && buf[i] != 0)) {
                     findDiff = true;
-                else
-                    left += blockSize;
-            } else {
-                readCount = src.read(buf, blockSize);
-                byte* blockData = p_->blocksMap_[blockIndex].getData();
-                for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                    if (buf[i] != blockData[i]) {
-                        findDiff = true;
-                    } else {
-                        left++;
-                    }
+                } else {
+                    left++;
                 }
             }
             blockIndex++;
@@ -1575,17 +1569,14 @@ namespace Exiv2 {
             if(src.seek(-1 * (blockSize + right), BasicIo::end)) {
                 findDiff = true;
             } else {
-                if (p_->blocksMap_[blockIndex].isKnown()) { // skip
-                    right += blockSize;
-                } else {
-                    readCount = src.read(buf, blockSize);
-                    byte* blockData = p_->blocksMap_[blockIndex].getData();
-                    for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
-                        if (buf[readCount - i - 1] != blockData[blockSize - i - 1]) {
-                            findDiff = true;
-                        } else {
-                            right++;
-                        }
+                bool isFakeData = p_->blocksMap_[blockIndex].isKnown(); // fake data
+                readCount = src.read(buf, blockSize);
+                byte* blockData = p_->blocksMap_[blockIndex].getData();
+                for (i = 0; (i < readCount) && (i < blockSize) && !findDiff; i++) {
+                    if ((!isFakeData && buf[readCount - i - 1] != blockData[blockSize - i - 1]) || (isFakeData && buf[readCount - i - 1] != 0)) {
+                        findDiff = true;
+                    } else {
+                        right++;
                     }
                 }
             }
