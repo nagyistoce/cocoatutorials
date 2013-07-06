@@ -617,7 +617,7 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
 
     //write metadata in order
     //find and move to avih position
-    unsigned long chunkPosition = findChunkPosition("AVIH");
+    long chunkPosition = findChunkPosition("AVIH");
     outIo.seek(chunkPosition,BasicIo::beg);
 
     Exiv2::XmpKey frameRateKey = Exiv2::XmpKey("Xmp.video.MicroSecPerFrame");
@@ -626,10 +626,11 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     Exiv2::XmpKey streamCountKey = Exiv2::XmpKey("Xmp.video.StreamCount");
     Exiv2::XmpKey imageWidthKey = Exiv2::XmpKey("Xmp.video.Width");
     Exiv2::XmpKey imageHeightKey = Exiv2::XmpKey("Xmp.video.Height");
+
     if(!(xmpData_.findKey(frameRateKey) == xmpData_.end()))
     {
         byte *rawMicroSecondsperFrame;
-        unsigned long microSecondsperFrame = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
+        long microSecondsperFrame = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
         memcpy(rawMicroSecondsperFrame,&microSecondsperFrame,4);
         outIo.write(rawMicroSecondsperFrame,4);
     }
@@ -640,40 +641,43 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     if(!(xmpData_.findKey(maxDataRateKey) == xmpData_.end()))
     {
         byte *rawMaxDatarate;
-        unsigned long maxDataRate = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
+        long maxDataRate = xmpData_["Xmp.video.MaxDataRate"].toLong();
         memcpy(rawMaxDatarate,&maxDataRate,4);
         outIo.write(rawMaxDatarate,4);
+        outIo.seek(8,BasicIo::cur);
     }
     else
     {
-        outIo.seek(4,BasicIo::cur);
+        outIo.seek(12,BasicIo::cur);
     }
     if(!(xmpData_.findKey(frameCountKey) == xmpData_.end()))
     {
         byte *rawFrameCount;
-        unsigned long frameCount = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
+        long frameCount = xmpData_["Xmp.video.FrameCount"].toLong();
         memcpy(rawFrameCount,&frameCount,4);
         outIo.write(rawFrameCount,4);
+        outIo.seek(4,BasicIo::cur);
     }
     else
     {
-        outIo.seek(4,BasicIo::cur);
+        outIo.seek(8,BasicIo::cur);
     }
     if(!(xmpData_.findKey(streamCountKey) == xmpData_.end()))
     {
         byte *rawStreamCount;
-        unsigned long streamCount = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
+        long streamCount = xmpData_["Xmp.video.StreamCount"].toLong();
         memcpy(rawStreamCount,&streamCount,4);
         outIo.write(rawStreamCount,4);
+        outIo.seek(4,BasicIo::cur);
     }
     else
     {
-        outIo.seek(4,BasicIo::cur);
+        outIo.seek(8,BasicIo::cur);
     }
     if(!(xmpData_.findKey(imageWidthKey) == xmpData_.end()))
     {
         byte *rawImageWidth;
-        unsigned long imageWidth = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
+        long imageWidth = xmpData_["Xmp.video.Width"].toLong();
         memcpy(rawImageWidth,&imageWidth,4);
         outIo.write(rawImageWidth,4);
     }
@@ -684,9 +688,199 @@ void RiffVideo::doWriteMetadata(BasicIo &outIo)
     if(!(xmpData_.findKey(imageHeightKey) == xmpData_.end()))
     {
         byte *rawImageHeight;
-        unsigned long imageHeight = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
+        long imageHeight = xmpData_["Xmp.video.Height"].toLong();
         memcpy(rawImageHeight,&imageHeight,4);
         outIo.write(rawImageHeight,4);
+    }
+
+    //find and move to strh position
+    chunkPosition = findChunkPosition("STRH");
+    outIo.seek(chunkPosition,BasicIo::beg);
+
+    io_->seek(chunkPosition,BasicIo::beg);
+    io_->read(chkId.pData_,bufMinSize);
+    if(equalsRiffTag(chkId, "VIDS"))
+        streamType_ = Video;
+    else if (equalsRiffTag(chkId, "AUDS"))
+        streamType_ = Audio;
+
+    Exiv2::XmpKey videoCodec = Exiv2::XmpKey("Xmp.video.Codec");
+    Exiv2::XmpKey videoFrameRate = Exiv2::XmpKey("Xmp.video.FrameRate");
+    Exiv2::XmpKey videoStreamSampleRate = Exiv2::XmpKey("Xmp.video.StreamSampleRate");
+    Exiv2::XmpKey videoFrameCount = Exiv2::XmpKey("Xmp.video.FrameCount");
+    Exiv2::XmpKey videoStreamSampleCount = Exiv2::XmpKey("Xmp.video.StreamSampleCount");
+    Exiv2::XmpKey videoQuality = Exiv2::XmpKey("Xmp.video.VideoQuality");
+    Exiv2::XmpKey videoSampleSize = Exiv2::XmpKey("Xmp.video.VideoSampleSize");
+    Exiv2::XmpKey videoStreamQuality = Exiv2::XmpKey("Xmp.video.StreamQuality");
+    Exiv2::XmpKey videoStreamSampleSize = Exiv2::XmpKey("Xmp.video.StreamSampleSize");
+
+    Exiv2::XmpKey audioSampleRate = Exiv2::XmpKey("Xmp.audio.SampleRate");
+    Exiv2::XmpKey audioCodec = Exiv2::XmpKey("Xmp.audio.Codec");
+    Exiv2::XmpKey audioSampleCount = Exiv2::XmpKey("Xmp.audio.SampleCount");
+
+    if(streamType_ == Video)
+    {
+        if(!(xmpData_.findKey(videoCodec) == xmpData_.end()))
+        {
+            outIo.seek(4,BasicIo::cur);
+            byte *rawVideoCodec;
+            long codec = xmpData_["Xmp.video.Codec"].toLong();
+            memcpy(rawVideoCodec,&codec,4);
+            outIo.write(rawVideoCodec,4);
+            outIo.seek(12,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(16,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(videoFrameRate) == xmpData_.end()))
+        {
+            DataBuf multiplier;
+            outIo.read(multiplier.pData_,bufMinSize);
+
+            byte *rawFrameRate;
+            long frameRate = (double)xmpData_["Xmp.video.FrameRate"].toLong()*(double)Exiv2::getULong(multiplier.pData_, littleEndian);
+            memcpy(rawFrameRate,&frameRate,4);
+            outIo.write(rawFrameRate,4);
+            outIo.seek(8,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(12,BasicIo::cur);
+        }
+
+        if(!(xmpData_.findKey(videoFrameCount) == xmpData_.end()))
+        {
+            byte *rawFrameCount;
+            long frameCount = xmpData_["Xmp.video.FrameCount"].toLong();
+            memcpy(rawFrameCount,&frameCount,4);
+            outIo.write(rawFrameCount,4);
+            outIo.seek(4,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(8,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(videoQuality) == xmpData_.end()))
+        {
+            byte *rawVideoQuality;
+            long quality = xmpData_["Xmp.video.VideoQuality"].toLong();
+            memcpy(rawVideoQuality,&quality,4);
+            outIo.write(rawVideoQuality,4);
+        }
+        else
+        {
+            outIo.seek(4,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(videoSampleSize) == xmpData_.end()))
+        {
+            byte *rawVideoSampleSize;
+            long sampleSize = xmpData_["Xmp.video.FrameRate"].toLong();
+            memcpy(rawVideoSampleSize,&sampleSize,4);
+            outIo.write(rawVideoSampleSize,4);
+        }
+    }
+    else if(streamType_ == Audio)
+    {
+        if(!(xmpData_.findKey(audioCodec) == xmpData_.end()))
+        {
+            outIo.seek(4,BasicIo::cur);
+            byte *rawAudioCodec;
+            long codec = xmpData_["Xmp.audio.Codec"].toLong();
+            memcpy(rawAudioCodec,&codec,4);
+            outIo.write(rawAudioCodec,4);
+            outIo.seek(12,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(16,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(audioSampleRate) == xmpData_.end()))
+        {
+            DataBuf multiplier;
+            outIo.read(multiplier.pData_,bufMinSize);
+
+            byte *rawSampleRate;
+            long sampleRate = (double)xmpData_["Xmp.audio.SampleRate"].toLong()*(double)Exiv2::getULong(multiplier.pData_, littleEndian);
+            memcpy(rawSampleRate,&sampleRate,4);
+            outIo.write(rawSampleRate,4);
+            outIo.seek(8,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(12,BasicIo::cur);
+        }
+
+        if(!(xmpData_.findKey(audioSampleCount) == xmpData_.end()))
+        {
+            byte *rawFrameCount;
+            long frameCount = xmpData_["Xmp.audio.SampleCount"].toLong();
+            memcpy(rawFrameCount,&frameCount,4);
+            outIo.write(rawFrameCount,4);
+            outIo.seek(4,BasicIo::cur);
+        }
+    }
+    else
+    {
+        if(!(xmpData_.findKey(videoCodec) == xmpData_.end()))
+        {
+            outIo.seek(4,BasicIo::cur);
+            byte *rawVideoCodec;
+            long codec = xmpData_["Xmp.video.Codec"].toLong();
+            memcpy(rawVideoCodec,&codec,4);
+            outIo.write(rawVideoCodec,4);
+            outIo.seek(12,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(16,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(videoStreamSampleRate) == xmpData_.end()))
+        {
+            DataBuf multiplier;
+            outIo.read(multiplier.pData_,bufMinSize);
+
+            byte *rawStreamSampleRate;
+            long streamSampleRate = (double)xmpData_["Xmp.video.StreamSampleRate"].toLong()*(double)Exiv2::getULong(multiplier.pData_, littleEndian);
+            memcpy(rawStreamSampleRate,&streamSampleRate,4);
+            outIo.write(rawStreamSampleRate,4);
+            outIo.seek(8,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(12,BasicIo::cur);
+        }
+
+        if(!(xmpData_.findKey(videoStreamSampleCount) == xmpData_.end()))
+        {
+            byte *rawStreamSampleCount;
+            long streamSampleCount = xmpData_["Xmp.video.StreamSampleCount"].toLong();
+            memcpy(rawStreamSampleCount,&streamSampleCount,4);
+            outIo.write(rawStreamSampleCount,4);
+            outIo.seek(4,BasicIo::cur);
+        }
+        else
+        {
+            outIo.seek(8,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(videoStreamQuality) == xmpData_.end()))
+        {
+            byte *rawStreamQuality;
+            long streamQuality = xmpData_["Xmp.video.StreamQuality"].toLong();
+            memcpy(rawStreamQuality,&streamQuality,4);
+            outIo.write(rawStreamQuality,4);
+        }
+        else
+        {
+            outIo.seek(4,BasicIo::cur);
+        }
+        if(!(xmpData_.findKey(videoStreamSampleSize) == xmpData_.end()))
+        {
+            byte *rawSampleSize;
+            long streamSampleSize = xmpData_["Xmp.video.StreamSampleSize"].toLong();
+            memcpy(rawSampleSize,&streamSampleSize,4);
+            outIo.write(rawSampleSize,4);
+        }
     }
     //TODO :implement write functionality
 
@@ -723,6 +917,7 @@ void RiffVideo::readMetadata()
     io_->read(chkHeader.pData_, 4);
     xmpData_["Xmp.video.FileType"] = chkHeader.pData_;
 
+    cout << frameRate << "*********" << imageHeight_h << endl;
     m_decodeMetaData = true;
     decodeBlock();
 } // RiffVideo::readMetadata
