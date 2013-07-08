@@ -1830,8 +1830,53 @@ void RiffVideo::streamFormatHandler(long size)
         }
         else if(streamType_ == Audio)
         {
+            //TODO :audio compressor and numofchannels
+            if(0)
+            {
 
+            }
+            else
+            {
+                io_->seek(2,BasicIo::cur);
+            }
 
+            if(0)
+            {
+
+            }
+            else
+            {
+                io_->seek(2,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.audio.SampleRate"].count() > 0)
+            {
+                byte rawSampleRate[2];
+                const std::string sampleRate = xmpData_["Xmp.audio.SampleRate"].toString();
+                memcpy(rawSampleRate,&sampleRate,2);
+                io_->write(rawSampleRate,2);
+            }
+            else
+            {
+                io_->seek(2,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.audio.SampleType"].count() > 0)
+            {
+                byte rawSampleType[2];
+                const std::string sampleType= xmpData_["Xmp.audio.SampleType"].toString();
+                memcpy(rawSampleType,&sampleType,2);
+                io_->write(rawSampleType,2);
+            }
+            else
+            {
+                io_->seek(2,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.audio.BitsPerSample"].count() > 0)
+            {
+                byte rawBitsPerSample[2];
+                const std::string bitsPerSample= xmpData_["Xmp.audio.BitsPerSample"].toString();
+                memcpy(rawBitsPerSample,&bitsPerSample,2);
+                io_->write(rawBitsPerSample,2);
+            }
         }
     }
 } // RiffVideo::streamFormatHandler
