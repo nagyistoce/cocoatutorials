@@ -80,6 +80,8 @@ public:
     public:
         byte m_headerId[5];
         vector<PrimitiveChunk*> m_primitiveChunks;
+        unsigned long m_headerLocation;
+        unsigned long m_headerSize;
     };
 
     class ListChunk
@@ -262,8 +264,9 @@ private:
 
           @return 4 if opening or writing to the associated BasicIo fails
          */
-    unsigned long findChunkPosition(char chunkId[4]);
-    EXV_DLLLOCAL void doWriteMetadata(BasicIo& outIo);
+    std::vector<long> findChunkPositions(const char *chunkId);
+    std::vector<long> findHeaderPositions(const char* headerId);
+    EXV_DLLLOCAL void doWriteMetadata();
 
 private:
     //! Variable to check the end of metadata traversing.

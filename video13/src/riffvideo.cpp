@@ -563,6 +563,25 @@ std::vector<long> RiffVideo::findChunkPositions(const char* chunkId)
     return positions;
 }
 
+std::vector<long> RiffVideo::findHeaderPositions(const char* headerId)
+{
+    DataBuf hdrId((unsigned long)5);
+    hdrId.pData_[4] = '\0';
+
+    std::vector<long> positions;
+    for (int i=0;i<m_riffFileSkeleton.m_headerChunks.size();i++)
+    {
+        io_->seek(m_riffFileSkeleton.m_headerChunks[i]->m_headerLocation,BasicIo::beg);
+        io_->read(hdrId.pData_,4);
+        if(equalsRiffTag(hdrId,headerId))
+        {
+            positions.push_back((long)io_->tell());
+        }
+
+    }
+    return positions;
+}
+
 void RiffVideo::writeMetadata()
 {
     if (io_->open() != 0)
@@ -648,7 +667,26 @@ void RiffVideo::doWriteMetadata()
         io_->seek(iditChunkPositions[i]+4,BasicIo::beg);
         dateTimeOriginal(dummyLong);
     }
-    //TODO :implement write functionality for exif and iptc metadata
+
+    std::vector<long> odmlHeaderPositions = findHeaderPositions("ODML");
+    for(int i=0;i<odmlHeaderPositions.size(); i++)
+    {
+        io_->seek(odmlHeaderPositions[i],BasicIo::beg);
+        odmlTagsHandler();
+    }
+    std::vector<long> ncdtHeaderPositions = findHeaderPositions("NCDT");
+    for(int i=0;i<ncdtHeaderPositions.size(); i++)
+    {
+        io_->seek(ncdtHeaderPositions[i],BasicIo::beg);
+        nikonTagsHandler();
+    }
+    std::vector<long> infoHeaderPositions = findHeaderPositions("INFO");
+    for(int i=0;i<infoHeaderPositions.size(); i++)
+    {
+        io_->seek(infoHeaderPositions[i],BasicIo::beg);
+        infoTagsHandler();
+    }
+    //TODO :implement write functionality for header chunks and exif and iptc metadata
 
 }// RiffVideo::doWriteMetadata
 
@@ -758,6 +796,11 @@ void RiffVideo::tagDecoder()
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 8;
                 tmpPremitiveChunk->m_chunkSize = size;
                 tmpHeaderChunk->m_primitiveChunks.push_back(tmpPremitiveChunk);
+            }
+            if(equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
+            {
+                tmpHeaderChunk->m_headerLocation = (unsigned long) io_->tell() - 12;
+                tmpHeaderChunk->m_headerSize = listsize ;
             }
             //to handle AVI file formats
             if(!m_decodeMetaData && equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
@@ -969,28 +1012,36 @@ void RiffVideo::dateTimeOriginal(long size, int i)
 
 void RiffVideo::odmlTagsHandler()
 {
-    const long bufMinSize = 100;
-    DataBuf buf(bufMinSize);
-    buf.pData_[4] = '\0';
-    io_->seek(-12, BasicIo::cur);
-    io_->read(buf.pData_, 4);
-    unsigned long size = Exiv2::getULong(buf.pData_, littleEndian);
-    unsigned long size2 = size;
-
-    uint64_t cur_pos = io_->tell();
-    io_->read(buf.pData_, 4); size -= 4;
-
-    while(size > 0)
+    if(!m_modifyMetadata)
     {
+        const long bufMinSize = 100;
+        DataBuf buf(bufMinSize);
+        buf.pData_[4] = '\0';
+        io_->seek(-12, BasicIo::cur);
+        io_->read(buf.pData_, 4);
+        unsigned long size = Exiv2::getULong(buf.pData_, littleEndian);
+        unsigned long size2 = size;
+
+        uint64_t cur_pos = io_->tell();
         io_->read(buf.pData_, 4); size -= 4;
-        if(equalsRiffTag(buf,"DMLH"))
+
+        while(size > 0)
         {
             io_->read(buf.pData_, 4); size -= 4;
-            io_->read(buf.pData_, 4); size -= 4;
-            xmpData_["Xmp.video.TotalFrameCount"] = Exiv2::getULong(buf.pData_, littleEndian);
+            if(equalsRiffTag(buf,"DMLH"))
+            {
+                io_->read(buf.pData_, 4); size -= 4;
+                io_->read(buf.pData_, 4); size -= 4;
+                xmpData_["Xmp.video.TotalFrameCount"] = Exiv2::getULong(buf.pData_, littleEndian);
+            }
         }
+        io_->seek(cur_pos + size2, BasicIo::beg);
     }
-    io_->seek(cur_pos + size2, BasicIo::beg);
+    else
+    {
+
+
+    }
 } // RiffVideo::odmlTagsHandler
 
 void RiffVideo::skipListData()
