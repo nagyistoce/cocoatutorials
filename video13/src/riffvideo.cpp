@@ -609,13 +609,13 @@ void RiffVideo::doWriteMetadata()
     //write metadata in order
 
     //find and move to avih position
-    long dummyInt = 0;
+    long dummyLong = 0;
 
     std::vector<long> avihChunkPositions = findChunkPositions("AVIH");
     for (int i=0; i<avihChunkPositions.size(); i++)
     {
         io_->seek(avihChunkPositions[i]+4,BasicIo::beg);
-        aviHeaderTagsHandler(dummyInt);
+        aviHeaderTagsHandler(dummyLong);
     }
 
     //find and move to strh position
@@ -624,7 +624,7 @@ void RiffVideo::doWriteMetadata()
     {
 
         io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
-        streamHandler(dummyInt);
+        streamHandler(dummyLong);
     }
 
     streamType_ = Video;
@@ -632,9 +632,23 @@ void RiffVideo::doWriteMetadata()
     for(int i=0; i<strfChunkPositions.size(); i++)
     {
         io_->seek(strfChunkPositions[i]+4,BasicIo::beg);
-        streamFormatHandler(dummyInt);
+        streamFormatHandler(dummyLong);
     }
-    //TODO :implement write functionality
+
+    std::vector<long> strnChunkPositions = findChunkPositions("STRF");
+    for(int i=0;i<strnChunkPositions.size(); i++)
+    {
+        io_->seek(strnChunkPositions[i]+4,BasicIo::beg);
+        dateTimeOriginal(dummyLong);
+    }
+
+    std::vector<long> iditChunkPositions = findChunkPositions("IDIT");
+    for(int i=0;i<iditChunkPositions.size(); i++)
+    {
+        io_->seek(iditChunkPositions[i]+4,BasicIo::beg);
+        dateTimeOriginal(dummyLong);
+    }
+    //TODO :implement write functionality for exif and iptc metadata
 
 }// RiffVideo::doWriteMetadata
 
@@ -913,15 +927,44 @@ void RiffVideo::streamDataTagHandler(long size)
 
 void RiffVideo::dateTimeOriginal(long size, int i)
 {
-    uint64_t cur_pos = io_->tell();
-    const long bufMinSize = 100;
-    DataBuf buf(bufMinSize);
-    io_->read(buf.pData_, size);
-    if(!i)
-        xmpData_["Xmp.video.DateUT"] = buf.pData_;
+    if(!m_modifyMetadata)
+    {
+        uint64_t cur_pos = io_->tell();
+        const long bufMinSize = 100;
+        DataBuf buf(bufMinSize);
+        io_->read(buf.pData_, size);
+        if(!i)
+            xmpData_["Xmp.video.DateUT"] = buf.pData_;
+        else
+            xmpData_["Xmp.video.StreamName"] = buf.pData_;
+        io_->seek(cur_pos + size, BasicIo::beg);
+    }
     else
-        xmpData_["Xmp.video.StreamName"] = buf.pData_;
-    io_->seek(cur_pos + size, BasicIo::beg);
+    {
+        if(xmpData_["Xmp.video.DateUT"].count() > 0)
+        {
+            const long bufMinSize = 100;
+            byte rawDateTimeOriginal[bufMinSize];
+            std::string dateAndTime = xmpData_["Xmp.video.DateUT"].toString();
+            for(int i=0; i<(int)bufMinSize; i++)
+            {
+                rawDateTimeOriginal[i] = dateAndTime[i];
+            }
+            io_->write(rawDateTimeOriginal,4);
+        }
+
+        if(xmpData_["Xmp.video.StreamName"].count() >0)
+        {
+            const long bufMinSize = 100;
+            byte rawStreamName[bufMinSize];
+            std::string streamName = xmpData_["Xmp.video.StreamName"].toString();
+            for(int i=0; i<(int)bufMinSize; i++)
+            {
+                rawStreamName[i] = streamName[i];
+            }
+            io_->write(rawStreamName,4);
+        }
+    }
 } // RiffVideo::dateTimeOriginal
 
 void RiffVideo::odmlTagsHandler()
