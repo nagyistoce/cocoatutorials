@@ -34,14 +34,9 @@ EXIV2_RCSID("@(#) $Id: pngimage.cpp 2862 2012-08-31 04:31:05Z ahuggel $")
 //#define DEBUG 1
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
-#ifdef EXV_HAVE_LIBZ
+#ifdef   EXV_HAVE_LIBZ
 #include "pngchunk_int.hpp"
 #include "pngimage.hpp"
 #include "jpgimage.hpp"

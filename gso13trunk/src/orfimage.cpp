@@ -30,12 +30,7 @@
 EXIV2_RCSID("@(#) $Id: orfimage.cpp 2976 2013-01-16 02:23:10Z robinwmills $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
 #include "orfimage.hpp"
 #include "orfimage_int.hpp"

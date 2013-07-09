@@ -34,20 +34,65 @@
 // included header files
 #ifdef _MSC_VER
 # include "exv_msvc.h"
+# include <types.hpp>
 #else
 # include "exv_conf.h"
 #endif
 
+#ifdef EXV_HAVE_STDINT_H
+# include <stdint.h>                     // for uint8_t
+#endif
+#include <limits.h>						 // for UINT_MAX
+
 // + standard includes
 #include <string>
+#include <map>
 
 // *********************************************************************
 // namespace extensions
 namespace Exiv2 {
-
+    enum  EnVar { envHTTPPOST = 0};
+    /*!
+       @brief The Protocol enum and the map to hold the strings
+     */
+    enum    Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
+    typedef std::map<std::string,Protocol>           protDict_t;
+    typedef std::map<std::string,Protocol>::iterator protDict_i;
+#ifdef EXV_UNICODE_PATH
+    typedef std::map<std::wstring,Protocol> wprotDict_t;
+    typedef std::map<std::wstring,Protocol>::iterator wprotDict_i;
+#endif
 // *********************************************************************
 // free functions
 
+    EXIV2API std::string getEnv(EnVar var);
+    // URL Encoding from http://www.geekhideout.com/urlcode.shtml
+    EXIV2API char to_hex(char code);
+    EXIV2API char from_hex(char ch);
+    EXIV2API char* urlencode(char* str);
+    EXIV2API char* urldecode(const char* str);
+    /*!
+      @brief Encodes in base64 the data in data_buf and puts the resulting string in result.
+      @param resultSize size in bytes of the out string, it should be at least ((dataLength + 2) / 3) * 4 + 1
+      @param dataLength size in bytes of the in buffer
+      @return the string containing the encoded data, or NULL in case of error.
+
+      @note From http://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
+      */
+    EXIV2API int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize);
+    /*!
+      @brief Return the protocol of the path
+      @param path the path of file to detect the protocol
+      @return the protocol of the path
+     */
+    EXIV2API Protocol fileProtocol(const std::string& path);
+#ifdef EXV_UNICODE_PATH
+    /*!
+      @brief Like fileProtocol() but accepts a unicode path in an std::wstring.
+      @note This function is only available on Windows.
+     */
+    EXIV2API Protocol fileProtocol(const std::wstring& wpath);
+#endif
     /*!
       @brief Test if a file exists.
 
@@ -73,6 +118,21 @@ namespace Exiv2 {
              See %strerror(3).
      */
     EXIV2API std::string strError();
+
+    // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+    class Uri
+    {
+    public:
+        std::string QueryString;
+        std::string Path;
+        std::string Protocol;
+        std::string Host;
+        std::string Port;
+        std::string Username;
+        std::string Password;
+
+        static Uri EXIV2API Parse(const std::string &uri);
+    };
 
 }                                       // namespace Exiv2
 

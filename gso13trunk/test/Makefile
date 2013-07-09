@@ -65,16 +65,13 @@ SVN = svn://dev.exiv2.org/svn/testdata/trunk
 
 ##
 # Add test drivers to this list
-TESTS = addmoddel.sh      \
+TESTX = addmoddel.sh      \
         bugfixes-test.sh  \
         exifdata-test.sh  \
-        exiv2-test.sh     \
         imagetest.sh      \
         iotest.sh         \
         iptctest.sh       \
-        modify-test.sh    \
         path-test.sh      \
-        preview-test.sh   \
         stringto-test.sh  \
         tiff-test.sh      \
         write-test.sh     \
@@ -83,12 +80,18 @@ TESTS = addmoddel.sh      \
         conversions.sh
 TESTV = video-test.sh
 TESTE = eps-test.sh    
+TESTS = exiv2-test.sh     \
+        modify-test.sh    \
+        preview-test.sh   \
+        httpiotest.sh     \
+        remoteiotest.sh   \
+        sshiotest.sh
 
-tests:
+testx:
 	cd .. ; make tests
 
 test:
-	@list='$(TESTS)'; for p in $$list; do \
+	@list='$(TESTX)'; for p in $$list; do \
 	    echo Running $$p ...; \
 	    ./$$p;  \
 	    rc=$$?; \
@@ -111,6 +114,14 @@ testv:
 # TODO: download eps data on demand for 0.24 (similar to testv)
 teste:
 	@list='$(TESTE)'; for p in $$list; do \
+	    echo Running $$p ...; \
+	    ./$$p; \
+	done
+
+##
+# TODO: test httpIo and remoteIo
+tests:
+	@list='$(TESTS)'; for p in $$list; do \
 	    echo Running $$p ...; \
 	    ./$$p; \
 	done

@@ -29,12 +29,7 @@
 EXIV2_RCSID("@(#) $Id: makernote.cpp 2698 2012-04-11 16:02:44Z ahuggel $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
 #include "makernote_int.hpp"
 #include "tiffcomposite_int.hpp"

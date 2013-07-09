@@ -7,16 +7,24 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
+#include <cstring>
 
 int main(int argc, char* const argv[])
 try {
 
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " file\n";
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " file {--nocurl | --curl}\n";
         return 1;
     }
 
-    Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(argv[1]);
+    bool useCurlFromExiv2TestApps = true;
+    for ( int a = 1 ; a < argc ; a++ ) {
+        std::string arg(argv[a]);
+        if (arg == "--nocurl")  useCurlFromExiv2TestApps = false;
+        else if (arg == "--curl") useCurlFromExiv2TestApps = true;
+    }
+
+    Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(argv[1], useCurlFromExiv2TestApps);
     assert(image.get() != 0);
     image->readMetadata();
 

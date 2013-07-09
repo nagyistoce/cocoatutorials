@@ -444,6 +444,21 @@ namespace Exiv2 {
     class EXIV2API ImageFactory {
         friend bool Image::good() const;
     public:
+		/*!
+          @brief Create the appropriate class implemented BasicIo by reading
+              the %Image path.
+          @param  path %Image file.
+          @return An auto-pointer that owns an BasicIo instance.
+          @throw Error If the path is "-" and there is no data from stdin.
+         */
+        static BasicIo::AutoPtr createIo(const std::string& path, bool useCurl = true);
+#ifdef EXV_UNICODE_PATH
+		/*!
+          @brief Like createIo() but accepts a unicode path in an std::wstring.
+          @note This function is only available on Windows.
+         */
+        static BasicIo::AutoPtr createIo(const std::wstring& wpath, bool useCurl = true);
+#endif
         /*!
           @brief Create an Image subclass of the appropriate type by reading
               the specified file. %Image type is derived from the file
@@ -455,13 +470,13 @@ namespace Exiv2 {
           @throw Error If opening the file fails or it contains data of an
               unknown image type.
          */
-        static Image::AutoPtr open(const std::string& path);
+        static Image::AutoPtr open(const std::string& path, bool useCurl = true);
 #ifdef EXV_UNICODE_PATH
         /*!
           @brief Like open() but accepts a unicode path in an std::wstring.
           @note This function is only available on Windows.
          */
-        static Image::AutoPtr open(const std::wstring& wpath);
+        static Image::AutoPtr open(const std::wstring& wpath, bool useCurl = true);
 #endif
         /*!
           @brief Create an Image subclass of the appropriate type by reading

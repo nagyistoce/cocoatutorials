@@ -32,12 +32,7 @@
 EXIV2_RCSID("@(#) $Id: jpgimage.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
 #include "jpgimage.hpp"
 #include "error.hpp"
@@ -824,6 +819,9 @@ namespace Exiv2 {
             if (marker < 0) throw Error(22);
             ++count;
         }
+
+        //populate the fake data, only make sense for remoteio, httpio and sshio
+        io_->populateFakeData();
 
         // Copy rest of the Io
         io_->seek(-2, BasicIo::cur);

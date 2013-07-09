@@ -31,7 +31,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # File:      Makefile.in
-# Version:   $Rev: 3038 $
+# Version:   $Rev: 2924 $
 # Author(s): Andreas Huggel (ahu) <ahuggel@gmx.net>
 # History:   15-Jan-04, ahu: created
 #
@@ -71,10 +71,13 @@ samples: config/config.mk
 	cd samples && $(MAKE) $(MAKECMDGOALS)
 
 tests:
-	cd test && $(MAKE) test
+	cd test && $(MAKE) tests
 
 teste:
 	cd test && $(MAKE) teste
+
+testx:
+	cd test && $(MAKE) test
 
 testv:
 	cd test && $(MAKE) testv

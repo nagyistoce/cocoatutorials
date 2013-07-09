@@ -29,13 +29,7 @@
 EXIV2_RCSID("@(#) $Id: tiffcomposite.cpp 2962 2013-01-06 19:36:24Z robinwmills $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
-
+#include "exv_conf.h"
 #include "tiffimage_int.hpp"
 #include "tiffcomposite_int.hpp"
 #include "tiffvisitor_int.hpp"

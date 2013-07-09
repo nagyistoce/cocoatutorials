@@ -31,12 +31,7 @@
 EXIV2_RCSID("@(#) $Id: exiv2.cpp 2771 2012-07-09 01:25:17Z robinwmills $")
 
 // *****************************************************************************
-// included header files
-#ifdef _MSC_VER
-# include "exv_msvc.h"
-#else
-# include "exv_conf.h"
-#endif
+#include "exv_conf.h"
 
 #include "exiv2app.hpp"
 #include "actions.hpp"
@@ -44,6 +39,7 @@ EXIV2_RCSID("@(#) $Id: exiv2.cpp 2771 2012-07-09 01:25:17Z robinwmills $")
 #include "convert.hpp"
 #include "i18n.h"      // NLS support.
 #include "xmp.hpp"
+#include "version.hpp"
 
 #include <string>
 #include <iostream>

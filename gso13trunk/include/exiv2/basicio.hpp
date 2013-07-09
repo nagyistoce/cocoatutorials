@@ -29,14 +29,22 @@
 #ifndef BASICIO_HPP_
 #define BASICIO_HPP_
 
+// The way to handle data from stdin. If STDIN_MEMIO = 1, it uses MemIo. Otherwises, it uses FileIo.
+#ifndef STDIN_MEMIO
+#define STDIN_MEMIO 0
+#endif
+
 // *****************************************************************************
 // included header files
 #include "types.hpp"
 
 // + standard includes
 #include <string>
-#include <memory>                               // for std::auto_ptr
-
+#include <memory>       // for std::auto_ptr
+#include <fstream>      // write the temporary file
+#include <fcntl.h>      // _O_BINARY in FileIo::FileIo
+#include <ctime>        // timestamp for the name of temporary file
+#include <cstring>      // std::memcpy
 // *****************************************************************************
 // namespace extensions
 namespace Exiv2 {
@@ -170,9 +178,9 @@ namespace Exiv2 {
               Nonzero if failure;
          */
 #if defined(_MSC_VER)
-        virtual int seek(uint64_t offset, Position pos) = 0;
+        virtual int seek(int64_t offset, Position pos) = 0;
 #else
-		virtual int seek(long offset, Position pos) = 0;
+        virtual int seek(long offset, Position pos) = 0;
 #endif
 
         /*!
@@ -241,6 +249,8 @@ namespace Exiv2 {
           @throw Error In case of failure
          */
         virtual BasicIo::AutoPtr temporary() const = 0;
+
+        virtual void populateFakeData() = 0;
         //@}
 
     protected:
@@ -264,7 +274,7 @@ namespace Exiv2 {
         //! Constructor, takes a BasicIo reference
         IoCloser(BasicIo& bio) : bio_(bio) {}
         //! Destructor, closes the BasicIo reference
-        ~IoCloser() { close(); }
+        virtual ~IoCloser() { close(); }
         //@}
 
         //! @name Manipulators
@@ -430,11 +440,11 @@ namespace Exiv2 {
                  Nonzero if failure;
          */
 #if defined(_MSC_VER)
-        virtual int seek(uint64_t offset, Position pos);
+        virtual int seek(int64_t offset, Position pos);
 #else
         virtual int seek(long offset, Position pos);
 #endif
-		/*!
+        /*!
           @brief Map the file into the process's address space. The file must be
                  open before mmap() is called. If the mapped area is writeable,
                  changes may not be written back to the underlying file until
@@ -454,8 +464,19 @@ namespace Exiv2 {
                   Nonzero if failure;
          */
         virtual int munmap();
+        /*!
+          @brief close the file source and set a new path.
+         */
+        virtual void setPath(const std::string& path);
+#ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like setPath(const std::string& path) but accepts a
+              unicode path in an std::wstring.
+          @note This method is only available on Windows.
+         */
+        virtual void setPath(const std::wstring& wpath);
+#endif
         //@}
-
         //! @name Accessors
         //@{
         /*!
@@ -496,6 +517,8 @@ namespace Exiv2 {
           @throw Error If opening the temporary file fails
          */
         virtual BasicIo::AutoPtr temporary() const;
+
+        virtual void populateFakeData();
         //@}
 
     private:
@@ -539,7 +562,7 @@ namespace Exiv2 {
          */
         MemIo(const byte* data, long size);
         //! Destructor. Releases all managed memory
-        ~MemIo();
+        virtual ~MemIo();
         //@}
 
         //! @name Manipulators
@@ -642,9 +665,9 @@ namespace Exiv2 {
                  Nonzero if failure;
          */
 #if defined(_MSC_VER)
-        virtual int seek(uint64_t offset, Position pos);
+        virtual int seek(int64_t offset, Position pos);
 #else
-		virtual int seek(long offset, Position pos);
+        virtual int seek(long offset, Position pos);
 #endif
 		/*!
           @brief Allow direct access to the underlying data buffer. The buffer
@@ -693,6 +716,8 @@ namespace Exiv2 {
           @return An instance of BasicIo
          */
         virtual BasicIo::AutoPtr temporary() const;
+
+        virtual void populateFakeData();
         //@}
 
     private:
@@ -707,6 +732,336 @@ namespace Exiv2 {
         Impl* p_;
 
     }; // class MemIo
+
+    /*!
+      @brief Reading the data from stdin and provide FileIo or MemIo by inheriting from one of these classes.
+     */
+#if STDIN_MEMIO
+    class EXIV2API StdinIo : public MemIo {
+    public:
+        //! @name Creators
+        //@{
+        /*!
+            @brief Default constructor that reads the data from stdin and write the data to memory.
+            @throw Error if it can't convert stdin to binary.
+         */
+        StdinIo();
+        //@}
+    }; // class StdinIo
+#else
+    class EXIV2API StdinIo : public FileIo {
+    public:
+        /*!
+            @brief The extention of the temporary file which is created when getting input data
+                    from stdin to read metadata. This file will be deleted in destructor.
+        */
+        static const std::string TEMP_FILE_EXT;
+        /*!
+            @brief The extention of the generated file which is created when getting input data from
+                    stdin to add or modify the metadata.
+        */
+        static const std::string GEN_FILE_EXT;
+
+        //! @name Creators
+        //@{
+        //! Default constructor that reads data from stdin, write to the temp file.
+        StdinIo();
+
+        //! Destructor. Releases all managed memory and remove temp file.
+        virtual ~StdinIo();
+        //@}
+
+        //! @name Manipulators
+        //@{
+        /*!
+            @brief Change the name of the temp file and make it untemporary before
+                    calling the method of superclass FileIo::transfer.
+         */
+        virtual void transfer(BasicIo& src);
+
+        //@}
+
+        //! @name Static methods
+        //@{
+        /*!
+            @brief Read the data from stdin and write to the file.
+            @return the name of the new file.
+            @throw Error if it can't convert stdin to binary.
+         */
+        static std::string writeStdinToFile();
+        //@}
+
+    private:
+        bool isTemp_;
+        std::string tempFilePath_;
+    }; // class StdinIo
+#endif
+
+    class EXIV2API BlockMap {
+    public:
+        enum    blockType_e {bNone, bKnown, bMemory};
+                BlockMap():type_(bNone), data_(NULL) {}
+        virtual ~BlockMap() {
+            if (data_) {std::free(data_); data_ = NULL;}
+        }
+        void    populate (byte* source, size_t num) {
+            size_ = num;
+            data_ = (byte*) std::malloc(size_);
+            type_ = bMemory;
+            std::memcpy(data_, source, size_);
+        }
+        void    markKnown(size_t num) {
+            type_ = bKnown;
+            size_ = num;
+        }
+        bool    isNone()  {return type_ == bNone;}
+        bool    isInMem ()  {return type_ == bMemory;}
+        bool    isKnown ()  {return type_ == bKnown;}
+        byte*   getData ()  {return data_;}
+        size_t  getSize ()  {return size_;}
+    private:
+        blockType_e type_;
+        byte*       data_;
+        size_t      size_;
+    };
+
+    /*!
+        @brief Provides RemoteIo superclass by implementing the BasicIo.
+               This class implements the blockMap which is used by httpio, curlio, sshio
+    */
+    class EXIV2API RemoteIo : public BasicIo {
+    public:
+        //! Destructor. Releases all managed memory
+        virtual ~RemoteIo();
+        //@}
+
+        //! @name Manipulators
+        //@{
+        /*!
+          @brief Connect to the remote server, do a HEAD and get the size of the file.
+                 allocate the array of blocksMap.
+
+            This method can also be used to "reopen" the connection which will release the
+            data and reset the IO position to the start.
+          @return 0 if successful;<BR>
+              Nonzero if failure.
+         */
+        virtual int open();
+        /*!
+          @brief Release the data and reset the IO position to the start . It is
+              safe to call close on an already closed instance.
+          @return 0 if successful;<BR>
+              Nonzero if failure.
+         */
+        virtual int close();
+        /*!
+          @brief Not support
+          @return 0 means failure
+         */
+        virtual long write(const byte* data, long wcount);
+        /*!
+          @brief Not support
+          @return 0 means failure
+         */
+        virtual long write(BasicIo& src);
+
+        /*!
+         @brief Not support
+         @return 0 means failure
+        */
+       virtual int putb(byte data);
+       /*!
+         @brief Read data from the memory blocks. Reading starts at the current
+             IO position and the position is advanced by the number of
+             bytes read.
+             If the memory blocks are not populated (False), it will connect to server
+             and populate the data to memory blocks.
+         @param rcount Maximum number of bytes to read. Fewer bytes may be
+             read if \em rcount bytes are not available.
+         @return DataBuf instance containing the bytes read. Use the
+               DataBuf::size_ member to find the number of bytes read.
+               DataBuf::size_ will be 0 on failure.
+        */
+       virtual DataBuf read(long rcount);
+       /*!
+         @brief Read data from the memory blocks. Reading starts at the current
+             IO position and the position is advanced by the number of
+             bytes read.
+             If the memory blocks are not populated (False), it will connect to server
+             and populate the data to memory blocks.
+         @param buf Pointer to a block of memory into which the read data
+             is stored. The memory block must be at least \em rcount bytes
+             long.
+         @param rcount Maximum number of bytes to read. Fewer bytes may be
+             read if \em rcount bytes are not available.
+         @return Number of bytes read from the memory block successfully;<BR>
+                0 if failure;
+        */
+       virtual long read(byte* buf, long rcount);
+       /*!
+         @brief Read one byte from the memory block. The IO position is
+             advanced by one byte.
+             If the memory block is not populated (False), it will connect to server
+             and populate the data to the memory block.
+         @return The byte read from the memory block if successful;<BR>
+                EOF if failure;
+        */
+       virtual int getb();
+       /*!
+         @brief Not support. Do no thing
+         @throw Error
+        */
+       virtual void transfer(BasicIo& src);
+       /*!
+         @brief Move the current IO position.
+         @param offset Number of bytes to move the IO position
+             relative to the starting position specified by \em pos
+         @param pos Position from which the seek should start
+         @return 0 if successful;<BR>
+                Nonzero if failure;
+        */
+#if defined(_MSC_VER)
+       virtual int seek(int64_t offset, Position pos);
+#else
+       virtual int seek(long offset, Position pos);
+#endif
+       /*!
+         @brief Allow direct access to the underlying data buffer. The buffer
+                is not protected against write access in any way, the argument
+                is ignored.
+         @note  The application must ensure that the memory pointed to by the
+                returned pointer remains valid and allocated as long as the
+                MemIo object exists.
+        */
+       virtual byte* mmap(bool /*isWriteable*/ =false);
+       virtual int munmap();
+       //@}
+       //! @name Accessors
+       //@{
+       /*!
+         @brief Get the current IO position.
+         @return Offset from the start of the memory block
+        */
+       virtual long tell() const;
+       /*!
+         @brief Get the current memory buffer size in bytes.
+         @return Size of the in memory data in bytes;<BR>
+                -1 if failure;
+        */
+       virtual long size() const;
+       //!Returns true if the memory area is allocated.
+       virtual bool isopen() const;
+       //!Always returns 0
+       virtual int error() const;
+       //!Returns true if the IO position has reach the end, otherwise false.
+       virtual bool eof() const;
+       //!Returns the URL of the file.
+       virtual std::string path() const;
+#ifdef EXV_UNICODE_PATH
+       /*
+         @brief Like path() but returns a unicode URL path in an std::wstring.
+         @note This function is only available on Windows.
+        */
+       virtual std::wstring wpath() const;
+#endif
+       /*!
+         @brief Returns a temporary data storage location. Currently returns
+             an empty MemIo object, but callers should not rely on this
+             behavior since it may change.
+         @return An instance of BasicIo
+        */
+       virtual BasicIo::AutoPtr temporary() const;
+
+       virtual void populateFakeData();
+       //@}
+
+    protected:
+        // Pimpl idiom
+        class Impl;
+        Impl* p_;
+        //! @name Creators
+        //@{
+        //! Default Constructor
+        RemoteIo() {}
+        //@}
+    }; // class RemoteIo
+
+    class EXIV2API HttpIo : public RemoteIo {
+    public:
+        HttpIo(const std::string&  url,  size_t blockSize = 1024);
+#ifdef EXV_UNICODE_PATH
+        HttpIo(const std::wstring& wurl, size_t blockSize = 1024);
+#endif
+    protected:
+        // NOT IMPLEMENTED
+        //! Copy constructor
+        HttpIo(HttpIo& rhs);
+        //! Assignment operator
+        HttpIo& operator=(const HttpIo& rhs);
+        // Pimpl idiom
+        class HttpImpl;
+
+        //! @name Creators
+        //@{
+        //! Default Destructor
+        virtual ~HttpIo(){}
+        //@}
+    };
+
+
+#if EXV_USE_CURL == 1
+    class EXIV2API CurlIo : public RemoteIo {
+    public:
+        //! @name Creators
+        //@{
+        CurlIo(const std::string&  url,  size_t blockSize = 0);
+#ifdef EXV_UNICODE_PATH
+        CurlIo(const std::wstring& wurl, size_t blockSize = 0);
+#endif
+        long write(const byte* data, long wcount);
+        long write(BasicIo& src);
+    protected:
+        // NOT IMPLEMENTED
+        //! Copy constructor
+        CurlIo(CurlIo& rhs);
+        //! Assignment operator
+        CurlIo& operator=(const CurlIo& rhs);
+        // Pimpl idiom
+        class CurlImpl;
+
+        //! @name Creators
+        //@{
+        //! Default Destructor
+        virtual ~CurlIo(){}
+        //@}
+    };
+#endif
+
+#if EXV_USE_SSH == 1
+    class EXIV2API SshIo : public RemoteIo {
+    public:
+        //! @name Creators
+        //@{
+        SshIo(const std::string&  url,  size_t blockSize = 1024);
+#ifdef EXV_UNICODE_PATH
+        SshIo(const std::wstring& wurl, size_t blockSize = 1024);
+#endif
+    protected:
+        // NOT IMPLEMENTED
+        //! Copy constructor
+        SshIo(SshIo& rhs);
+        //! Assignment operator
+        SshIo& operator=(const SshIo& rhs);
+        // Pimpl idiom
+        class SshImpl;
+
+        //! @name Creators
+        //@{
+        //! Default Destructor
+        virtual ~SshIo(){}
+        //@}
+    };
+#endif
 
 // *****************************************************************************
 // template, inline and free functions
@@ -736,8 +1091,27 @@ namespace Exiv2 {
       @note This function is only available on Windows.
      */
     EXIV2API long writeFile(const DataBuf& buf, const std::wstring& wpath);
-
 #endif
-
+	/*!
+      @brief replace each substring of the subject that matches the given search string with the given replacement.
+      @return the subject after replacing.
+     */
+    EXIV2API std::string ReplaceStringInPlace(std::string subject, const std::string& search,
+                          const std::string& replace);
+#ifdef EXV_UNICODE_PATH
+	/*!
+      @brief Like ReplaceStringInPlace() but accepts a unicode path in an std::wstring.
+      @return the subject after replacing.
+      @note This function is only available on Windows.
+     */
+    EXIV2API std::wstring ReplaceStringInPlace(std::wstring subject, const std::wstring& search,
+                          const std::wstring& replace);
+#endif
+#if EXV_USE_CURL == 1
+    /*!
+      @brief The callback function is called by libcurl to write the data
+    */
+    EXIV2API size_t curlWriter(char* data, size_t size, size_t nmemb, std::string* writerData);
+#endif
 }                                       // namespace Exiv2
 #endif                                  // #ifndef BASICIO_HPP_
