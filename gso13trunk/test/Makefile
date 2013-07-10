@@ -80,10 +80,10 @@ TESTX = addmoddel.sh      \
         xmpparser-test.sh \
         conversions.sh
 TESTV = video-test.sh
-TESTE = eps-test.sh    
+TESTE = eps-test.sh       \
+        preview-test.sh
 TESTS = exiv2-test.sh     \
         modify-test.sh    \
-        preview-test.sh   \
         httpiotest.sh     \
         remoteiotest.sh   \
         sshiotest.sh
