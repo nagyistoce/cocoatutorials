@@ -62,6 +62,7 @@ SHELL = /bin/sh
 #       If we remove it now, it'll break the test instructions on the web:
 #       http://www.exiv2.org/download.html
 SVN = svn://dev.exiv2.org/svn/testdata/trunk
+SVN_TEST = svn://dev.exiv2.org/svn/trunk/test/data
 
 ##
 # Add test drivers to this list
@@ -113,6 +114,11 @@ testv:
 ##
 # TODO: download eps data on demand for 0.24 (similar to testv)
 teste:
+	@for t in /eps ; do \
+		if [ ! -e data/$$t ]; then \
+	echo svn export '$(SVN_TEST)'$$t data$$t ; \
+	     svn export '$(SVN_TEST)'$$t data$$t ; \
+	fi ; done
 	@list='$(TESTE)'; for p in $$list; do \
 	    echo Running $$p ...; \
 	    ./$$p; \
