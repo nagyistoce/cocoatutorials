@@ -592,6 +592,8 @@ void RiffVideo::writeMetadata()
 
     doWriteMetadata();
 
+    io_->close();
+
 } // RiffVideo::writeMetadata
 
 void RiffVideo::doWriteMetadata()
@@ -637,6 +639,7 @@ void RiffVideo::doWriteMetadata()
         aviHeaderTagsHandler(dummyLong);
     }
 
+    return;
     //find and move to strh position
     std::vector<long> strhChunkPositions = findChunkPositions("STRH");
     for(int i=0; i< strhChunkPositions.size(); i++)
@@ -809,9 +812,9 @@ void RiffVideo::tagDecoder()
             {
                 io_->seek(size,BasicIo::cur);
             }
-            else if(!m_decodeMetaData && equalsRiffTag(chkId,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
+            else if(!m_decodeMetaData && equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
             {
-                io_->seek(listsize,BasicIo::cur);
+                io_->seek((listsize - 8),BasicIo::cur);
             }
             else if(equalsRiffTag(chkId, "JUNK"))
             {
@@ -1478,7 +1481,7 @@ void RiffVideo::aviHeaderTagsHandler(long size)
         if(xmpData_["Xmp.video.MaxDataRate"].count() > 0 )
         {
             byte rawMaxDatarate[4];
-            long maxDataRate = xmpData_["Xmp.video.MaxDataRate"].toLong();
+            long maxDataRate = xmpData_["Xmp.video.MaxDataRate"].toLong()*1024;
             memcpy(rawMaxDatarate,&maxDataRate,4);
             io_->write(rawMaxDatarate,4);
             io_->seek(8,BasicIo::cur);
