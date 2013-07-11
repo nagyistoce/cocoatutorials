@@ -639,7 +639,6 @@ void RiffVideo::doWriteMetadata()
         aviHeaderTagsHandler(dummyLong);
     }
 
-    return;
     //find and move to strh position
     std::vector<long> strhChunkPositions = findChunkPositions("STRH");
     for(int i=0; i< strhChunkPositions.size(); i++)
