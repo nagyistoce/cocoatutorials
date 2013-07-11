@@ -656,7 +656,7 @@ void RiffVideo::doWriteMetadata()
         streamFormatHandler(dummyLong);
     }
 
-    std::vector<long> strnChunkPositions = findChunkPositions("STRF");
+    std::vector<long> strnChunkPositions = findChunkPositions("STRN");
     for(int i=0;i<strnChunkPositions.size(); i++)
     {
         io_->seek(strnChunkPositions[i]+4,BasicIo::beg);
@@ -852,6 +852,7 @@ void RiffVideo::tagDecoder()
             //recursive call to decode LIST by breaking out of the loop
             else if(equalsRiffTag(chkId, "LIST"))
             {
+                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
                 position = RiffVideo::TraversingChunk;
                 io_->seek(-8,BasicIo::cur);
             }
@@ -904,7 +905,7 @@ void RiffVideo::tagDecoder()
                 io_->seek(1,BasicIo::cur);
             }
         }
-        m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
+
     }
 
     //AVIX can have JUNK chunk directly inside RIFF chunk
@@ -1543,7 +1544,7 @@ void RiffVideo::streamHandler(long size)
     {
         const long bufMinSize = 4;
         DataBuf buf(bufMinSize+1);
-        buf.pData_[4]='\0';
+        buf.pData_[4] =  '\0';
         long divisor = 1;
         uint64_t cur_pos = io_->tell();
 
@@ -1700,7 +1701,7 @@ void RiffVideo::streamHandler(long size)
             }
             else
             {
-                io_->seek(20,BasicIo::cur);
+                io_->seek(16,BasicIo::cur);
             }
 
             io_->read(chkId.pData_,bufMinSize);
@@ -2063,11 +2064,15 @@ void RiffVideo::streamFormatHandler(long size)
             {
                 io_->seek(2,BasicIo::cur);
             }
+
             if(xmpData_["Xmp.audio.SampleRate"].count() > 0)
             {
                 byte rawSampleRate[2];
                 const std::string sampleRate = xmpData_["Xmp.audio.SampleRate"].toString();
-                memcpy(rawSampleRate,&sampleRate,2);
+                for(int i=0; i<2 ;i++)
+                {
+                    rawSampleRate[i] = sampleRate[i];
+                }
                 io_->write(rawSampleRate,2);
                 io_->seek(2,BasicIo::cur);
             }
