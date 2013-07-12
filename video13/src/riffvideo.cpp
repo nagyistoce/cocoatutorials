@@ -654,7 +654,6 @@ void RiffVideo::doWriteMetadata()
         streamHandler(dummyLong);
     }
 
-    streamType_ = Video;
     std::vector<long> strfChunkPositions = findChunkPositions("STRF");
     for(int i=0; i<strfChunkPositions.size(); i++)
     {
@@ -781,7 +780,7 @@ void RiffVideo::tagDecoder()
         HeaderChunk *tmpHeaderChunk = new HeaderChunk();
         memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
 
-        unsigned long listend = io_->tell() + listsize ;
+        unsigned long listend = io_->tell() + listsize - 4 ;
 
         IoPosition position = PremitiveChunk;
         while( position == PremitiveChunk && io_->tell() < listend)
@@ -807,6 +806,7 @@ void RiffVideo::tagDecoder()
                 tmpPremitiveChunk->m_chunkSize = size;
                 tmpHeaderChunk->m_primitiveChunks.push_back(tmpPremitiveChunk);
             }
+
             if(equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
             {
                 tmpHeaderChunk->m_headerLocation = (unsigned long) io_->tell() - 16;
@@ -817,10 +817,12 @@ void RiffVideo::tagDecoder()
             {
                 io_->seek(size,BasicIo::cur);
             }
+
             else if(!m_decodeMetaData && equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
             {
-                io_->seek((listsize - 8),BasicIo::cur);
+                io_->seek((listsize - 12),BasicIo::cur);
             }
+
             else if(equalsRiffTag(chkId, "JUNK"))
             {
                 junkHandler(size);
@@ -858,7 +860,6 @@ void RiffVideo::tagDecoder()
             //recursive call to decode LIST by breaking out of the loop
             else if(equalsRiffTag(chkId, "LIST"))
             {
-                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
                 position = RiffVideo::TraversingChunk;
                 io_->seek(-8,BasicIo::cur);
             }
@@ -896,22 +897,19 @@ void RiffVideo::tagDecoder()
             //skip chunk with unknown headerId
             else
             {
-                DataBuf chkId((const long)5);
-                DataBuf chkSize((const long)5);
-                chkId.pData_[4] = '\0';
-                chkSize.pData_[4] = '\0';
-
-                io_->read(chkId.pData_, 4);
-                io_->read(chkSize.pData_, 4);
-                unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
                 io_->seek(io_->tell()+size, BasicIo::cur);
             }
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)) && (size % 2 != 0))
             {
                 io_->seek(1,BasicIo::cur);
             }
-        }
 
+            if(equalsRiffTag(chkId,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)) && (listsize % 2 != 0))
+            {
+                io_->seek(1,BasicIo::cur);
+            }
+            m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
+        }
     }
 
     //AVIX can have JUNK chunk directly inside RIFF chunk
