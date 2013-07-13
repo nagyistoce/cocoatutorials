@@ -522,7 +522,7 @@ namespace Exiv2 {
     };
     enum aviHeaderTags
     {
-        frameRate, maxDataRate, frameCount = 4, streamCount = 6, imageWidth_h = 8, imageHeight_h
+        frameRate, maxDataRate, frameCount = 4,  initialFrames ,streamCount, suggestedBufferSize ,imageWidth_h, imageHeight_h
     };
     }
 }                                      // namespace Internal, Exiv2
@@ -1459,8 +1459,14 @@ void RiffVideo::aviHeaderTagsHandler(long size)
                 xmpData_["Xmp.video.FrameCount"] = Exiv2::getULong(buf.pData_, littleEndian);
                 frame_count = Exiv2::getULong(buf.pData_, littleEndian);
                 break;
+            case initialFrames:
+                xmpData_["Xmp.video.InitialFrames"] = Exiv2::getULong(buf.pData_, littleEndian);
+                break;
             case streamCount:
                 xmpData_["Xmp.video.StreamCount"] = Exiv2::getULong(buf.pData_, littleEndian);
+                break;
+            case suggestedBufferSize:
+                xmpData_["Xmp.video.SuggestedBufferSize"] = Exiv2::getULong(buf.pData_, littleEndian);
                 break;
             case imageWidth_h:
                 width = Exiv2::getULong(buf.pData_, littleEndian);
@@ -1511,11 +1517,21 @@ void RiffVideo::aviHeaderTagsHandler(long size)
             long frameCount = xmpData_["Xmp.video.FrameCount"].toLong();
             memcpy(rawFrameCount,&frameCount,4);
             io_->write(rawFrameCount,4);
-            io_->seek(4,BasicIo::cur);
         }
         else
         {
-            io_->seek(8,BasicIo::cur);
+            io_->seek(4,BasicIo::cur);
+        }
+
+        if(xmpData_["Xmp.video.InitialFrames"].count() > 0)
+        {
+            byte rawInitialFrames[4];
+            long initFrames = xmpData_["Xmp.video.InitialFrames"].toLong();
+            memcpy(rawInitialFrames,&initFrames,4);
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
         }
 
         if(xmpData_["Xmp.video.StreamCount"].count() > 0)
@@ -1524,12 +1540,24 @@ void RiffVideo::aviHeaderTagsHandler(long size)
             long streamCount = xmpData_["Xmp.video.StreamCount"].toLong();
             memcpy(rawStreamCount,&streamCount,4);
             io_->write(rawStreamCount,4);
-            io_->seek(4,BasicIo::cur);
         }
         else
         {
-            io_->seek(8,BasicIo::cur);
+            io_->seek(4,BasicIo::cur);
         }
+
+        if(xmpData_["Xmp.video.SuggestedBufferSize"].count() >0)
+        {
+            byte rawSuggestedBufferSize[4];
+            long sugBufferSize = xmpData_["Xmp.video.SuggestedBufferSize"].toLong();
+            memcpy(rawSuggestedBufferSize,&sugBufferSize,4);
+            io_->write(rawSuggestedBufferSize,4);
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+
         if(xmpData_["Xmp.video.Width"].count() > 0)
         {
             byte rawImageWidth[4];
