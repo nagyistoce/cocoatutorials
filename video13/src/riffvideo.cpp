@@ -847,8 +847,6 @@ void RiffVideo::tagDecoder()
                 if(equalsRiffTag(chkId,"FMT "))
                     streamType_ = Audio;
                 streamFormatHandler(size);
-                cout << "done" << endl;
-                cout << io_->tell() << endl;
             }
             else if(equalsRiffTag(chkId, "STRN"))
             {
