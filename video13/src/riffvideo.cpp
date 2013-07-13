@@ -1121,7 +1121,6 @@ void RiffVideo::nikonTagsHandler()
         const long bufMinSize = 100;
         DataBuf buf(bufMinSize), buf2(4+1);
         buf.pData_[4] = '\0';
-        io_->seek(-12, BasicIo::cur);
         io_->read(buf.pData_, 4);
 
         long internal_size = 0, tagID = 0, dataSize = 0, tempSize, size = Exiv2::getULong(buf.pData_, littleEndian);
@@ -1587,6 +1586,7 @@ void RiffVideo::aviHeaderTagsHandler(long size)
             byte rawInitialFrames[4];
             long initFrames = xmpData_["Xmp.video.InitialFrames"].toLong();
             memcpy(rawInitialFrames,&initFrames,4);
+            io_->write(rawInitialFrames,4);
         }
         else
         {
