@@ -571,11 +571,11 @@ std::vector<long> RiffVideo::findHeaderPositions(const char* headerId)
     std::vector<long> positions;
     for (int i=0;i<m_riffFileSkeleton.m_headerChunks.size();i++)
     {
-        io_->seek(m_riffFileSkeleton.m_headerChunks[i]->m_headerLocation,BasicIo::beg);
+        io_->seek((m_riffFileSkeleton.m_headerChunks[i]->m_headerLocation + 4),BasicIo::beg);
         io_->read(hdrId.pData_,4);
         if(equalsRiffTag(hdrId,headerId))
         {
-            positions.push_back((long)io_->tell());
+            positions.push_back((long)io_->tell() - 8);
         }
 
     }
@@ -626,7 +626,6 @@ void RiffVideo::doWriteMetadata()
     m_decodeMetaData = false;
     m_modifyMetadata = true;
     tagDecoder();
-
     //write metadata in order
 
     //find and move to avih position
@@ -787,7 +786,7 @@ void RiffVideo::tagDecoder()
         unsigned long listend = io_->tell() + listsize - 4 ;
 
         IoPosition position = PremitiveChunk;
-        while( position == PremitiveChunk)
+        while( (position == PremitiveChunk) && (io_->tell() < listend))
         {
             DataBuf chkId((const long)5);
             DataBuf chkSize((const long)5);
@@ -856,10 +855,6 @@ void RiffVideo::tagDecoder()
             {
                 streamDataTagHandler(size);
             }
-            else if(equalsRiffTag(chkId, "IDIT"))
-            {
-                dateTimeOriginal(size);
-            }
             //add more else if to support more primitive chunks below if any
             //TODO:add indx support
 
@@ -873,17 +868,17 @@ void RiffVideo::tagDecoder()
             //header chunks note:compare chkHeader
             else if(equalsRiffTag(chkHeader, "INFO"))
             {
-                io_->seek(-4,BasicIo::cur);
+                io_->seek(-16,BasicIo::cur);
                 infoTagsHandler();
             }
             else if(equalsRiffTag(chkHeader, "NCDT"))
             {
-                io_->seek(-4,BasicIo::cur);
+                io_->seek(-16,BasicIo::cur);
                 nikonTagsHandler();
             }
             else if(equalsRiffTag(chkHeader, "ODML"))
             {
-                io_->seek(-4,BasicIo::cur);
+                io_->seek(-16,BasicIo::cur);
                 odmlTagsHandler();
             }
             //only way to exit from readMetadata()
@@ -926,7 +921,35 @@ void RiffVideo::tagDecoder()
         junkSize.pData_[4] = '\0';
         io_->read(junkSize.pData_, 4);
         unsigned long size = Exiv2::getULong(junkSize.pData_, littleEndian);
-        junkHandler(size);
+        if(!m_decodeMetaData)
+        {
+            ListChunk *tmpList = new ListChunk();
+            tmpList->m_listLocation = io_->tell() - 8;
+            tmpList->m_listSize = size;
+            m_riffFileSkeleton.m_lists.push_back(tmpList);
+        }
+        else
+        {
+            junkHandler(size);
+        }
+    }
+    else if(equalsRiffTag(chkMainId, "IDIT"))
+    {
+        DataBuf dataSize((const long)5);
+        dataSize.pData_[4] = '\0';
+        io_->read(dataSize.pData_, 4);
+        unsigned long size = Exiv2::getULong(dataSize.pData_, littleEndian);
+        if(!m_decodeMetaData)
+        {
+            ListChunk *tmpList = new ListChunk();
+            tmpList->m_listLocation = io_->tell() - 8;
+            tmpList->m_listSize = size;
+            m_riffFileSkeleton.m_lists.push_back(tmpList);
+        }
+        else
+        {
+            dateTimeOriginal(size);
+        }
     }
 
     tagDecoder();
@@ -1031,13 +1054,13 @@ void RiffVideo::dateTimeOriginal(long size, int i)
 
 void RiffVideo::odmlTagsHandler()
 {
+    const long bufMinSize = 4;
+    DataBuf buf(bufMinSize + 1);
+    buf.pData_[4] = '\0';
+    io_->read(buf.pData_,4);
+
     if(!m_modifyMetadata)
     {
-        const long bufMinSize = 100;
-        DataBuf buf(bufMinSize);
-        buf.pData_[4] = '\0';
-        io_->seek(-12, BasicIo::cur);
-        io_->read(buf.pData_, 4);
         unsigned long size = Exiv2::getULong(buf.pData_, littleEndian);
         unsigned long size2 = size;
 
@@ -1060,10 +1083,6 @@ void RiffVideo::odmlTagsHandler()
     {
         if(xmpData_["Xmp.video.TotalFrameCount"].count() > 0)
         {
-            const long bufMinSize = 4;
-            DataBuf buf((const long) (bufMinSize +1));
-            buf.pData_[4] = '\0';
-            io_->read(buf.pData_,4);
             unsigned long tmpSize = Exiv2::getULong(buf.pData_, littleEndian);
             while(tmpSize > 0)
             {
@@ -1313,37 +1332,77 @@ void RiffVideo::nikonTagsHandler()
 
 void RiffVideo::infoTagsHandler()
 {
-    const long bufMinSize = 100;
-    DataBuf buf(bufMinSize);
+    const long bufMinSize = 4;
+    DataBuf buf(bufMinSize + 1);
     buf.pData_[4] = '\0';
-    io_->seek(-12, BasicIo::cur);
     io_->read(buf.pData_, 4);
+
     long infoSize, size = Exiv2::getULong(buf.pData_, littleEndian);
     long size_external = size;
     const TagVocabulary* tv;
 
-    uint64_t cur_pos = io_->tell();
-    io_->read(buf.pData_, 4); size -= 4;
+    if(!m_modifyMetadata)
+    {
+        uint64_t cur_pos = io_->tell();
+        io_->read(buf.pData_, 4); size -= 4;
 
-    while(size > 3)
+        while(size > 3)
+        {
+            io_->read(buf.pData_, 4); size -= 4;
+            if(!Exiv2::getULong(buf.pData_, littleEndian))
+                break;
+            tv = find(infoTags , Exiv2::toString( buf.pData_));
+            io_->read(buf.pData_, 4); size -= 4;
+            infoSize = Exiv2::getULong(buf.pData_, littleEndian);
+
+            if(infoSize >= 0)
+            {
+                DataBuf tmpBuf(infoSize +1);
+                tmpBuf.pData_[infoSize] = '\0';
+                size -= infoSize;
+                io_->read(tmpBuf.pData_, infoSize);
+                if(tv)
+                {
+                    xmpData_[exvGettext(tv->label_)] = tmpBuf.pData_;
+                }
+            }
+        }
+        io_->seek(cur_pos + size_external, BasicIo::beg);
+    }
+    else
     {
         io_->read(buf.pData_, 4); size -= 4;
-        if(!Exiv2::getULong(buf.pData_, littleEndian))
-            break;
-        tv = find(infoTags , Exiv2::toString( buf.pData_));
-        io_->read(buf.pData_, 4); size -= 4;
-        infoSize = Exiv2::getULong(buf.pData_, littleEndian);
-
-        if(infoSize >= 0)
+        while(size > 3)
         {
-            size -= infoSize;
-            io_->read(buf.pData_, infoSize);
-        }
+            io_->read(buf.pData_, 4); size -= 4;
+            if(!Exiv2::getULong(buf.pData_, littleEndian))
+                break;
+            tv = find(infoTags , Exiv2::toString( buf.pData_));
+            io_->read(buf.pData_, 4); size -= 4;
+            infoSize = Exiv2::getULong(buf.pData_, littleEndian);
 
-        if(tv)
-            xmpData_[exvGettext(tv->label_)] = buf.pData_;
+            if(infoSize >= 0)
+            {
+                DataBuf tmpBuf(infoSize +1);
+                tmpBuf.pData_[infoSize] = '\0';
+                size -= infoSize;
+
+                if(tv)
+                {
+                    if(xmpData_[exvGettext(tv->label_)].count() >0)
+                    {
+                        byte rawInfoData[infoSize];
+                        const std::string infoData = xmpData_[exvGettext(tv->label_)].toString();
+                        for(int i=0; i<infoSize ;i++)
+                        {
+                            rawInfoData[i] = infoData[i];
+                        }
+                        io_->write(rawInfoData,infoSize);
+                    }
+                }
+            }
+        }
     }
-    io_->seek(cur_pos + size_external, BasicIo::beg);
 } // RiffVideo::infoTagsHandler
 
 void RiffVideo::junkHandler(long size)
