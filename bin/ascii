@@ -39,7 +39,7 @@ my $n     = 200    ;
 my $end   = $first + $n ;
 for ( my $i = $first ; $ i < $end ; $i++ )
 {
-  	printf("%8x:",$i) ;
+  	printf("%8x:%s:",$i,$i) ;
   	print(chr($i)) ;
   	print("\n") ;
 }
