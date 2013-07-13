@@ -787,7 +787,7 @@ void RiffVideo::tagDecoder()
         unsigned long listend = io_->tell() + listsize - 4 ;
 
         IoPosition position = PremitiveChunk;
-        while( position == PremitiveChunk && io_->tell() < listend)
+        while( position == PremitiveChunk)
         {
             DataBuf chkId((const long)5);
             DataBuf chkSize((const long)5);
@@ -847,6 +847,8 @@ void RiffVideo::tagDecoder()
                 if(equalsRiffTag(chkId,"FMT "))
                     streamType_ = Audio;
                 streamFormatHandler(size);
+                cout << "done" << endl;
+                cout << io_->tell() << endl;
             }
             else if(equalsRiffTag(chkId, "STRN"))
             {
@@ -905,6 +907,7 @@ void RiffVideo::tagDecoder()
             {
                 io_->seek(io_->tell()+size, BasicIo::cur);
             }
+
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)) && (size % 2 != 0))
             {
                 io_->seek(1,BasicIo::cur);
@@ -933,53 +936,56 @@ void RiffVideo::tagDecoder()
 
 void RiffVideo::streamDataTagHandler(long size)
 {
-    const long bufMinSize = 20000;
-    DataBuf buf(bufMinSize);
-    buf.pData_[4] = '\0';
-    uint64_t cur_pos = io_->tell();
-
-    io_->read(buf.pData_, 8);
-
-    if(equalsRiffTag(buf, "AVIF"))
+    if(!m_modifyMetadata)
     {
+        const long bufMinSize = 20000;
+        DataBuf buf(bufMinSize);
+        buf.pData_[4] = '\0';
+        uint64_t cur_pos = io_->tell();
 
-        if (size - 4 < 0)
+        io_->read(buf.pData_, 8);
+
+        if(equalsRiffTag(buf, "AVIF"))
         {
-#ifndef SUPPRESS_WARNINGS
-            EXV_ERROR   << " Exif Tags found in this RIFF file are not of valid size ."
-                        << " Entries considered invalid. Not Processed.\n";
-#endif
-        }
-        else
-        {
-            io_->read(buf.pData_, size - 4);
 
-            IptcData iptcData;
-            XmpData  xmpData;
-            DummyTiffHeader tiffHeader(littleEndian);
-            TiffParserWorker::decode(exifData_,
-                                     iptcData,
-                                     xmpData,
-                                     buf.pData_,
-                                     buf.size_,
-                                     Tag::root,
-                                     TiffMapping::findDecoder,
-                                     &tiffHeader);
+            if (size - 4 < 0)
+            {
+#ifndef SUPPRESS_WARNINGS
+                EXV_ERROR   << " Exif Tags found in this RIFF file are not of valid size ."
+                            << " Entries considered invalid. Not Processed.\n";
+#endif
+            }
+            else
+            {
+                io_->read(buf.pData_, size - 4);
+
+                IptcData iptcData;
+                XmpData  xmpData;
+                DummyTiffHeader tiffHeader(littleEndian);
+                TiffParserWorker::decode(exifData_,
+                                         iptcData,
+                                         xmpData,
+                                         buf.pData_,
+                                         buf.size_,
+                                         Tag::root,
+                                         TiffMapping::findDecoder,
+                                         &tiffHeader);
 
 #ifndef SUPPRESS_WARNINGS
-            if (!iptcData.empty())
-            {
-                EXV_WARNING << "Ignoring IPTC information encoded in the Exif data.\n";
-            }
-            if (!xmpData.empty())
-            {
-                EXV_WARNING << "Ignoring XMP information encoded in the Exif data.\n";
-            }
+                if (!iptcData.empty())
+                {
+                    EXV_WARNING << "Ignoring IPTC information encoded in the Exif data.\n";
+                }
+                if (!xmpData.empty())
+                {
+                    EXV_WARNING << "Ignoring XMP information encoded in the Exif data.\n";
+                }
 #endif
+            }
         }
+        // TODO decode CasioData and ZORA Tag
+        io_->seek(cur_pos + size, BasicIo::beg);
     }
-    // TODO decode CasioData and ZORA Tag
-    io_->seek(cur_pos + size, BasicIo::beg);
 
 } // RiffVideo::streamDataTagHandler
 
