@@ -796,9 +796,7 @@ void RiffVideo::tagDecoder()
             io_->read(chkId.pData_, 4);
             io_->read(chkSize.pData_, 4);
 
-            cout << chkId.pData_ << endl;
             unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
-            cout << size << endl;
 
             const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD"};
             const char allHeaderFlags[][5]={"INFO","NCDT","ODML"};
