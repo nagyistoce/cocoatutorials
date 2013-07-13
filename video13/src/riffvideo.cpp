@@ -686,10 +686,8 @@ void RiffVideo::doWriteMetadata()
     }
 
     std::vector<long> ncdtHeaderPositions = findHeaderPositions("NCDT");
-    cout << ncdtHeaderPositions.size() << endl;
     for(int i=0;i<ncdtHeaderPositions.size(); i++)
     {
-        cout << ncdtHeaderPositions[i] << endl;
         io_->seek(ncdtHeaderPositions[i],BasicIo::beg);
         nikonTagsHandler();
     }
@@ -788,7 +786,7 @@ void RiffVideo::tagDecoder()
         unsigned long listend = io_->tell() + listsize - 4 ;
 
         IoPosition position = PremitiveChunk;
-        while( position == PremitiveChunk )
+        while( (position == PremitiveChunk) && (io_->tell() < listend) )
         {
             DataBuf chkId((const long)5);
             DataBuf chkSize((const long)5);
@@ -798,7 +796,9 @@ void RiffVideo::tagDecoder()
             io_->read(chkId.pData_, 4);
             io_->read(chkSize.pData_, 4);
 
+            cout << chkId.pData_ << endl;
             unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
+            cout << size << endl;
 
             const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD"};
             const char allHeaderFlags[][5]={"INFO","NCDT","ODML"};
