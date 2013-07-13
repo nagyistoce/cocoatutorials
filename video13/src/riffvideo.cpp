@@ -686,8 +686,10 @@ void RiffVideo::doWriteMetadata()
     }
 
     std::vector<long> ncdtHeaderPositions = findHeaderPositions("NCDT");
+    cout << ncdtHeaderPositions.size() << endl;
     for(int i=0;i<ncdtHeaderPositions.size(); i++)
     {
+        cout << ncdtHeaderPositions[i] << endl;
         io_->seek(ncdtHeaderPositions[i],BasicIo::beg);
         nikonTagsHandler();
     }
@@ -786,7 +788,7 @@ void RiffVideo::tagDecoder()
         unsigned long listend = io_->tell() + listsize - 4 ;
 
         IoPosition position = PremitiveChunk;
-        while( (position == PremitiveChunk) && (io_->tell() < listend))
+        while( position == PremitiveChunk )
         {
             DataBuf chkId((const long)5);
             DataBuf chkSize((const long)5);
@@ -798,7 +800,7 @@ void RiffVideo::tagDecoder()
 
             unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
 
-            const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD","IDIT"};
+            const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD"};
             const char allHeaderFlags[][5]={"INFO","NCDT","ODML"};
 
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
@@ -814,6 +816,7 @@ void RiffVideo::tagDecoder()
             {
                 tmpHeaderChunk->m_headerLocation = (unsigned long) io_->tell() - 16;
                 tmpHeaderChunk->m_headerSize = listsize ;
+                position = RiffVideo::TraversingChunk;
             }
             //to handle AVI file formats
             if(!m_decodeMetaData && equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
@@ -1116,20 +1119,20 @@ void RiffVideo::skipListData()
 
 void RiffVideo::nikonTagsHandler()
 {
+    const long bufMinSize = 100;
+    DataBuf buf(bufMinSize), buf2(4+1);
+    buf.pData_[4] = '\0';
+    io_->read(buf.pData_, 4);
+
+    long internal_size = 0, tagID = 0, dataSize = 0, tempSize, size = Exiv2::getULong(buf.pData_, littleEndian);
+    tempSize = size; char str[9] = " . . . ";
+    uint64_t internal_pos, cur_pos; internal_pos = cur_pos = io_->tell();
+    const TagDetails* td;
+    double denominator = 1;
+    io_->read(buf.pData_, 4); tempSize -= 4;
+
     if(!m_modifyMetadata)
     {
-        const long bufMinSize = 100;
-        DataBuf buf(bufMinSize), buf2(4+1);
-        buf.pData_[4] = '\0';
-        io_->read(buf.pData_, 4);
-
-        long internal_size = 0, tagID = 0, dataSize = 0, tempSize, size = Exiv2::getULong(buf.pData_, littleEndian);
-        tempSize = size; char str[9] = " . . . ";
-        uint64_t internal_pos, cur_pos; internal_pos = cur_pos = io_->tell();
-        const TagDetails* td;
-        double denominator = 1;
-        io_->read(buf.pData_, 4); tempSize -= 4;
-
         while((long)tempSize > 0)
         {
             std::memset(buf.pData_, 0x0, buf.size_);
@@ -1249,68 +1252,54 @@ void RiffVideo::nikonTagsHandler()
     }
     else
     {
-        unsigned long bufMinSize = 4;
-        DataBuf buf(bufMinSize+1);
-        DataBuf buf2(bufMinSize+1);
-        buf.pData_[4] = '\0';
-        buf2.pData_[4] = '\0';
-        io_->read(buf.pData_,bufMinSize);
-        long tagId = 0,dataSize = 0;
-        unsigned long tmpSize = Exiv2::getULong(buf.pData_, littleEndian),internal_size;
-        io_->seek(4,BasicIo::cur); tmpSize -= 4;
-        while((long)tmpSize > 0)
+        while((long)tempSize > 0)
         {
             io_->read(buf.pData_,4);
             io_->read(buf2.pData_,4);
-            long tmp = internal_size = Exiv2::getULong(buf.pData_, littleEndian);
-            tmpSize -= (io_->tell() + 8);
+            int temp = internal_size = Exiv2::getULong(buf2.pData_, littleEndian);
+            tempSize -= (io_->tell() + 8);
             if(equalsRiffTag(buf, "NCVR"))
             {
-                if(xmpData_["Xmp.video.MakerNoteType"].count() >0)
+                while((long)temp > 3)
                 {
-                    while((long)tmpSize > 3)
+                    io_->read(buf.pData_, 2);
+                    tagID = Exiv2::getULong(buf.pData_, littleEndian);
+                    io_->read(buf.pData_, 2);
+                    dataSize = Exiv2::getULong(buf.pData_, littleEndian);
+                    temp -= (4 + dataSize);
+
+                    if((tagID == 0x0001) && (xmpData_["Xmp.video.MakerNoteType"].count() >0))
                     {
-                        std::memset(buf.pData_, 0x0, buf.size_);
-                        io_->read(buf.pData_, 2);
-                        tagId = Exiv2::getULong(buf.pData_, littleEndian);
-                        io_->read(buf.pData_, 2);
-                        dataSize = Exiv2::getULong(buf.pData_, littleEndian);
-                        tmpSize -= (4 + dataSize);
-
-                        if(tagId == 0x0001)
+                        if (dataSize <= 0)//do nothing
                         {
-                            if (dataSize <= 0)//do nothing
-                            {
 
-                            }
-                            else//write the makernotetype tag
+                        }
+                        else//write the makernotetype tag
+                        {
+                            byte rawMakerNoteType[dataSize];
+                            std::string makerNoteType = xmpData_["Xmp.video.MakerNoteType"].toString();
+                            if(xmpData_["Xmp.video.MakerNoteType"].size() < dataSize)
                             {
-                                byte rawMakerNoteType[dataSize];
-                                std::string makerNoteType = xmpData_["Xmp.video.MakerNoteType"].toString();
-                                if(xmpData_["Xmp.video.MakerNoteType"].size() < dataSize)
+                                for(int i=0; i<dataSize; i++)
                                 {
-                                    for(int i=0; i<xmpData_["Xmp.video.MakerNoteType"].size(); i++)
-                                    {
-                                        rawMakerNoteType[i] = makerNoteType[i];
-                                    }
-                                    io_->write(rawMakerNoteType,xmpData_["Xmp.video.MakerNoteType"].size());
+                                    rawMakerNoteType[i] = makerNoteType[i];
                                 }
+                                io_->write(rawMakerNoteType,dataSize);
                             }
                         }
-                        else if (tagId == 0x0002)
+                    }
+                    else if ((tagID == 0x0002) && xmpData_["Xmp.video.MakerNoteVersion"].count() >0)
+                    {
+                        long originalDataSize = dataSize;
+                        std::string makerNoteVersion = xmpData_["Xmp.video.MakerNoteVersion"].toString();
+                        byte rawMakerNoteVersion[originalDataSize];
+                        int tmpCounter = 0;
+                        while(dataSize)
                         {
-                            int originalDataSize = dataSize;
-                            byte rawMakerNoteVersion[originalDataSize];
-                            int tmpCounter = 0;
-                            while(dataSize)
-                            {
-                                std::string makerNoteVersion = xmpData_["Xmp.video.MakerNoteVersion"].toString();
-                                rawMakerNoteVersion[tmpCounter] = makerNoteVersion[(4 - dataSize) * 2];
-                                tmpCounter++;
-                                --dataSize;
-                            }
-                            io_->write(rawMakerNoteVersion,originalDataSize);
+                            rawMakerNoteVersion[tmpCounter] = (byte) makerNoteVersion[(4 - dataSize) * 2];
+                            --dataSize;tmpCounter++;
                         }
+                        io_->write(rawMakerNoteVersion,originalDataSize);
                     }
                 }
             }
