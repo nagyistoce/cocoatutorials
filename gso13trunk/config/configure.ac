@@ -103,7 +103,7 @@ AC_MSG_CHECKING([whether to enable symbol visibility support])
 visibility=yes
 # visibility support in cygwin/ming generates 1000's of warning, set off by default
 case "$host_os" in
-	*mingw* | *cygwin*) visibility=no  ;;
+    *mingw* | *cygwin*) visibility=no  ;;
 esac
 AC_ARG_ENABLE(visibility,
     [  --disable-visibility    do not use symbol visibility support ],
@@ -117,7 +117,7 @@ if test "$VISIBILITY_SUPPORT" = "yes"; then
     else
         # GNU g++
         AX_CXX_CHECK_FLAG(-fvisibility-inlines-hidden,[],[],[VISIBILITY_SUPPORT=yes],[VISIBILITY_SUPPORT=no])
-    	if test "$VISIBILITY_SUPPORT" = "yes"; then
+        if test "$VISIBILITY_SUPPORT" = "yes"; then
            CXXFLAGS="${CXXFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden"
         fi
     fi
@@ -373,8 +373,8 @@ yes) echo "-- Using Lib Curl................. YES" ;;
 esac
 
 case "$USE_SSH" in
-yes) echo "-- Using Lib SSH................. YES" ;;
-*)   echo "-- Using Lib SSH................. NO"
+yes) echo "-- Using Lib SSH.................. YES" ;;
+*)   echo "-- Using Lib SSH.................. NO"
      echo ""
      echo "Libssh is required for SshIo in basicIo.cpp. Make sure the libssh header"
      echo "files are installed and use --with-ssh=DIR if it is in a"
