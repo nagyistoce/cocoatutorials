@@ -644,21 +644,25 @@ void RiffVideo::doWriteMetadata()
     for(int i=0; i< strhChunkPositions.size(); i++)
     {
         io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
-        streamHandler(dummyLong);
-    }
-
-    std::vector<long> fmtChunkPositions = findChunkPositions("FMT ");
-    for(int i=0; i< fmtChunkPositions.size(); i++)
-    {
-        io_->seek(fmtChunkPositions[i]+4,BasicIo::beg);
+        setStreamType();
         streamHandler(dummyLong);
     }
 
     std::vector<long> strfChunkPositions = findChunkPositions("STRF");
     for(int i=0; i<strfChunkPositions.size(); i++)
     {
+        io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
+        setStreamType();
         io_->seek(strfChunkPositions[i]+4,BasicIo::beg);
         streamFormatHandler(dummyLong);
+    }
+
+    std::vector<long> fmtChunkPositions = findChunkPositions("FMT ");
+    for(int i=0; i< fmtChunkPositions.size(); i++)
+    {
+        streamType_ = Audio;
+        io_->seek(fmtChunkPositions[i]+4,BasicIo::beg);
+        streamHandler(dummyLong);
     }
 
     std::vector<long> strnChunkPositions = findChunkPositions("STRN");
@@ -834,6 +838,8 @@ void RiffVideo::tagDecoder()
             }
             else if(equalsRiffTag(chkId, "STRH"))
             {
+                //since strh and strf exist sequential stream type can be set once
+                setStreamType();
                 streamHandler(size);
             }
             else if(equalsRiffTag(chkId,"STRF") || equalsRiffTag(chkId, "FMT "))
@@ -1543,21 +1549,24 @@ void RiffVideo::aviHeaderTagsHandler(long size)
     }
 } // RiffVideo::aviHeaderTagsHandler
 
+void RiffVideo::setStreamType()
+{
+    DataBuf chkId((unsigned long)5);
+    io_->read(chkId.pData_,(unsigned long)4);
+    if(equalsRiffTag(chkId, "VIDS"))
+        streamType_ = Video;
+    else if (equalsRiffTag(chkId, "AUDS"))
+        streamType_ = Audio;
+}
 void RiffVideo::streamHandler(long size)
 {
     if (!m_modifyMetadata)
     {
-        const long bufMinSize = 4;
+        unsigned long bufMinSize = 4;
         DataBuf buf(bufMinSize+1);
         buf.pData_[4] =  '\0';
         long divisor = 1;
-        uint64_t cur_pos = io_->tell();
-
-        io_->read(buf.pData_, bufMinSize);
-        if(equalsRiffTag(buf, "VIDS"))
-            streamType_ = Video;
-        else if (equalsRiffTag(buf, "AUDS"))
-            streamType_ = Audio;
+        uint64_t cur_pos = io_->tell() - 4;
 
         for(int i=1; i<=25; i++)
         {
@@ -1615,15 +1624,9 @@ void RiffVideo::streamHandler(long size)
     {
         DataBuf chkId((unsigned long)5);
         chkId.pData_[4] = '\0';
-        long bufMinSize = 4;
+        const long bufMinSize = 4;
+
         long multiplier;
-
-        io_->read(chkId.pData_,bufMinSize);
-        if(equalsRiffTag(chkId, "VIDS"))
-            streamType_ = Video;
-        else if (equalsRiffTag(chkId, "AUDS"))
-            streamType_ = Audio;
-
         if(streamType_ == Video)
         {
             if(xmpData_["Xmp.video.Codec"].count() > 0)
@@ -1917,6 +1920,7 @@ void RiffVideo::streamFormatHandler(long size)
             DataBuf chkId((unsigned long) 5);
             chkId.pData_[4] = '\0';
             io_->read(chkId.pData_,4);
+
             if(xmpData_["Xmp.video.Width"].count() > 0)
             {
                 byte rawVideoWidth[4];
@@ -1944,11 +1948,8 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.video.Planes"].count() > 0)
             {
                 byte rawVideoPlanes[2];
-                const std::string planes = xmpData_["Xmp.video.Planes"].toString();
-                for(int i=0;i<2;i++)
-                {
-                    rawVideoPlanes[i] = (byte)planes[i];
-                }
+                const ushort videoPlanes= (ushort)xmpData_["Xmp.video.Planes"].toLong();
+                memcpy(rawVideoPlanes,&videoPlanes,2);
                 io_->write(rawVideoPlanes,2);
             }
             else
@@ -1959,11 +1960,8 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.video.PixelDepth"].count() > 0)
             {
                 byte rawVideoPixelDepth[2];
-                const std::string pixelDepth = xmpData_["Xmp.video.PixelDepth"].toString();
-                for(int i=0;i<2;i++)
-                {
-                    rawVideoPixelDepth[i] = (byte)pixelDepth[i];
-                }
+                const ushort pixelDepth = (ushort)xmpData_["Xmp.video.PixelDepth"].toLong();
+                memcpy(rawVideoPixelDepth,&pixelDepth,2);
                 io_->write(rawVideoPixelDepth,2);
             }
             else
@@ -2079,11 +2077,8 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.audio.SampleRate"].count() > 0)
             {
                 byte rawSampleRate[2];
-                const std::string sampleRate = xmpData_["Xmp.audio.SampleRate"].toString();
-                for(int i=0; i<2 ;i++)
-                {
-                    rawSampleRate[i] = sampleRate[i];
-                }
+                const ushort sampleRate = (ushort)xmpData_["Xmp.audio.SampleRate"].toLong();
+                memcpy(rawSampleRate,&sampleRate,2);
                 io_->write(rawSampleRate,2);
                 io_->seek(2,BasicIo::cur);
             }
@@ -2094,7 +2089,7 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.audio.SampleType"].count() > 0)
             {
                 byte rawSampleType[2];
-                const std::string sampleType= xmpData_["Xmp.audio.SampleType"].toString();
+                const ushort sampleType = (ushort)xmpData_["Xmp.audio.SampleType"].toLong();
                 memcpy(rawSampleType,&sampleType,2);
                 io_->write(rawSampleType,2);
                 io_->seek(4,BasicIo::cur);
@@ -2106,7 +2101,7 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.audio.BitsPerSample"].count() > 0)
             {
                 byte rawBitsPerSample[2];
-                const std::string bitsPerSample= xmpData_["Xmp.audio.BitsPerSample"].toString();
+                const ushort bitsPerSample= (ushort)xmpData_["Xmp.audio.BitsPerSample"].toLong();
                 memcpy(rawBitsPerSample,&bitsPerSample,2);
                 io_->write(rawBitsPerSample,2);
             }

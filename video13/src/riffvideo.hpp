@@ -173,6 +173,10 @@ protected:
           @param size Size of the data block used to store Tag Information.
          */
     void junkHandler(long size);
+
+    /*! find whether stream is audio or video
+        */
+    void setStreamType();
     /*!
           @brief Interpret Stream tag information, and save it
               in the respective XMP container.
