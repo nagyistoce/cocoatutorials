@@ -820,11 +820,13 @@ void RiffVideo::tagDecoder()
             if(!m_decodeMetaData && equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
             {
                 io_->seek(size,BasicIo::cur);
+                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
             }
 
             else if(!m_decodeMetaData && equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
             {
                 io_->seek((listsize - 12),BasicIo::cur);
+                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
             }
 
             else if(equalsRiffTag(chkId, "JUNK"))
@@ -911,7 +913,6 @@ void RiffVideo::tagDecoder()
             {
                 io_->seek(1,BasicIo::cur);
             }
-            m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
         }
     }
 
@@ -1129,43 +1130,60 @@ void RiffVideo::nikonTagsHandler()
     double denominator = 1;
     io_->read(buf.pData_, 4); tempSize -= 4;
 
-    if(!m_modifyMetadata)
+    while((long)tempSize > 0)
     {
-        while((long)tempSize > 0)
+        std::memset(buf.pData_, 0x0, buf.size_);
+        io_->read(buf.pData_, 4);
+        io_->read(buf2.pData_, 4);
+        int temp = internal_size = Exiv2::getULong(buf2.pData_, littleEndian);
+        internal_pos = io_->tell(); tempSize -= (internal_size + 8);
+
+        if(equalsRiffTag(buf, "NCVR"))
         {
-            std::memset(buf.pData_, 0x0, buf.size_);
-            io_->read(buf.pData_, 4);
-            io_->read(buf2.pData_, 4);
-            int temp = internal_size = Exiv2::getULong(buf2.pData_, littleEndian);
-            internal_pos = io_->tell(); tempSize -= (internal_size + 8);
-
-            if(equalsRiffTag(buf, "NCVR"))
+            while((long)temp > 3)
             {
-                while((long)temp > 3)
-                {
-                    std::memset(buf.pData_, 0x0, buf.size_);
-                    io_->read(buf.pData_, 2);
-                    tagID = Exiv2::getULong(buf.pData_, littleEndian);
-                    io_->read(buf.pData_, 2);
-                    dataSize = Exiv2::getULong(buf.pData_, littleEndian);
-                    temp -= (4 + dataSize);
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 2);
+                tagID = Exiv2::getULong(buf.pData_, littleEndian);
+                io_->read(buf.pData_, 2);
+                dataSize = Exiv2::getULong(buf.pData_, littleEndian);
+                temp -= (4 + dataSize);
 
-                    if(tagID == 0x0001)
+                if(tagID == 0x0001)
+                {
+                    if (dataSize <= 0)
                     {
-                        if (dataSize <= 0)
-                        {
 #ifndef SUPPRESS_WARNINGS
-                            EXV_ERROR   << " Makernotes found in this RIFF file are not of valid size ."
-                                        << " Entries considered invalid. Not Processed.\n";
+                        EXV_ERROR   << " Makernotes found in this RIFF file are not of valid size ."
+                                    << " Entries considered invalid. Not Processed.\n";
 #endif
-                        }
-                        else
-                        {
-                            io_->read(buf.pData_, dataSize);
-                            xmpData_["Xmp.video.MakerNoteType"] = buf.pData_;
-                        }
                     }
-                    else if (tagID == 0x0002)
+                    else if(!m_modifyMetadata)
+                    {
+                        io_->read(buf.pData_, dataSize);
+                        xmpData_["Xmp.video.MakerNoteType"] = buf.pData_;
+                    }
+                    else if(xmpData_["Xmp.video.MakerNoteType"].count() > 0)
+                    {
+                        byte rawMakerNoteType[dataSize];
+                        std::string makerNoteType = xmpData_["Xmp.video.MakerNoteType"].toString();
+                        for(int i=0; i<dataSize; i++)
+                        {
+                            rawMakerNoteType[i] = makerNoteType[i];
+                        }
+                        io_->write(rawMakerNoteType,dataSize);
+                    }
+                    else
+                    {
+                        io_->seek(dataSize,BasicIo::cur);
+                    }
+                }
+                else if (tagID == 0x0002)
+                {
+                    if (dataSize <= 0)
+                    {
+                    }
+                    else if(!m_modifyMetadata)
                     {
                         while(dataSize)
                         {
@@ -1175,118 +1193,7 @@ void RiffVideo::nikonTagsHandler()
                         }
                         xmpData_["Xmp.video.MakerNoteVersion"] = str;
                     }
-                }
-            }
-            else if(equalsRiffTag(buf, "NCTG"))
-            {
-                while((long)temp > 3)
-                {
-                    std::memset(buf.pData_, 0x0, buf.size_);
-                    io_->read(buf.pData_, 2);
-                    tagID = Exiv2::getULong(buf.pData_, littleEndian);
-                    io_->read(buf.pData_, 2);
-                    dataSize = Exiv2::getULong(buf.pData_, littleEndian);
-                    temp -= (4 + dataSize);
-                    td = find(nikonAVITags , tagID);
-
-                    if (dataSize <= 0)
-                    {
-#ifndef SUPPRESS_WARNINGS
-                        EXV_ERROR   << " Makernotes found in this RIFF file are not of valid size ."
-                                    << " Entries considered invalid. Not Processed.\n";
-#endif
-                    }
-                    else
-                    {
-                        io_->read(buf.pData_, dataSize);
-
-                        switch (tagID) {
-                        case 0x0003: case 0x0004: case 0x0005: case 0x0006:
-                        case 0x0013: case 0x0014: case 0x0018: case 0x001d:
-                        case 0x001e: case 0x001f: case 0x0020:
-                            xmpData_[exvGettext(td->label_)] = buf.pData_; break;
-
-                        case 0x0007: case 0x0010: case 0x0011: case 0x000c:
-                        case 0x0012:
-                            xmpData_[exvGettext(td->label_)] = Exiv2::getULong(buf.pData_, littleEndian); break;
-
-                        case 0x0008: case 0x0009: case 0x000a: case 0x000b:
-                        case 0x000f: case 0x001b: case 0x0016:
-                            buf2.pData_[0] = buf.pData_[4]; buf2.pData_[1] = buf.pData_[5];
-                            buf2.pData_[2] = buf.pData_[6]; buf2.pData_[3] = buf.pData_[7];
-                            denominator = (double)Exiv2::getLong(buf2.pData_, littleEndian);
-                            if (denominator != 0)
-                                xmpData_[exvGettext(td->label_)] = (double)Exiv2::getLong(buf.pData_, littleEndian) / denominator;
-                            else
-                                xmpData_[exvGettext(td->label_)] = 0;
-                            break;
-
-                        default:
-                            break;
-                        }
-                    }
-                }
-            }
-
-            else if(equalsRiffTag(buf, "NCTH"))
-            {//TODO Nikon Thumbnail Image
-            }
-
-            else if(equalsRiffTag(buf, "NCVW"))
-            {//TODO Nikon Preview Image
-            }
-
-            io_->seek(internal_pos + internal_size, BasicIo::beg);
-        }
-
-        if (size ==0)
-        {
-            io_->seek(cur_pos + 4, BasicIo::beg);
-        }
-        else
-        {
-            io_->seek(cur_pos + size, BasicIo::beg);
-        }
-    }
-    else
-    {
-        while((long)tempSize > 0)
-        {
-            io_->read(buf.pData_,4);
-            io_->read(buf2.pData_,4);
-            int temp = internal_size = Exiv2::getULong(buf2.pData_, littleEndian);
-            tempSize -= (io_->tell() + 8);
-            if(equalsRiffTag(buf, "NCVR"))
-            {
-                while((long)temp > 3)
-                {
-                    io_->read(buf.pData_, 2);
-                    tagID = Exiv2::getULong(buf.pData_, littleEndian);
-                    io_->read(buf.pData_, 2);
-                    dataSize = Exiv2::getULong(buf.pData_, littleEndian);
-                    temp -= (4 + dataSize);
-
-                    if((tagID == 0x0001) && (xmpData_["Xmp.video.MakerNoteType"].count() >0))
-                    {
-                        if (dataSize <= 0)//do nothing
-                        {
-
-                        }
-                        else//write the makernotetype tag
-                        {
-                            byte rawMakerNoteType[dataSize];
-                            std::string makerNoteType = xmpData_["Xmp.video.MakerNoteType"].toString();
-                            if(xmpData_["Xmp.video.MakerNoteType"].size() < dataSize)
-                            {
-                                for(int i=0; i<dataSize; i++)
-                                {
-                                    rawMakerNoteType[i] = makerNoteType[i];
-                                }
-                                io_->write(rawMakerNoteType,dataSize);
-                            }
-                        }
-                    }
-                    else if ((tagID == 0x0002) && xmpData_["Xmp.video.MakerNoteVersion"].count() >0)
+                    else if(xmpData_["Xmp.video.MakerNoteVersion"].count() > 0)
                     {
                         long originalDataSize = dataSize;
                         std::string makerNoteVersion = xmpData_["Xmp.video.MakerNoteVersion"].toString();
@@ -1294,25 +1201,132 @@ void RiffVideo::nikonTagsHandler()
                         int tmpCounter = 0;
                         while(dataSize)
                         {
-                            rawMakerNoteVersion[tmpCounter] = (byte) makerNoteVersion[(4 - dataSize) * 2];
+                            rawMakerNoteVersion[tmpCounter] = (byte) (makerNoteVersion[(4 - dataSize) * 2] - 48);
                             --dataSize;tmpCounter++;
                         }
                         io_->write(rawMakerNoteVersion,originalDataSize);
                     }
+                    else
+                    {
+                        io_->seek(dataSize,BasicIo::cur);
+                    }
                 }
             }
-            else if(equalsRiffTag(buf, "NCTG"))
+        }
+        else if(equalsRiffTag(buf, "NCTG"))
+        {
+            while((long)temp > 3)
             {
-            }
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 2);
+                tagID = Exiv2::getULong(buf.pData_, littleEndian);
+                io_->read(buf.pData_, 2);
+                dataSize = Exiv2::getULong(buf.pData_, littleEndian);
+                temp -= (4 + dataSize);
+                td = find(nikonAVITags , tagID);
 
-            else if(equalsRiffTag(buf, "NCTH"))
-            {//TODO Nikon Thumbnail Image
-            }
+                if (dataSize <= 0)
+                {
+                }
+                else
+                {
+                    switch (tagID)
+                    {
+                    case 0x0003: case 0x0004: case 0x0005: case 0x0006:
+                    case 0x0013: case 0x0014: case 0x0018: case 0x001d:
+                    case 0x001e: case 0x001f: case 0x0020:
+                        if(!m_modifyMetadata)
+                        {
+                            io_->read(buf.pData_, dataSize);
+                            xmpData_[exvGettext(td->label_)] = buf.pData_;
+                        }
+                        else if(xmpData_[exvGettext(td->label_)].count() > 0)
+                        {
+                            byte rawnikonData[dataSize];
+                            std::string nikonData = xmpData_[exvGettext(td->label_)].toString();
+                            for(int i=0; i<dataSize; i++)
+                            {
+                                rawnikonData[i] = nikonData[i];
+                            }
+                            io_->write(rawnikonData,dataSize);
+                        }
+                        else
+                        {
+                            io_->seek(dataSize,BasicIo::cur);
+                        }
+                        break;
+                    case 0x0007: case 0x0010: case 0x0011: case 0x000c:
+                    case 0x0012:
+                        if(!m_modifyMetadata)
+                        {
+                            io_->read(buf.pData_, dataSize);
+                            xmpData_[exvGettext(td->label_)] = Exiv2::getULong(buf.pData_, littleEndian);
+                        }
+                        else if(xmpData_[exvGettext(td->label_)].count() > 0)
+                        {
+                            byte rawnikonData[dataSize];
+                            const unsigned long nikonData = xmpData_[exvGettext(td->label_)].toLong();
+                            memcpy(rawnikonData,&nikonData,dataSize);
+                            io_->write(rawnikonData,dataSize);
+                        }
+                        else
+                        {
+                            io_->seek(dataSize,BasicIo::cur);
+                        }
+                        break;
+                    case 0x0008: case 0x0009: case 0x000a: case 0x000b:
+                    case 0x000f: case 0x001b: case 0x0016:
+                        buf2.pData_[0] = buf.pData_[4]; buf2.pData_[1] = buf.pData_[5];
+                        buf2.pData_[2] = buf.pData_[6]; buf2.pData_[3] = buf.pData_[7];
+                        denominator = (double)Exiv2::getLong(buf2.pData_, littleEndian);
 
-            else if(equalsRiffTag(buf, "NCVW"))
-            {//TODO Nikon Preview Image
+                        if(!m_modifyMetadata)
+                        {
+                            io_->read(buf.pData_, dataSize);
+                            if (denominator != 0)
+                                xmpData_[exvGettext(td->label_)] = (double)Exiv2::getLong(buf.pData_, littleEndian) / denominator;
+                            else
+                                xmpData_[exvGettext(td->label_)] = 0;
+                        }
+                        else if(xmpData_[exvGettext(td->label_)].count() > 0)
+                        {
+                            byte rawnikonData[dataSize];
+                            const long nikonData = (long)((double)xmpData_[exvGettext(td->label_)].toLong() * (double)denominator);
+                            memcpy(rawnikonData,&nikonData,dataSize);
+                            io_->write(rawnikonData,dataSize);
+                        }
+                        else
+                        {
+                            io_->seek(dataSize,BasicIo::cur);
+                        }
+                        break;
+
+                    default:
+                        io_->read(buf.pData_, dataSize);
+                        break;
+                    }
+                }
             }
         }
+
+        else if(equalsRiffTag(buf, "NCTH"))
+        {//TODO Nikon Thumbnail Image
+        }
+
+        else if(equalsRiffTag(buf, "NCVW"))
+        {//TODO Nikon Preview Image
+        }
+
+        io_->seek(internal_pos + internal_size, BasicIo::beg);
+    }
+
+    if (size ==0)
+    {
+        io_->seek(cur_pos + 4, BasicIo::beg);
+    }
+    else
+    {
+        io_->seek(cur_pos + size, BasicIo::beg);
     }
 } // RiffVideo::nikonTagsHandler
 
