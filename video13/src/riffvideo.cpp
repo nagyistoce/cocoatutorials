@@ -484,6 +484,14 @@ namespace Exiv2 {
         return true;
     }
 
+    bool simpleBytesComparision(Exiv2::DataBuf& buf ,const char* str,int size)
+    {
+        for(int i = 0; i < size; i++ )
+            if(toupper(buf.pData_[i]) != str[i])
+                return false;
+        return true;
+    }
+
     bool equalsRiffTag(Exiv2::DataBuf& buf,const char arr[][5],int arraysize)
     {
         for (int i=0; i< arraysize; i++)
@@ -959,56 +967,53 @@ void RiffVideo::tagDecoder()
 
 void RiffVideo::streamDataTagHandler(long size)
 {
-    if(!m_modifyMetadata)
+    const long bufMinSize = 20000;
+    DataBuf buf(bufMinSize);
+    buf.pData_[4] = '\0';
+    uint64_t cur_pos = io_->tell();
+
+    io_->read(buf.pData_, 8);
+
+    if(equalsRiffTag(buf, "AVIF"))
     {
-        const long bufMinSize = 20000;
-        DataBuf buf(bufMinSize);
-        buf.pData_[4] = '\0';
-        uint64_t cur_pos = io_->tell();
 
-        io_->read(buf.pData_, 8);
-
-        if(equalsRiffTag(buf, "AVIF"))
+        if (size - 4 < 0)
         {
-
-            if (size - 4 < 0)
-            {
 #ifndef SUPPRESS_WARNINGS
-                EXV_ERROR   << " Exif Tags found in this RIFF file are not of valid size ."
-                            << " Entries considered invalid. Not Processed.\n";
+            EXV_ERROR   << " Exif Tags found in this RIFF file are not of valid size ."
+                        << " Entries considered invalid. Not Processed.\n";
 #endif
-            }
-            else
-            {
-                io_->read(buf.pData_, size - 4);
-
-                IptcData iptcData;
-                XmpData  xmpData;
-                DummyTiffHeader tiffHeader(littleEndian);
-                TiffParserWorker::decode(exifData_,
-                                         iptcData,
-                                         xmpData,
-                                         buf.pData_,
-                                         buf.size_,
-                                         Tag::root,
-                                         TiffMapping::findDecoder,
-                                         &tiffHeader);
-
-#ifndef SUPPRESS_WARNINGS
-                if (!iptcData.empty())
-                {
-                    EXV_WARNING << "Ignoring IPTC information encoded in the Exif data.\n";
-                }
-                if (!xmpData.empty())
-                {
-                    EXV_WARNING << "Ignoring XMP information encoded in the Exif data.\n";
-                }
-#endif
-            }
         }
-        // TODO decode CasioData and ZORA Tag
-        io_->seek(cur_pos + size, BasicIo::beg);
+        else
+        {
+            io_->read(buf.pData_, size - 4);
+
+            IptcData iptcData;
+            XmpData  xmpData;
+            DummyTiffHeader tiffHeader(littleEndian);
+            TiffParserWorker::decode(exifData_,
+                                     iptcData,
+                                     xmpData,
+                                     buf.pData_,
+                                     buf.size_,
+                                     Tag::root,
+                                     TiffMapping::findDecoder,
+                                     &tiffHeader);
+
+#ifndef SUPPRESS_WARNINGS
+            if (!iptcData.empty())
+            {
+                EXV_WARNING << "Ignoring IPTC information encoded in the Exif data.\n";
+            }
+            if (!xmpData.empty())
+            {
+                EXV_WARNING << "Ignoring XMP information encoded in the Exif data.\n";
+            }
+#endif
+        }
     }
+    // TODO decode CasioData and ZORA Tag
+    io_->seek(cur_pos + size, BasicIo::beg);
 
 } // RiffVideo::streamDataTagHandler
 
@@ -2124,10 +2129,10 @@ void RiffVideo::streamFormatHandler(long size)
                 io_->seek(4,BasicIo::cur);
             }
 
-            if(xmpData_["Xmp.video.NumIfImpColours"].count() > 0)
+            if(xmpData_["Xmp.video.NumOfImpColours"].count() > 0)
             {
                 byte rawVideoNumIfImpColours[4];
-                if(xmpData_["Xmp.video.NumIfImpColours"].toString() == "All")
+                if(xmpData_["Xmp.video.NumOfImpColours"].toString() == "All")
                 {
                     const long numImportantColours = (long) 0;
                     memcpy(rawVideoNumIfImpColours,&numImportantColours,4);
@@ -2135,7 +2140,7 @@ void RiffVideo::streamFormatHandler(long size)
                 }
                 else
                 {
-                    const long numImportantColours = xmpData_["Xmp.video.NumIfImpColours"].toLong();
+                    const long numImportantColours = xmpData_["Xmp.video.NumOfImpColours"].toLong();
                     memcpy(rawVideoNumIfImpColours,&numImportantColours,4);
                     io_->write(rawVideoNumIfImpColours,4);
                 }
@@ -2147,19 +2152,46 @@ void RiffVideo::streamFormatHandler(long size)
         }
         else if(streamType_ == Audio)
         {
-            //TODO :audio compressor and numofchannels
-            if(0)
+            //TODO :audio compressor
+            if(0)//xmpData_["Xmp.audio.Compressor"].count() > 0)
             {
-
+                int sizeComp = xmpData_["Xmp.audio.Compressor"].size();
+                DataBuf audCompressor(sizeComp);
+                const std::string audioCompressor = xmpData_["Xmp.audio.Compressor"].toString();
+                for(int i=0; i<=sizeComp;i++)
+                {
+                    audCompressor.pData_[i] = audioCompressor[i];
+                }
             }
             else
             {
                 io_->seek(2,BasicIo::cur);
             }
 
-            if(0)
+            if(xmpData_["Xmp.audio.ChannelType"].count() > 0)
             {
-
+                const int sizeChan = xmpData_["Xmp.audio.ChannelType"].size();
+                DataBuf tmpBuf(sizeChan+1);
+                tmpBuf.pData_[sizeChan+1] = '\0';
+                const std::string audioChannealType = xmpData_["Xmp.audio.ChannelType"].toString();
+                for(int i=0; i<=sizeChan;i++)
+                {
+                    tmpBuf.pData_[i] = (byte)audioChannealType[i];
+                }
+                byte rawChannelType[2];
+                ushort channelType;
+                if(simpleBytesComparision(tmpBuf,"MONO",sizeChan))
+                    channelType = 1;
+                else if(simpleBytesComparision(tmpBuf,"STEREO",sizeChan))
+                {
+                    channelType = 2;
+                }
+                else if(simpleBytesComparision(tmpBuf,"5.1 SURROUND SOUND",sizeChan))
+                    channelType = 5;
+                else if(simpleBytesComparision(tmpBuf,"7.1 SURROUND SOUND",sizeChan))
+                    channelType = 7;
+                memcpy(rawChannelType,&channelType,2);
+                io_->write(rawChannelType,2);
             }
             else
             {
