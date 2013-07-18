@@ -679,10 +679,10 @@ void RiffVideo::doWriteMetadata()
         dateTimeOriginal(dummyLong);
     }
 
-    std::vector<long> iditChunkPositions = findChunkPositions("IDIT");
-    for(int i=0;i<iditChunkPositions.size(); i++)
+    std::vector<long> iditChunkPositions = findHeaderPositions("IDIT");
+    for(int i=0; i<iditChunkPositions.size(); i++)
     {
-        io_->seek(iditChunkPositions[i]+4,BasicIo::beg);
+        io_->seek(iditChunkPositions[i]+8,BasicIo::beg);
         dateTimeOriginal(dummyLong);
     }
 
@@ -820,7 +820,7 @@ void RiffVideo::tagDecoder()
 
             if(equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
             {
-                tmpHeaderChunk->m_headerLocation = (unsigned long) io_->tell() - 16;
+                tmpHeaderChunk->m_headerLocation = io_->tell() - 16;
                 tmpHeaderChunk->m_headerSize = listsize ;
                 position = RiffVideo::TraversingChunk;
             }
@@ -951,10 +951,11 @@ void RiffVideo::tagDecoder()
         unsigned long size = Exiv2::getULong(dataSize.pData_, littleEndian);
         if(!m_decodeMetaData)
         {
-            ListChunk *tmpList = new ListChunk();
-            tmpList->m_listLocation = io_->tell() - 8;
-            tmpList->m_listSize = size;
-            m_riffFileSkeleton.m_lists.push_back(tmpList);
+            HeaderChunk *tmpHeaderChunk = new HeaderChunk();
+            tmpHeaderChunk->m_headerLocation = io_->tell() - 12;
+            tmpHeaderChunk->m_headerSize = size;
+            memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkMainId.pData_,5);
+            m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
         }
         else
         {
@@ -1022,9 +1023,14 @@ void RiffVideo::dateTimeOriginal(long size, int i)
     if(!m_modifyMetadata)
     {
         uint64_t cur_pos = io_->tell();
-        const long bufMinSize = 100;
-        DataBuf buf(bufMinSize);
-        io_->read(buf.pData_, size);
+        io_->seek(-4,BasicIo::cur);
+        DataBuf dataLength(2);
+        dataLength.pData_[1] = '\0';
+        io_->read(dataLength.pData_,1);
+        unsigned long bufMinSize = (unsigned long)Exiv2::getShort(dataLength.pData_, littleEndian);
+        DataBuf buf((unsigned long)bufMinSize);
+        io_->seek(3,BasicIo::cur);
+        io_->read(buf.pData_, bufMinSize);
         if(!i)
             xmpData_["Xmp.video.DateUT"] = buf.pData_;
         else
@@ -1035,21 +1041,29 @@ void RiffVideo::dateTimeOriginal(long size, int i)
     {
         if(xmpData_["Xmp.video.DateUT"].count() > 0)
         {
-            const long bufMinSize = 100;
+            DataBuf dataLength(2);
+            dataLength.pData_[1] = '\0';
+            io_->read(dataLength.pData_,1);
+            io_->seek(3,BasicIo::cur);
+            unsigned long bufMinSize = (unsigned long)Exiv2::getShort(dataLength.pData_, littleEndian);
             byte rawDateTimeOriginal[bufMinSize];
-            std::string dateAndTime = xmpData_["Xmp.video.DateUT"].toString();
+            const std::string dateAndTime = xmpData_["Xmp.video.DateUT"].toString();
             for(int i=0; i<(int)bufMinSize; i++)
             {
                 rawDateTimeOriginal[i] = dateAndTime[i];
             }
-            io_->write(rawDateTimeOriginal,4);
+            io_->write(rawDateTimeOriginal,bufMinSize);
         }
 
         if(xmpData_["Xmp.video.StreamName"].count() >0)
         {
-            const long bufMinSize = 100;
+            DataBuf dataLength(2);
+            dataLength.pData_[1] = '\0';
+            io_->read(dataLength.pData_,1);
+            io_->seek(3,BasicIo::cur);
+            unsigned long bufMinSize = (unsigned long)Exiv2::getShort(dataLength.pData_, littleEndian);
             byte rawStreamName[bufMinSize];
-            std::string streamName = xmpData_["Xmp.video.StreamName"].toString();
+            const std::string streamName = xmpData_["Xmp.video.StreamName"].toString();
             for(int i=0; i<(int)bufMinSize; i++)
             {
                 rawStreamName[i] = streamName[i];
