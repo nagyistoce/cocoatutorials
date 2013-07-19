@@ -159,6 +159,9 @@ namespace Exiv2 {
     Image::~Image()
     {
     }
+    void Image::printStructure()
+    {
+    }
 
     void Image::clearMetadata()
     {

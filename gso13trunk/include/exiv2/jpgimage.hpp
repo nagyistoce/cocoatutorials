@@ -150,6 +150,7 @@ namespace Exiv2 {
     public:
         //! @name Manipulators
         //@{
+        void printStructure();
         void readMetadata();
         void writeMetadata();
         //@}
@@ -218,6 +219,9 @@ namespace Exiv2 {
         //@}
 
         // Constant Data
+        static const byte dht_;                 //!< JPEG DHT marker
+        static const byte dqt_;                 //!< JPEG DQT marker
+        static const byte dri_;                 //!< JPEG DRI marker
         static const byte sos_;                 //!< JPEG SOS marker
         static const byte eoi_;                 //!< JPEG EOI marker
         static const byte app0_;                //!< JPEG APP0 marker

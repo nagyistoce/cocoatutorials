@@ -102,6 +102,7 @@ namespace Exiv2 {
 
         //! @name Manipulators
         //@{
+        virtual void printStructure();
         /*!
           @brief Read all metadata supported by a specific image format from the
               image. Before this method is called, the image metadata will be

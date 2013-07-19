@@ -48,6 +48,9 @@ EXIV2_RCSID("@(#) $Id: jpgimage.cpp 2681 2012-03-22 15:19:35Z ahuggel $")
 
 namespace Exiv2 {
 
+    const byte     JpegBase::dht_      = 0xc4;
+    const byte     JpegBase::dqt_      = 0xdb;
+    const byte     JpegBase::dri_      = 0xdd;
     const byte     JpegBase::sos_      = 0xda;
     const byte     JpegBase::eoi_      = 0xd9;
     const byte     JpegBase::app0_     = 0xe0;
@@ -503,6 +506,72 @@ namespace Exiv2 {
 #endif
         }
     } // JpegBase::readMetadata
+
+    void JpegBase::printStructure()
+    {
+        if (io_->open() != 0) throw Error(9, io_->path(), strError());
+        // Ensure that this is the correct image type
+        if (!isThisType(*io_, false)) {
+            if (io_->error() || io_->eof()) throw Error(14);
+            throw Error(15);
+        }
+
+        // For Signature
+        const long bufMinSize = 36;
+        long bufRead = 0, startSig = 0;
+        DataBuf buf(bufMinSize);
+
+        // Read section marker
+        int marker = advanceToMarker();
+        if (marker < 0) throw Error(15);
+        // count marker
+        long count = 0;
+
+        printf("marker | size | note\n");
+        do {
+            // print marker bytes
+            printf("0x%x    ", marker);
+
+            // Read size and signature
+            std::memset(buf.pData_, 0x0, buf.size_);
+            bufRead = io_->read(buf.pData_, bufMinSize);
+            if (io_->error()) throw Error(14);
+            if (bufRead < 2) throw Error(15);
+            uint16_t size = 0;
+
+            // not all markers have size field.
+            if ((marker >= sof0_ && marker <= sof15_) ||
+                (marker >= app0_ && marker <= (app0_ | 0x0F)) ||
+                 marker == dht_ || marker == dqt_ || marker == dri_ ||
+                 marker == com_ || marker == sos_) {
+                size = getUShort(buf.pData_, bigEndian);
+                printf("%*d  ", 6, size);
+            } else {
+                printf("        ");
+            }
+
+            // not all markers have signature.
+            if (count == 0 || marker == app1_ || marker == app13_ || marker == app0_) {
+                startSig = (size > 0 || count == 0)?2:0;
+                while (startSig < bufRead && buf.pData_[startSig] < 128)
+                    printf("%c", buf.pData_[startSig++]);
+            }
+
+            // Skip the segment if the size is known
+            if (io_->seek(size - bufRead, BasicIo::cur)) throw Error(14);
+
+            printf("\n");
+            // sos_ is immediately followed by entropy-coded data & eoi_
+            if (marker == sos_) break;
+
+            // Read the beginning of the next segment
+            marker = advanceToMarker();
+            count++;
+        } while(marker > 0 && marker != eoi_);
+
+        // print eoi_
+        printf("0x%x\n", eoi_);
+    }
 
     void JpegBase::writeMetadata()
     {
