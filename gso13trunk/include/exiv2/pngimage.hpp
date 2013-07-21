@@ -84,6 +84,7 @@ namespace Exiv2
 
         //! @name Manipulators
         //@{
+        void printStructure();
         void readMetadata();
         void writeMetadata();
         //@}
