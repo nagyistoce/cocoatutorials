@@ -74,6 +74,7 @@ namespace Exiv2 {
         //@{
         void readMetadata();
         void writeMetadata();
+        void doWriteMetadata();
         //@}
 
         //! @name Accessors

@@ -582,10 +582,10 @@ DataBuf returnBuf(int64_t intValue,int n=4)
     for(int i = 0; i < n; i++)
     {
 #ifdef _MSC_VER
-        buf.pData_[i] = static_cast<byte> (intValue - (intValue/(pow(static_cast<float>(256), n-i))));
+        buf.pData_[n-i-1] = static_cast<byte> (intValue - (intValue/(pow(static_cast<float>(256), n-i))));
         intValue = static_cast<int64_t>(intValue/(pow(static_cast<float>(256), n-i)));
 #else
-        buf.pData_[i] = (byte)(intValue - intValue/(pow((float)256,n-i)));
+        buf.pData_[n-i-1] = (byte)(intValue - intValue/(pow((float)256,n-i)));
         intValue = (int64_t) (intValue/(pow((float)256,n-i)));
 #endif
     }
@@ -609,6 +609,22 @@ uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int n = 4) {
     return temp;
 }
 
+DataBuf returnBuf(uint64_t intValue,int n=4)
+{
+    DataBuf buf((unsigned long)(n+1));
+    buf.pData_[n] = '\0';
+    for(int i = 0; i < n; i++)
+    {
+#ifdef _MSC_VER
+        buf.pData_[n-i-1] = static_cast<byte> (intValue - (intValue/(pow(static_cast<float>(256), n-i))));
+        intValue = static_cast<uint64_t>(intValue/(pow(static_cast<float>(256), n-i)));
+#else
+        buf.pData_[n-i-1] = (byte)(intValue - intValue/(pow((float)256,n-i)));
+        intValue = (uint64_t) (intValue/(pow((float)256,n-i)));
+#endif
+    }
+    return buf;
+}
 /*!
       @brief Function used to quicktime files, by checking the
           the tags at the start of the file. If the Tag is any one
@@ -637,6 +653,8 @@ using namespace Exiv2::Internal;
 QuickTimeVideo::QuickTimeVideo(BasicIo::AutoPtr io)
     : Image(ImageType::qtime, mdNone, io)
 {
+    m_decodeMetadata = true;
+    m_modifyMetadata = false;
 } // QuickTimeVideo::QuickTimeVideo
 
 std::string QuickTimeVideo::mimeType() const
@@ -646,6 +664,28 @@ std::string QuickTimeVideo::mimeType() const
 
 void QuickTimeVideo::writeMetadata()
 {
+    if (io_->open() != 0)
+    {
+        throw Error(9, io_->path(), strError());
+    }
+    IoCloser closer(*io_);
+
+    doWriteMetadata();
+
+    io_->close();
+}
+
+void QuickTimeVideo::doWriteMetadata()
+{
+    // Ensure that this is the correct image type
+    if (!isQTimeType(*io_, false)) {
+        if (io_->error() || io_->eof()) throw Error(14);
+        throw Error(3, "QuickTime");
+    }
+
+    m_decodeMetadata = false;
+    m_modifyMetadata = true;
+    //keep on adding Atom types below
 }
 
 void QuickTimeVideo::readMetadata()
@@ -1183,8 +1223,7 @@ void QuickTimeVideo::setMediaStream()
     while(!io_->eof()) {
         io_->read(buf.pData_, 4);
         if (equalsQTimeTag(buf, "hdlr")) {
-            io_->read(buf.pData_, 4);
-            io_->read(buf.pData_, 4);
+            io_->seek(8,BasicIo::cur);
             io_->read(buf.pData_, 4);
 
             if (equalsQTimeTag(buf, "vide"))
@@ -1575,73 +1614,174 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size) {
     buf.pData_[4] = '\0';
     int64_t temp = 0;
 
-    for (int i = 0; size/4 != 0  ; size -=4, i++) {
-        io_->read(buf.pData_, 4);
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; size/4 != 0  ; size -=4, i++) {
+            io_->read(buf.pData_, 4);
 
-        switch(i) {
-        case TrackHeaderVersion:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackHeaderVersion"] = returnBufValue(buf,1);
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.audio.TrackHeaderVersion"] = returnBufValue(buf,1);
-            break;
-        case TrackCreateDate:
-            //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackCreateDate"] = returnUnsignedBufValue(buf);
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.audio.TrackCreateDate"] = returnUnsignedBufValue(buf);
-            break;
-        case TrackModifyDate:
-            //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackModifyDate"] = returnUnsignedBufValue(buf);
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.audio.TrackModifyDate"] = returnUnsignedBufValue(buf);
-            break;
-        case TrackID:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackID"] = returnBufValue(buf);
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.audio.TrackID"] = returnBufValue(buf);
-            break;
-        case TrackDuration:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackDuration"] = returnBufValue(buf)/timeScale_;
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.audio.TrackDuration"] = returnBufValue(buf)/timeScale_;
-            break;
-        case TrackLayer:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackLayer"] = returnBufValue(buf, 2);
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.audio.TrackLayer"] = returnBufValue(buf, 2);
-            break;
-        case TrackVolume:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100;
-            else if(currentStream_ == Audio)
-                xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100;
-            break;
-        case ImageWidth:
-            if(currentStream_ == Video) {
-                temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-                xmpData_["Xmp.video.Width"] = temp;
-                width_ = temp;
+            switch(i) {
+            case TrackHeaderVersion:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackHeaderVersion"] = returnBufValue(buf,1);
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.audio.TrackHeaderVersion"] = returnBufValue(buf,1);
+                break;
+            case TrackCreateDate:
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackCreateDate"] = returnUnsignedBufValue(buf);
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.audio.TrackCreateDate"] = returnUnsignedBufValue(buf);
+                break;
+            case TrackModifyDate:
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackModifyDate"] = returnUnsignedBufValue(buf);
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.audio.TrackModifyDate"] = returnUnsignedBufValue(buf);
+                break;
+            case TrackID:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackID"] = returnBufValue(buf);
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.audio.TrackID"] = returnBufValue(buf);
+                break;
+            case TrackDuration:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackDuration"] = returnBufValue(buf)/timeScale_;
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.audio.TrackDuration"] = returnBufValue(buf)/timeScale_;
+                break;
+            case TrackLayer:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackLayer"] = returnBufValue(buf, 2);
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.audio.TrackLayer"] = returnBufValue(buf, 2);
+                break;
+            case TrackVolume:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100;
+                else if(currentStream_ == Audio)
+                    xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100;
+                break;
+            case ImageWidth:
+                if(currentStream_ == Video) {
+                    temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                    xmpData_["Xmp.video.Width"] = temp;
+                    width_ = temp;
+                }
+                break;
+            case ImageHeight:
+                if(currentStream_ == Video) {
+                    temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                    xmpData_["Xmp.video.Height"] = temp;
+                    height_ = temp;
+                }
+                break;
+            default:
+                break;
             }
-            break;
-        case ImageHeight:
-            if(currentStream_ == Video) {
-                temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-                xmpData_["Xmp.video.Height"] = temp;
-                height_ = temp;
+        }
+        io_->read(buf.pData_, size%4);
+    }
+    else
+    {
+        for (int i = 0; size/4 != 0  ; size -=4, i++)
+        {
+            if(xmpData_["Xmp.video.TrackHeaderVersion"].count() >0)
+            {
+                int64_t trackHeaderVersion = xmpData_["Xmp.video.TrackHeaderVersion"].toLong();
+                buf = returnBuf(trackHeaderVersion);
+                io_->write(buf.pData_,4);
             }
-            break;
-        default:
-            break;
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.TrackCreateDate"].count() >0)
+            {
+                int64_t trackCreateDate = xmpData_["Xmp.video.TrackCreateDate"].toLong();
+                buf = returnBuf(trackCreateDate);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.TrackModifyDate"].count() >0)
+            {
+                int64_t trackModifyDate = xmpData_["Xmp.video.TrackModifyDate"].toLong();
+                buf = returnBuf(trackModifyDate);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.TrackID"].count() >0)
+            {
+                int64_t trackID = xmpData_["Xmp.video.TrackID"].toLong();
+                buf = returnBuf(trackID);
+                io_->write(buf.pData_,4);
+                io_->seek(4,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(8,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.TrackDuration"].count() >0)
+            {
+                int64_t trackDuration= xmpData_["Xmp.video.TrackDuration"].toLong();
+                buf = returnBuf(trackDuration);
+                io_->write(buf.pData_,4);
+                io_->seek(8,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(12,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.TrackLayer"].count() >0)
+            {
+                int64_t trackLayer = xmpData_["Xmp.video.TrackLayer"].toLong();
+                buf = returnBuf(trackLayer);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+
+            //TODO:modify below 3 values before writing to file
+            if(xmpData_["Xmp.video.TrackVolume"].count() >0)
+            {
+                int64_t trackVolume = xmpData_["Xmp.video.TrackVolume"].toLong();
+                buf = returnBuf(trackVolume);
+                io_->write(buf.pData_,4);
+                io_->seek(40,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(44,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.Width"].count() >0)
+            {
+                int64_t width = xmpData_["Xmp.video.Width"].toLong();
+                buf = returnBuf(width);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+
+            }
+            if(xmpData_["Xmp.video.Height"].count() >0)
+            {
+                int64_t Height = xmpData_["Xmp.video.Height"].toLong();
+                buf = returnBuf(Height);
+                io_->write(buf.pData_,4);
+            }
         }
     }
-    io_->read(buf.pData_, size%4);
 } // QuickTimeVideo::trackHeaderDecoder
 
 void QuickTimeVideo::movieHeaderDecoder(unsigned long size) {
@@ -1649,47 +1789,192 @@ void QuickTimeVideo::movieHeaderDecoder(unsigned long size) {
     std::memset(buf.pData_, 0x0, buf.size_);
     buf.pData_[4] = '\0';
 
-    for (int i = 0; size/4 != 0 ; size -=4, i++) {
-        io_->read(buf.pData_, 4);
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; size/4 != 0 ; size -=4, i++) {
+            io_->read(buf.pData_, 4);
 
-        switch(i) {
-        case MovieHeaderVersion:
-            xmpData_["Xmp.video.MovieHeaderVersion"] = returnBufValue(buf,1); break;
-        case CreateDate:
-            //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-            xmpData_["Xmp.video.DateUTC"] = returnUnsignedBufValue(buf); break;
-        case ModifyDate:
-            //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-            xmpData_["Xmp.video.ModificationDate"] = returnUnsignedBufValue(buf); break;
-        case TimeScale:
-            xmpData_["Xmp.video.TimeScale"] = returnBufValue(buf);
-            timeScale_ = returnBufValue(buf); break;
-        case Duration:
-            xmpData_["Xmp.video.Duration"] = returnBufValue(buf) * 1000 / timeScale_; break;
-        case PreferredRate:
-            xmpData_["Xmp.video.PreferredRate"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01); break;
-        case PreferredVolume:
-            xmpData_["Xmp.video.PreferredVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100; break;
-        case PreviewTime:
-            xmpData_["Xmp.video.PreviewTime"] = returnBufValue(buf); break;
-        case PreviewDuration:
-            xmpData_["Xmp.video.PreviewDuration"] = returnBufValue(buf); break;
-        case PosterTime:
-            xmpData_["Xmp.video.PosterTime"] = returnBufValue(buf); break;
-        case SelectionTime:
-            xmpData_["Xmp.video.SelectionTime"] = returnBufValue(buf); break;
-        case SelectionDuration:
-            xmpData_["Xmp.video.SelectionDuration"] = returnBufValue(buf); break;
-        case CurrentTime:
-            xmpData_["Xmp.video.CurrentTime"] = returnBufValue(buf); break;
-        case NextTrackID:
-            xmpData_["Xmp.video.NextTrackID"] = returnBufValue(buf); break;
-        default:
-            break;
+            switch(i) {
+            case MovieHeaderVersion:
+                xmpData_["Xmp.video.MovieHeaderVersion"] = returnBufValue(buf,1); break;
+            case CreateDate:
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+                xmpData_["Xmp.video.DateUTC"] = returnUnsignedBufValue(buf); break;
+            case ModifyDate:
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+                xmpData_["Xmp.video.ModificationDate"] = returnUnsignedBufValue(buf); break;
+            case TimeScale:
+                xmpData_["Xmp.video.TimeScale"] = returnBufValue(buf);
+                timeScale_ = returnBufValue(buf); break;
+            case Duration:
+                xmpData_["Xmp.video.Duration"] = returnBufValue(buf) * 1000 / timeScale_; break;
+            case PreferredRate:
+                xmpData_["Xmp.video.PreferredRate"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01); break;
+            case PreferredVolume:
+                xmpData_["Xmp.video.PreferredVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100; break;
+            case PreviewTime:
+                xmpData_["Xmp.video.PreviewTime"] = returnBufValue(buf); break;
+            case PreviewDuration:
+                xmpData_["Xmp.video.PreviewDuration"] = returnBufValue(buf); break;
+            case PosterTime:
+                xmpData_["Xmp.video.PosterTime"] = returnBufValue(buf); break;
+            case SelectionTime:
+                xmpData_["Xmp.video.SelectionTime"] = returnBufValue(buf); break;
+            case SelectionDuration:
+                xmpData_["Xmp.video.SelectionDuration"] = returnBufValue(buf); break;
+            case CurrentTime:
+                xmpData_["Xmp.video.CurrentTime"] = returnBufValue(buf); break;
+            case NextTrackID:
+                xmpData_["Xmp.video.NextTrackID"] = returnBufValue(buf); break;
+            default:
+                break;
+            }
+        }
+        io_->read(buf.pData_, size%4);
+    }
+    else
+    {
+        for (int i = 0; size/4 != 0 ; size -=4, i++)
+        {
+            if(xmpData_["Xmp.video.MovieHeaderVersion"].count() > 0)
+            {
+                int64_t movieHeaderVersion  = (int64_t)xmpData_["Xmp.video.MovieHeaderVersion"].toLong();
+                buf = returnBuf(movieHeaderVersion);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.DateUTC"].count() > 0)
+            {
+                uint64_t dateUTC  = (uint64_t)xmpData_["Xmp.video.DateUTC"].toLong();
+                buf = returnBuf(dateUTC);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.ModificationDate"].count() > 0)
+            {
+                uint64_t modificationDate  = (uint64_t)xmpData_["Xmp.video.ModificationDate"].toLong();
+                buf = returnBuf(modificationDate);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.TimeScale"].count() > 0)
+            {
+                uint64_t timeScale  = (uint64_t)xmpData_["Xmp.video.TimeScale"].toLong();
+                buf = returnBuf(timeScale);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.Duration"].count() > 0)
+            {
+                int64_t duration  = (int64_t)xmpData_["Xmp.video.Duration"].toLong();
+                buf = returnBuf(duration);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.PreferredRate"].count() > 0)
+            {
+                int64_t preferredRate  = (int64_t)xmpData_["Xmp.video.PreferredRate"].toLong();
+                buf = returnBuf(preferredRate);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.PreferredVolume"].count() > 0)
+            {
+                int64_t preferredVolume  = (int64_t)xmpData_["Xmp.video.PreferredVolume"].toLong();
+                buf = returnBuf(preferredVolume);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(48,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.PreviewTime"].count() > 0)
+            {
+                int64_t previewTime  = (int64_t)xmpData_["Xmp.video.PreviewTime"].toLong();
+                buf = returnBuf(previewTime);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.PreviewDuration"].count() > 0)
+            {
+                int64_t previewDuration  = (int64_t)xmpData_["Xmp.video.PreviewDuration"].toLong();
+                buf = returnBuf(previewDuration);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.PosterTime"].count() > 0)
+            {
+                int64_t posterTime  = (int64_t)xmpData_["Xmp.video.PosterTime"].toLong();
+                buf = returnBuf(posterTime);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.SelectionTime"].count() > 0)
+            {
+                int64_t selectionTime  = (int64_t)xmpData_["Xmp.video.SelectionTime"].toLong();
+                buf = returnBuf(selectionTime);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.SelectionDuration"].count() > 0)
+            {
+                int64_t selectionDuration  = (int64_t)xmpData_["Xmp.video.SelectionDuration"].toLong();
+                buf = returnBuf(selectionDuration);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.CurrentTime"].count() > 0)
+            {
+                int64_t currentTime  = (int64_t)xmpData_["Xmp.video.CurrentTime"].toLong();
+                buf = returnBuf(currentTime);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.NextTrackID"].count() > 0)
+            {
+                int64_t nextTrackID  = (int64_t)xmpData_["Xmp.video.NextTrackID"].toLong();
+                buf = returnBuf(nextTrackID);
+                io_->write(buf.pData_,4);
+            }
         }
     }
-    io_->read(buf.pData_, size%4);
-} // QuickTimeVideo::movieHeaderDecoder
+}// QuickTimeVideo::movieHeaderDecoder
 
 void QuickTimeVideo::aspectRatio()
 {
