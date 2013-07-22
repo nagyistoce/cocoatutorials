@@ -8,20 +8,28 @@ import lxml.etree as etree
 def syntax(me):
 	"""syntax - print syntax of webby.py """
 	me=os.path.basename(os.path.abspath(me))
-	print 'syntax: %s filename'%(me)
+	print 'syntax: %s [--flat] filename ...'%(me)
 
 def main(argv):
 	"""main - main program of course"""
 	argc = len(argv)
 	result=0
+	pretty=True
 	if argc >= 2:
 		try:
-			x = etree.parse(argv[1])
-			print etree.tostring(x, pretty_print = True)
+			for arg in argv[1:]:
+				if arg=='-f' or arg=='--flat' or arg=='-flat':
+					pretty=False
+				else:
+					x = etree.parse(arg)
+					x = etree.tostring(x, pretty_print = True)
+					if not pretty:
+						x = x.replace('\n',' ')
+					print x
 		except Exception as inst:
 			print >> sys.stderr, '-------------------' 
 			print >> sys.stderr, inst, 'name = ',inst.args
-			os.system('file ' + argv[1] + ' 1>&2')
+			os.system('file ' + arg + ' 1>&2')
 			print >> sys.stderr, '-------------------' 
 			result=1
 	else:
