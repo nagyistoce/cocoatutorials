@@ -1337,43 +1337,96 @@ void QuickTimeVideo::imageDescDecoder()
 
     const TagVocabulary* td;
 
-    for (int i = 0; size/4 != 0 ; size -= 4, i++) {
-        io_->read(buf.pData_, 4);
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; size/4 != 0 ; size -= 4, i++) {
+            io_->read(buf.pData_, 4);
 
-        switch(i) {
-        case codec:
-            td = find(qTimeFileType, Exiv2::toString( buf.pData_));
-            if(td)
-                xmpData_["Xmp.video.Codec"] = exvGettext(td->label_);
-            else
-                xmpData_["Xmp.video.Codec"] = Exiv2::toString( buf.pData_);
-            break;
-        case VendorID:
-            td = find(vendorIDTags, Exiv2::toString( buf.pData_));
-            if(td)
-                xmpData_["Xmp.video.VendorID"] = exvGettext(td->label_);
-            break;
-        case SourceImageWidth_Height:
-            xmpData_["Xmp.video.SourceImageWidth"] = returnBufValue(buf, 2);
-            xmpData_["Xmp.video.SourceImageHeight"] = (buf.pData_[2] * 256 + buf.pData_[3]);
-            break;
-        case XResolution:
-            xmpData_["Xmp.video.XResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-            break;
-        case YResolution:
-            xmpData_["Xmp.video.YResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-            io_->read(buf.pData_, 3); size -= 3;
-            break;
-        case CompressorName:
-            io_->read(buf.pData_, 32); size -= 32;
-            xmpData_["Xmp.video.Compressor"] = Exiv2::toString( buf.pData_);
-            break;
-        default:
-            break;
+            switch(i) {
+            case codec:
+                td = find(qTimeFileType, Exiv2::toString( buf.pData_));
+                if(td)
+                    xmpData_["Xmp.video.Codec"] = exvGettext(td->label_);
+                else
+                    xmpData_["Xmp.video.Codec"] = Exiv2::toString( buf.pData_);
+                break;
+            case VendorID:
+                td = find(vendorIDTags, Exiv2::toString( buf.pData_));
+                if(td)
+                    xmpData_["Xmp.video.VendorID"] = exvGettext(td->label_);
+                break;
+            case SourceImageWidth_Height:
+                xmpData_["Xmp.video.SourceImageWidth"] = returnBufValue(buf, 2);
+                xmpData_["Xmp.video.SourceImageHeight"] = (buf.pData_[2] * 256 + buf.pData_[3]);
+                break;
+            case XResolution:
+                xmpData_["Xmp.video.XResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                break;
+            case YResolution:
+                xmpData_["Xmp.video.YResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                io_->read(buf.pData_, 3); size -= 3;
+                break;
+            case CompressorName:
+                io_->read(buf.pData_, 32); size -= 32;
+                xmpData_["Xmp.video.Compressor"] = Exiv2::toString( buf.pData_);
+                break;
+            default:
+                break;
+            }
         }
+        io_->read(buf.pData_, static_cast<long>(size % 4));
+        xmpData_["Xmp.video.BitDepth"] = returnBufValue(buf, 1);
     }
-    io_->read(buf.pData_, static_cast<long>(size % 4));
-    xmpData_["Xmp.video.BitDepth"] = returnBufValue(buf, 1);
+    else
+    {
+        TagVocabulary revTagVocabulary[(sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))];
+        reverseTagVocabulary(qTimeFileType,revTagVocabulary,((sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))));
+        if(xmpData_["Xmp.video.Codec"].count() >0)
+        {
+            td = find(revTagVocabulary, xmpData_["Xmp.video.Codec"].toString());
+            if(td)
+            {
+                byte rawCodec[4];
+                const char *codecName = td->voc_;
+                for(int j=0; j<4 ;j++)
+                {
+                    rawCodec[j] = codecName[j];
+                }
+                io_->write(rawCodec,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.VendorID"].count() >0)
+        {
+            td = find(revTagVocabulary, xmpData_["Xmp.video.VendorID"].toString());
+            if(td)
+            {
+                byte rawVendorID[4];
+                const char *vendorID = td->voc_;
+                for(int j=0; j<4 ;j++)
+                {
+                    rawVendorID[j] = vendorID[j];
+                }
+                io_->write(rawVendorID,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+
+    }
 } // QuickTimeVideo::imageDescDecoder
 
 void QuickTimeVideo::multipleEntriesDecoder()
@@ -1590,9 +1643,8 @@ void QuickTimeVideo::fileTypeDecoder(unsigned long size) {
             case 0:
                 if(xmpData_["Xmp.video.MajorBrand"].count() > 0)
                 {
-                    byte rawMajorBrand[xmpData_["Xmp.video.MajorBrand"].size()];
-                    const std::string majorBrand = xmpData_["Xmp.video.MajorBrand"].toString();
-                    td = find(revTagVocabulary, majorBrand);
+                    byte rawMajorBrand[4];
+                    td = find(revTagVocabulary, xmpData_["Xmp.video.MajorBrand"].toString());
                     const char *majorBrandVoc = td->voc_;
                     for(int j=0; j<4 ;j++)
                     {
@@ -1621,9 +1673,8 @@ void QuickTimeVideo::fileTypeDecoder(unsigned long size) {
             default:
                 if(xmpData_["Xmp.video.CompatibleBrands"].count() >0)
                 {
-                    byte rawCompatibleBrand[xmpData_["Xmp.video.CompatibleBrands"].size()];
-                    const std::string compatibleBrand = xmpData_["Xmp.video.CompatibleBrands"].toString();
-                    td = find(revTagVocabulary, compatibleBrand);
+                    byte rawCompatibleBrand[4];
+                    td = find(revTagVocabulary, xmpData_["Xmp.video.CompatibleBrands"].toString());
                     const char *compatibleBrandVoc = td->voc_;
                     if(td)
                     {
@@ -1634,6 +1685,7 @@ void QuickTimeVideo::fileTypeDecoder(unsigned long size) {
                     }
                     else
                     {
+                        const std::string compatibleBrand = xmpData_["Xmp.video.CompatibleBrands"].toString();
                         for(int j=0; j<4; j++)
                         {
                             rawCompatibleBrand[i] = compatibleBrand[i];
