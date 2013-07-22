@@ -557,6 +557,15 @@ void reverseTagVocabulary(const TagVocabulary inputTagVocabulary[],TagVocabulary
     }
 }
 
+void reverseTagDetails(const TagDetails inputTagVocabulary[],RevTagDetails  outputTagVocabulary[] ,int size)
+{
+    for (int i=0; i<size ;i++)
+    {
+        outputTagVocabulary[i].label_ = inputTagVocabulary[i].label_;
+        outputTagVocabulary[i].val_ = inputTagVocabulary[i].val_;
+    }
+}
+
 /*!
       @brief Function used to convert buffer data into 64-bit
           signed integer, information stored in Big Endian format
@@ -1386,25 +1395,61 @@ void QuickTimeVideo::videoHeaderDecoder(unsigned long size) {
     buf.pData_[2] = '\0';
     currentStream_ = Video;
 
+    const RevTagDetails* rtd;
     const TagDetails* td;
 
-    for (int i = 0; size/2 != 0 ; size -= 2, i++) {
-        io_->read(buf.pData_, 2);
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; size/2 != 0 ; size -= 2, i++) {
+            io_->read(buf.pData_, 2);
 
-        switch(i) {
-        case GraphicsMode:
-            td = find(graphicsModetags, returnBufValue(buf,2));
-            if(td)
-                xmpData_["Xmp.video.GraphicsMode"] = exvGettext(td->label_);
-            break;
-        case OpColor:
-            xmpData_["Xmp.video.OpColor"] = returnBufValue(buf,2);
-            break;
-        default:
-            break;
+            switch(i) {
+            case GraphicsMode:
+                td = find(graphicsModetags, returnBufValue(buf,2));
+                if(td)
+                    xmpData_["Xmp.video.GraphicsMode"] = exvGettext(td->label_);
+                break;
+            case OpColor:
+                xmpData_["Xmp.video.OpColor"] = returnBufValue(buf,2);
+                break;
+            default:
+                break;
+            }
+        }
+        io_->read(buf.pData_, size % 2);
+    }
+    else
+    {
+        io_->seek(4,BasicIo::cur);
+        RevTagDetails revTagDetails[(sizeof(graphicsModetags)/sizeof(graphicsModetags[0]))];
+        reverseTagDetails(graphicsModetags,revTagDetails,((sizeof(graphicsModetags)/sizeof(graphicsModetags[0]))));
+        if(xmpData_["Xmp.video.GraphicsMode"].count() >0)
+        {
+            byte rawGraphicsMode[2];
+            const std::string graphicsMode = xmpData_["Xmp.video.GraphicsMode"].toString();
+            char *graphicsModeData = (char *)malloc(xmpData_["Xmp.video.GraphicsMode"].size());
+            for(int j=0; j<xmpData_["Xmp.video.GraphicsMode"].size(); j++)
+            {
+                graphicsModeData[j] = graphicsMode[j];
+            }
+            rtd = find(revTagDetails,graphicsModeData);
+            short sGraphicsMode = (short)rtd->val_;
+            memcpy(rawGraphicsMode,&sGraphicsMode,2);
+            io_->write(rawGraphicsMode,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.OpColor"].count() >0)
+        {
+            DataBuf rawOpColor((unsigned long)3);
+            rawOpColor.pData_[2] = '\0';
+            const int64_t opColor = xmpData_["Xmp.video.OpColor"].toLong();
+            rawOpColor = returnBuf(opColor);
+            io_->write(rawOpColor.pData_,2);
         }
     }
-    io_->read(buf.pData_, size % 2);
 } // QuickTimeVideo::videoHeaderDecoder
 
 void QuickTimeVideo::handlerDecoder(unsigned long size)
@@ -1416,40 +1461,91 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
 
     const TagVocabulary* tv;
 
-    for (int i = 0; i < 5 ; i++) {
-        io_->read(buf.pData_, 4);
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; i < 5 ; i++) {
+            io_->read(buf.pData_, 4);
 
-        switch(i) {
-        case HandlerClass:
-            tv = find(handlerClassTags, Exiv2::toString( buf.pData_));
-            if(tv) {
-                if (currentStream_ == Video)
-                    xmpData_["Xmp.video.HandlerClass"] = exvGettext(tv->label_);
-                else if (currentStream_ == Audio)
-                    xmpData_["Xmp.audio.HandlerClass"] = exvGettext(tv->label_);
+            switch(i) {
+            case HandlerClass:
+                tv = find(handlerClassTags, Exiv2::toString( buf.pData_));
+                if(tv) {
+                    if (currentStream_ == Video)
+                        xmpData_["Xmp.video.HandlerClass"] = exvGettext(tv->label_);
+                    else if (currentStream_ == Audio)
+                        xmpData_["Xmp.audio.HandlerClass"] = exvGettext(tv->label_);
+                }
+                break;
+            case HandlerType:
+                tv = find(handlerTypeTags, Exiv2::toString( buf.pData_));
+                if(tv) {
+                    if (currentStream_ == Video)
+                        xmpData_["Xmp.video.HandlerType"] = exvGettext(tv->label_);
+                    else if (currentStream_ == Audio)
+                        xmpData_["Xmp.audio.HandlerType"] = exvGettext(tv->label_);
+                }
+                break;
+            case HandlerVendorID:
+                tv = find(vendorIDTags, Exiv2::toString( buf.pData_));
+                if(tv) {
+                    if (currentStream_ == Video)
+                        xmpData_["Xmp.video.HandlerVendorID"] = exvGettext(tv->label_);
+                    else if (currentStream_ == Audio)
+                        xmpData_["Xmp.audio.HandlerVendorID"] = exvGettext(tv->label_);
+                }
+                break;
             }
-            break;
-        case HandlerType:
-            tv = find(handlerTypeTags, Exiv2::toString( buf.pData_));
-            if(tv) {
-                if (currentStream_ == Video)
-                    xmpData_["Xmp.video.HandlerType"] = exvGettext(tv->label_);
-                else if (currentStream_ == Audio)
-                    xmpData_["Xmp.audio.HandlerType"] = exvGettext(tv->label_);
-            }
-            break;
-        case HandlerVendorID:
-            tv = find(vendorIDTags, Exiv2::toString( buf.pData_));
-            if(tv) {
-                if (currentStream_ == Video)
-                    xmpData_["Xmp.video.HandlerVendorID"] = exvGettext(tv->label_);
-                else if (currentStream_ == Audio)
-                    xmpData_["Xmp.audio.HandlerVendorID"] = exvGettext(tv->label_);
-            }
-            break;
         }
+        io_->seek(cur_pos + size, BasicIo::beg);
     }
-    io_->seek(cur_pos + size, BasicIo::beg);
+    else
+    {
+        TagVocabulary revTagVocabulary[(sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))];
+        reverseTagVocabulary(handlerClassTags,revTagVocabulary,((sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))));
+        io_->seek(4,BasicIo::cur);
+        if(xmpData_["Xmp.video.HandlerClass"].count() >0)
+        {
+            byte rawHandlerClass[4];
+            tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString());
+            const std::string handlerClass = tv->label_;
+            for(int j=0; j<4; j++)
+            {
+                rawHandlerClass[j] = handlerClass[j];
+            }
+            io_->write(rawHandlerClass,4);
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.HandlerType"].count() >0)
+        {
+            byte rawHandlerType[4];
+            tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerType"].toString());
+            const std::string handlerType = tv->label_;
+            for(int j=0; j<4; j++)
+            {
+                rawHandlerType[j] = handlerType[j];
+            }
+            io_->write(rawHandlerType,4);
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.HandlerVendorID"].count() >0)
+        {
+            byte rawHandlerVendorID[4];
+            tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerVendorID"].toString());
+            const std::string handlerVendorID = tv->label_;
+            for(int j=0; j<4; j++)
+            {
+                rawHandlerVendorID[j] = handlerVendorID[j];
+            }
+            io_->write(rawHandlerVendorID,4);
+        }
+
+    }
 } // QuickTimeVideo::handlerDecoder
 
 void QuickTimeVideo::fileTypeDecoder(unsigned long size) {
@@ -1557,55 +1653,117 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
     buf.pData_[4] = '\0';
     int64_t time_scale = 1;
 
-    for (int i = 0; size/4 != 0 ; size -=4, i++) {
-        io_->read(buf.pData_, 4);
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; size/4 != 0 ; size -=4, i++) {
+            io_->read(buf.pData_, 4);
 
-        switch(i) {
-        case MediaHeaderVersion:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.MediaHeaderVersion"] = returnBufValue(buf,1);
-            else if (currentStream_ == Audio)
-                xmpData_["Xmp.audio.MediaHeaderVersion"] = returnBufValue(buf,1);
-            break;
-        case MediaCreateDate:
-            //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.MediaCreateDate"] = returnUnsignedBufValue(buf);
-            else if (currentStream_ == Audio)
-                xmpData_["Xmp.audio.MediaCreateDate"] = returnUnsignedBufValue(buf);
-            break;
-        case MediaModifyDate:
-            //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.MediaModifyDate"] = returnUnsignedBufValue(buf);
-            else if (currentStream_ == Audio)
-                xmpData_["Xmp.audio.MediaModifyDate"] = returnUnsignedBufValue(buf);
-            break;
-        case MediaTimeScale:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.MediaTimeScale"] = returnBufValue(buf);
-            else if (currentStream_ == Audio)
-                xmpData_["Xmp.audio.MediaTimeScale"] = returnBufValue(buf);
-            time_scale = returnBufValue(buf);
-            break;
-        case MediaDuration:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.MediaDuration"] = returnBufValue(buf)/time_scale;
-            else if (currentStream_ == Audio)
-                xmpData_["Xmp.audio.MediaDuration"] = returnBufValue(buf)/time_scale;
-            break;
-        case MediaLanguageCode:
-            if(currentStream_ == Video)
-                xmpData_["Xmp.video.MediaLangCode"] = returnUnsignedBufValue(buf,2);
-            else if (currentStream_ == Audio)
-                xmpData_["Xmp.audio.MediaLangCode"] = returnUnsignedBufValue(buf,2);
-            break;
+            switch(i) {
+            case MediaHeaderVersion:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.MediaHeaderVersion"] = returnBufValue(buf,1);
+                else if (currentStream_ == Audio)
+                    xmpData_["Xmp.audio.MediaHeaderVersion"] = returnBufValue(buf,1);
+                break;
+            case MediaCreateDate:
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.MediaCreateDate"] = returnUnsignedBufValue(buf);
+                else if (currentStream_ == Audio)
+                    xmpData_["Xmp.audio.MediaCreateDate"] = returnUnsignedBufValue(buf);
+                break;
+            case MediaModifyDate:
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.MediaModifyDate"] = returnUnsignedBufValue(buf);
+                else if (currentStream_ == Audio)
+                    xmpData_["Xmp.audio.MediaModifyDate"] = returnUnsignedBufValue(buf);
+                break;
+            case MediaTimeScale:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.MediaTimeScale"] = returnBufValue(buf);
+                else if (currentStream_ == Audio)
+                    xmpData_["Xmp.audio.MediaTimeScale"] = returnBufValue(buf);
+                time_scale = returnBufValue(buf);
+                break;
+            case MediaDuration:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.MediaDuration"] = returnBufValue(buf)/time_scale;
+                else if (currentStream_ == Audio)
+                    xmpData_["Xmp.audio.MediaDuration"] = returnBufValue(buf)/time_scale;
+                break;
+            case MediaLanguageCode:
+                if(currentStream_ == Video)
+                    xmpData_["Xmp.video.MediaLangCode"] = returnUnsignedBufValue(buf,2);
+                else if (currentStream_ == Audio)
+                    xmpData_["Xmp.audio.MediaLangCode"] = returnUnsignedBufValue(buf,2);
+                break;
 
-        default:
-            break;
+            default:
+                break;
+            }
+        }
+        io_->read(buf.pData_, size%4);
+    }
+    else
+    {
+        for (int i = 0; size/4 != 0 ; size -=4, i++)
+        {
+            if(xmpData_["Xmp.video.MediaHeaderVersion"].count() > 0)
+            {
+                buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaHeaderVersion"].toLong());
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.MediaCreateDate"].count() > 0)
+            {
+                buf = returnBuf((uint64_t)xmpData_["Xmp.video.MediaCreateDate"].toLong());
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.MediaModifyDate"].count() > 0)
+            {
+                buf = returnBuf((uint64_t)xmpData_["Xmp.video.MediaModifyDate"].toLong());
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.MediaTimeScale"].count() > 0)
+            {
+                buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaTimeScale"].toLong());
+                io_->write(buf.pData_,4);
+                io_->seek(-4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.MediaDuration"].count() > 0)
+            {
+                io_->read(buf.pData_,4);
+                time_scale = returnBufValue(buf);
+                buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaDuration"].toLong()*time_scale);
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->read(buf.pData_,4);
+                time_scale = returnBufValue(buf);
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.MediaLangCode"].count() > 0)
+            {
+                io_->read(buf.pData_,4);
+                time_scale = returnBufValue(buf);
+                buf = returnBuf((uint64_t)xmpData_["Xmp.video.MediaLangCode"].toLong()*time_scale);
+                io_->write(buf.pData_,4);
+            }
         }
     }
-    io_->read(buf.pData_, size%4);
 } // QuickTimeVideo::mediaHeaderDecoder
 
 void QuickTimeVideo::trackHeaderDecoder(unsigned long size) {
