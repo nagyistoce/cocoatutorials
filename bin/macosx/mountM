@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ ! -e /Volumes/mbp ]; then
+	mkdir /Volumes/mbp
+	# mount_afp afp://rmills:secret40@rmills-mbp/Users /Volumes/mbp/
+	mount_afp -i afp://rmills-mbp/Users /Volumes/mbp/
+fi
+
+# That's all Folks!
+##
