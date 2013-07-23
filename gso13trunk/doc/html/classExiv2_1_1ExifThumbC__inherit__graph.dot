@@ -1,8 +1,0 @@
-digraph "Exiv2::ExifThumbC"
-{
-  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
-  node [fontname="FreeSans",fontsize="10",shape=record];
-  Node1 [label="Exiv2::ExifThumbC",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
-  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
-  Node2 [label="Exiv2::ExifThumb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1ExifThumb.html",tooltip="Access and modify an Exif thumbnail image. This class implements manipulators to set and erase the th..."];
-}

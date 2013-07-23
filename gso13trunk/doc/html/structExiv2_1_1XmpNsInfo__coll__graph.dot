@@ -1,8 +1,0 @@
-digraph "Exiv2::XmpNsInfo"
-{
-  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
-  node [fontname="FreeSans",fontsize="10",shape=record];
-  Node1 [label="Exiv2::XmpNsInfo",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
-  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" xmpPropertyInfo_" ,fontname="FreeSans"];
-  Node2 [label="Exiv2::XmpPropertyInfo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structExiv2_1_1XmpPropertyInfo.html",tooltip="Information about one XMP property. "];
-}

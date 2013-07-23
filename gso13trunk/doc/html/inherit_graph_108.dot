@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
-  node [fontname="FreeSans",fontsize="10",shape=record];
-  rankdir="LR";
-  Node1 [label="Exiv2::XmpParser",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1XmpParser.html",tooltip="Stateless parser class for XMP packets. Images use this class to parse and serialize XMP packets..."];
-}

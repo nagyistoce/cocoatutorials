@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
-  node [fontname="FreeSans",fontsize="10",shape=record];
-  rankdir="LR";
-  Node1 [label="Exiv2::TiffParser",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1TiffParser.html",tooltip="Stateless parser class for data in TIFF format. Images use this class to decode and encode TIFF data..."];
-}
