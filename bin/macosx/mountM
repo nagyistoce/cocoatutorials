@@ -1,7 +1,7 @@
 #!/bin/bash
 
-V="/Volumes/mbp/"
-v=/mbp
+V="/Volumes/mbpHD/"
+v=/mbpHD
 doit=0
 if [ ! -e $V ]; then
 	mkdir $V
@@ -14,6 +14,9 @@ if [ $? != 0 ]; then
 fi
 
 if [ $doit == 1 ]; then
+    if [ ! -e $v ]; then
+    	sudo ln -s $V $v
+    fi
 	mount_afp afp://rmills:Largs12%40@rmills-mbp/mbpHD $V
 	# mount_afp -i afp://rmills-mbp/mbpHD "$V"/
 else
