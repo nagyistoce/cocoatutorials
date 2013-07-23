@@ -524,8 +524,6 @@ namespace Exiv2 {
         // Read section marker
         int marker = advanceToMarker();
         if (marker < 0) throw Error(15);
-        // count marker
-        long count = 0;
 
         printf("marker | size | note\n");
         do {
@@ -550,9 +548,9 @@ namespace Exiv2 {
                 printf("        ");
             }
 
-            // not all markers have signature.
-            if (count == 0 || marker == app1_ || marker == app13_ || marker == app0_) {
-                startSig = (size > 0 || count == 0)?2:0;
+            // only print signature for appn
+            if (marker >= app0_ && marker <= (app0_ | 0x0F)) {
+                startSig = size>0?2:0;
                 while (startSig < bufRead && buf.pData_[startSig] < 128)
                     printf("%c", buf.pData_[startSig++]);
             }
@@ -566,7 +564,6 @@ namespace Exiv2 {
 
             // Read the beginning of the next segment
             marker = advanceToMarker();
-            count++;
         } while(marker > 0 && marker != eoi_);
 
         // print eoi_
