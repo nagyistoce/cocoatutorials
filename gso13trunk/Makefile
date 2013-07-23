@@ -50,7 +50,7 @@
 ########################################################################
 
 SHELL = /bin/sh
-ENABLE_XMP = 1
+ENABLE_XMP = @ENABLE_XMP@
 
 .PHONY: all doc config samples xmpsdk                \
         mostlyclean clean distclean maintainer-clean \
@@ -134,3 +134,14 @@ maintainer-clean: distclean
 
 config/config.mk: 
 	$(error File config/config.mk does not exist. Did you run ./configure?)
+
+rebuild:
+	make distclean
+	make config
+	./configure
+	make
+	sudo make install
+	make samples
+
+# That's all Folks!
+##
