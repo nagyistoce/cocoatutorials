@@ -525,7 +525,7 @@ namespace Exiv2 {
         int marker = advanceToMarker();
         if (marker < 0) throw Error(15);
 
-        printf("marker | size | note\n");
+        printf("marker | size | signature\n");
         do {
             // print marker bytes
             printf("0x%x    ", marker);
