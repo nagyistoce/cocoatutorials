@@ -1,9 +1,23 @@
 #!/bin/bash
 
-if [ ! -e /Volumes/mbp ]; then
-	mkdir /Volumes/mbp
-	# mount_afp afp://rmills:secret40@rmills-mbp/Users /Volumes/mbp/
-	mount_afp -i afp://rmills-mbp/Users /Volumes/mbp/
+V="/Volumes/mbp/"
+v=/mbp
+doit=0
+if [ ! -e $V ]; then
+	mkdir $V
+	doit=1
+fi
+
+ls -alt $V 2>&1 >/dev/null
+if [ $? != 0 ]; then 
+	doit=1
+fi
+
+if [ $doit == 1 ]; then
+	mount_afp afp://rmills:Largs12%40@rmills-mbp/mbpHD $V
+	# mount_afp -i afp://rmills-mbp/mbpHD "$V"/
+else
+	echo $v "already mounted"
 fi
 
 # That's all Folks!
