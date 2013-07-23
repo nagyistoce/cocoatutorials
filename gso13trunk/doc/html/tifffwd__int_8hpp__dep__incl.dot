@@ -1,0 +1,21 @@
+digraph "tifffwd_int.hpp"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="tifffwd_int.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node2 [label="tiffimage_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tiffimage__int_8hpp.html",tooltip="Internal class TiffParserWorker to parse TIFF data. "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 [label="cr2image_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$cr2image__int_8hpp.html",tooltip="Internal classes to support CR2 image format. "];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node4 [label="orfimage_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$orfimage__int_8hpp.html",tooltip="Internal classes to support Olympus RAW image format. "];
+  Node2 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node5 [label="rw2image_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rw2image__int_8hpp.html",tooltip="Internal classes to support RW2 image format. "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node6 [label="tiffcomposite_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tiffcomposite__int_8hpp.html",tooltip="Internal classes used in a TIFF composite structure. "];
+  Node6 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node7 [label="makernote_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$makernote__int_8hpp.html",tooltip="Makernote factory and registry, IFD makernote header, and camera vendor specific makernote implementa..."];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node8 [label="tiffvisitor_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tiffvisitor__int_8hpp.html",tooltip="Internal operations on a TIFF composite tree, implemented as visitor classes. "];
+}

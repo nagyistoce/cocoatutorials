@@ -1,0 +1,13 @@
+digraph "Exiv2::Internal::ArraySet"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="Exiv2::Internal::ArraySet",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" def_" ,fontname="FreeSans"];
+  Node2 [label="Exiv2::Internal::ArrayDef",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structExiv2_1_1Internal_1_1ArrayDef.html",tooltip="Defines one tag in a binary array. "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cfg_" ,fontname="FreeSans"];
+  Node3 [label="Exiv2::Internal::ArrayCfg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structExiv2_1_1Internal_1_1ArrayCfg.html",tooltip="Additional configuration for a binary array. "];
+  Node2 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" elDefaultDef_" ,fontname="FreeSans"];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cryptFct_" ,fontname="FreeSans"];
+  Node4 [label="Exiv2::DataBuf",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1DataBuf.html",tooltip="Utility class containing a character array. All it does is to take care of memory allocation and dele..."];
+}

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['image',['Image',['../classExiv2_1_1Image.html',1,'Exiv2']]],
+  ['imagefactory',['ImageFactory',['../classExiv2_1_1ImageFactory.html',1,'Exiv2']]],
+  ['impl',['Impl',['../classExiv2_1_1MemIo_1_1Impl.html',1,'Exiv2::MemIo']]],
+  ['impl',['Impl',['../classExiv2_1_1RemoteIo_1_1Impl.html',1,'Exiv2::RemoteIo']]],
+  ['impl',['Impl',['../classExiv2_1_1FileIo_1_1Impl.html',1,'Exiv2::FileIo']]],
+  ['impl',['Impl',['../structExiv2_1_1ExifKey_1_1Impl.html',1,'Exiv2::ExifKey']]],
+  ['impl',['Impl',['../structExiv2_1_1Xmpdatum_1_1Impl.html',1,'Exiv2::Xmpdatum']]],
+  ['insert',['Insert',['../classAction_1_1Insert.html',1,'Action']]],
+  ['iocloser',['IoCloser',['../classExiv2_1_1IoCloser.html',1,'Exiv2']]],
+  ['iowrapper',['IoWrapper',['../classExiv2_1_1Internal_1_1IoWrapper.html',1,'Exiv2::Internal']]],
+  ['iptcdata',['IptcData',['../classExiv2_1_1IptcData.html',1,'Exiv2']]],
+  ['iptcdatasets',['IptcDataSets',['../classExiv2_1_1IptcDataSets.html',1,'Exiv2']]],
+  ['iptcdatum',['Iptcdatum',['../classExiv2_1_1Iptcdatum.html',1,'Exiv2']]],
+  ['iptckey',['IptcKey',['../classExiv2_1_1IptcKey.html',1,'Exiv2']]],
+  ['iptcparser',['IptcParser',['../classExiv2_1_1IptcParser.html',1,'Exiv2']]],
+  ['iterator',['iterator',['../classJzon_1_1Array_1_1iterator.html',1,'Jzon::Array']]],
+  ['iterator',['iterator',['../classJzon_1_1Object_1_1iterator.html',1,'Jzon::Object']]]
+];

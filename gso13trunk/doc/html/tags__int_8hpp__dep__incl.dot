@@ -1,0 +1,37 @@
+digraph "tags_int.hpp"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="tags_int.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node2 [label="asfvideo.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$asfvideo_8hpp.html",tooltip="An Image subclass to support ASF video files. "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 [label="tifffwd_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tifffwd__int_8hpp.html",tooltip="Internal TIFF parser related typedefs and forward definitions. "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node4 [label="tiffimage_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tiffimage__int_8hpp.html",tooltip="Internal class TiffParserWorker to parse TIFF data. "];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node5 [label="cr2image_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$cr2image__int_8hpp.html",tooltip="Internal classes to support CR2 image format. "];
+  Node4 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node6 [label="orfimage_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$orfimage__int_8hpp.html",tooltip="Internal classes to support Olympus RAW image format. "];
+  Node4 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node7 [label="rw2image_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rw2image__int_8hpp.html",tooltip="Internal classes to support RW2 image format. "];
+  Node3 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node8 [label="tiffcomposite_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tiffcomposite__int_8hpp.html",tooltip="Internal classes used in a TIFF composite structure. "];
+  Node8 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node9 [label="makernote_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$makernote__int_8hpp.html",tooltip="Makernote factory and registry, IFD makernote header, and camera vendor specific makernote implementa..."];
+  Node3 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node10 [label="tiffvisitor_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tiffvisitor__int_8hpp.html",tooltip="Internal operations on a TIFF composite tree, implemented as visitor classes. "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node1 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node11 [label="crwimage_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$crwimage__int_8hpp.html",tooltip="Internal classes to support CRW/CIFF format. "];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node1 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node12 [label="matroskavideo.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$matroskavideo_8hpp.html",tooltip="An Image subclass to support Matroska video files. "];
+  Node1 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node13 [label="pentaxmn_int.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pentaxmn__int_8hpp.html",tooltip="Pentax MakerNote implemented according to the specification http://www.gvsoft.homedns.org/exif/makernote-pentax-type3.html and based on ExifTool implementation and Pentax Makernote list by Phil Harvey  "];
+  Node1 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node14 [label="quicktimevideo.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$quicktimevideo_8hpp.html",tooltip="An Image subclass to support Quick Time video files. "];
+  Node1 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node15 [label="riffvideo.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$riffvideo_8hpp.html",tooltip="An Image subclass to support RIFF video files. "];
+}

@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Exiv2::Internal::LensType\lAndFocalLengthAndMaxAperture",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structExiv2_1_1Internal_1_1LensTypeAndFocalLengthAndMaxAperture.html",tooltip="Helper structure. "];
+}

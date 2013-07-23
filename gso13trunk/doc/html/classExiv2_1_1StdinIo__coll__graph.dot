@@ -1,0 +1,14 @@
+digraph "Exiv2::StdinIo"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="Exiv2::StdinIo",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node2 [label="Exiv2::FileIo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1FileIo.html",tooltip="Provides binary file IO by implementing the BasicIo interface. "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 [label="Exiv2::BasicIo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1BasicIo.html",tooltip="An interface for simple binary IO. "];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" TEMP_FILE_EXT\nGEN_FILE_EXT" ,fontname="FreeSans"];
+  Node4 [label="std::string",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip="STL class. "];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node5 [label="std::basic_string\<\l char \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip="STL class. "];
+}

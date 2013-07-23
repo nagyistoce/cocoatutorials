@@ -1,0 +1,8 @@
+digraph "Jzon::Pair&lt; T1, T2 &gt;"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="Jzon::Pair\< T1, T2 \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< Jzon::Value::ValueType,\l std::string \>" ,fontname="FreeSans"];
+  Node2 [label="Jzon::Pair\< Jzon::Value\l::ValueType, std::string \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structJzon_1_1Pair.html"];
+}

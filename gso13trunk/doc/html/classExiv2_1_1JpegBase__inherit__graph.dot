@@ -1,0 +1,12 @@
+digraph "Exiv2::JpegBase"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="Exiv2::JpegBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node2 [label="Exiv2::Image",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Image.html",tooltip="Abstract base class defining the interface for an image. This is the top-level interface to the Exiv2..."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 [label="Exiv2::ExvImage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1ExvImage.html",tooltip="Helper class to access Exiv2 files. "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node4 [label="Exiv2::JpegImage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1JpegImage.html",tooltip="Class to access JPEG images. "];
+}

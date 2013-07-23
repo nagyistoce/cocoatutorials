@@ -1,0 +1,12 @@
+digraph "Exiv2::Key"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="Exiv2::Key",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node2 [label="Exiv2::ExifKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1ExifKey.html",tooltip="Concrete keys for Exif metadata and access to Exif tag reference data. "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 [label="Exiv2::IptcKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1IptcKey.html",tooltip="Concrete keys for IPTC metadata. "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node4 [label="Exiv2::XmpKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1XmpKey.html",tooltip="Concrete keys for XMP metadata. "];
+}

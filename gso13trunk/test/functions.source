@@ -434,7 +434,7 @@ prepareTest()
 				fi
 				args+=($i)
 			done
-			DIFF=$(readlink -f "$here/../msvc/diff$exe")
+			DIFF=$(readlink -f "$here/../msvc2003/diff$exe")
 			chmod +x "$DIFF"
 			         "$DIFF" ${args[@]}
 		}

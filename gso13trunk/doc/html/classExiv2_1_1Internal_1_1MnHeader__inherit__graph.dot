@@ -1,0 +1,29 @@
+digraph "Exiv2::Internal::MnHeader"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Exiv2::Internal::MnHeader",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node2 [label="Exiv2::Internal::FujiMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1FujiMnHeader.html",tooltip="Header of a Fujifilm Makernote. "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node3 [label="Exiv2::Internal::Nikon2Mn\lHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1Nikon2MnHeader.html",tooltip="Header of a Nikon 2 Makernote. "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node4 [label="Exiv2::Internal::Nikon3Mn\lHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1Nikon3MnHeader.html",tooltip="Header of a Nikon 3 Makernote. "];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node5 [label="Exiv2::Internal::Olympus2\lMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1Olympus2MnHeader.html",tooltip="Header of an Olympus II Makernote. "];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node6 [label="Exiv2::Internal::Olympus\lMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1OlympusMnHeader.html",tooltip="Header of an Olympus Makernote. "];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node7 [label="Exiv2::Internal::Panasonic\lMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1PanasonicMnHeader.html",tooltip="Header of a Panasonic Makernote. "];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node8 [label="Exiv2::Internal::PentaxDng\lMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1PentaxDngMnHeader.html",tooltip="Header of an Pentax DNG Makernote. "];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node9 [label="Exiv2::Internal::PentaxMn\lHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1PentaxMnHeader.html",tooltip="Header of an Pentax Makernote. "];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node10 [label="Exiv2::Internal::Samsung\lMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1SamsungMnHeader.html",tooltip="Header of a Samsung Makernote, only used for the relative offset. "];
+  Node1 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node11 [label="Exiv2::Internal::SigmaMn\lHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1SigmaMnHeader.html",tooltip="Header of a Sigma Makernote. "];
+  Node1 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="FreeSans"];
+  Node12 [label="Exiv2::Internal::SonyMnHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classExiv2_1_1Internal_1_1SonyMnHeader.html",tooltip="Header of a Sony Makernote. "];
+}
