@@ -1,0 +1,6 @@
+#!/bin/bash
+
+~/Software/smartsvn/smartsvn/bin/smartsvn.sh 2>/dev/null >/dev/null &
+
+# That's all Folks!
+##

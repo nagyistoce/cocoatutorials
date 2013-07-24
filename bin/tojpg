@@ -7,7 +7,7 @@ renamer JPG jpg "*.JPG"
 ##
 # get "raw" filenames (raw = IMG_1234.JPG - as it arrives from the camera)
 IFS=$'\n'
-FILES="$(find . -maxdepth 1 -iname "*.jpg")"
+FILES="$(find . -maxdepth 1 -iname \"*.jpg\")"
 
 ##
 # rename them in lower case, one at a time
