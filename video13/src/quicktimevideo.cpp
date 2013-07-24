@@ -1298,33 +1298,121 @@ void QuickTimeVideo::audioDescDecoder()
 
     const TagVocabulary* td;
 
-    for (int i = 0; size/4 != 0 ; size -= 4, i++) {
-        io_->read(buf.pData_, 4);
-        switch(i) {
-        case AudioFormat:
-            td = find(qTimeFileType, Exiv2::toString( buf.pData_));
+    if(!m_modifyMetadata)
+    {
+        for (int i = 0; size/4 != 0 ; size -= 4, i++) {
+            io_->read(buf.pData_, 4);
+            switch(i) {
+            case AudioFormat:
+                td = find(qTimeFileType, Exiv2::toString( buf.pData_));
+                if(td)
+                    xmpData_["Xmp.audio.Compressor"] = exvGettext(td->label_);
+                else
+                    xmpData_["Xmp.audio.Compressor"] = Exiv2::toString( buf.pData_);
+                break;
+            case AudioVendorID:
+                td = find(vendorIDTags, Exiv2::toString( buf.pData_));
+                if(td)
+                    xmpData_["Xmp.audio.VendorID"] = exvGettext(td->label_);
+                break;
+            case AudioChannels:
+                xmpData_["Xmp.audio.ChannelType"] = returnBufValue(buf, 2);
+                xmpData_["Xmp.audio.BitsPerSample"] = (buf.pData_[2] * 256 + buf.pData_[3]);
+                break;
+            case AudioSampleRate:
+                xmpData_["Xmp.audio.SampleRate"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                break;
+            default:
+                break;
+            }
+        }
+        io_->read(buf.pData_, static_cast<long>(size % 4));	//cause size is so small, this cast should be right.
+    }
+    else
+    {
+        TagVocabulary revTagVocabulary[(sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))];
+        reverseTagVocabulary(qTimeFileType,revTagVocabulary,((sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))));
+        if(xmpData_["Xmp.audio.Compressor"].count() > 0)
+        {
+            byte rawCompressor[4];
+            td = find(qTimeFileType,xmpData_["Xmp.audio.Compressor"].toString());
+            const char* compressor = td->voc_;
             if(td)
-                xmpData_["Xmp.audio.Compressor"] = exvGettext(td->label_);
+            {
+                for(int j=0; j<4; j++)
+                {
+                    rawCompressor[j] = compressor[j];
+                }
+                io_->write(rawCompressor,4);
+            }
             else
-                xmpData_["Xmp.audio.Compressor"] = Exiv2::toString( buf.pData_);
-            break;
-        case AudioVendorID:
-            td = find(vendorIDTags, Exiv2::toString( buf.pData_));
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.audio.VendorID"].count() >0)
+        {
+            byte rawVendorID[4];
+            td = find(qTimeFileType,xmpData_["Xmp.audio.VendorID"].toString());
+            const char* vendorID = td->voc_;
             if(td)
-                xmpData_["Xmp.audio.VendorID"] = exvGettext(td->label_);
-            break;
-        case AudioChannels:
-            xmpData_["Xmp.audio.ChannelType"] = returnBufValue(buf, 2);
-            xmpData_["Xmp.audio.BitsPerSample"] = (buf.pData_[2] * 256 + buf.pData_[3]);
-            break;
-        case AudioSampleRate:
-            xmpData_["Xmp.audio.SampleRate"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-            break;
-        default:
-            break;
+            {
+                for(int j=0; j<4; j++)
+                {
+                    rawVendorID[j] = vendorID[j];
+                }
+                io_->write(rawVendorID,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.audio.ChannelType"].count() >0)
+        {
+            byte rawChannelType[2];
+            ushort channelType =(ushort) xmpData_["Xmp.audio.ChannelType"].toLong();
+            memcpy(rawChannelType,channelType,2);
+            io_->write(rawChannelType,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.audio.BitsPerSample"].count() >0)
+        {
+            byte rawBitsPerSample[2];
+            ushort bitsPerSample =(ushort) (xmpData_["Xmp.audio.BitsPerSample"].toLong()/256);
+            memcpy(rawBitsPerSample,bitsPerSample,2);
+            io_->write(rawBitsPerSample,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.audio.SampleRate"].count() >0)
+        {
+            byte rawSampleRate[4];
+            byte tmpRawData[2];
+            xmpData_["Xmp.audio.SampleRate"].toLong();
+            ushort sampleRateBase = (ushort) (xmpData_["Xmp.audio.SampleRate"].toLong()/512);
+            memcpy(tmpRawData,sampleRateBase,2);
+            rawSampleRate[0] = tmpRawData[0] ; rawSampleRate[1] = tmpRawData[1];
+            //TODO calculations and logic
+        }
+        else
+        {
+
         }
     }
-    io_->read(buf.pData_, static_cast<long>(size % 4));	//cause size is so small, this cast should be right.
 } // QuickTimeVideo::audioDescDecoder
 
 void QuickTimeVideo::imageDescDecoder()
@@ -1425,7 +1513,24 @@ void QuickTimeVideo::imageDescDecoder()
         {
             io_->seek(4,BasicIo::cur);
         }
-
+        if(xmpData_["Xmp.video.SourceImageWidth"].count() >0)
+        {
+            DataBuf imageWidth = returnBuf((int64_t)xmpData_["Xmp.video.SourceImageWidth"].toLong());
+            io_->write(imageWidth.pData_,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.SourceImageHeight"].count() >0)
+        {
+            DataBuf imageHeight = returnBuf((int64_t)xmpData_["Xmp.video.SourceImageHeight"].toLong()/256);
+            io_->write(imageHeight.pData_,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
     }
 } // QuickTimeVideo::imageDescDecoder
 
