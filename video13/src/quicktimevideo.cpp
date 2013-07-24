@@ -878,7 +878,21 @@ void QuickTimeVideo::previewTagDecoder(unsigned long size)
         }
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
         {
-            //const char* xmpda xmpData_["Xmp.video.PreviewAtomType"].toString();
+            DataBuf buf((unsigned long)5);
+            byte rawPreviewAtomType[4] = {'P','I','C','T'};
+            const std::string previewAtomType = xmpData_["Xmp.video.PreviewAtomType"].toString();
+            for(int j=0; j<4; j++)
+            {
+                buf.pData_[j] = previewAtomType[j];
+            }
+            if(!equalsQTimeTag(buf, "PICT"))
+            {
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->write(rawPreviewAtomType,4);
+            }
         }
         else
         {
@@ -890,19 +904,69 @@ void QuickTimeVideo::previewTagDecoder(unsigned long size)
 void QuickTimeVideo::keysTagDecoder(unsigned long size)
 {
     DataBuf buf(4);
-    uint64_t cur_pos = io_->tell();
-    io_->read(buf.pData_, 4);
-    xmpData_["Xmp.video.PreviewDate"] = getULong(buf.pData_, bigEndian);
-    io_->read(buf.pData_, 2);
-    xmpData_["Xmp.video.PreviewVersion"] = getShort(buf.pData_, bigEndian);
+    if(!m_modifyMetadata)
+    {
+        uint64_t cur_pos = io_->tell();
+        io_->read(buf.pData_, 4);
+        xmpData_["Xmp.video.PreviewDate"] = getULong(buf.pData_, bigEndian);
+        io_->read(buf.pData_, 2);
+        xmpData_["Xmp.video.PreviewVersion"] = getShort(buf.pData_, bigEndian);
 
-    io_->read(buf.pData_, 4);
-    if(equalsQTimeTag(buf, "PICT"))
-        xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
+        io_->read(buf.pData_, 4);
+        if(equalsQTimeTag(buf, "PICT"))
+            xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
+        else
+            xmpData_["Xmp.video.PreviewAtomType"] = Exiv2::toString(buf.pData_);
+
+        io_->seek(cur_pos + size, BasicIo::beg);
+    }
     else
-        xmpData_["Xmp.video.PreviewAtomType"] = Exiv2::toString(buf.pData_);
-
-    io_->seek(cur_pos + size, BasicIo::beg);
+    {
+        if(xmpData_["Xmp.video.PreviewDate"].count() >0)
+        {
+            byte rawpreviewDate[4];
+            const long previewDate = xmpData_["Xmp.video.PreviewDate"].toLong();
+            memcpy(rawpreviewDate,&previewDate,4);
+            io_->write(rawpreviewDate,4);
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.PreviewVersion"].count() >0)
+        {
+            byte rawPreviewVersion[2];
+            const ushort previewVersion = (ushort) xmpData_["Xmp.video.PreviewVersion"].toLong();
+            memcpy(rawPreviewVersion,&previewVersion,2);
+            io_->write(rawPreviewVersion,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
+        {
+            DataBuf buf((unsigned long)5);
+            byte rawPreviewAtomType[4] = {'P','I','C','T'};
+            const std::string previewAtomType = xmpData_["Xmp.video.PreviewAtomType"].toString();
+            for(int j=0; j<4; j++)
+            {
+                buf.pData_[j] = previewAtomType[j];
+            }
+            if(!equalsQTimeTag(buf, "PICT"))
+            {
+                io_->write(buf.pData_,4);
+            }
+            else
+            {
+                io_->write(rawPreviewAtomType,4);
+            }
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+    }
 } // QuickTimeVideo::keysTagDecoder
 
 void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
