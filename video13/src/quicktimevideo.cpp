@@ -836,19 +836,55 @@ void QuickTimeVideo::discard(unsigned long size)
 void QuickTimeVideo::previewTagDecoder(unsigned long size)
 {
     DataBuf buf(4);
-    uint64_t cur_pos = io_->tell();
-    io_->read(buf.pData_, 4);
-    xmpData_["Xmp.video.PreviewDate"] = getULong(buf.pData_, bigEndian);
-    io_->read(buf.pData_, 2);
-    xmpData_["Xmp.video.PreviewVersion"] = getShort(buf.pData_, bigEndian);
+    if(!m_modifyMetadata)
+    {
+        uint64_t cur_pos = io_->tell();
+        io_->read(buf.pData_, 4);
+        xmpData_["Xmp.video.PreviewDate"] = getULong(buf.pData_, bigEndian);
+        io_->read(buf.pData_, 2);
+        xmpData_["Xmp.video.PreviewVersion"] = getShort(buf.pData_, bigEndian);
 
-    io_->read(buf.pData_, 4);
-    if(equalsQTimeTag(buf, "PICT"))
-        xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
+        io_->read(buf.pData_, 4);
+        if(equalsQTimeTag(buf, "PICT"))
+            xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
+        else
+            xmpData_["Xmp.video.PreviewAtomType"] = Exiv2::toString(buf.pData_);
+
+        io_->seek(cur_pos + size, BasicIo::beg);
+    }
     else
-        xmpData_["Xmp.video.PreviewAtomType"] = Exiv2::toString(buf.pData_);
-
-    io_->seek(cur_pos + size, BasicIo::beg);
+    {
+        if(xmpData_["Xmp.video.PreviewDate"].count() >0)
+        {
+            byte rawPreviewDate[4];
+            const long previewDate = xmpData_["Xmp.video.PreviewDate"].toLong();
+            memcpy(rawPreviewDate,&previewDate,4);
+            io_->write(rawPreviewDate,4);
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.PreviewVersion"].count() >0)
+        {
+            byte rawPreviewVersion[2];
+            const ushort previewVersion = (ushort) xmpData_["Xmp.video.PreviewVersion"].toLong();
+            memcpy(rawPreviewVersion,&previewVersion,2);
+            io_->write(rawPreviewVersion,2);
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
+        {
+            //const char* xmpda xmpData_["Xmp.video.PreviewAtomType"].toString();
+        }
+        else
+        {
+            io_->seek(4,BasicIo::cur);
+        }
+    }
 } // QuickTimeVideo::previewTagDecoder
 
 void QuickTimeVideo::keysTagDecoder(unsigned long size)
@@ -1025,203 +1061,209 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
     unsigned short dataLength = 0, dataType = 2;
     const TagDetails* td, *td2;
 
-    for(int i = 0 ; i < 100 ; i++) {
-        io_->read(buf.pData_, 4);
-        TagID = Exiv2::getULong(buf.pData_, bigEndian);
-        td = find(NikonNCTGTags, TagID);
-
-        io_->read(buf.pData_, 2);
-        dataType = Exiv2::getUShort(buf.pData_, bigEndian);
-
-        std::memset(buf.pData_, 0x0, buf.size_);
-        io_->read(buf.pData_, 2);
-
-        if(TagID == 0x2000023) {
-            uint64_t local_pos = io_->tell();
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
-            std::memset(buf.pData_, 0x0, buf.size_);
-
-            io_->read(buf.pData_, 4);   xmpData_["Xmp.video.PictureControlVersion"]  = Exiv2::toString(buf.pData_);
-            io_->read(buf.pData_, 20);  xmpData_["Xmp.video.PictureControlName"]     = Exiv2::toString(buf.pData_);
-            io_->read(buf.pData_, 20);  xmpData_["Xmp.video.PictureControlBase"]     = Exiv2::toString(buf.pData_);
-            io_->read(buf.pData_, 4);   std::memset(buf.pData_, 0x0, buf.size_);
-
-            io_->read(buf.pData_, 1);
-            td2 = find(PictureControlAdjust, (int)buf.pData_[0] & 7 );
-            if(td2)
-                xmpData_["Xmp.video.PictureControlAdjust"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.PictureControlAdjust"] = (int)buf.pData_[0] & 7 ;
-
-            io_->read(buf.pData_, 1);
-            td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
-            if(td2)
-                xmpData_["Xmp.video.PictureControlQuickAdjust"] = exvGettext(td2->label_);
-
-            io_->read(buf.pData_, 1);
-            td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
-            if(td2)
-                xmpData_["Xmp.video.Sharpness"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.Sharpness"] = (int)buf.pData_[0] & 7;
-
-            io_->read(buf.pData_, 1);
-            td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
-            if(td2)
-                xmpData_["Xmp.video.Contrast"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.Contrast"] = (int)buf.pData_[0] & 7;
-
-            io_->read(buf.pData_, 1);
-            td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
-            if(td2)
-                xmpData_["Xmp.video.Brightness"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.Brightness"] = (int)buf.pData_[0] & 7;
-
-            io_->read(buf.pData_, 1);
-            td2 = find(Saturation, (int)buf.pData_[0] & 7 );
-            if(td2)
-                xmpData_["Xmp.video.Saturation"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.Saturation"] = (int)buf.pData_[0] & 7;
-
-            io_->read(buf.pData_, 1);
-            xmpData_["Xmp.video.HueAdjustment"] = (int)buf.pData_[0] & 7;
-
-            io_->read(buf.pData_, 1);
-            td2 = find(FilterEffect, (int)buf.pData_[0]);
-            if(td2)
-                xmpData_["Xmp.video.FilterEffect"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.FilterEffect"] = (int)buf.pData_[0];
-
-            io_->read(buf.pData_, 1);
-            td2 = find(ToningEffect, (int)buf.pData_[0]);
-            if(td2)
-                xmpData_["Xmp.video.ToningEffect"] = exvGettext(td2->label_);
-            else
-                xmpData_["Xmp.video.ToningEffect"] = (int)buf.pData_[0];
-
-            io_->read(buf.pData_, 1);   xmpData_["Xmp.video.ToningSaturation"] = (int)buf.pData_[0];
-
-            io_->seek(local_pos + dataLength, BasicIo::beg);
-        }
-
-        else if(TagID == 0x2000024) {
-            uint64_t local_pos = io_->tell();
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
-            std::memset(buf.pData_, 0x0, buf.size_);
-
-            io_->read(buf.pData_, 2);   xmpData_["Xmp.video.TimeZone"] = Exiv2::getShort(buf.pData_, bigEndian);
-            io_->read(buf.pData_, 1);
-            td2 = find(YesNo, (int)buf.pData_[0]);
-            if(td2)
-                xmpData_["Xmp.video.DayLightSavings"] = exvGettext(td2->label_);
-
-            io_->read(buf.pData_, 1);
-            td2 = find(DateDisplayFormat, (int)buf.pData_[0]);
-            if(td2)
-                xmpData_["Xmp.video.DateDisplayFormat"] = exvGettext(td2->label_);
-
-            io_->seek(local_pos + dataLength, BasicIo::beg);
-        }
-
-        else if(dataType == 2 || dataType == 7) {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
-            std::memset(buf.pData_, 0x0, buf.size_);
-
-            // Sanity check with an "unreasonably" large number
-            if (dataLength > 200) {
-#ifndef SUPPRESS_WARNINGS
-                EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be larger than 200."
-                          << " Entries considered invalid. Not Processed.\n";
-#endif
-                io_->seek(io_->tell() + dataLength, BasicIo::beg);
-            }
-            else
-                io_->read(buf.pData_, dataLength);
-
-            if(td)
-                xmpData_[exvGettext(td->label_)] = Exiv2::toString(buf.pData_);
-        }
-        else if(dataType == 4)  {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
-            std::memset(buf.pData_, 0x0, buf.size_);
+    if(!m_modifyMetadata)
+    {
+        for(int i = 0 ; i < 100 ; i++) {
             io_->read(buf.pData_, 4);
-            if(td)
-                xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getULong( buf.pData_, bigEndian));
+            TagID = Exiv2::getULong(buf.pData_, bigEndian);
+            td = find(NikonNCTGTags, TagID);
 
-            // Sanity check with an "unreasonably" large number
-            if (dataLength > 200 || dataLength < 4) {
-#ifndef SUPPRESS_WARNINGS
-                EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
-                          << " Entries considered invalid. Not Processed.\n";
-#endif
-                io_->seek(io_->tell() + dataLength - 4, BasicIo::beg);
-            }
-            else
-                io_->read(buf.pData_, dataLength - 4);
-        }
-        else if(dataType == 3)  {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
+            io_->read(buf.pData_, 2);
+            dataType = Exiv2::getUShort(buf.pData_, bigEndian);
+
             std::memset(buf.pData_, 0x0, buf.size_);
             io_->read(buf.pData_, 2);
-            if(td)
-                xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian));
 
-            // Sanity check with an "unreasonably" large number
-            if (dataLength > 200 || dataLength < 2) {
-#ifndef SUPPRESS_WARNINGS
-                EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
-                          << " Entries considered invalid. Not Processed.\n";
-#endif
-                io_->seek(io_->tell() + dataLength - 2, BasicIo::beg);
-            }
-            else
-                io_->read(buf.pData_, dataLength - 2);
-        }
-        else if(dataType == 5) {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 8;
-            std::memset(buf.pData_, 0x0, buf.size_);
-            io_->read(buf.pData_, 4);
-            io_->read(buf2.pData_, 4);
-            if(td)
-                xmpData_[exvGettext(td->label_)] = Exiv2::toString((double)Exiv2::getULong( buf.pData_, bigEndian) / (double)Exiv2::getULong( buf2.pData_, bigEndian));
+            if(TagID == 0x2000023) {
+                uint64_t local_pos = io_->tell();
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
+                std::memset(buf.pData_, 0x0, buf.size_);
 
-            // Sanity check with an "unreasonably" large number
-            if (dataLength > 200 || dataLength < 8) {
-#ifndef SUPPRESS_WARNINGS
-                EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
-                          << " Entries considered invalid. Not Processed.\n";
-#endif
-                io_->seek(io_->tell() + dataLength - 8, BasicIo::beg);
-            }
-            else
-                io_->read(buf.pData_, dataLength - 8);
-        }
-        else if(dataType == 8) {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
-            std::memset(buf.pData_, 0x0, buf.size_);
-            io_->read(buf.pData_, 2);
-            io_->read(buf2.pData_, 2);
-            if(td)
-                xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian) ) + " " + Exiv2::toString(Exiv2::getUShort( buf2.pData_, bigEndian));
+                io_->read(buf.pData_, 4);   xmpData_["Xmp.video.PictureControlVersion"]  = Exiv2::toString(buf.pData_);
+                io_->read(buf.pData_, 20);  xmpData_["Xmp.video.PictureControlName"]     = Exiv2::toString(buf.pData_);
+                io_->read(buf.pData_, 20);  xmpData_["Xmp.video.PictureControlBase"]     = Exiv2::toString(buf.pData_);
+                io_->read(buf.pData_, 4);   std::memset(buf.pData_, 0x0, buf.size_);
 
-            // Sanity check with an "unreasonably" large number
-            if (dataLength > 200 || dataLength < 4) {
-#ifndef SUPPRESS_WARNINGS
-                EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
-                          << " Entries considered invalid. Not Processed.\n";
-#endif
-                io_->seek(io_->tell() + dataLength - 4, BasicIo::beg);
+                io_->read(buf.pData_, 1);
+                td2 = find(PictureControlAdjust, (int)buf.pData_[0] & 7 );
+                if(td2)
+                    xmpData_["Xmp.video.PictureControlAdjust"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.PictureControlAdjust"] = (int)buf.pData_[0] & 7 ;
+
+                io_->read(buf.pData_, 1);
+                td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
+                if(td2)
+                    xmpData_["Xmp.video.PictureControlQuickAdjust"] = exvGettext(td2->label_);
+
+                io_->read(buf.pData_, 1);
+                td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
+                if(td2)
+                    xmpData_["Xmp.video.Sharpness"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.Sharpness"] = (int)buf.pData_[0] & 7;
+
+                io_->read(buf.pData_, 1);
+                td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
+                if(td2)
+                    xmpData_["Xmp.video.Contrast"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.Contrast"] = (int)buf.pData_[0] & 7;
+
+                io_->read(buf.pData_, 1);
+                td2 = find(NormalSoftHard, (int)buf.pData_[0] & 7 );
+                if(td2)
+                    xmpData_["Xmp.video.Brightness"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.Brightness"] = (int)buf.pData_[0] & 7;
+
+                io_->read(buf.pData_, 1);
+                td2 = find(Saturation, (int)buf.pData_[0] & 7 );
+                if(td2)
+                    xmpData_["Xmp.video.Saturation"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.Saturation"] = (int)buf.pData_[0] & 7;
+
+                io_->read(buf.pData_, 1);
+                xmpData_["Xmp.video.HueAdjustment"] = (int)buf.pData_[0] & 7;
+
+                io_->read(buf.pData_, 1);
+                td2 = find(FilterEffect, (int)buf.pData_[0]);
+                if(td2)
+                    xmpData_["Xmp.video.FilterEffect"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.FilterEffect"] = (int)buf.pData_[0];
+
+                io_->read(buf.pData_, 1);
+                td2 = find(ToningEffect, (int)buf.pData_[0]);
+                if(td2)
+                    xmpData_["Xmp.video.ToningEffect"] = exvGettext(td2->label_);
+                else
+                    xmpData_["Xmp.video.ToningEffect"] = (int)buf.pData_[0];
+
+                io_->read(buf.pData_, 1);   xmpData_["Xmp.video.ToningSaturation"] = (int)buf.pData_[0];
+
+                io_->seek(local_pos + dataLength, BasicIo::beg);
             }
-            else
-                io_->read(buf.pData_, dataLength - 4);
+
+            else if(TagID == 0x2000024) {
+                uint64_t local_pos = io_->tell();
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
+                std::memset(buf.pData_, 0x0, buf.size_);
+
+                io_->read(buf.pData_, 2);   xmpData_["Xmp.video.TimeZone"] = Exiv2::getShort(buf.pData_, bigEndian);
+                io_->read(buf.pData_, 1);
+                td2 = find(YesNo, (int)buf.pData_[0]);
+                if(td2)
+                    xmpData_["Xmp.video.DayLightSavings"] = exvGettext(td2->label_);
+
+                io_->read(buf.pData_, 1);
+                td2 = find(DateDisplayFormat, (int)buf.pData_[0]);
+                if(td2)
+                    xmpData_["Xmp.video.DateDisplayFormat"] = exvGettext(td2->label_);
+
+                io_->seek(local_pos + dataLength, BasicIo::beg);
+            }
+
+            else if(dataType == 2 || dataType == 7) {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
+                std::memset(buf.pData_, 0x0, buf.size_);
+
+                // Sanity check with an "unreasonably" large number
+                if (dataLength > 200) {
+#ifndef SUPPRESS_WARNINGS
+                    EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be larger than 200."
+                              << " Entries considered invalid. Not Processed.\n";
+#endif
+                    io_->seek(io_->tell() + dataLength, BasicIo::beg);
+                }
+                else
+                    io_->read(buf.pData_, dataLength);
+
+                if(td)
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString(buf.pData_);
+            }
+            else if(dataType == 4)  {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 4);
+                if(td)
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getULong( buf.pData_, bigEndian));
+
+                // Sanity check with an "unreasonably" large number
+                if (dataLength > 200 || dataLength < 4) {
+#ifndef SUPPRESS_WARNINGS
+                    EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
+                              << " Entries considered invalid. Not Processed.\n";
+#endif
+                    io_->seek(io_->tell() + dataLength - 4, BasicIo::beg);
+                }
+                else
+                    io_->read(buf.pData_, dataLength - 4);
+            }
+            else if(dataType == 3)  {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 2);
+                if(td)
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian));
+
+                // Sanity check with an "unreasonably" large number
+                if (dataLength > 200 || dataLength < 2) {
+#ifndef SUPPRESS_WARNINGS
+                    EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
+                              << " Entries considered invalid. Not Processed.\n";
+#endif
+                    io_->seek(io_->tell() + dataLength - 2, BasicIo::beg);
+                }
+                else
+                    io_->read(buf.pData_, dataLength - 2);
+            }
+            else if(dataType == 5) {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 8;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 4);
+                io_->read(buf2.pData_, 4);
+                if(td)
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString((double)Exiv2::getULong( buf.pData_, bigEndian) / (double)Exiv2::getULong( buf2.pData_, bigEndian));
+
+                // Sanity check with an "unreasonably" large number
+                if (dataLength > 200 || dataLength < 8) {
+#ifndef SUPPRESS_WARNINGS
+                    EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
+                              << " Entries considered invalid. Not Processed.\n";
+#endif
+                    io_->seek(io_->tell() + dataLength - 8, BasicIo::beg);
+                }
+                else
+                    io_->read(buf.pData_, dataLength - 8);
+            }
+            else if(dataType == 8) {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 2);
+                io_->read(buf2.pData_, 2);
+                if(td)
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian) ) + " " + Exiv2::toString(Exiv2::getUShort( buf2.pData_, bigEndian));
+
+                // Sanity check with an "unreasonably" large number
+                if (dataLength > 200 || dataLength < 4) {
+#ifndef SUPPRESS_WARNINGS
+                    EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
+                              << " Entries considered invalid. Not Processed.\n";
+#endif
+                    io_->seek(io_->tell() + dataLength - 4, BasicIo::beg);
+                }
+                else
+                    io_->read(buf.pData_, dataLength - 4);
+            }
         }
+        io_->seek(cur_pos + size_external, BasicIo::beg);
     }
+    else
+    {
 
-    io_->seek(cur_pos + size_external, BasicIo::beg);
+    }
 } // QuickTimeVideo::NikonTagsDecoder
 
 void QuickTimeVideo::setMediaStream()
@@ -1259,15 +1301,25 @@ void QuickTimeVideo::timeToSampleDecoder()
     noOfEntries = returnUnsignedBufValue(buf);
     uint64_t temp;
 
-    for(unsigned long i = 1; i <= noOfEntries; i++) {
-        io_->read(buf.pData_, 4);
-        temp = returnBufValue(buf);
-        totalframes += temp;
-        io_->read(buf.pData_, 4);
-        timeOfFrames += temp * returnBufValue(buf);
+    if(!m_modifyMetadata)
+    {
+        for(unsigned long i = 1; i <= noOfEntries; i++) {
+            io_->read(buf.pData_, 4);
+            temp = returnBufValue(buf);
+            totalframes += temp;
+            io_->read(buf.pData_, 4);
+            timeOfFrames += temp * returnBufValue(buf);
+        }
+        if (currentStream_ == Video)
+            xmpData_["Xmp.video.FrameRate"] = (double)totalframes * (double)timeScale_ / (double)timeOfFrames;
     }
-    if (currentStream_ == Video)
-        xmpData_["Xmp.video.FrameRate"] = (double)totalframes * (double)timeScale_ / (double)timeOfFrames;
+    else
+    {
+        if(xmpData_["Xmp.video.FrameRate"].count() >0)
+        {
+            //TODO calculation
+        }
+    }
 } // QuickTimeVideo::timeToSampleDecoder
 
 void QuickTimeVideo::sampleDesc(unsigned long size)
@@ -1380,7 +1432,7 @@ void QuickTimeVideo::audioDescDecoder()
         {
             byte rawChannelType[2];
             ushort channelType =(ushort) xmpData_["Xmp.audio.ChannelType"].toLong();
-            memcpy(rawChannelType,channelType,2);
+            memcpy(rawChannelType,&channelType,2);
             io_->write(rawChannelType,2);
         }
         else
@@ -1391,7 +1443,7 @@ void QuickTimeVideo::audioDescDecoder()
         {
             byte rawBitsPerSample[2];
             ushort bitsPerSample =(ushort) (xmpData_["Xmp.audio.BitsPerSample"].toLong()/256);
-            memcpy(rawBitsPerSample,bitsPerSample,2);
+            memcpy(rawBitsPerSample,&bitsPerSample,2);
             io_->write(rawBitsPerSample,2);
         }
         else
@@ -1404,7 +1456,7 @@ void QuickTimeVideo::audioDescDecoder()
             byte tmpRawData[2];
             xmpData_["Xmp.audio.SampleRate"].toLong();
             ushort sampleRateBase = (ushort) (xmpData_["Xmp.audio.SampleRate"].toLong()/512);
-            memcpy(tmpRawData,sampleRateBase,2);
+            memcpy(tmpRawData,&sampleRateBase,2);
             rawSampleRate[0] = tmpRawData[0] ; rawSampleRate[1] = tmpRawData[1];
             //TODO calculations and logic
         }
