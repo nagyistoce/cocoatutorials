@@ -566,6 +566,22 @@ void reverseTagDetails(const TagDetails inputTagVocabulary[],RevTagDetails  outp
     }
 }
 
+const std::vector<ushort> getNumberFromString(const std::string stringData,char seperator )
+{
+    vector<ushort> shortValues;
+    for(int i=0; i<2; i++)
+    {
+        int counter =0;
+        byte tmpValue[4];
+        while((counter < stringData.size()) && (stringData[counter] != seperator) && (stringData[counter] != '\0'))
+        {
+            tmpValue[counter] = stringData[counter];
+            counter++;
+        }
+        shortValues.push_back((short)Exiv2::getShort(tmpValue, bigEndian));
+    }
+    return shortValues;
+}
 /*!
       @brief Function used to convert buffer data into 64-bit
           signed integer, information stored in Big Endian format
@@ -973,42 +989,205 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
 {
     DataBuf buf(4), buf2(2);
     uint64_t cur_pos = io_->tell();
-    byte n = 3;
+    if(!m_modifyMetadata)
+    {
+        byte n = 3;
+        while(n--) {
+            io_->seek(static_cast<long>(4), BasicIo::cur); io_->read(buf.pData_, 4);
 
-    while(n--) {
-        io_->seek(static_cast<long>(4), BasicIo::cur); io_->read(buf.pData_, 4);
+            if(equalsQTimeTag(buf, "clef")) {
+                io_->seek(static_cast<long>(4), BasicIo::cur);
+                io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
+                xmpData_["Xmp.video.CleanApertureWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
+                        + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+                io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
+                xmpData_["Xmp.video.CleanApertureHeight"]   =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
+                        + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+            }
 
-        if(equalsQTimeTag(buf, "clef")) {
-            io_->seek(static_cast<long>(4), BasicIo::cur);
-            io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
-            xmpData_["Xmp.video.CleanApertureWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
-                    + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
-            io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
-            xmpData_["Xmp.video.CleanApertureHeight"]   =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
-                    + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+            else if(equalsQTimeTag(buf, "prof")) {
+                io_->seek(static_cast<long>(4), BasicIo::cur);
+                io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
+                xmpData_["Xmp.video.ProductionApertureWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
+                        + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+                io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
+                xmpData_["Xmp.video.ProductionApertureHeight"]   =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
+                        + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+            }
+
+            else if(equalsQTimeTag(buf, "enof")) {
+                io_->seek(static_cast<long>(4), BasicIo::cur);
+                io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
+                xmpData_["Xmp.video.EncodedPixelsWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
+                        + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+                io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
+                xmpData_["Xmp.video.EncodedPixelsHeight"]   =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
+                        + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+            }
+        }
+        io_->seek(static_cast<long>(cur_pos + size), BasicIo::beg);
+    }
+    else
+    {
+        io_->seek(4,BasicIo::cur);
+        io_->read(buf.pData_,4);
+        if(xmpData_["Xmp.video.CleanApertureWidth"].count() >0)
+        {
+            if(equalsQTimeTag(buf, "clef"))
+            {
+                char rawCleanApertureWidthOne[4]; char rawCleanApertureWidthTwo[2];
+                byte rawCleanApertureWidth[6];
+                const std::string cleanApertureWidth =  xmpData_["Xmp.video.CleanApertureWidth"].toString();
+                vector<ushort> cleanApertureWidthValue = getNumberFromString(cleanApertureWidth,'.');
+                const long tmpValue = (long)cleanApertureWidthValue.at(0);
+                memcpy(rawCleanApertureWidthOne,&tmpValue,4);
+                memcpy(rawCleanApertureWidthTwo,&cleanApertureWidthValue.at(1),2);
+                for(int j=0; j<4; j++)
+                {
+                    rawCleanApertureWidth[j] = (byte)rawCleanApertureWidthOne[j];
+                }
+                rawCleanApertureWidth[4] =(byte) rawCleanApertureWidthTwo[0];
+                rawCleanApertureWidth[5] =(byte) rawCleanApertureWidthTwo[1];
+                io_->write(rawCleanApertureWidth,6);
+            }
+            else
+            {
+                io_->seek(6,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(6,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.CleanApertureHeight"].count() >0)
+        {
+            io_->seek(-10,BasicIo::cur);
+            io_->read(buf.pData_,4);
+            if(equalsQTimeTag(buf, "clef"))
+            {
+                byte rawCleanApertureHeightOne[4]; byte rawCleanApertureHeightTwo[2];
+                const std::string cleanApertureHeight = xmpData_["Xmp.video.CleanApertureHeight"].toString();
+                vector<ushort> cleanApertureHeightValue = getNumberFromString(cleanApertureHeight,'.');
+                const long tmpValue = (long)cleanApertureHeightValue.at(0);
+                memcpy(rawCleanApertureHeightOne,&tmpValue,4);
+                memcpy(rawCleanApertureHeightTwo,&cleanApertureHeightValue.at(1),2);
+                io_->write(rawCleanApertureHeightOne,4);
+                io_->seek(2,BasicIo::cur);
+                io_->write(rawCleanApertureHeightTwo,2);
+            }
+            else
+            {
+                io_->seek(2,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
         }
 
-        else if(equalsQTimeTag(buf, "prof")) {
-            io_->seek(static_cast<long>(4), BasicIo::cur);
-            io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
-            xmpData_["Xmp.video.ProductionApertureWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
-                    + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
-            io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
-            xmpData_["Xmp.video.ProductionApertureHeight"]   =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
-                    + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+        io_->seek(4,BasicIo::cur);
+        io_->read(buf.pData_,4);
+        if(xmpData_["Xmp.video.ProductionApertureWidth"].count() >0)
+        {
+            if(equalsQTimeTag(buf, "prof"))
+            {
+                char rawProductionApertureWidthOne[4]; char rawProductionApertureWidthTwo[2];
+                byte rawProductionApertureWidth[6];
+                const std::string ProductionApertureWidth = xmpData_["Xmp.video.ProductionApertureWidth"].toString();
+                vector<ushort> ProductionApertureWidthValue = getNumberFromString(ProductionApertureWidth,'.');
+                const long tmpValue =(long)ProductionApertureWidthValue.at(0);
+                memcpy(rawProductionApertureWidthOne,&tmpValue,4);
+                memcpy(rawProductionApertureWidthTwo,&ProductionApertureWidthValue.at(1),2);
+                for(int j=0; j<4; j++)
+                {
+                    rawProductionApertureWidth[j] = (byte)rawProductionApertureWidthOne[j];
+                }
+                rawProductionApertureWidth[4] =(byte) rawProductionApertureWidthTwo[0];
+                rawProductionApertureWidth[5] =(byte) rawProductionApertureWidthTwo[1];
+                io_->write(rawProductionApertureWidth,6);
+            }
+            else
+            {
+                io_->seek(6,BasicIo::cur);
+            }
         }
-
-        else if(equalsQTimeTag(buf, "enof")) {
-            io_->seek(static_cast<long>(4), BasicIo::cur);
-            io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
-            xmpData_["Xmp.video.EncodedPixelsWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
-                    + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
-            io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
-            xmpData_["Xmp.video.EncodedPixelsHeight"]   =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
-                    + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
+        else
+        {
+            io_->seek(6,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.ProductionApertureHeight"].count() >0)
+        {
+            io_->seek(-10,BasicIo::cur);
+            io_->read(buf.pData_,4);
+            if(equalsQTimeTag(buf, "prof"))
+            {
+                byte rawProductionApertureHeightOne[4]; byte rawProductionApertureHeightTwo[2];
+                const std::string ProductionApertureHeight = xmpData_["Xmp.video.ProductionApertureHeight"].toString();
+                vector<ushort> ProductionApertureHeightValue = getNumberFromString(ProductionApertureHeight,'.');
+                const long tmpValue = (long)ProductionApertureHeightValue.at(0);
+                memcpy(rawProductionApertureHeightOne,&tmpValue,4);
+                memcpy(rawProductionApertureHeightTwo,&ProductionApertureHeightValue.at(1),2);
+                io_->write(rawProductionApertureHeightOne,4);
+                io_->seek(2,BasicIo::cur);
+                io_->write(rawProductionApertureHeightTwo,2);
+            }
+            else
+            {
+                io_->seek(2,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(2,BasicIo::cur);
+        }
+        io_->seek(4,BasicIo::cur);
+        io_->read(buf.pData_,4);
+        if(xmpData_["Xmp.video.EncodedPixelsWidth"].count() >0)
+        {
+            if(equalsQTimeTag(buf, "prof"))
+            {
+                char rawEncodedPixelsWidthOne[4]; char rawEncodedPixelsWidthTwo[2];
+                byte rawEncodedPixelsWidth[6];
+                const std::string EncodedPixelsWidth = xmpData_["Xmp.video.EncodedPixelsWidth"].toString();
+                vector<ushort> EncodedPixelsWidthValue = getNumberFromString(EncodedPixelsWidth,'.');
+                const long tmpValue = (long)EncodedPixelsWidthValue.at(0);
+                memcpy(rawEncodedPixelsWidthOne,&tmpValue,4);
+                memcpy(rawEncodedPixelsWidthTwo,&EncodedPixelsWidthValue.at(1),2);
+                for(int j=0; j<4; j++)
+                {
+                    rawEncodedPixelsWidth[j] = (byte)rawEncodedPixelsWidthOne[j];
+                }
+                rawEncodedPixelsWidth[4] =(byte) rawEncodedPixelsWidthTwo[0];
+                rawEncodedPixelsWidth[5] =(byte) rawEncodedPixelsWidthTwo[1];
+                io_->write(rawEncodedPixelsWidth,6);
+            }
+            else
+            {
+                io_->seek(6,BasicIo::cur);
+            }
+        }
+        else
+        {
+            io_->seek(6,BasicIo::cur);
+        }
+        if(xmpData_["Xmp.video.EncodedPixelsHeight"].count() >0)
+        {
+            io_->seek(-10,BasicIo::cur);
+            io_->read(buf.pData_,4);
+            if(equalsQTimeTag(buf, "prof"))
+            {
+                byte rawEncodedPixelsHeightOne[4]; byte rawEncodedPixelsHeightTwo[2];
+                const std::string EncodedPixelsHeight = xmpData_["Xmp.video.EncodedPixelsHeight"].toString();
+                vector<ushort> EncodedPixelsHeightValue = getNumberFromString(EncodedPixelsHeight,'.');
+                const long tmpValue = (long)EncodedPixelsHeightValue.at(0);
+                memcpy(rawEncodedPixelsHeightOne,&tmpValue,4);
+                memcpy(rawEncodedPixelsHeightTwo,&EncodedPixelsHeightValue.at(1),2);
+                io_->write(rawEncodedPixelsHeightOne,4);
+                io_->seek(2,BasicIo::cur);
+                io_->write(rawEncodedPixelsHeightTwo,2);
+            }
         }
     }
-    io_->seek(static_cast<long>(cur_pos + size), BasicIo::beg);
 } // QuickTimeVideo::trackApertureTagDecoder
 
 void QuickTimeVideo::CameraTagsDecoder(unsigned long size_external)
