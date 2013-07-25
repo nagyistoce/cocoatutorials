@@ -1932,7 +1932,7 @@ namespace Exiv2 {
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
-            blockSize_ = (protocol_ == pFtp || protocol_ == pSftp) ? 102400 : 1024;
+            blockSize_ = protocol_ == pFtp ? 102400 : 1024;
         }
     }
 #ifdef EXV_UNICODE_PATH
@@ -1950,7 +1950,7 @@ namespace Exiv2 {
 
         // if users don't set the blockSize_ value
         if (blockSize_ == 0) {
-            blockSize_ = (protocol_ == pFtp || protocol_ == pSftp) ? 102400 : 1024;
+            blockSize_ = protocol_ == pFtp ? 102400 : 1024;
         }
     }
 #endif
@@ -1959,8 +1959,6 @@ namespace Exiv2 {
     {
         long returnCode = 200;
         length = -1;
-
-        if (protocol_ == pSftp) return returnCode; // sftp doesnt support content-length
 
         curl_easy_reset(curl_); // reset all options
         std::string response;
@@ -2109,8 +2107,9 @@ namespace Exiv2 {
         //! Constructor accepting a unicode path in an std::wstring
         SshImpl(const std::wstring& wpath, size_t blockSize);
 #endif
-        dict_t  hostInfo_;         //!< host information extracted from path
-        SSH*         ssh_;         //!< SSH pointer
+        dict_t      hostInfo_;          //!< host information extracted from path
+        SSH*        ssh_;               //!< SSH pointer
+        sftp_file   fileHandler_;       //!< sftp file handler
 
         long getFileLength(long& length);
         long getDataByRange(long lowBlock, long highBlock, std::string& response);
@@ -2128,7 +2127,6 @@ namespace Exiv2 {
         hostInfo_["server"]     = uri.Host;
         hostInfo_["page"  ]     = uri.Path;
         hostInfo_["query" ]     = uri.QueryString;
-        hostInfo_["proto" ]     = uri.Protocol;
         hostInfo_["port"  ]     = uri.Port;
         hostInfo_["username"]   = uri.Username;
         char* decodePass = urldecode(uri.Password.c_str());
@@ -2139,6 +2137,13 @@ namespace Exiv2 {
             hostInfo_["page"] = hostInfo_["page"].substr(1);
         }
         ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
+
+        if (protocol_ == pSftp) {
+            ssh_->getFileSftp(hostInfo_["page"], fileHandler_);
+            if (fileHandler_ == NULL) throw Error(1, "Unable to open the file via sftp");
+        } else {
+            fileHandler_ = NULL;
+        }
     }
 #ifdef EXV_UNICODE_PATH
     SshIo::SshImpl::SshImpl(const std::wstring& wurl, size_t blockSize):Impl(url, blockSize)
@@ -2151,7 +2156,6 @@ namespace Exiv2 {
         hostInfo_["server"] = uri.Host;
         hostInfo_["page"  ] = uri.Path;
         hostInfo_["query" ] = uri.QueryString;
-        hostInfo_["proto" ] = uri.Protocol;
         hostInfo_["port"  ] = uri.Port;
         hostInfo_["username"  ] = uri.Username;
         hostInfo_["password"  ] = uri.Password;
@@ -2160,52 +2164,77 @@ namespace Exiv2 {
             hostInfo_["page"] = hostInfo_["page"].substr(1);
         }
         ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
+
+        if (protocol_ == pSftp) {
+            fileHandler_ = ssh_->getFileSftp(hostInfo_["page"]);
+            if (fileHandler_ == NULL) throw(1, "Unable to open the file.");
+        } else {
+            fileHandler_ = NULL;
+        }
     }
 #endif
 
     long SshIo::SshImpl::getFileLength(long& length)
     {
-        long returnCode;
+        long returnCode = 0;
         length = 0;
 
-        std::string response;
-        std::string cmd = "stat -c %s " + hostInfo_["page"];
-        returnCode = (long)ssh_->runCommand(cmd, &response);
+        if (protocol_ == pSftp) {
+            sftp_attributes attributes = sftp_fstat(fileHandler_);
+            length = (long)attributes->size;
+        } else { // ssh
+            std::string response;
+            std::string cmd = "stat -c %s " + hostInfo_["page"];
+            returnCode = (long)ssh_->runCommand(cmd, &response);
 
-        if (returnCode == -1) {
-            throw Error(1, "SSH: Unable to get file length");
-        } else {
-            length = atol(response.c_str());
+            if (returnCode == -1) {
+                throw Error(1, "SSH: Unable to get file length");
+            } else {
+                length = atol(response.c_str());
+            }
+            //printf("File size %ld, blocksize %ld\n", length, blockSize_);
         }
-
-        //printf("File size %ld, blocksize %ld\n", length, blockSize_);
 
         return returnCode;
     }
 
     long SshIo::SshImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
     {
-        std::stringstream ss;
-        if (lowBlock > -1 && highBlock > -1) {
-            ss  << "dd if=" << hostInfo_["page"]
-                << " ibs=" << blockSize_
-                << " skip=" << lowBlock
-                << " count=" << (highBlock - lowBlock) + 1<< " 2>/dev/null";
+        long rCount = 0;
+        //printf("getDataByRange lowBlock=%ld, highBlock=%ld\n", lowBlock, highBlock);
+        if (protocol_ == pSftp) {
+            if (sftp_seek(fileHandler_, lowBlock * blockSize_) < 0) throw Error(1, "SFTP: unable to sftp_seek");
+            size_t buffSize = (highBlock - lowBlock + 1) * blockSize_;
+            char* buffer = new char[buffSize];
+            long nBytes = sftp_read(fileHandler_, buffer, buffSize);
+            if (nBytes < 0) throw Error(1, "SFTP: unable to sftp_read");
+            response.assign(buffer, buffSize);
+            delete[] buffer;
         } else {
-            ss  << "dd if=" << hostInfo_["page"]
-                << " ibs=" << blockSize_
-                << " 2>/dev/null";
+            std::stringstream ss;
+            if (lowBlock > -1 && highBlock > -1) {
+                ss  << "dd if=" << hostInfo_["page"]
+                    << " ibs=" << blockSize_
+                    << " skip=" << lowBlock
+                    << " count=" << (highBlock - lowBlock) + 1<< " 2>/dev/null";
+            } else {
+                ss  << "dd if=" << hostInfo_["page"]
+                    << " ibs=" << blockSize_
+                    << " 2>/dev/null";
+            }
+            std::string cmd = ss.str();
+            rCount = (long)ssh_->runCommand(cmd, &response);
         }
-        std::string cmd = ss.str();
-        long rCount = (long)ssh_->runCommand(cmd, &response);
         return rCount;
     }
 
     long SshIo::SshImpl::writeRemote(const byte* data, size_t size, long from, long to)
     {
+        if (protocol_ == pSftp) throw Error(1, "not support SFTP write access.");
+
         //printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
          assert(isMalloced_);
-         long returnCode;
+         long returnCode = 0;
 
          std::string tempFile = hostInfo_["page"] + ".exiv2tmp";
          std::string response;
@@ -2262,6 +2291,7 @@ namespace Exiv2 {
     }
 
     SshIo::SshImpl::~SshImpl() {
+        if (fileHandler_) sftp_close(fileHandler_);
         if (ssh_) delete ssh_;
     }
 

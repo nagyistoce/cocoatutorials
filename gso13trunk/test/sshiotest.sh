@@ -5,6 +5,26 @@ source ./functions.source
 
 ##
 #function to test remote read access in basicio.cpp
+SFTPReadTest()
+{
+    arg=$1
+    scheme=${arg:0:4}
+
+    src=$(basename "$arg")
+    filename=${src%.*}
+    test=${filename}.txt
+    good=$datapath/${filename}.txt
+    dot=.
+    # run tests
+    runTest exifprint $1 > $test
+    #check results
+    diffCheckAscii $test $good
+
+    printf $dot
+}
+
+##
+#function to test remote read access in basicio.cpp
 SshIOTest()
 {
     arg=$1
@@ -41,7 +61,7 @@ SshIOTest()
         exit 1
     fi
 
-    errors=0
+    files+=(remoteImg{0..9}.jpg)
     iopngfiles+=(remoteio{1..5}.png)
     iojpgfiles+=(remoteio{6..10}.jpg)
     USE_SSH=$("$bin"/exiv2 -v -V | grep ^ssh= | sed s/ssh=//)
@@ -49,6 +69,20 @@ SshIOTest()
         #Skip remoteIo test cases
         echo 'Ssh is not used. Skip sshio test cases.'
     else
+        # SFTP protocol
+        errors=0
+        printf 'SFTP READ '
+        for name in ${files[@]}; do
+            SFTPReadTest "sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$name"
+        done
+        if [ $errors -eq 0 ]; then
+            printf '\nAll test cases passed\n'
+        else
+            echo $errors ' test cases failed!'
+        fi
+
+        # SSH protocol
+        errors=0
         printf 'SSH IO '
         for name in ${iopngfiles[@]}; do
             SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"

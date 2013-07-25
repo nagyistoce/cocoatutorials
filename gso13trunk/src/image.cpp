@@ -420,12 +420,12 @@ namespace Exiv2 {
         } else {
             Protocol fProt = fileProtocol(path);
 #if EXV_USE_SSH == 1
-            if (fProt == pSsh) {
+            if (fProt == pSsh || fProt == pSftp) {
                 return BasicIo::AutoPtr(new SshIo(path));
             }
 #endif
 #if EXV_USE_CURL == 1
-            if (useCurl && fProt && fProt != pSsh) {
+            if (useCurl && fProt && fProt != pSsh && fProt != pSftp) {
                 return BasicIo::AutoPtr(new CurlIo(path));
             } else if(fProt == pHttp) {
                 return BasicIo::AutoPtr(new HttpIo(path));

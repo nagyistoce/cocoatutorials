@@ -2,7 +2,7 @@
 #if EXV_USE_SSH == 1
 // class member definitions
 namespace Exiv2 {
-    SSH::SSH(const std::string& host, const std::string& user, const std::string& pass):host_(host),user_(user),pass_(pass) {
+SSH::SSH(const std::string& host, const std::string& user, const std::string& pass):host_(host),user_(user),pass_(pass),sftp_(0) {
         int rc;
         session_ = ssh_new();
         if (session_ == NULL) {
@@ -84,7 +84,29 @@ namespace Exiv2 {
         return rc;
     }
 
+    void SSH::openSftp() {
+        if (sftp_) return;
+
+        sftp_ = sftp_new(session_);
+        if (sftp_ == NULL) {
+            throw Error(1, "Unable to create the the sftp session");
+        }
+        if (sftp_init(sftp_) != SSH_OK) {
+            sftp_free(sftp_);
+            throw Error(1, "Error initializing SFTP session");
+        }
+    }
+
+    void SSH::getFileSftp(const std::string& filePath, sftp_file& handle) {
+        if (!sftp_) openSftp();
+        handle = sftp_open(sftp_, ("/"+filePath).c_str(), 0x0000, 0); // read only
+        if (handle == NULL) {
+            printf("SFTP error: %s\n", ssh_get_error(session_));
+        }
+    }
+
     SSH::~SSH() {
+        if (sftp_) sftp_free(sftp_);
         ssh_disconnect(session_);
         ssh_free(session_);
     }

@@ -85,7 +85,7 @@ TESTE = eps-test.sh       \
 TESTS = exiv2-test.sh     \
         modify-test.sh    \
         httpiotest.sh     \
-        remoteiotest.sh   \
+        curliotest.sh     \
         sshiotest.sh
 
 testx:
