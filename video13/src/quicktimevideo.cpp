@@ -582,6 +582,23 @@ const std::vector<ushort> getNumberFromString(const std::string stringData,char 
     }
     return shortValues;
 }
+
+const std::vector<long> getLongFromString(const std::string stringData,char seperator )
+{
+    vector<long> longValues;
+    for(int i=0; i<2; i++)
+    {
+        int counter =0;
+        byte tmpValue[4];
+        while((counter < stringData.size()) && (stringData[counter] != seperator) && (stringData[counter] != '\0'))
+        {
+            tmpValue[counter] = stringData[counter];
+            counter++;
+        }
+        longValues.push_back((long)Exiv2::getLong(tmpValue, bigEndian));
+    }
+    return longValues;
+}
 /*!
       @brief Function used to convert buffer data into 64-bit
           signed integer, information stored in Big Endian format
@@ -1195,35 +1212,158 @@ void QuickTimeVideo::CameraTagsDecoder(unsigned long size_external)
     uint64_t cur_pos = io_->tell();
     DataBuf buf(50), buf2(4);
     const TagDetails* td;
-
+    const RevTagDetails* rtd;
     io_->read(buf.pData_, 4);
-    if(equalsQTimeTag(buf, "NIKO")) {
+    if(equalsQTimeTag(buf, "NIKO"))
+    {
         io_->seek(cur_pos, BasicIo::beg);
+        if(!m_modifyMetadata)
+        {
+            io_->read(buf.pData_, 24);
+            xmpData_["Xmp.video.Make"] = Exiv2::toString(buf.pData_);
+            io_->read(buf.pData_, 14);
+            xmpData_["Xmp.video.Model"] = Exiv2::toString(buf.pData_);
+            io_->read(buf.pData_, 4);
+            xmpData_["Xmp.video.ExposureTime"] = "1/" + Exiv2::toString( ceil( getULong(buf.pData_, littleEndian) / (double)10));
+            io_->read(buf.pData_, 4); io_->read(buf2.pData_, 4);
+            xmpData_["Xmp.video.FNumber"] =  getULong(buf.pData_, littleEndian) / (double)getULong(buf2.pData_, littleEndian) ;
+            io_->read(buf.pData_, 4); io_->read(buf2.pData_, 4);
+            xmpData_["Xmp.video.ExposureCompensation"] =  getULong(buf.pData_, littleEndian) / (double)getULong(buf2.pData_, littleEndian) ;
+            io_->read(buf.pData_, 10); io_->read(buf.pData_, 4);
+            td = find(whiteBalance, getULong(buf.pData_, littleEndian));
+            if (td)
+                xmpData_["Xmp.video.WhiteBalance"] = exvGettext(td->label_);
+            io_->read(buf.pData_, 4); io_->read(buf2.pData_, 4);
+            xmpData_["Xmp.video.FocalLength"] =  getULong(buf.pData_, littleEndian) / (double)getULong(buf2.pData_, littleEndian) ;
+            io_->seek(static_cast<long>(95), BasicIo::cur);
+            io_->read(buf.pData_, 48);
+            xmpData_["Xmp.video.Software"] = Exiv2::toString(buf.pData_);
+            io_->read(buf.pData_, 4);
+            xmpData_["Xmp.video.ISO"] = getULong(buf.pData_, littleEndian);
+            io_->seek(cur_pos + size_external, BasicIo::beg);
+        }
+        else
+        {
+            RevTagDetails revTagDetails[(sizeof(graphicsModetags)/sizeof(graphicsModetags[0]))];
+            reverseTagDetails(graphicsModetags,revTagDetails,((sizeof(graphicsModetags)/sizeof(graphicsModetags[0]))));
 
-        io_->read(buf.pData_, 24);
-        xmpData_["Xmp.video.Make"] = Exiv2::toString(buf.pData_);
-        io_->read(buf.pData_, 14);
-        xmpData_["Xmp.video.Model"] = Exiv2::toString(buf.pData_);
-        io_->read(buf.pData_, 4);
-        xmpData_["Xmp.video.ExposureTime"] = "1/" + Exiv2::toString( ceil( getULong(buf.pData_, littleEndian) / (double)10));
-        io_->read(buf.pData_, 4); io_->read(buf2.pData_, 4);
-        xmpData_["Xmp.video.FNumber"] =  getULong(buf.pData_, littleEndian) / (double)getULong(buf2.pData_, littleEndian) ;
-        io_->read(buf.pData_, 4); io_->read(buf2.pData_, 4);
-        xmpData_["Xmp.video.ExposureCompensation"] =  getULong(buf.pData_, littleEndian) / (double)getULong(buf2.pData_, littleEndian) ;
-        io_->read(buf.pData_, 10); io_->read(buf.pData_, 4);
-        td = find(whiteBalance, getULong(buf.pData_, littleEndian));
-        if (td)
-            xmpData_["Xmp.video.WhiteBalance"] = exvGettext(td->label_);
-        io_->read(buf.pData_, 4); io_->read(buf2.pData_, 4);
-        xmpData_["Xmp.video.FocalLength"] =  getULong(buf.pData_, littleEndian) / (double)getULong(buf2.pData_, littleEndian) ;
-        io_->seek(static_cast<long>(95), BasicIo::cur);
-        io_->read(buf.pData_, 48);
-        xmpData_["Xmp.video.Software"] = Exiv2::toString(buf.pData_);
-        io_->read(buf.pData_, 4);
-        xmpData_["Xmp.video.ISO"] = getULong(buf.pData_, littleEndian);
+            if(xmpData_["Xmp.video.Make"].count() >0)
+            {
+                byte rawMake[24];
+                const std::string make = xmpData_["Xmp.video.Make"].toString();
+                for(int j=0; j<24; j++)
+                {
+                    rawMake[j] = make[j];
+                }
+                io_->write(rawMake,24);
+            }
+            else
+            {
+                io_->seek(24,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.Model"].count() >0)
+            {
+                byte rawModel[14];
+                const std::string model = xmpData_["Xmp.video.Model"].toString();
+                for(int j=0; j<14; j++)
+                {
+                    rawModel[j] = model[j];
+                }
+                io_->write(rawModel,14);
+            }
+            else
+            {
+                io_->seek(14,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.ExposureTime"].count() >0)
+            {
+                byte rawExposureTime[4];
+                const std::vector<long> d_exposureTime = getLongFromString(xmpData_["Xmp.video.ExposureTime"].toString(),'/');
+                const long tmpValue = (d_exposureTime.at(1)*10);
+                memcpy(rawExposureTime,&tmpValue,4);
+                io_->write(rawExposureTime,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.FNumber"].count() >0)
+            {
+                byte rawFNumber[4];
+                const long fNumber =(long)((double)xmpData_["Xmp.video.FNumber"].toLong()*(double)getULong(buf2.pData_, littleEndian));
+                memcpy(rawFNumber,&fNumber,4);
+                io_->write(rawFNumber,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.ExposureCompensation"].count() >0)
+            {
+                byte rawExposureCompensation[4];
+                const long exposureCompensation =(long)((double)xmpData_["Xmp.video.ExposureCompensation"].toLong()
+                                                        *(double)getULong(buf2.pData_, littleEndian));
+                memcpy(rawExposureCompensation,&exposureCompensation,4);
+                io_->write(rawExposureCompensation,4);
+                io_->seek(10,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(14,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
+            {
+                byte rawWhiteBalance[2];
+                const std::string whiteBalance = xmpData_["Xmp.video.WhiteBalance"].toString();
+                char *whiteBalanceData = (char *)malloc(xmpData_["Xmp.video.WhiteBalance"].size());
+                for(int j=0; j<xmpData_["Xmp.video.GraphicsMode"].size(); j++)
+                {
+                    whiteBalanceData[j] = whiteBalance[j];
+                }
+                rtd = find(revTagDetails,whiteBalanceData);
+                short sWhiteBalance = (short)rtd->val_;
+                memcpy(rawWhiteBalance,&sWhiteBalance,2);
+                io_->write(rawWhiteBalance,2);}
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.FocalLength"].count() >0)
+            {
+                byte rawFocalLength[4];
+                const long focalLength =(long)((double)xmpData_["Xmp.video.FocalLength"].toLong()
+                                               *(double)getULong(buf2.pData_, littleEndian));
+                memcpy(rawFocalLength,&focalLength,4);
+                io_->write(rawFocalLength,4);
+                io_->seek(95,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(99,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.Software"].count() >0)
+            {
+                byte rawSoftware[48];
+                const std::string software = xmpData_["Xmp.video.Software"].toString();
+                for(int j=0; j<48; j++)
+                {
+                    rawSoftware[j] = software[j];
+                }
+                io_->write(rawSoftware,48);
+            }
+            else
+            {
+                io_->seek(48,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.ISO"].count() >0)
+            {
+                byte rawISO[4];
+                const long ISO = xmpData_["Xmp.video.ISO"].toLong();
+                memcpy(rawISO,&ISO,4);
+                io_->write(rawISO,4);
+            }
+        }
     }
-
-    io_->seek(cur_pos + size_external, BasicIo::beg);
 } // QuickTimeVideo::CameraTagsDecoder
 
 void QuickTimeVideo::userDataDecoder(unsigned long size_external)
