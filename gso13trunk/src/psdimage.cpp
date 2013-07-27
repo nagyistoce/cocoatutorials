@@ -541,7 +541,8 @@ namespace Exiv2 {
             xmpDone = true;
         }
 
-        //populate the fake data, only make sense for remoteio, httpio and sshio
+        // Populate the fake data, only make sense for remoteio, httpio and sshio.
+        // it avoids allocating memory for parts of the file that contain image-date.
         io_->populateFakeData();
 
         // Copy remaining data

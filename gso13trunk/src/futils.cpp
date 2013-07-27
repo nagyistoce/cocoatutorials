@@ -63,16 +63,16 @@ namespace Exiv2 {
 // free functions
     std::string getEnv(EnVar var) {
         return getenv(ENVARKEY[var]) ? getenv(ENVARKEY[var]) : ENVARDEF[var];
-    }
+    } // getEnv
 
     char to_hex(char code) {
         static char hex[] = "0123456789abcdef";
         return hex[code & 15];
-    }
+    } // to_hex
 
     char from_hex(char ch) {
         return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
-    }
+    } // from_hex
 
     char* urlencode(char* str) {
         char* pstr = str;
@@ -89,7 +89,7 @@ namespace Exiv2 {
         }
         *pbuf = '\0';
         return buf;
-    }
+    } // urlencode
 
     char* urldecode(const char* str) {
         const char* pstr = str;
@@ -110,7 +110,7 @@ namespace Exiv2 {
         }
         *pbuf = '\0';
         return buf;
-    }
+    } // urldecode
 
     int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize) {
         const char base64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -184,7 +184,7 @@ namespace Exiv2 {
         if(resultIndex >= resultSize) return 0;   /* indicate failure: buffer too small */
         result[resultIndex] = 0;
         return 1;   /* indicate success */
-    }
+    } // base64encode
 
     Protocol fileProtocol(const std::string& path) {
         Protocol result = pFile ;
@@ -201,7 +201,7 @@ namespace Exiv2 {
                  result = it->second;
         }
         return result;
-    }
+    } // fileProtocol
 #ifdef EXV_UNICODE_PATH
     Protocol fileProtocol(const std::wstring& wpath) {
         Protocol result = pFile ;
@@ -219,7 +219,7 @@ namespace Exiv2 {
             }
         }
         return result;
-    }
+    } // fileProtocol
 #endif
     bool fileExists(const std::string& path, bool ct)
     {
@@ -278,7 +278,7 @@ namespace Exiv2 {
         os << " (errno = " << error << ")";
         return os.str();
     } // strError
-    // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+
     Uri Uri::Parse(const std::string &uri)
     {
         Uri result;
@@ -356,5 +356,5 @@ namespace Exiv2 {
             result.QueryString = std::string(queryStart, uri.end());
 
         return result;
-    }   // Parse
+    }   // Uri::Parse
 }                                       // namespace Exiv2

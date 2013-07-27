@@ -102,6 +102,11 @@ namespace Exiv2 {
 
         //! @name Manipulators
         //@{
+        /*!
+          @brief Print out the structure of image file.
+          @throw Error if reading of the file fails or the image data is
+                not valid (does not look like data of the specific image type).
+         */
         virtual void printStructure();
         /*!
           @brief Read all metadata supported by a specific image format from the
@@ -446,11 +451,18 @@ namespace Exiv2 {
         friend bool Image::good() const;
     public:
 		/*!
-          @brief Create the appropriate class implemented BasicIo by reading
-              the %Image path.
-          @param  path %Image file.
+          @brief Create the appropriate class type implemented BasicIo based on the protocol of the input.
+
+          "-" path implies the data from stdin and it is handled by StdinIo.
+          Http path can be handled by either HttpIo or CurlIo. Https, ftp paths
+          are handled by CurlIo. Ssh, sftp paths are handled by SshIo. Others are handled by FileIo.
+
+          @param path %Image file.
+          @param useCurl Indicate whether the libcurl is used or not.
+                If it's true, http is handled by CurlIo. Otherwise it is handled by HttpIo.
           @return An auto-pointer that owns an BasicIo instance.
-          @throw Error If the path is "-" and there is no data from stdin.
+          @throw Error If the file is not found or it is unable to connect to the server to
+                read the remote file.
          */
         static BasicIo::AutoPtr createIo(const std::string& path, bool useCurl = true);
 #ifdef EXV_UNICODE_PATH
@@ -466,6 +478,8 @@ namespace Exiv2 {
               contents.
           @param  path %Image file. The contents of the file are tested to
               determine the image type. File extension is ignored.
+          @param useCurl Indicate whether the libcurl is used or not.
+                If it's true, http is handled by CurlIo. Otherwise it is handled by HttpIo.
           @return An auto-pointer that owns an Image instance whose type
               matches that of the file.
           @throw Error If opening the file fails or it contains data of an

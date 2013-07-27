@@ -97,14 +97,12 @@ namespace Exiv2 {
 
     void PngImage::printStructure()
     {
-        if (io_->open() != 0)
-        {
+        if (io_->open() != 0) {
             throw Error(9, io_->path(), strError());
         }
         IoCloser closer(*io_);
         // Ensure that this is the correct image type
-        if (!isPngType(*io_, true))
-        {
+        if (!isPngType(*io_, true)) {
             if (io_->error() || io_->eof()) throw Error(14);
             throw Error(3, "PNG");
         }
@@ -114,8 +112,7 @@ namespace Exiv2 {
         const long imgSize = io_->size();
         DataBuf cheaderBuf(8);
 
-        while(!io_->eof())
-        {
+        while(!io_->eof()) {
             std::memset(cheaderBuf.pData_, 0x0, cheaderBuf.size_);
             long bufRead = io_->read(cheaderBuf.pData_, cheaderBuf.size_);
             if (io_->error()) throw Error(14);

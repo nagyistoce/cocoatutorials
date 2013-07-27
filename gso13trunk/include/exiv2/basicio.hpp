@@ -734,7 +734,7 @@ namespace Exiv2 {
     }; // class MemIo
 
     /*!
-      @brief Reading the data from stdin and provide FileIo or MemIo by inheriting from one of these classes.
+      @brief Provides binary IO for the data from stdin.
      */
 #if STDIN_MEMIO
     class EXIV2API StdinIo : public MemIo {
@@ -743,7 +743,7 @@ namespace Exiv2 {
         //@{
         /*!
             @brief Default constructor that reads the data from stdin and write the data to memory.
-            @throw Error if it can't convert stdin to binary.
+            @throw Error if there is no data from stdin or it can't convert data to binary.
          */
         StdinIo();
         //@}
@@ -764,10 +764,10 @@ namespace Exiv2 {
 
         //! @name Creators
         //@{
-        //! Default constructor that reads data from stdin, write to the temp file.
+        //! Default constructor that reads data from stdin, writes them to the temp file.
         StdinIo();
 
-        //! Destructor. Releases all managed memory and remove temp file.
+        //! Destructor. Releases all managed memory and removes the temp file.
         virtual ~StdinIo();
         //@}
 
@@ -784,7 +784,7 @@ namespace Exiv2 {
         //! @name Static methods
         //@{
         /*!
-            @brief Read the data from stdin and write to the file.
+            @brief Read the data from stdin and write them to the file.
             @return the name of the new file.
             @throw Error if it can't convert stdin to binary.
          */
@@ -797,71 +797,108 @@ namespace Exiv2 {
     }; // class StdinIo
 #endif
 
+    /*!
+      @brief Utility class provides the block mapping to the part of data. This avoids allocating
+            a single contiguous block of memory to the big data.
+     */
     class EXIV2API BlockMap {
     public:
+        //! the status of the block.
         enum    blockType_e {bNone, bKnown, bMemory};
-                BlockMap():type_(bNone), data_(NULL) {}
+        //! @name Creators
+        //@{
+        //! Default constructor. the init status of the block is bNone.
+        BlockMap():type_(bNone), data_(NULL) {}
+        //! Destructor. Releases all managed memory.
         virtual ~BlockMap() {
             if (data_) {std::free(data_); data_ = NULL;}
         }
+        //@}
+        //! @name Manipulators
+        //@{
+        /*!
+          @brief Populate the block.
+          @param source The data populate to the block
+          @param num The size of data
+         */
         void    populate (byte* source, size_t num) {
             size_ = num;
             data_ = (byte*) std::malloc(size_);
             type_ = bMemory;
             std::memcpy(data_, source, size_);
         }
+        /*!
+          @brief Change the status to bKnow. bKnow blocks do not contain the data,
+                but they keep the size of data. This avoids allocating memory for parts
+                of the file that contain image-date (non-metadata/pixel data) which never change in exiv2.
+          @param num The size of the data
+         */
         void    markKnown(size_t num) {
             type_ = bKnown;
             size_ = num;
         }
+        //@}
+        //! @name Accessors
+        //@{
         bool    isNone()  {return type_ == bNone;}
         bool    isInMem ()  {return type_ == bMemory;}
         bool    isKnown ()  {return type_ == bKnown;}
         byte*   getData ()  {return data_;}
         size_t  getSize ()  {return size_;}
+        //@}
     private:
         blockType_e type_;
         byte*       data_;
         size_t      size_;
-    };
+    }; // class BlockMap
 
     /*!
-        @brief Provides RemoteIo superclass by implementing the BasicIo.
-               This class implements the blockMap which is used by httpio, curlio, sshio
+        @brief Provides remote binary file IO by implementing the BasicIo interface. This is an
+            abstract class. The logics for remote access are implemented in HttpIo, CurlIo, SshIo which
+            are the derived classes of RemoteIo.
     */
     class EXIV2API RemoteIo : public BasicIo {
     public:
-        //! Destructor. Releases all managed memory
+        //! Destructor. Releases all managed memory.
         virtual ~RemoteIo();
         //@}
 
         //! @name Manipulators
         //@{
         /*!
-          @brief Connect to the remote server, do a HEAD and get the size of the file.
-                 allocate the array of blocksMap.
+          @brief Connect to the remote server, get the size of the remote file and
+            allocate the array of blocksMap.
 
-            This method can also be used to "reopen" the connection which will release the
-            data and reset the IO position to the start.
+            If the blocksMap is already allocated (this method has been called before),
+            it just reset IO position to the start and does not flush the old data.
           @return 0 if successful;<BR>
               Nonzero if failure.
          */
         virtual int open();
         /*!
-          @brief Release the data and reset the IO position to the start . It is
-              safe to call close on an already closed instance.
+          @brief Reset the IO position to the start. It does not release the data.
           @return 0 if successful;<BR>
               Nonzero if failure.
          */
         virtual int close();
         /*!
-          @brief Not support
+          @brief Not support this method.
           @return 0 means failure
          */
         virtual long write(const byte* data, long wcount);
         /*!
-          @brief Not support
-          @return 0 means failure
+          @brief Write data that is read from another BasicIo instance to the remote file.
+
+          The write access is done in an efficient way. It only sends the range of different
+          bytes between the current data and BasicIo instance to the remote machine.
+
+          @param src Reference to another BasicIo instance. Reading start
+              at the source's current IO position
+          @return The size of BasicIo instance;<BR>
+                 0 if failure;
+          @throw Error In case of failure
+
+          @note The write access is only supported by http, https, ssh.
          */
         virtual long write(BasicIo& src);
 
@@ -884,10 +921,10 @@ namespace Exiv2 {
         */
        virtual DataBuf read(long rcount);
        /*!
-         @brief Read data from the memory blocks. Reading starts at the current
+         @brief Read data from the the memory blocks. Reading starts at the current
              IO position and the position is advanced by the number of
              bytes read.
-             If the memory blocks are not populated (False), it will connect to server
+             If the memory blocks are not populated (!= bMemory), it will connect to server
              and populate the data to memory blocks.
          @param buf Pointer to a block of memory into which the read data
              is stored. The memory block must be at least \em rcount bytes
@@ -899,18 +936,28 @@ namespace Exiv2 {
         */
        virtual long read(byte* buf, long rcount);
        /*!
-         @brief Read one byte from the memory block. The IO position is
+         @brief Read one byte from the memory blocks. The IO position is
              advanced by one byte.
-             If the memory block is not populated (False), it will connect to server
+             If the memory block is not populated (!= bMemory), it will connect to server
              and populate the data to the memory block.
          @return The byte read from the memory block if successful;<BR>
                 EOF if failure;
         */
        virtual int getb();
-       /*!
-         @brief Not support. Do no thing
-         @throw Error
-        */
+        /*!
+          @brief Remove the contents of the file and then transfer data from
+              the \em src BasicIo object into the empty file.
+
+          The write access is done in an efficient way. It only sends the range of different
+          bytes between the current data and BasicIo instance to the remote machine.
+
+          @param src Reference to another BasicIo instance. The entire contents
+              of src are transferred to this object. The \em src object is
+              invalidated by the method.
+          @throw Error In case of failure
+
+          @note The write access is only supported by http, https, ssh.
+         */
        virtual void transfer(BasicIo& src);
        /*!
          @brief Move the current IO position.
@@ -926,14 +973,14 @@ namespace Exiv2 {
        virtual int seek(long offset, Position pos);
 #endif
        /*!
-         @brief Allow direct access to the underlying data buffer. The buffer
-                is not protected against write access in any way, the argument
-                is ignored.
-         @note  The application must ensure that the memory pointed to by the
-                returned pointer remains valid and allocated as long as the
-                MemIo object exists.
+         @brief Not support
+         @return NULL
         */
        virtual byte* mmap(bool /*isWriteable*/ =false);
+        /*!
+          @brief Not support
+          @return 0
+         */
        virtual int munmap();
        //@}
        //! @name Accessors
@@ -972,26 +1019,54 @@ namespace Exiv2 {
         */
        virtual BasicIo::AutoPtr temporary() const;
 
+        /*!
+          @brief Mark all the bNone blocks to bKnow. This avoids allocating memory
+            for parts of the file that contain image-date (non-metadata/pixel data)
+
+          @note This method should be only called after the concerned data (metadata)
+                are all downloaded from the remote file to memory.
+         */
        virtual void populateFakeData();
        //@}
 
     protected:
-        // Pimpl idiom
-        class Impl;
-        Impl* p_;
         //! @name Creators
         //@{
         //! Default Constructor
-        RemoteIo() {}
+        RemoteIo() {p_=NULL;}
         //@}
+
+        // Pimpl idiom
+        class Impl;
+        Impl* p_;
     }; // class RemoteIo
 
+    /*!
+        @brief Provides the http read/write access for the RemoteIo.
+    */
     class EXIV2API HttpIo : public RemoteIo {
     public:
+        //! @name Creators
+        //@{
+        /*!
+          @brief Constructor that accepts the http URL on which IO will be
+              performed. The constructor does not open the file, and
+              therefore never failes.
+          @param url The full path of url
+          @param blockSize the size of the memory block. The file content is
+                divided into the memory blocks. These blocks are populated
+                on demand from the server, so it avoids copying the complete file.
+         */
         HttpIo(const std::string&  url,  size_t blockSize = 1024);
 #ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like HttpIo(const std::string& url, size_t blockSize = 1024) but accepts a
+              unicode url in an std::wstring.
+          @note This constructor is only available on Windows.
+         */
         HttpIo(const std::wstring& wurl, size_t blockSize = 1024);
 #endif
+        //@}
     protected:
         // NOT IMPLEMENTED
         //! Copy constructor
@@ -1010,15 +1085,43 @@ namespace Exiv2 {
 
 
 #if EXV_USE_CURL == 1
+    /*!
+        @brief Provides the http, https read/write access and ftp read access for the RemoteIo.
+            This class is based on libcurl.
+    */
     class EXIV2API CurlIo : public RemoteIo {
     public:
         //! @name Creators
         //@{
+        /*!
+          @brief Constructor that accepts the URL on which IO will be
+              performed.
+          @param url The full path of url
+          @param blockSize the size of the memory block. The file content is
+                divided into the memory blocks. These blocks are populated
+                on demand from the server, so it avoids copying the complete file.
+          @throw Error if it is unable to init curl pointer.
+         */
         CurlIo(const std::string&  url,  size_t blockSize = 0);
 #ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like CurlIo(const std::string&  url,  size_t blockSize = 0) but accepts a
+              unicode url in an std::wstring.
+          @note This constructor is only available on Windows.
+         */
         CurlIo(const std::wstring& wurl, size_t blockSize = 0);
 #endif
+        /*!
+          @brief Write access is only available for some protocols. This method
+                will call RemoteIo::write(const byte* data, long wcount) if the write
+                access is available for the protocol. Otherwise, it throws the Error.
+         */
         long write(const byte* data, long wcount);
+        /*!
+          @brief Write access is only available for some protocols. This method
+                will call RemoteIo::write(BasicIo& src) if the write access is available
+                for the protocol. Otherwise, it throws the Error.
+         */
         long write(BasicIo& src);
     protected:
         // NOT IMPLEMENTED
@@ -1038,14 +1141,33 @@ namespace Exiv2 {
 #endif
 
 #if EXV_USE_SSH == 1
+    /*!
+        @brief Provides the ssh read/write access and sftp read access for the RemoteIo.
+            This class is based on libssh.
+    */
     class EXIV2API SshIo : public RemoteIo {
     public:
         //! @name Creators
         //@{
+        /*!
+          @brief Constructor that accepts the URL on which IO will be
+              performed.
+          @param url The full path of url
+          @param blockSize the size of the memory block. The file content is
+                divided into the memory blocks. These blocks are populated
+                on demand from the server, so it avoids copying the complete file.
+          @throw Error if it is unable to init ssh session.
+         */
         SshIo(const std::string&  url,  size_t blockSize = 1024);
 #ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like SshIo(const std::string&  url,  size_t blockSize = 1024) but accepts a
+              unicode url in an std::wstring.
+          @note This constructor is only available on Windows.
+         */
         SshIo(const std::wstring& wurl, size_t blockSize = 1024);
 #endif
+        //@}
     protected:
         // NOT IMPLEMENTED
         //! Copy constructor

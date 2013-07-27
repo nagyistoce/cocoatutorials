@@ -1,9 +1,10 @@
 #include "ssh.hpp"
 #if EXV_USE_SSH == 1
+
 // class member definitions
 namespace Exiv2 {
-SSH::SSH(const std::string& host, const std::string& user, const std::string& pass):host_(host),user_(user),pass_(pass),sftp_(0) {
-        int rc;
+    SSH::SSH(const std::string& host, const std::string& user, const std::string& pass):
+        host_(host),user_(user),pass_(pass),sftp_(0) {
         session_ = ssh_new();
         if (session_ == NULL) {
             throw Error(1, "Unable to create the the ssh session");
@@ -11,13 +12,11 @@ SSH::SSH(const std::string& host, const std::string& user, const std::string& pa
         // try to connect
         ssh_options_set(session_, SSH_OPTIONS_HOST, host_.c_str());
         ssh_options_set(session_, SSH_OPTIONS_USER, user_.c_str());
-        rc = ssh_connect(session_);
-        if (rc != SSH_OK) {
+        if (ssh_connect(session_) != SSH_OK) {
             throw Error(1, ssh_get_error(session_));
         }
         // Authentication
-        rc = ssh_userauth_password(session_, NULL, pass_.c_str());
-        if (rc != SSH_AUTH_SUCCESS) {
+        if (ssh_userauth_password(session_, NULL, pass_.c_str()) != SSH_AUTH_SUCCESS) {
             throw Error(1, ssh_get_error(session_));
         }
     }
@@ -34,11 +33,9 @@ SSH::SSH(const std::string& host, const std::string& user, const std::string& pa
                 ssh_channel_free(channel);
             } else {
                 char buffer[256];
-                rc = channel_request_exec(channel, cmd.c_str());
-                if (rc > 0) {
-                    rc = -1;
-                } else {
-                    while ((rc = channel_read(channel, buffer, sizeof(buffer), 0)) > 0) {
+                rc = ssh_channel_request_exec(channel, cmd.c_str());
+                if (rc == SSH_OK) {
+                    while ((rc = ssh_channel_read(channel, buffer, sizeof(buffer), 0)) > 0) {
                         output->append(buffer, sizeof(buffer));
                     }
                 }
@@ -100,9 +97,6 @@ SSH::SSH(const std::string& host, const std::string& user, const std::string& pa
     void SSH::getFileSftp(const std::string& filePath, sftp_file& handle) {
         if (!sftp_) openSftp();
         handle = sftp_open(sftp_, ("/"+filePath).c_str(), 0x0000, 0); // read only
-        if (handle == NULL) {
-            printf("SFTP error: %s\n", ssh_get_error(session_));
-        }
     }
 
     SSH::~SSH() {

@@ -416,26 +416,24 @@ namespace Exiv2 {
     BasicIo::AutoPtr ImageFactory::createIo(const std::string& path, bool useCurl)
 	{
 		if (path.compare("-") == 0) {
-            return BasicIo::AutoPtr(new StdinIo());
+            return BasicIo::AutoPtr(new StdinIo()); // may throw
         } else {
             Protocol fProt = fileProtocol(path);
 #if EXV_USE_SSH == 1
             if (fProt == pSsh || fProt == pSftp) {
-                return BasicIo::AutoPtr(new SshIo(path));
+                return BasicIo::AutoPtr(new SshIo(path)); // may throw
             }
 #endif
 #if EXV_USE_CURL == 1
-            if (useCurl && fProt && fProt != pSsh && fProt != pSftp) {
-                return BasicIo::AutoPtr(new CurlIo(path));
-            } else if(fProt == pHttp) {
-                return BasicIo::AutoPtr(new HttpIo(path));
+            if (useCurl && fProt != pFile && fProt != pSsh && fProt != pSftp) {
+                return BasicIo::AutoPtr(new CurlIo(path)); // may throw
             }
-#else
-            if (fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(path));
 #endif
+            if (fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(path)); // may throw
+
 			return BasicIo::AutoPtr(new FileIo(path));
 		}
-	}
+    } // ImageFactory::createIo
 #ifdef EXV_UNICODE_PATH
     BasicIo::AutoPtr ImageFactory::createIo(const std::wstring& wpath, bool useCurl)
 	{
@@ -444,22 +442,20 @@ namespace Exiv2 {
         } else {
             Protocol fProt = fileProtocol(wpath);
 #if EXV_USE_SSH == 1
-            if (fProt == pSsh) {
+            if (fProt == pSsh || fProt == pSftp) {
                 return BasicIo::AutoPtr(new SshIo(wpath));
             }
 #endif
 #if EXV_USE_CURL == 1
-            if (useCurl && fProt && fProt != pSsh) {
+            if (useCurl && fProt != pFile && fProt != pSsh && fProt != pSftp) {
                 return BasicIo::AutoPtr(new CurlIo(wpath));
-            } else if(fProt == pHttp) {
-                return BasicIo::AutoPtr(new HttpIo(wpath));
             }
-#else
-            if(fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
 #endif
+            if(fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
+
 			return BasicIo::AutoPtr(new FileIo(wpath));
 		}
-	}
+    } // ImageFactory::createIo
 #endif
     Image::AutoPtr ImageFactory::open(const std::string& path, bool useCurl)
     {

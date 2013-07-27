@@ -51,44 +51,78 @@
 // *********************************************************************
 // namespace extensions
 namespace Exiv2 {
-    enum  EnVar { envHTTPPOST = 0};
-    /*!
-       @brief The Protocol enum and the map to hold the strings
-     */
-    enum    Protocol { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
+    //! the name of environmental variables.
+    enum    EnVar       { envHTTPPOST = 0};
+    //! the collection of protocols.
+    enum    Protocol    { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
+    //! the dictionary type for the protcol identifer strings.
     typedef std::map<std::string,Protocol>           protDict_t;
+    //! the dictionary iterator for protcol identifer strings.
     typedef std::map<std::string,Protocol>::iterator protDict_i;
 #ifdef EXV_UNICODE_PATH
+    //! the dictionary type for the protcol identifer strings.
     typedef std::map<std::wstring,Protocol> wprotDict_t;
+    //! the dictionary iterator for protcol identifer strings.
     typedef std::map<std::wstring,Protocol>::iterator wprotDict_i;
 #endif
 // *********************************************************************
 // free functions
-
+    /*!
+      @brief  Return the value of environmental variable.
+      @param  var The name of environmental variable.
+      @return the value of environmental variable. If it's empty, the default value is returned.
+     */
     EXIV2API std::string getEnv(EnVar var);
-    // URL Encoding from http://www.geekhideout.com/urlcode.shtml
+    /*!
+      @brief Convert an integer value to its hex character.
+      @param code The integer value.
+      @return the input's hex character.
+     */
     EXIV2API char to_hex(char code);
+    /*!
+      @brief Convert a hex character to its integer value.
+      @param ch The hex character.
+      @return the input's integer value.
+     */
     EXIV2API char from_hex(char ch);
+    /*!
+      @brief Encode the input url.
+      @param str The url needs encoding.
+      @return the url-encoded version of str.
+
+      @note Be sure to free() the returned string after use
+            Source: http://www.geekhideout.com/urlcode.shtml
+     */
     EXIV2API char* urlencode(char* str);
+    /*!
+      @brief Decode the input url.
+      @param str The url needs decoding.
+      @return the url-decoded version of str.
+
+      @note Be sure to free() the returned string after use
+            Source: http://www.geekhideout.com/urlcode.shtml
+     */
     EXIV2API char* urldecode(const char* str);
     /*!
-      @brief Encodes in base64 the data in data_buf and puts the resulting string in result.
-      @param resultSize size in bytes of the out string, it should be at least ((dataLength + 2) / 3) * 4 + 1
-      @param dataLength size in bytes of the in buffer
+      @brief Encode in base64 the data in data_buf and puts the resulting string in result.
+      @param data_buf The data need to encode
+      @param dataLength Size in bytes of the in buffer
+      @param result The container for the result
+      @param resultSize Size in bytes of the out string, it should be at least ((dataLength + 2) / 3) * 4 + 1
       @return the string containing the encoded data, or NULL in case of error.
 
-      @note From http://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
+      @note Source: http://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
       */
     EXIV2API int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize);
     /*!
-      @brief Return the protocol of the path
-      @param path the path of file to detect the protocol
-      @return the protocol of the path
+      @brief Return the protocol of the path.
+      @param path The path of file to extract the protocol.
+      @return the protocol of the path.
      */
     EXIV2API Protocol fileProtocol(const std::string& path);
 #ifdef EXV_UNICODE_PATH
     /*!
-      @brief Like fileProtocol() but accepts a unicode path in an std::wstring.
+      @brief Like fileProtocol() but accept a unicode path in an std::wstring.
       @note This function is only available on Windows.
      */
     EXIV2API Protocol fileProtocol(const std::wstring& wpath);
@@ -119,21 +153,30 @@ namespace Exiv2 {
      */
     EXIV2API std::string strError();
 
-    // http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+    /*!
+      @brief A container for URL components. It also provides the method to parse a
+            URL to get the protocol, host, path, port, querystring, username, password.
+
+      Source: http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+     */
     class Uri
     {
     public:
-        std::string QueryString;
-        std::string Path;
-        std::string Protocol;
-        std::string Host;
-        std::string Port;
-        std::string Username;
-        std::string Password;
+        // DATA
+        std::string QueryString;    //!< URL query string
+        std::string Path;           //!< URL file path
+        std::string Protocol;       //!< URL protocol
+        std::string Host;           //!< URL host
+        std::string Port;           //!< URL port
+        std::string Username;       //!< URL username
+        std::string Password;       //!< URL password
 
+        /*!
+          @brief Parse the input URL to the protocol, host, path, username, password
+         */
         static Uri EXIV2API Parse(const std::string &uri);
-    };
+    }; // class Uri
 
-}                                       // namespace Exiv2
+} // namespace Exiv2
 
 #endif                                  // #ifndef FUTILS_HPP_

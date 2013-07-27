@@ -516,7 +516,7 @@ namespace Exiv2 {
             throw Error(15);
         }
 
-        // For Signature
+        // Container for the signature
         const long bufMinSize = 36;
         long bufRead = 0, startSig = 0;
         DataBuf buf(bufMinSize);
@@ -548,7 +548,7 @@ namespace Exiv2 {
                 printf("        ");
             }
 
-            // only print signature for appn
+            // only print the signature for appn
             if (marker >= app0_ && marker <= (app0_ | 0x0F)) {
                 startSig = size>0?2:0;
                 while (startSig < bufRead && buf.pData_[startSig] < 128)
@@ -886,7 +886,8 @@ namespace Exiv2 {
             ++count;
         }
 
-        //populate the fake data, only make sense for remoteio, httpio and sshio
+        // Populate the fake data, only make sense for remoteio, httpio and sshio.
+        // it avoids allocating memory for parts of the file that contain image-date.
         io_->populateFakeData();
 
         // Copy rest of the Io
