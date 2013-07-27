@@ -1372,68 +1372,147 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
     const TagVocabulary* td;
     const TagVocabulary* tv, *tv_internal;
 
-    const long bufMinSize = 100;
-    DataBuf buf(bufMinSize);
-    unsigned long size = 0, size_internal = size_external;
-    std::memset(buf.pData_, 0x0, buf.size_);
+    if(!m_modifyMetadata)
+    {
+        const long bufMinSize = 100;
+        DataBuf buf(bufMinSize);
+        unsigned long size = 0, size_internal = size_external;
+        std::memset(buf.pData_, 0x0, buf.size_);
 
-    while((size_internal/4 != 0) && (size_internal > 0)) {
+        while((size_internal/4 != 0) && (size_internal > 0)) {
 
-        buf.pData_[4] = '\0' ;
-        io_->read(buf.pData_, 4);
-        size = Exiv2::getULong(buf.pData_, bigEndian);
-        if(size > size_internal)
-            break;
-        size_internal -= size;
-        io_->read(buf.pData_, 4);
-
-        if(buf.pData_[0] == 169)
-            buf.pData_[0] = ' ';
-        td = find(userDatatags, Exiv2::toString( buf.pData_));
-
-        tv = find(userDataReferencetags, Exiv2::toString( buf.pData_));
-
-        if(size == 0 || (size - 12) <= 0)
-            break;
-
-        else if(equalsQTimeTag(buf, "DcMD")  || equalsQTimeTag(buf, "NCDT"))
-            userDataDecoder(size - 8);
-
-        else if(equalsQTimeTag(buf, "NCTG"))
-            NikonTagsDecoder(size - 8);
-
-        else if(equalsQTimeTag(buf, "TAGS"))
-            CameraTagsDecoder(size - 8);
-
-        else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
-                || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
-                || equalsQTimeTag(buf, "FFMV")) {
-            io_->read(buf.pData_, size - 8);
-            xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
-        }
-
-        else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo")) {
-            io_->read(buf.pData_, 2);
-            buf.pData_[2] = '\0' ;
-            tv_internal = find(cameraByteOrderTags, Exiv2::toString( buf.pData_));
-
-            if (tv_internal)
-                xmpData_[exvGettext(tv->label_)] = exvGettext(tv_internal->label_);
-            else
-                xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
-        }
-
-        else if(tv) {
+            buf.pData_[4] = '\0' ;
             io_->read(buf.pData_, 4);
-            io_->read(buf.pData_, size-12);
-            xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
+            size = Exiv2::getULong(buf.pData_, bigEndian);
+            if(size > size_internal)
+                break;
+            size_internal -= size;
+            io_->read(buf.pData_, 4);
+
+            if(buf.pData_[0] == 169)
+                buf.pData_[0] = ' ';
+            td = find(userDatatags, Exiv2::toString( buf.pData_));
+
+            tv = find(userDataReferencetags, Exiv2::toString( buf.pData_));
+
+            if(size == 0 || (size - 12) <= 0)
+                break;
+
+            else if(equalsQTimeTag(buf, "DcMD")  || equalsQTimeTag(buf, "NCDT"))
+                userDataDecoder(size - 8);
+
+            else if(equalsQTimeTag(buf, "NCTG"))
+                NikonTagsDecoder(size - 8);
+
+            else if(equalsQTimeTag(buf, "TAGS"))
+                CameraTagsDecoder(size - 8);
+
+            else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
+                    || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
+                    || equalsQTimeTag(buf, "FFMV")) {
+                io_->read(buf.pData_, size - 8);
+                xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
+            }
+
+            else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo")) {
+                io_->read(buf.pData_, 2);
+                buf.pData_[2] = '\0' ;
+                tv_internal = find(cameraByteOrderTags, Exiv2::toString( buf.pData_));
+
+                if (tv_internal)
+                    xmpData_[exvGettext(tv->label_)] = exvGettext(tv_internal->label_);
+                else
+                    xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
+            }
+
+            else if(tv) {
+                io_->read(buf.pData_, 4);
+                io_->read(buf.pData_, size-12);
+                xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
+            }
+
+            else if(td)
+                tagDecoder(buf,size-8);
         }
 
-        else if(td)
-            tagDecoder(buf,size-8);
+        io_->seek(cur_pos + size_external, BasicIo::beg);
     }
+    else
+    {
+        const long bufMinSize = 100;
+        DataBuf buf(bufMinSize);
+        unsigned long size = 0, size_internal = size_external;
+        std::memset(buf.pData_, 0x0, buf.size_);
 
-    io_->seek(cur_pos + size_external, BasicIo::beg);
+        while((size_internal/4 != 0) && (size_internal > 0)) {
+
+            buf.pData_[4] = '\0' ;
+            io_->read(buf.pData_, 4);
+            size = Exiv2::getULong(buf.pData_, bigEndian);
+            if(size > size_internal)
+                break;
+            size_internal -= size;
+            io_->read(buf.pData_, 4);
+
+            if(buf.pData_[0] == 169)
+                buf.pData_[0] = ' ';
+            td = find(userDatatags, Exiv2::toString( buf.pData_));
+
+            tv = find(userDataReferencetags, Exiv2::toString( buf.pData_));
+
+            if(size == 0 || (size - 12) <= 0)
+                break;
+
+            else if(equalsQTimeTag(buf, "DcMD")  || equalsQTimeTag(buf, "NCDT"))
+                userDataDecoder(size - 8);
+
+            else if(equalsQTimeTag(buf, "NCTG"))
+                NikonTagsDecoder(size - 8);
+
+            else if(equalsQTimeTag(buf, "TAGS"))
+                CameraTagsDecoder(size - 8);
+
+            else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
+                    || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
+                    || equalsQTimeTag(buf, "FFMV"))
+            {
+                if(xmpData_[exvGettext(tv->label_)].count() > 0)
+                {
+                    byte rawTagData[size-12];
+                    const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
+                    for(int j=0; j <(size-12); j++)
+                    {
+                        rawTagData[j] = tagData[j];
+                    }
+                    io_->write(rawTagData,(size-12));
+                }
+                else
+                {
+                    io_->seek((size-12),BasicIo::cur);
+                }
+            }
+
+            else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo"))
+            {
+                io_->seek(2,BasicIo::cur);
+            }
+
+            else if(tv)
+            {
+                io_->seek(4,BasicIo::cur);
+                if(xmpData_[exvGettext(tv->label_)].count() >0)
+                {
+                    byte rawtagData[size-12];
+                    const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
+                    for(int j=0; j<(size-12); j++)
+                    {
+                        rawtagData[j] = tagData[j];
+                    }
+                    io_->write(rawtagData,(size-12));
+                }
+            }
+        }
+    }
 } // QuickTimeVideo::userDataDecoder
 
 void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
