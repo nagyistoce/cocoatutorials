@@ -1,6 +1,6 @@
 # ************************************************************* -*- Makefile -*-
 #
-# Copyright (C) 2004-2012 Andreas Huggel <ahuggel@gmx.net>
+# Copyright (C) 2004-2013 Andreas Huggel <ahuggel@gmx.net>
 #
 # This Makefile is part of the Exiv2 distribution.
 #
@@ -102,6 +102,9 @@ EXECUTABLE = $(BINSRC:.cpp=$(EXEEXT)) $(OTHER)
 ifdef DEP_TRACKING
 DEP = $(BINSRC:%.cpp=$(DEPDIR)/%.d)
 endif
+
+PREFIX = /usr/local/lib
+LINK.cc += -rpath $(PREFIX) -L$(PREFIX) 
 
 # ******************************************************************************
 # Rules
