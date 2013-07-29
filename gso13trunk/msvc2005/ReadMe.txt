@@ -2,10 +2,8 @@ exiv2\msvc2005\ReadMe.txt
 -------------------------
 
 +-----------------------------------------------------------+
-| msvc2012 builds 32bit and 64bit binaries                  |
-|          with Visual Studio 2012                          |
 | msvc2005 builds 32bit and 64bit binaries                  |
-|          with Visual Studio 2005/8/10                     |
+|          with Visual Studio 2005/8/10/12                  |
 | msvc2003 builds 32bit binaries                            |
 |          with Visual Studio 2003/5/8                      |
 +-----------------------------------------------------------+
@@ -55,25 +53,23 @@ T A B L E  o f  C O N T E N T S
      c:\gnu>dir
      Directory of c:\gnu
      2010-12-05  10:05    <DIR>             exiv2                <--- this tree
-     2012-05-04  23:35    <DIR>             expat-2.1.0          <--- "vanilla" expat 2.1.0 source tree
-     2012-05-04  23:35    <DIR>             zlib-1.2.7           <--- "vanilla" zlib  1.2.7 source tree
-     2012-05-04  23:35    <DIR>             curl-7.20.0          <--- "vanilla" zlib  1.2.7 source tree
-     2010-12-02  21:06    <DIR>             expat-2.0.1 OPTIONAL <--- "vanilla" expat 2.0.1 source tree
-     2010-12-02  20:58    <DIR>             zlib-1.2.5  OPTIONAL <--- "vanilla" zlib  1.2.5 source tree
-     2010-12-02  20:58    <DIR>             zlib-1.2.3  OPTIONAL <--- "vanilla" zlib  1.2.3 source tree
+     2012-05-04  23:35    <DIR>             expat                <--- "vanilla" expat 2.1.0 source tree
+     2012-05-04  23:35    <DIR>             zlib                 <--- "vanilla" zlib  1.2.7 source tree
+     2012-05-04  23:35    <DIR>             curl                 <--- "vanilla" curl  7.30.0 source tree
      c:\gnu>
 
      The URLs from which to obtain zlib and expat are documented in exiv2\msvc2003\ReadMe.txt
      expat-2.1.0 is available from http://voxel.dl.sourceforge.net/sourceforge/expat/expat-2.1.0.tar.gz
      zlib-1.2.7  is available from http://zlib.net/zlib-1.2.7.tar.gz
-
+     curl-7.30.0 is available from http://curl.haxx.se/download.html
+     
 1.3  Open exiv2\msvc2005\exiv2.sln
      Projects are zlib, expat, xmpsdk, curl, exiv2lib, exiv2, addmoddel etc...
      Build/Batch build...  Select All, Build
-     - 29 projects      (zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc)
+     - 32 projects      (zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc)
      x 2 Platforms      (x64|Win32)
      x 4 Configurations (Debug|Release|DebugDLL|ReleaseDLL)
-     = 29x2x4 = 232 builds.
+     = 32x2x4 = 256 builds.
 
      If you haven't installed the x64 compiler, don't select the 64 bit configurations!
      You may have to hand-edit the vcproj and sln files to hide the 64 bit information.
@@ -161,28 +157,20 @@ T A B L E  o f  C O N T E N T S
 
 2    Design
 
-     expat and zlib1.2.5 (and earlier) do not provide 64 bit builds for DevStudio.
+     expat-2.10.0 and zlib1.2.5 (and earlier) do not provide 64 bit builds for DevStudio.
      
      The projects provided for zlib1.2.7 support 64 bit builds, however it didn't
      work cleanly for me.  They use different projects for VC9 and VC10.
-     They don't provide support for VC8 or 11beta.
+     They don't provide support for VC8 or VC11
      
-     I have created build environments for zlib and expat within exiv2/msvc2005.
-     I don't include the source code for zlib or expat - only the build environment.
+     I have created build environments for zlib, expat and curl within exiv2/msvc2005.
+     I don't include the source code for zlib, expat or curl - only the build environment.
      
      You are expected to install the "vanilla" expat and zlib libraries
      in a directory at the same level as exiv2.
      I personally always build in the directory c:\gnu,
      however the name/location/spaces of the build directory are all irrelevant,
-     it's only the relative position of expat-2.1.0 and zlib-1.2.7 that matter.
-     The names expat-2.1.0 and zlib-1.2.7 are fixed (and used by the .vcproj files)
-
-     zlib and expat
-     exiv2\msvc2005\zlib\zlib.vcproj                          DevStudio files
-     ..\..\..\zlib-1.2.7\                                   Source code
-
-     exiv2\msvc2005\expat\expat.vcproj                        DevStudio files
-     ..\..\..\expat-2.1.0\                                  Source code
+     it's only the relative position of zlib, expat and curl that matter.
 
 2.1  Architecture
      There are directories for every component:
@@ -205,7 +193,7 @@ T A B L E  o f  C O N T E N T S
      1) msvc2005 supports 64 bit and 32 bit builds
      2) msvc2005 provides projects to build expat and zlib
      3) msvc2005 is designed to accomodate new versions of expat and zlib when they become available.
-     4) msvc2005 supports DevStudio 2005, 2008 and 2010 (no support for 2003)
+     4) msvc2005 supports DevStudio 2005, 2008, 2010 and 2012.  (no support for 2003)
      5) msvc2005 does not require you to build 'vanilla' expat and zlib projects in advance
      6) msvc2005 does not support the organize application
      7) msvc2005 supports building with zlib1.2.7 (default) or zlib1.2.3/5
