@@ -10,7 +10,7 @@ exiv2\msvc2005\ReadMe.txt
 |          with Visual Studio 2003/5/8                      |
 +-----------------------------------------------------------+
 
-Updated: 2013-07-22 
+Updated: 2013-07-28 
 
 Robin Mills
 http://clanmills.com
@@ -21,7 +21,7 @@ T A B L E  o f  C O N T E N T S
 
 1    Build Instructions
 1.1  Tools
-1.2  Install zlib and expat sources.
+1.2  Install zlib, expat, and curl sources.
 1.3  Open exiv2\msvc2005\exiv2.sln
 1.4  What is build
 1.5  Building with zlib1.2.3 (or 1.2.5) and expat 2.0.1
@@ -36,9 +36,7 @@ T A B L E  o f  C O N T E N T S
 3.1  Differences between inherited project and the exiv2 projects
 
 4    Batch builds and tests
-4.1  buildall.bat
-4.2  runner.py
-4.3  Running the test suite
+4.1  Running the test suite
 
 ## End Table of Contents End ##
 ####
@@ -51,7 +49,7 @@ T A B L E  o f  C O N T E N T S
      possible to build 32 bit libraries with "Express".
      See notes below about DevStudio Express and building only Win32 or x64 builds
 
-1.2  Install zlib and expat sources.
+1.2  Install zlib, expat, and curl sources.
      I use the directory c:\gnu for this purpose, however the name isn't important.
 
      c:\gnu>dir
@@ -59,6 +57,7 @@ T A B L E  o f  C O N T E N T S
      2010-12-05  10:05    <DIR>             exiv2                <--- this tree
      2012-05-04  23:35    <DIR>             expat-2.1.0          <--- "vanilla" expat 2.1.0 source tree
      2012-05-04  23:35    <DIR>             zlib-1.2.7           <--- "vanilla" zlib  1.2.7 source tree
+     2012-05-04  23:35    <DIR>             curl-7.20.0          <--- "vanilla" zlib  1.2.7 source tree
      2010-12-02  21:06    <DIR>             expat-2.0.1 OPTIONAL <--- "vanilla" expat 2.0.1 source tree
      2010-12-02  20:58    <DIR>             zlib-1.2.5  OPTIONAL <--- "vanilla" zlib  1.2.5 source tree
      2010-12-02  20:58    <DIR>             zlib-1.2.3  OPTIONAL <--- "vanilla" zlib  1.2.3 source tree
@@ -69,7 +68,7 @@ T A B L E  o f  C O N T E N T S
      zlib-1.2.7  is available from http://zlib.net/zlib-1.2.7.tar.gz
 
 1.3  Open exiv2\msvc2005\exiv2.sln
-     Projects are zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc...
+     Projects are zlib, expat, xmpsdk, curl, exiv2lib, exiv2, addmoddel etc...
      Build/Batch build...  Select All, Build
      - 29 projects      (zlib, expat, xmpsdk, exiv2lib, exiv2, addmoddel etc)
      x 2 Platforms      (x64|Win32)
@@ -80,14 +79,14 @@ T A B L E  o f  C O N T E N T S
      You may have to hand-edit the vcproj and sln files to hide the 64 bit information.
      See the notes about DevStudio Express for more information about this.
 
-     Build time is 20 minutes on a 2.2GHz Duo Core and consumes 3.0 gBytes of disk space.
+     Build time is 45 minutes on a 2.2GHz Duo Core and consumes 4.0 gBytes of disk space.
 
 1.4  What is built
      The DLL builds use the DLL version of the C runtime libraries
      The Debug|Release builds use static C runtime libraries
      This is discussed in exiv2\msvc2003\ReadMe.txt 
 
-1.5  Building with zlib1.2.5 (or 1.2.3) and/or expat 2.0.1
+1.5  Building with zlib1.2.5 (or 1.2.3) and/or expat 2.0.1 and/or curl-7.31.0
      By default, msvc2005 builds with zlib-1.2.7 and expat 2.1.0
      You can build with zlib1.2.3.  To do this:
 
@@ -98,10 +97,12 @@ T A B L E  o f  C O N T E N T S
      c:\gnu>dir
       Directory of c:\gnu
      2010-12-05  10:05    <DIR>             exiv2                <--- this tree
-     2012-05-04  23:35    <DIR>             expat-2.1.0          <--- "vanilla" expat 2.1.0 source tree
-     2010-12-02  21:06    <DIR>             expat-2.0.1          <--- "vanilla" expat 2.0.1 source tree
-     2010-12-02  20:58    <DIR>             zlib-1.2.7           <--- "vanilla" zlib 1.2.7 source tree
-     2010-12-02  20:58    <DIR>             zlib-1.2.3 OPTIONAL  <--- "vanilla" zlib 1.2.3 source tree
+     2012-05-04  23:35    <DIR>             expat-2.1.0          <--- "vanilla" expat 2.1.0  source tree
+     2010-12-02  21:06    <DIR>             expat-2.0.1          <--- "vanilla" expat 2.0.1  source tree
+     2010-12-02  20:58    <DIR>             zlib-1.2.7           <--- "vanilla" zlib  1.2.7  source tree
+     2010-12-02  20:58    <DIR>             curl-7.30.0          <--- "vanilla" curl  7.30.0 source tree
+     2010-12-02  20:58    <DIR>             zlib-1.2.3 OPTIONAL  <--- "vanilla" zlib  1.2.3  source tree
+     2010-12-02  20:58    <DIR>             curl-7.31.0 OPTIONAL <--- "vanilla" curl  7.31.0  source tree
      c:\gnu>
      Please see exiv2\msvc2003\ReadMe.txt for information about obtaining zlib-1.2.3
 
@@ -233,28 +234,7 @@ T A B L E  o f  C O N T E N T S
 
 4    Batch builds and tests
 
-4.1  buildall.bat
-     This was intended to be a "throw away" kind of script and it's grown to be quite useful.
-     You will have to run vcvars32.bat for the compiler you intend to use to ensure devenv is
-     on your path.
-
-     It doesn't know anything about building only x64 or only Win32. Change the script if you
-     want something special.
-
-4.2  runner.py
-     runner.py [Win32|x64|all]
-
-     This script runs some basic "sanity" checks on the build.  You should compare the
-         output of runner.py with the reference output runner.txt.  
-         diff/windiff/winmergeu - or whatever your favorite diff tool.
-
-     python runner.py all > new.txt
-     winmergeu.exe new.txt runner.txt
-
-     If you have only build Win32 (or x64), you'll have to remove the output from
-         runner.txt for the target that isn't of interest.
-         
-4.3  Running the test suite
+4.1  Running the test suite
      You will need to install cygwin to run the test suite.
      
      This is a two stage process:
