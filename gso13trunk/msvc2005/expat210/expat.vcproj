@@ -4,7 +4,7 @@
     <Platform Name="Win32"/>
     <Platform Name="x64"/>
   </Platforms>
-  <ToolFiles>	</ToolFiles>
+  <ToolFiles>   </ToolFiles>
   <Configurations>
     <Configuration Name="Debug|Win32" OutputDirectory=".\Win32\Debug" IntermediateDirectory=".\build\Win32\Debug" ConfigurationType="4" UseOfMFC="0" ATLMinimizesCRunTimeLibraryUsage="false" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
@@ -84,7 +84,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool" PreprocessorDefinitions="_DEBUG" Culture="1033"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" OutputFile="Win32\DebugDLL/libexpat.dll" LinkIncremental="2" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat-2.1.0\lib\libexpat.def" GenerateDebugInformation="true" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\Win32\DebugDLL/libexpat.lib" TargetMachine="1"/>
+      <Tool Name="VCLinkerTool" OutputFile="Win32\DebugDLL/libexpat.dll" LinkIncremental="2" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat\lib\libexpat.def" GenerateDebugInformation="true" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\Win32\DebugDLL/libexpat.lib" TargetMachine="1"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -103,7 +103,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool" PreprocessorDefinitions="_DEBUG" Culture="1033"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" OutputFile=".\x64\DebugDLL/libexpat.dll" LinkIncremental="2" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat-2.1.0\lib\libexpat.def" GenerateDebugInformation="true" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\x64\DebugDLL/libexpat.lib" TargetMachine="17"/>
+      <Tool Name="VCLinkerTool" OutputFile=".\x64\DebugDLL/libexpat.dll" LinkIncremental="2" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat\lib\libexpat.def" GenerateDebugInformation="true" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\x64\DebugDLL/libexpat.lib" TargetMachine="17"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -122,7 +122,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool" PreprocessorDefinitions="NDEBUG" Culture="1033"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" OutputFile="Win32\ReleaseDLL/libexpat.dll" LinkIncremental="1" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat-2.1.0\lib\libexpat.def" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\Win32\ReleaseDLL/libexpat.lib" TargetMachine="1"/>
+      <Tool Name="VCLinkerTool" OutputFile="Win32\ReleaseDLL/libexpat.dll" LinkIncremental="1" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat\lib\libexpat.def" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\Win32\ReleaseDLL/libexpat.lib" TargetMachine="1"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -141,7 +141,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool" PreprocessorDefinitions="NDEBUG" Culture="1033"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" OutputFile=".\x64\ReleaseDLL/libexpat.dll" LinkIncremental="1" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat-2.1.0\lib\libexpat.def" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\x64\ReleaseDLL/libexpat.lib" TargetMachine="17"/>
+      <Tool Name="VCLinkerTool" OutputFile=".\x64\ReleaseDLL/libexpat.dll" LinkIncremental="1" SuppressStartupBanner="true" ModuleDefinitionFile="..\..\..\expat\lib\libexpat.def" RandomizedBaseAddress="1" DataExecutionPrevention="0" ImportLibrary=".\x64\ReleaseDLL/libexpat.lib" TargetMachine="17"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -151,30 +151,30 @@
       <Tool Name="VCPostBuildEventTool"/>
     </Configuration>
   </Configurations>
-  <References>	</References>
+  <References>  </References>
   <Files>
     <Filter Name="Source Files" Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmlparse.c">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmlrole.c">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmltok.c">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmltok_impl.c">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmltok_ns.c">			</File>
+      <File RelativePath="..\..\..\expat\lib\xmlparse.c">           </File>
+      <File RelativePath="..\..\..\expat\lib\xmlrole.c">            </File>
+      <File RelativePath="..\..\..\expat\lib\xmltok.c">         </File>
+      <File RelativePath="..\..\..\expat\lib\xmltok_impl.c">            </File>
+      <File RelativePath="..\..\..\expat\lib\xmltok_ns.c">          </File>
     </Filter>
     <Filter Name="Header Files" Filter="h;hpp;hxx;hm;inl">
-      <File RelativePath="..\..\..\expat-2.1.0\lib\ascii.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\asciitab.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\expat.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\expat_external.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\iasciitab.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\internal.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\latin1tab.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\nametab.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\utf8tab.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmlrole.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmltok.h">			</File>
-      <File RelativePath="..\..\..\expat-2.1.0\lib\xmltok_impl.h">			</File>
+      <File RelativePath="..\..\..\expat\lib\ascii.h">          </File>
+      <File RelativePath="..\..\..\expat\lib\asciitab.h">           </File>
+      <File RelativePath="..\..\..\expat\lib\expat.h">          </File>
+      <File RelativePath="..\..\..\expat\lib\expat_external.h">         </File>
+      <File RelativePath="..\..\..\expat\lib\iasciitab.h">          </File>
+      <File RelativePath="..\..\..\expat\lib\internal.h">           </File>
+      <File RelativePath="..\..\..\expat\lib\latin1tab.h">          </File>
+      <File RelativePath="..\..\..\expat\lib\nametab.h">            </File>
+      <File RelativePath="..\..\..\expat\lib\utf8tab.h">            </File>
+      <File RelativePath="..\..\..\expat\lib\xmlrole.h">            </File>
+      <File RelativePath="..\..\..\expat\lib\xmltok.h">         </File>
+      <File RelativePath="..\..\..\expat\lib\xmltok_impl.h">            </File>
     </Filter>
-    <Filter Name="Resource Files" Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">		</Filter>
+    <Filter Name="Resource Files" Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">        </Filter>
   </Files>
-  <Globals>	</Globals>
+  <Globals> </Globals>
 </VisualStudioProject>
