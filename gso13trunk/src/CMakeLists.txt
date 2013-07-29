@@ -164,11 +164,11 @@ SET( EXIV2_SRC            exiv2.cpp
                           utils.cpp
 )
 # httptest application
-SET( HTTPTEST             httptest.cpp)
+SET( HTTPTEST             ../samples/httptest.cpp)
 # exifprint application
-SET( EXIFPRINT            exifprint.cpp)
+SET( EXIFPRINT            ../samples/exifprint.cpp)
 # cmdfiletest application
-SET( REMOTETEST           remotetest.cpp)
+SET( REMOTETEST           ../samples/remotetest.cpp)
 
 ##
 # modify source lists to suit environment

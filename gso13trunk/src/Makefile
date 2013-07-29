@@ -173,21 +173,23 @@ EXIV2COBJ = $(EXIVCSRC:.c=.o)
 EXIV2BIN  = $(EXIV2MAIN:.cpp=)
 EXIV2EXE  = $(EXIV2MAIN:.cpp=$(EXEEXT))
 
+SAMPLEDIR = ../samples/
+
 # httptest application
 HTTPTEST  = httptest.cpp
-HTTPTOBJ  = $(HTTPTEST:.cpp=.o) $(HTTPTSRC:.cpp=.o)
+HTTPTOBJ  = $(SAMPLEDIR)$(HTTPTEST:.cpp=.o)
 HTTPTBIN  = $(HTTPTEST:.cpp=)
 HTTPTEXE  = $(HTTPTEST:.cpp=$(EXEEXT))
 
 # exifprint application
 EXIFPRINT = exifprint.cpp
-EXIFPOBJ  = $(EXIFPRINT:.cpp=.o) $(EXIFPSRC:.cpp=.o)
+EXIFPOBJ  = $(SAMPLEDIR)$(EXIFPRINT:.cpp=.o)
 EXIFPBIN  = $(EXIFPRINT:.cpp=)
 EXIFPEXE  = $(EXIFPRINT:.cpp=$(EXEEXT))
 
 # cmdfiletest application
 REMOTETEST  = remotetest.cpp
-REMOTETOBJ  = $(REMOTETEST:.cpp=.o) $(REMOTETSRC:.cpp=.o)
+REMOTETOBJ  = $(SAMPLEDIR)$(REMOTETEST:.cpp=.o)
 REMOTETBIN  = $(REMOTETEST:.cpp=)
 REMOTETEXE  = $(REMOTETEST:.cpp=$(EXEEXT))
 
