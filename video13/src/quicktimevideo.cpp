@@ -2638,15 +2638,17 @@ void QuickTimeVideo::imageDescDecoder()
                     {
                         rawCompressor[j] = (byte)compressor[j];
                     }
+                    io_->seek(4,BasicIo::cur);
                     io_->write(rawCompressor,32);
                 }
                 else
                 {
-                    io_->seek(32,BasicIo::cur);
+                    io_->seek(36,BasicIo::cur);
                 }
                 size -= 32;
                 break;
             default:
+                io_->seek(4,BasicIo::cur);
                 break;
             }
         }
