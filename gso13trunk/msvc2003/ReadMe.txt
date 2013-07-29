@@ -2,13 +2,13 @@ Notes about msvc2003 32 bit build of exiv2
 ------------------------------------------
 
 +-----------------------------------------------------------+
-| msvc2012 builds 32bit and 64bit binaries                  |
-|          with Visual Studio 2012                          |
 | msvc2005 builds 32bit and 64bit binaries                  |
-|          with Visual Studio 2005/8/10                     |
+|          with Visual Studio 2005/8/10/12                  |
 | msvc2003 builds 32bit binaries                            |
 |          with Visual Studio 2003/5/8                      |
 +-----------------------------------------------------------+
+
+Updated: 2013-07-28 
 
 Tools
 -----
