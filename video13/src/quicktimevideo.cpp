@@ -2591,6 +2591,7 @@ void QuickTimeVideo::imageDescDecoder()
             case XResolution:
                 if(xmpData_["Xmp.video.XResolution"].count() >0)
                 {
+                    cout << "here" << endl;
                     DataBuf tmpBuf((unsigned long)5);
                     tmpBuf.pData_[3] ='\0';
                     DataBuf imageWidth = returnBuf((int64_t)xmpData_["Xmp.video.XResolution"].toLong());
@@ -3350,7 +3351,6 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
     }
     else
     {
-        cout << "executed" << endl;
         for (int i = 0; size/4 != 0  ; size -=4, i++)
         {
             switch(i)
@@ -3555,10 +3555,8 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 }
                 break;
             case ImageWidth:
-                cout << "one" << endl;
                 if(currentStream_ == Video)
                 {
-                    cout << "video" << endl;
                     if(xmpData_["Xmp.video.Width"].count() >0)
                     {
                         int64_t width = xmpData_["Xmp.video.Width"].toLong();
@@ -3575,7 +3573,6 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
             case ImageHeight:
                 if(currentStream_ == Video)
                 {
-                    cout << "height" << endl;
                     if(xmpData_["Xmp.video.Height"].count() >0)
                     {
                         int64_t Height = xmpData_["Xmp.video.Height"].toLong();
