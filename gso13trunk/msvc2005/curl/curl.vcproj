@@ -72,6 +72,7 @@
 				Name="VCLibrarianTool"
 				OutputFile="Win32\Debug\libcurl.lib"
 				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames="msvcrtd"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -147,6 +148,7 @@
 				Name="VCLibrarianTool"
 				OutputFile=".\x64\Debug\libcurl.lib"
 				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames="msvcrtd"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -221,6 +223,7 @@
 				Name="VCLibrarianTool"
 				OutputFile="Win32\Release/libcurl.lib"
 				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames="msvcrt"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -296,6 +299,7 @@
 				Name="VCLibrarianTool"
 				OutputFile=".\x64\Release/libcurl.lib"
 				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames="msvcrt"
 			/>
 			<Tool
 				Name="VCALinkTool"
