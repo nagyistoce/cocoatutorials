@@ -11,7 +11,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="1" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;_DEBUG;_CONSOLE" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="1" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
@@ -30,7 +30,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="2" EnableIntrinsicFunctions="true" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE" RuntimeLibrary="0" EnableFunctionLevelLinking="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="2" EnableIntrinsicFunctions="true" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;NDEBUG;_CONSOLE" RuntimeLibrary="0" EnableFunctionLevelLinking="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
@@ -49,7 +49,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="3" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;_DEBUG;_CONSOLE;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="3" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" Description="copy the dlls" CommandLine="copy/y ..\exiv2lib\$(ConfigurationName)\*.dll &quot;$(TargetDir)&quot;"/>
@@ -68,7 +68,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="2" EnableIntrinsicFunctions="true" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;EXV_HAVE_DLL" RuntimeLibrary="2" EnableFunctionLevelLinking="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="2" EnableIntrinsicFunctions="true" AdditionalIncludeDirectories="$(BOOST_ROOT);../../include;../../include/exiv2;../../src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;NDEBUG;_CONSOLE;EXV_HAVE_DLL" RuntimeLibrary="2" EnableFunctionLevelLinking="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" Description="copy the dlls" CommandLine="copy/y ..\exiv2lib\$(ConfigurationName)\*.dll &quot;$(TargetDir)&quot;"/>

@@ -150,7 +150,11 @@ static int error(std::string errors,const char* msg,const char* x=NULL,const cha
 static int error(std::string errors,const char* msg,const char* x     ,const char* y     ,int z )
 {
     char buffer[512] ;
-    snprintf(buffer,sizeof buffer,msg,x,y,z) ;
+#ifdef MSDEV_2003
+	sprintf(buffer,msg,x,y,z);
+#else
+	snprintf(buffer,sizeof buffer,msg,x,y,z) ;
+#endif
     if ( errno ) {
         perror(buffer) ;
     } else {
@@ -297,8 +301,12 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
 
     ////////////////////////////////////
     // format the request
+#ifdef MSDEV_2003
+    int    n  =  sprintf(buffer,httpTemplate,verb,page,version,servername,header) ;
+#else
     int    n  = snprintf(buffer,buff_l,httpTemplate,verb,page,version,servername,header) ;
-    buffer[n] = 0 ;
+#endif
+	buffer[n] = 0 ;
     response["requestheaders"]=std::string(buffer,n);
 
 
@@ -379,13 +387,22 @@ int Exiv2::http(dict_t& request,dict_t& response,std::string& errors)
     }
 
     if ( n != FINISH || !OK(status) ) {
-        snprintf(buffer,sizeof buffer,"wsa_error = %d,n = %d,sleep_ = %d status = %d"
+#ifdef MSDEV_2003
+		sprintf(buffer,"wsa_error = %d,n = %d,sleep_ = %d status = %d"
                 ,   WSAGetLastError()
                 ,   n
                 ,   sleep_
                 ,   status
                 ) ;
-        error(errors,buffer,NULL,NULL,0) ;
+#else
+		snprintf(buffer,sizeof buffer,"wsa_error = %d,n = %d,sleep_ = %d status = %d"
+                ,   WSAGetLastError()
+                ,   n
+                ,   sleep_
+                ,   status
+                ) ;
+#endif
+		error(errors,buffer,NULL,NULL,0) ;
     } else if ( bSearching && OK(status) ) {
         if ( end ) {
         //  we finished OK without finding headers, flush the buffer

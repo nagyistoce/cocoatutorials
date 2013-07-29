@@ -11,7 +11,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="1" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;_DEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="1" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
@@ -30,7 +30,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="2" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;_NDEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS" StringPooling="true" RuntimeLibrary="0" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="2" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;_NDEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS" StringPooling="true" RuntimeLibrary="0" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
@@ -49,7 +49,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="3" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;_DEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="3" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" Description="copy the dlls" CommandLine="copy/y ..\exiv2lib\$(ConfigurationName)\*.dll &quot;$(TargetDir)&quot;"/>
@@ -68,7 +68,7 @@
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
       <Tool Name="VCMIDLTool"/>
-      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="WIN32;_NDEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="2" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
+      <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat-2.0.1/lib;../../../zlib-1.2.3;" PreprocessorDefinitions="EXV_USE_CURL=0;WIN32;_NDEBUG;_WINDOWS;_USRDLL;EXIVSIMPLE_EXPORTS;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="2" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="true" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" Description="copy the dlls" CommandLine="copy/y ..\exiv2lib\$(ConfigurationName)\*.dll &quot;$(TargetDir)&quot;"/>

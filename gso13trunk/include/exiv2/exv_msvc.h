@@ -83,17 +83,19 @@ typedef int pid_t;
 #define EXV_HAVE_XMP_TOOLKIT 1
 
 /* Define as 1 if you want to use curl to perform http I/O */
+#ifndef EXV_USE_CURL
 #define EXV_USE_CURL 1
+#endif
 
 /* Help out our buddy curl */
 #ifndef EXV_HAVE_DLL
 #define CURL_STATICLIB
 #endif
 
-#if EXV_USE_CURL == 1
+//#if EXV_USE_CURL == 1
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "wldap32.lib")
-#endif
+//#endif
 
 
 /* File path seperator */
