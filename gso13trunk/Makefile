@@ -71,13 +71,13 @@ samples: config/config.mk
 	cd samples && $(MAKE) $(MAKECMDGOALS)
 
 tests:
-	cd test && $(MAKE) tests
+	cd test && $(MAKE) test
 
 teste:
 	cd test && $(MAKE) teste
 
 testx:
-	cd test && $(MAKE) test
+	cd test && $(MAKE) testx
 	
 testv:
 	cd test && $(MAKE) testv

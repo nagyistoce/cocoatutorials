@@ -54,7 +54,7 @@ SHELL = /bin/sh
 
 # ******************************************************************************
 # Targets
-.PHONY: all test testv teste clean distclean maintainer-clean
+.PHONY: all test testx testv teste clean distclean maintainer-clean
 
 ##
 # to save download time for simple build/test, we download video and eps data on demand
@@ -66,7 +66,7 @@ SVN_TEST = svn://dev.exiv2.org/svn/trunk/test/data
 
 ##
 # Add test drivers to this list
-TESTX = addmoddel.sh      \
+TESTS = addmoddel.sh      \
         bugfixes-test.sh  \
         exifdata-test.sh  \
         imagetest.sh      \
@@ -78,21 +78,21 @@ TESTX = addmoddel.sh      \
         write-test.sh     \
         write2-test.sh    \
         xmpparser-test.sh \
+        exiv2-test.sh     \
+        modify-test.sh    \
         conversions.sh
 TESTV = video-test.sh
 TESTE = eps-test.sh       \
         preview-test.sh
-TESTS = exiv2-test.sh     \
-        modify-test.sh    \
-        httpiotest.sh     \
+TESTX = httpiotest.sh     \
         curliotest.sh     \
         sshiotest.sh
 
-testx:
+tests:
 	cd .. ; make tests
 
 test:
-	@list='$(TESTX)'; for p in $$list; do \
+	@list='$(TESTS)'; for p in $$list; do \
 	    echo Running $$p ...; \
 	    ./$$p;  \
 	    rc=$$?; \
@@ -126,8 +126,8 @@ teste:
 
 ##
 # TODO: test httpIo and remoteIo
-tests:
-	@list='$(TESTS)'; for p in $$list; do \
+testx:
+	@list='$(TESTX)'; for p in $$list; do \
 	    echo Running $$p ...; \
 	    ./$$p; \
 	done
