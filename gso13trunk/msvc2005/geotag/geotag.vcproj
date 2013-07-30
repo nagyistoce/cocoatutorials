@@ -7,7 +7,7 @@
   <ToolFiles>
     </ToolFiles>
   <Configurations>
-    <Configuration Name="Debug|Win32" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
+    <Configuration Name="Debug|Win32" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
@@ -17,7 +17,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrtd" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="1"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrtd" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="1"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -27,7 +27,7 @@
       <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;"/>
     </Configuration>
-    <Configuration Name="Debug|x64" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
+    <Configuration Name="Debug|x64" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
@@ -37,7 +37,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2sd.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrtd" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="17"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrtd" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="17"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -45,9 +45,9 @@
       <Tool Name="VCFxCopTool"/>
       <Tool Name="VCAppVerifierTool"/>
       <Tool Name="VCWebDeploymentTool"/>
-      <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;&#13;&#10;"/>
+      
     </Configuration>
-    <Configuration Name="Release|Win32" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
+    <Configuration Name="Release|Win32" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
@@ -57,7 +57,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrt" GenerateDebugInformation="false" SubSystem="1" OptimizeReferences="2" EnableCOMDATFolding="2" TargetMachine="1"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrt" GenerateDebugInformation="false" SubSystem="1" OptimizeReferences="2" EnableCOMDATFolding="2" TargetMachine="1"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -65,9 +65,9 @@
       <Tool Name="VCFxCopTool"/>
       <Tool Name="VCAppVerifierTool"/>
       <Tool Name="VCWebDeploymentTool"/>
-      <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;&#13;&#10;"/>
+      
     </Configuration>
-    <Configuration Name="Release|x64" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
+    <Configuration Name="Release|x64" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCPreBuildEventTool"/>
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
@@ -77,7 +77,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool"/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2s.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrt" GenerateDebugInformation="false" SubSystem="1" OptimizeReferences="2" EnableCOMDATFolding="2" TargetMachine="17"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" IgnoreDefaultLibraryNames="msvcrt" GenerateDebugInformation="false" SubSystem="1" OptimizeReferences="2" EnableCOMDATFolding="2" TargetMachine="17"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -87,8 +87,7 @@
       <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;"/>
     </Configuration>
-    <Configuration Name="DebugDLL|Win32" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
-      <Tool Name="VCPreBuildEventTool" Description="copy the dlls" CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; "/>
+    <Configuration Name="DebugDLL|Win32" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
@@ -97,7 +96,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" CommandLine=""/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="1"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="1"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -107,8 +106,7 @@
       <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot;  &#13;&#10;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot;  &quot;%X%&quot;&#13;&#10;&#13;&#10;"/>
     </Configuration>
-    <Configuration Name="DebugDLL|x64" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
-      <Tool Name="VCPreBuildEventTool" Description="copy the dlls" CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; "/>
+    <Configuration Name="DebugDLL|x64" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
@@ -116,8 +114,7 @@
       <Tool Name="VCCLCompilerTool" Optimization="0" AdditionalIncludeDirectories="../../include;../../include/exiv2;../../src;../../xmpsdk/include;../../xmpsdk/src;../../../expat/lib;../../../zlib;../../../curl/include;" PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BUILD_GETOPT;EXV_HAVE_DLL;EXV_HAVE_DLL" MinimalRebuild="true" BasicRuntimeChecks="3" RuntimeLibrary="3" BufferSecurityCheck="true" RuntimeTypeInfo="true" UsePrecompiledHeader="0" BrowseInformation="1" WarningLevel="3" WarnAsError="false" DebugInformationFormat="3"/>
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
-      <Tool Name="VCPreLinkEventTool" Description="copy the dlls" CommandLine="copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; "/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2d.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1d.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="17"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="true" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="17"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -127,8 +124,7 @@
       <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot;  &#13;&#10;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot;  &quot;%X%&quot;&#13;&#10;&#13;&#10;"/>
     </Configuration>
-    <Configuration Name="ReleaseDLL|Win32" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
-      <Tool Name="VCPreBuildEventTool" Description="copy the dlls" CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; "/>
+    <Configuration Name="ReleaseDLL|Win32" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
@@ -137,7 +133,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" CommandLine=""/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="false" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="1"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="false" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="1"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>
@@ -147,8 +143,7 @@
       <Tool Name="VCWebDeploymentTool"/>
       <Tool Name="VCPostBuildEventTool" Description="copy target to bin" CommandLine="setlocal&#13;&#10;set X=$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)\&#13;&#10;if NOT EXIST &quot;%X%&quot; mkdir &quot;%X%&quot;&#13;&#10;copy/y &quot;$(TargetPath)&quot; &quot;%X%&quot;&#13;&#10;copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot;  &#13;&#10;copy/y &quot;$(SolutionDir)curl\$(PlatformName)\$(ConfigurationName)\*.dll&quot;  &quot;%X%&quot;&#13;&#10;&#13;&#10;"/>
     </Configuration>
-    <Configuration Name="ReleaseDLL|x64" OutputDirectory="$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
-      <Tool Name="VCPreBuildEventTool" Description="copy the dlls" CommandLine="if NOT EXIST &quot;$(TargetDir)&quot; mkdir &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)expat\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)zlib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; copy/y &quot;$(SolutionDir)exiv2lib\$(PlatformName)\$(ConfigurationName)\*.dll&quot; &quot;$(TargetDir)&quot; "/>
+    <Configuration Name="ReleaseDLL|x64" OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)" IntermediateDirectory="build\$(PlatformName)\$(ConfigurationName)" ConfigurationType="1" CharacterSet="2">
       <Tool Name="VCCustomBuildTool"/>
       <Tool Name="VCXMLDataGeneratorTool"/>
       <Tool Name="VCWebServiceProxyGeneratorTool"/>
@@ -157,7 +152,7 @@
       <Tool Name="VCManagedResourceCompilerTool"/>
       <Tool Name="VCResourceCompilerTool"/>
       <Tool Name="VCPreLinkEventTool" CommandLine=""/>
-      <Tool Name="VCLinkerTool" LinkLibraryDependencies="false" AdditionalDependencies="..\exiv2lib\$(PlatformName)\$(ConfigurationName)\exiv2.lib ..\expat\$(PlatformName)\$(ConfigurationName)\libexpat.lib ..\xmpsdk\$(PlatformName)\$(ConfigurationName)\xmpsdk.lib ..\curl\$(PlatformName)\$(ConfigurationName)\libcurl.lib ..\zlib\$(PlatformName)\$(ConfigurationName)\zlib1.lib" OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="false" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="17"/>
+      <Tool Name="VCLinkerTool" LinkLibraryDependencies="true"  OutputFile="$(OutDir)/$(ProjectName).exe" LinkIncremental="1" GenerateDebugInformation="false" ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb" SubSystem="1" TargetMachine="17"/>
       <Tool Name="VCALinkTool"/>
       <Tool Name="VCManifestTool"/>
       <Tool Name="VCXDCMakeTool"/>

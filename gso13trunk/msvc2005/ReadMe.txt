@@ -27,8 +27,7 @@ T A B L E  o f  C O N T E N T S
 1.3  Open exiv2\msvc2005\exiv2.sln
 1.4  What is build
 1.5  Building with zlib1.2.3 (or 1.2.5) and expat 2.0.1
-1.6  Express editions of DevStudio (or 32 bit only builds, or 64 bit only builds)
-1.7  Support for DevStudio 11
+1.6  Building without curl (or expat or zlib)
 
 2    Design
 2.1  Architecture
@@ -37,8 +36,7 @@ T A B L E  o f  C O N T E N T S
 3    Acknowledgment of prior work
 3.1  Differences between inherited project and the exiv2 projects
 
-4    Batch builds and tests
-4.1  Running the test suite
+4    Running the test suite
 
 ## End Table of Contents End ##
 ####
@@ -46,10 +44,9 @@ T A B L E  o f  C O N T E N T S
 1    Build Instructions
 
 1.1  Tools
-     This has been tested with the "Pro" versions of VS 2005/08/10
-     Express editions don't support 64 bit builds, however it is
-     possible to build 32 bit libraries with "Express".
-     See notes below about DevStudio Express and building only Win32 or x64 builds
+     This has been tested with
+     : "Pro"     edition of VS 2005/08/10
+     : "Express" edition of VS 2012
 
 1.2  Install zlib, expat, and curl sources.
      I use the directory c:\gnu for this purpose, however the name isn't important.
@@ -75,11 +72,9 @@ T A B L E  o f  C O N T E N T S
      x 4 Configurations (Debug|Release|DebugDLL|ReleaseDLL)
      = 32x2x4 = 256 builds.
 
-     If you haven't installed the x64 compiler, don't select the 64 bit configurations!
-     You may have to hand-edit the vcproj and sln files to hide the 64 bit information.
-     See the notes about DevStudio Express for more information about this.
+     If you haven't installed the x64 compiler, remove the 64 bit configuration!
 
-     Build time is 45 minutes on a 2.2GHz Duo Core and consumes 4.0 gBytes of disk space.
+     Build time is about 30 minutes on a 2.2GHz Duo Core and consumes 3.0 gBytes of disk space.
 
 1.4  What is built
      The DLL builds use the DLL version of the C runtime libraries
@@ -87,10 +82,16 @@ T A B L E  o f  C O N T E N T S
      This is discussed in exiv2\msvc2003\ReadMe.txt 
 
 1.5  Building with zlib1.2.5 (or 1.2.3) and/or expat 2.0.1 and/or curl-7.31.0
-     By default, msvc2005 builds with zlib-1.2.7 and expat 2.1.0
+     msvc2005 is routinely tested with zlib-1.2.7 and expat 2.1.0
 
      Exiv2 has been successfully built and tested in the past with expat-2.0.1,
      zlib-1.2.3, zlib-1.2.5, zlib-1.2.6 and zlib-1.2.8
+     
+1.6  Building without curl (or expat or zlib)
+     To build with a dependant library:
+     a) Open msvc2005/exiv2.sln in Visual Studio
+     b) Select and delete the curl (or expat or zlib) from the Project Explorer
+     c) Modify include/exiv2/exv_msvc.h to set build flags (eg EXV_USE_CURL)
 
 2    Design
 
@@ -111,7 +112,7 @@ T A B L E  o f  C O N T E N T S
 
 2.1  Architecture
      There are directories for every component:
-     The libraries: zlib, expat, xmpsdk, exiv2lib
+     The libraries: zlib1, expat, xmpsdk, curl, exiv2lib
      Applications:  exiv2.exe
      Sample Apps:   exifprint.exe, addmoddel.exe and many more (used by test suite)
 
@@ -157,9 +158,7 @@ T A B L E  o f  C O N T E N T S
 3.1  Differences between inherited projects and the exiv2 projects
      There is no compatiblity.
 
-4    Batch builds and tests
-
-4.1  Running the test suite
+4    Running the test suite
      You will need to install cygwin to run the test suite.
      
      This is a two stage process:
