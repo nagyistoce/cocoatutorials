@@ -43,6 +43,13 @@ T A B L E  o f  C O N T E N T S
 
 1    Build Instructions
 
+     +------------------------------------------------+
+     | Caution: Disable Visual Studio Parallel builds |
+     | Tools/Options/Projects & Solutions/Build       |
+     | Max Parallel Builds: 1                         |
+     | !! Parallel builds often have linking issues!! |
+     +------------------------------------------------+
+
 1.1  Tools
      This has been tested with
      : "Pro"     edition of VS 2005/08/10
