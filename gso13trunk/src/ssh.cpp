@@ -9,9 +9,12 @@ namespace Exiv2 {
         if (session_ == NULL) {
             throw Error(1, "Unable to create the the ssh session");
         }
+
+        long timeout = 20; // seconds
         // try to connect
         ssh_options_set(session_, SSH_OPTIONS_HOST, host_.c_str());
         ssh_options_set(session_, SSH_OPTIONS_USER, user_.c_str());
+        ssh_options_set(session_, SSH_OPTIONS_TIMEOUT, &timeout);
         if (ssh_connect(session_) != SSH_OK) {
             throw Error(1, ssh_get_error(session_));
         }
