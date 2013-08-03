@@ -112,6 +112,12 @@ namespace Exiv2 {
         return buf;
     } // urldecode
 
+    void urldecode(std::string& str) {
+        char* decodeStr = Exiv2::urldecode(str.c_str());
+        str = std::string(decodeStr);
+        free(decodeStr);
+    } // urldecode(const std::string& str)
+
     int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize) {
         const char base64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         const uint8_t* data = (const uint8_t*)data_buf;
@@ -278,6 +284,15 @@ namespace Exiv2 {
         os << " (errno = " << error << ")";
         return os.str();
     } // strError
+
+    void Uri::Decode(Uri& uri)
+    {
+        urldecode(uri.QueryString);
+        urldecode(uri.Path);
+        urldecode(uri.Host);
+        urldecode(uri.Username);
+        urldecode(uri.Password);
+    }
 
     Uri Uri::Parse(const std::string &uri)
     {

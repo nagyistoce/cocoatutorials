@@ -1807,7 +1807,7 @@ namespace Exiv2 {
         //! Constructor accepting a unicode path in an std::wstring
         HttpImpl(const std::wstring& wpath, size_t blockSize);
 #endif
-        dict_t  hostInfo_;    //!< the host information extracted from the path
+        Exiv2::Uri hostInfo_; //!< the host information extracted from the path
 
         // METHODS
         /*!
@@ -1848,12 +1848,8 @@ namespace Exiv2 {
 
     HttpIo::HttpImpl::HttpImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
     {
-        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-        hostInfo_["server"] = uri.Host;
-        hostInfo_["page"  ] = uri.Path;
-        hostInfo_["query" ] = uri.QueryString;
-        hostInfo_["proto" ] = uri.Protocol;
-        hostInfo_["port"  ] = uri.Port;
+        hostInfo_ = Exiv2::Uri::Parse(url);
+        Exiv2::Uri::Decode(hostInfo_);
     }
 #ifdef EXV_UNICODE_PATH
     HttpIo::HttpImpl::HttpImpl(const std::wstring& wurl, size_t blockSize):Impl(wurl, blockSize)
@@ -1862,21 +1858,20 @@ namespace Exiv2 {
         url.assign(wurl.begin(), wurl.end());
         path_ = url;
 
-        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-        hostInfo_["server"] = uri.Host;
-        hostInfo_["page"  ] = uri.Path;
-        hostInfo_["query" ] = uri.QueryString;
-        hostInfo_["proto" ] = uri.Protocol;
-        hostInfo_["port"  ] = uri.Port;
+        hostInfo_ = Exiv2::Uri::Parse(url);
+        Exiv2::Uri::Decode(hostInfo_);
     }
 #endif
 
     long HttpIo::HttpImpl::getFileLength()
     {
         dict_t response;
-        dict_t request(hostInfo_);
+        dict_t request;
         std::string errors;
-        request["verb"] = "HEAD";
+        request["server"] = hostInfo_.Host;
+        request["page"  ] = hostInfo_.Path;
+        if (hostInfo_.Port != "") request["port"] = hostInfo_.Port;
+        request["verb"]   = "HEAD";
         long serverCode = (long)http(request, response, errors);
         if (serverCode < 0 || serverCode >= 400 || errors.compare("") != 0) {
             throw Error(55, "Server", serverCode);
@@ -1889,7 +1884,11 @@ namespace Exiv2 {
     void HttpIo::HttpImpl::getDataByRange(long lowBlock, long highBlock, std::string& response)
     {
         dict_t responseDic;
-        dict_t request(hostInfo_);
+        dict_t request;
+        request["server"] = hostInfo_.Host;
+        request["page"  ] = hostInfo_.Path;
+        if (hostInfo_.Port != "") request["port"] = hostInfo_.Port;
+        request["verb"]   = "GET";
         std::string errors;
         if (lowBlock > -1 && highBlock > -1) {
             std::stringstream ss;
@@ -1907,13 +1906,15 @@ namespace Exiv2 {
     void HttpIo::HttpImpl::writeRemote(const byte* data, size_t size, long from, long to)
     {
         dict_t response;
-        dict_t request(hostInfo_);
+        dict_t request;
         std::string errors;
 
-        size_t found = hostInfo_["page"].find_last_of("/\\");
-        std::string filename = hostInfo_["page"].substr(found+1);
+        size_t found = hostInfo_.Path.find_last_of("/\\");
+        std::string filename = hostInfo_.Path.substr(found+1);
 
-        request["page"] = hostInfo_["page"].substr(0, found+1) + getEnv(envHTTPPOST);
+        request["server"] = hostInfo_.Host;
+        if (hostInfo_.Port != "") request["port"] = hostInfo_.Port;
+        request["page"] = hostInfo_.Path.substr(0, found+1) + getEnv(envHTTPPOST);
         request["verb"] = "POST";
 
         // encode base64
@@ -1959,6 +1960,11 @@ namespace Exiv2 {
     //! Internal Pimpl structure of class RemoteIo.
     class CurlIo::CurlImpl : public Impl  {
     public:
+        /*!
+            @brief The number of seconds to wait while trying to connect.
+        */
+        static const long TIMEOUT;
+
         //! Constructor
         CurlImpl(const std::string&  path, size_t blockSize);
 #ifdef EXV_UNICODE_PATH
@@ -2007,6 +2013,8 @@ namespace Exiv2 {
         CurlImpl& operator=(const CurlImpl& rhs); //!< Assignment
     }; // class RemoteIo::Impl
 
+    const long CurlIo::CurlImpl::TIMEOUT = 40; // seconds
+
     CurlIo::CurlImpl::CurlImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
     {
         // init curl pointer
@@ -2054,7 +2062,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, 30L);
+        curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, CurlIo::CurlImpl::TIMEOUT);
         //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
 
         /* Perform the request, res will get the return code */
@@ -2198,9 +2206,9 @@ namespace Exiv2 {
         //! Destructor. Closes ssh session and releases all managed memory.
         ~SshImpl();
 
-        dict_t      hostInfo_;          //!< host information extracted from path
-        SSH*        ssh_;               //!< SSH pointer
-        sftp_file   fileHandler_;       //!< sftp file handler
+        Exiv2::Uri      hostInfo_;          //!< host information extracted from path
+        SSH*            ssh_;               //!< SSH pointer
+        sftp_file       fileHandler_;       //!< sftp file handler
 
         // METHODS
         /*!
@@ -2239,23 +2247,17 @@ namespace Exiv2 {
 
     SshIo::SshImpl::SshImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
     {
-        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-        hostInfo_["server"]     = uri.Host;
-        hostInfo_["page"  ]     = uri.Path;
-        hostInfo_["query" ]     = uri.QueryString;
-        hostInfo_["port"  ]     = uri.Port;
-        hostInfo_["username"]   = uri.Username;
-        char* decodePass = urldecode(uri.Password.c_str());
-        hostInfo_["password"]   = std::string(decodePass);
-        delete decodePass;
+        hostInfo_ = Exiv2::Uri::Parse(url);
+        Exiv2::Uri::Decode(hostInfo_);
+
         // remove / at the beginning of the path
-        if (hostInfo_["page"][0] == '/') {
-            hostInfo_["page"] = hostInfo_["page"].substr(1);
+        if (hostInfo_.Path[0] == '/') {
+            hostInfo_.Path = hostInfo_.Path.substr(1);
         }
-        ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
+        ssh_ = new SSH(hostInfo_.Host, hostInfo_.Username, hostInfo_.Password, hostInfo_.Port);
 
         if (protocol_ == pSftp) {
-            ssh_->getFileSftp(hostInfo_["page"], fileHandler_);
+            ssh_->getFileSftp(hostInfo_.Path, fileHandler_);
             if (fileHandler_ == NULL) throw Error(1, "Unable to open the file");
         } else {
             fileHandler_ = NULL;
@@ -2268,22 +2270,18 @@ namespace Exiv2 {
         url.assign(wurl.begin(), wurl.end());
         path_ = url;
 
-        Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-        hostInfo_["server"] = uri.Host;
-        hostInfo_["page"  ] = uri.Path;
-        hostInfo_["query" ] = uri.QueryString;
-        hostInfo_["port"  ] = uri.Port;
-        hostInfo_["username"  ] = uri.Username;
-        hostInfo_["password"  ] = uri.Password;
+        hostInfo_ = Exiv2::Uri::Parse(url);
+        Exiv2::Uri::Decode(hostInfo_);
+
         // remove / at the beginning of the path
-        if (hostInfo_["page"][0] == '/') {
-            hostInfo_["page"] = hostInfo_["page"].substr(1);
+        if (hostInfo_.Path[0] == '/') {
+            hostInfo_.Path = hostInfo_.Path.substr(1);
         }
-        ssh_ = new SSH(hostInfo_["server"], hostInfo_["username"], hostInfo_["password"]);
+        ssh_ = new SSH(hostInfo_.Host, hostInfo_.Username, hostInfo_.Password, hostInfo_.Port);
 
         if (protocol_ == pSftp) {
-            fileHandler_ = ssh_->getFileSftp(hostInfo_["page"]);
-            if (fileHandler_ == NULL) throw(1, "Unable to open the file.");
+            ssh_->getFileSftp(hostInfo_.Path, fileHandler_);
+            if (fileHandler_ == NULL) throw Error(1, "Unable to open the file");
         } else {
             fileHandler_ = NULL;
         }
@@ -2298,8 +2296,8 @@ namespace Exiv2 {
             length = (long)attributes->size;
         } else { // ssh
             std::string response;
-            //std::string cmd = "stat -c %s " + hostInfo_["page"];
-            std::string cmd = "declare -a x=($(ls -alt " + hostInfo_["page"] + ")); echo ${x[4]}";
+            //std::string cmd = "stat -c %s " + hostInfo_.Path;
+            std::string cmd = "declare -a x=($(ls -alt " + hostInfo_.Path + ")); echo ${x[4]}";
             if (ssh_->runCommand(cmd, &response) != 0) {
                 throw Error(1, "Unable to get file length.");
             } else {
@@ -2325,12 +2323,12 @@ namespace Exiv2 {
         } else {
             std::stringstream ss;
             if (lowBlock > -1 && highBlock > -1) {
-                ss  << "dd if=" << hostInfo_["page"]
+                ss  << "dd if=" << hostInfo_.Path
                     << " ibs=" << blockSize_
                     << " skip=" << lowBlock
                     << " count=" << (highBlock - lowBlock) + 1<< " 2>/dev/null";
             } else {
-                ss  << "dd if=" << hostInfo_["page"]
+                ss  << "dd if=" << hostInfo_.Path
                     << " ibs=" << blockSize_
                     << " 2>/dev/null";
             }
@@ -2348,12 +2346,12 @@ namespace Exiv2 {
         //printf("ssh update size=%ld from=%ld to=%ld\n", (long)size, from, to);
         assert(isMalloced_);
 
-        std::string tempFile = hostInfo_["page"] + ".exiv2tmp";
+        std::string tempFile = hostInfo_.Path + ".exiv2tmp";
         std::string response;
         std::stringstream ss;
         // copy the head (byte 0 to byte fromByte) of original file to filepath.exiv2tmp
         ss  << "head -c " << from
-            << " "   << hostInfo_["page"]
+            << " "   << hostInfo_.Path
             << " > " << tempFile;
         std::string cmd = ss.str();
         if (ssh_->runCommand(cmd, &response) != 0) {
@@ -2362,12 +2360,12 @@ namespace Exiv2 {
 
         // upload the data (the byte ranges which are different between the original
         // file and the new file) to filepath.exiv2datatemp
-        if (ssh_->scp(hostInfo_["page"] + ".exiv2datatemp", data, size) != 0) {
+        if (ssh_->scp(hostInfo_.Path + ".exiv2datatemp", data, size) != 0) {
             throw Error(1, "SSH: Unable to copy file");
         }
 
         // concatenate the filepath.exiv2datatemp to filepath.exiv2tmp
-        cmd = "cat " + hostInfo_["page"] + ".exiv2datatemp >> " + tempFile;
+        cmd = "cat " + hostInfo_.Path + ".exiv2datatemp >> " + tempFile;
         if (ssh_->runCommand(cmd, &response) != 0) {
             throw Error(1, "SSH: Unable to copy the rest");
         }
@@ -2375,7 +2373,7 @@ namespace Exiv2 {
         // copy the tail (from byte toByte to the end of file) of original file to filepath.exiv2tmp
         ss.str("");
         ss  << "tail -c+" << (to + 1)
-            << " "   << hostInfo_["page"]
+            << " "   << hostInfo_.Path
             << " >> "   << tempFile;
         cmd = ss.str();
         if (ssh_->runCommand(cmd, &response) != 0) {
@@ -2383,13 +2381,13 @@ namespace Exiv2 {
         }
 
         // replace the original file with filepath.exiv2tmp
-        cmd = "mv " + tempFile + " " + hostInfo_["page"];
+        cmd = "mv " + tempFile + " " + hostInfo_.Path;
         if (ssh_->runCommand(cmd, &response) != 0) {
             throw Error(1, "SSH: Unable to copy the rest");
         }
 
         // remove filepath.exiv2datatemp
-        cmd = "rm " + hostInfo_["page"] + ".exiv2datatemp";
+        cmd = "rm " + hostInfo_.Path + ".exiv2datatemp";
         if (ssh_->runCommand(cmd, &response) != 0) {
             throw Error(1, "SSH: Unable to copy the rest");
         }

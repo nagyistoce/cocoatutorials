@@ -104,6 +104,10 @@ namespace Exiv2 {
      */
     EXIV2API char* urldecode(const char* str);
     /*!
+      @brief Like urlencode(char* str) but accept the input url in the std::string and modify it.
+     */
+    EXIV2API void urldecode(std::string& str);
+    /*!
       @brief Encode in base64 the data in data_buf and puts the resulting string in result.
       @param data_buf The data need to encode
       @param dataLength Size in bytes of the in buffer
@@ -175,6 +179,11 @@ namespace Exiv2 {
           @brief Parse the input URL to the protocol, host, path, username, password
          */
         static Uri EXIV2API Parse(const std::string &uri);
+
+        /*!
+          @brief Decode the url components.
+         */
+        static void EXIV2API Decode(Uri& uri);
     }; // class Uri
 
 } // namespace Exiv2

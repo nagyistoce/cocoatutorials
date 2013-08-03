@@ -15,6 +15,10 @@ namespace Exiv2 {
      */
     class EXIV2API SSH {
     public:
+        /*!
+            @brief The number of seconds to wait while trying to connect.
+        */
+        static const long TIMEOUT;
         //! @name Creators
         //@{
         /*!
@@ -22,9 +26,10 @@ namespace Exiv2 {
           @param host The host name of ssh server.
           @param user The username used to connect to ssh server.
           @param pass The password used to connect to ssh server.
+          @param port The port to connect to ssh server. Set empty string to use the default port.
           @throw Error if it fails to connect the server.
          */
-        SSH (const std::string& host, const std::string& user, const std::string& pass);
+        SSH (const std::string& host, const std::string& user, const std::string& pass, const std::string port = "");
         //! Destructor
         ~SSH();
         //@}

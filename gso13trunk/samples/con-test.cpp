@@ -23,6 +23,8 @@ void httpcon(const std::string& url) {
     string        errors;
 
     Exiv2::Uri uri = Exiv2::Uri::Parse(url);
+    Exiv2::Uri::Decode(uri);
+
     request["server"] = uri.Host;
     request["page"]   = uri.Path;
     request["port"]   = uri.Port;
@@ -71,16 +73,14 @@ void curlcon(const std::string& url) {
 #if EXV_USE_SSH == 1
 void sshcon(const std::string& url) {
     Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-    char* decodeUser = Exiv2::urldecode(uri.Username.c_str());
-    string user(decodeUser);
-    char* decodePass = Exiv2::urldecode(uri.Password.c_str());
-    string pass(decodePass);
+    Exiv2::Uri::Decode(uri);
+
     string page = uri.Path;
     // remove / at the beginning of the path
     if (page[0] == '/') {
         page = page.substr(1);
     }
-    Exiv2::SSH ssh(uri.Host, user, pass);
+    Exiv2::SSH ssh(uri.Host, uri.Username, uri.Password, uri.Port);
     string response = "";
     string cmd = "declare -a x=($(ls -alt " + page + ")); echo ${x[4]}";
     if (ssh.runCommand(cmd, &response) != 0) {
@@ -95,16 +95,14 @@ void sshcon(const std::string& url) {
 
 void sftpcon(const std::string& url) {
     Exiv2::Uri uri = Exiv2::Uri::Parse(url);
-    char* decodeUser = Exiv2::urldecode(uri.Username.c_str());
-    string user(decodeUser);
-    char* decodePass = Exiv2::urldecode(uri.Password.c_str());
-    string pass(decodePass);
+    Exiv2::Uri::Decode(uri);
+
     string page = uri.Path;
     // remove / at the beginning of the path
     if (page[0] == '/') {
         page = page.substr(1);
     }
-    Exiv2::SSH ssh(uri.Host, user, pass);
+    Exiv2::SSH ssh(uri.Host, uri.Username, uri.Password, uri.Port);
     sftp_file handle;
     ssh.getFileSftp(page, handle);
     if (handle == NULL) throw Exiv2::Error(1, "Unable to open the file");

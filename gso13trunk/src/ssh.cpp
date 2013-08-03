@@ -3,18 +3,22 @@
 
 // class member definitions
 namespace Exiv2 {
-    SSH::SSH(const std::string& host, const std::string& user, const std::string& pass):
+
+    const long SSH::TIMEOUT = 40; // seconds
+
+    SSH::SSH(const std::string& host, const std::string& user, const std::string& pass, const std::string port):
         host_(host),user_(user),pass_(pass),sftp_(0) {
         session_ = ssh_new();
         if (session_ == NULL) {
             throw Error(1, "Unable to create the the ssh session");
         }
 
-        long timeout = 30; // seconds
         // try to connect
         ssh_options_set(session_, SSH_OPTIONS_HOST, host_.c_str());
         ssh_options_set(session_, SSH_OPTIONS_USER, user_.c_str());
-        ssh_options_set(session_, SSH_OPTIONS_TIMEOUT, &timeout);
+        ssh_options_set(session_, SSH_OPTIONS_TIMEOUT, &SSH::TIMEOUT);
+        if (port != "") ssh_options_set(session_, SSH_OPTIONS_PORT_STR, port.c_str());
+
         if (ssh_connect(session_) != SSH_OK) {
             throw Error(1, ssh_get_error(session_));
         }
