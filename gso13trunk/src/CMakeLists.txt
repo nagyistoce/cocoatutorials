@@ -163,8 +163,8 @@ SET( EXIV2_SRC            exiv2.cpp
                           actions.cpp
                           utils.cpp
 )
-# httptest application
-SET( HTTPTEST             ../samples/httptest.cpp)
+# connection test application
+SET( CONTEST             ../samples/con-test.cpp)
 # exifprint application
 SET( EXIFPRINT            ../samples/exifprint.cpp)
 # cmdfiletest application
@@ -308,9 +308,9 @@ TARGET_LINK_LIBRARIES( exiv2 exiv2lib )
 INSTALL( TARGETS exiv2 ${INSTALL_TARGET_STANDARD_ARGS} )
 
 # ******************************************************************************
-# httptest application
-ADD_EXECUTABLE( httptest ${HTTPTEST} )
-TARGET_LINK_LIBRARIES( httptest exiv2lib )
+# connection test application
+ADD_EXECUTABLE( con-test ${CONTEST} )
+TARGET_LINK_LIBRARIES( con-test exiv2lib )
 
 # ******************************************************************************
 # exifprint application

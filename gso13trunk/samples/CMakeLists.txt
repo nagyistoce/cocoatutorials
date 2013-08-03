@@ -21,6 +21,7 @@ endif()
 include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/src")
 
 SET( SAMPLES addmoddel.cpp
+             httptest.cpp
              convert-test.cpp
              easyaccess-test.cpp
              exifcomment.cpp

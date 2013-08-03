@@ -1,5 +1,6 @@
 /*
- http.cpp
+ httptest.cpp
+ This application is to test http.cpp. It provides the function to GET|HEAD|PUT the file via http protocol.
  */
 
 #include "http.hpp"

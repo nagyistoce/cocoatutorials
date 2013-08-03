@@ -2304,6 +2304,9 @@ namespace Exiv2 {
                 throw Error(1, "Unable to get file length.");
             } else {
                 length = atol(response.c_str());
+                if (length == 0) {
+                    throw Error(1, "File is empty or not found.");
+                }
             }
         }
         return length;

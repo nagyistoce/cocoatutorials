@@ -63,6 +63,7 @@ RemoteIOTest()
     fi
 
     errors=0
+    tesfile="contest.jpg"
     files+=(remoteImg{0..9}.jpg)
     iopngfiles+=(remoteio{1..5}.png)
     iojpgfiles+=(remoteio{6..10}.jpg)
@@ -73,18 +74,26 @@ RemoteIOTest()
     else
         # HTTP protocol
         if [[ "$USE_CURL" == *http* ]]; then
-            errors=0
-            printf 'HTTP  IO '
-            for name in ${iopngfiles[@]}; do
-                RemoteIOTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
-            done
-            for name in ${iojpgfiles[@]}; do
-                RemoteIOTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
-            done
-            if [ $errors -eq 0 ]; then
-                printf '\nAll test cases passed\n'
+            # test connection
+            printf 'http test connection '
+            TEST_CON=$("$bin"/con-test http://$EXIV2_AWSUBUNTU_HOST/$testfile) 
+            if [ "$TEST_CON" == "OK" ]; then
+                errors=0
+                printf 'OK\nHTTP  IO '
+                for name in ${iopngfiles[@]}; do
+                    RemoteIOTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+                done
+                for name in ${iojpgfiles[@]}; do
+                    RemoteIOTest "http://$EXIV2_AWSUBUNTU_HOST/$name"
+                done
+                if [ $errors -eq 0 ]; then
+                    printf '\nAll test cases passed\n'
+                else
+                    echo $errors ' test cases failed!'
+                fi
             else
-                echo $errors ' test cases failed!'
+                echo $TEST_CON
+                printf "FAIL\nnot run httpIo\n"
             fi
         else
             echo 'Curl doesnt support HTTP'
@@ -92,18 +101,26 @@ RemoteIOTest()
 
         # HTTPS protocol
         if [[ "$USE_CURL" == *https* ]]; then
-            errors=0
-            printf 'HTTPS IO '
-            for name in ${iopngfiles[@]}; do
-                RemoteIOTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
-            done
-            for name in ${iojpgfiles[@]}; do
-                RemoteIOTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
-            done
-            if [ $errors -eq 0 ]; then
-                printf '\nAll test cases passed\n'
+            # test connection
+            printf 'https test connection '
+            TEST_CON=$("$bin"/con-test https://$EXIV2_AWSUBUNTU_HOST/$testfile)
+            if [ "$TEST_CON" == "OK" ]; then
+                errors=0
+                printf 'OK\nHTTPS IO '
+                for name in ${iopngfiles[@]}; do
+                    RemoteIOTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
+                done
+                for name in ${iojpgfiles[@]}; do
+                    RemoteIOTest "https://$EXIV2_AWSUBUNTU_HOST/$name"
+                done
+                if [ $errors -eq 0 ]; then
+                    printf '\nAll test cases passed\n'
+                else
+                    echo $errors ' test cases failed!'
+                fi
             else
-                echo $errors ' test cases failed!'
+                echo $TEST_CON
+                printf "FAIL\nnot run httpsIo\n"
             fi
         else
             echo 'Curl doesnt support HTTPS'
@@ -111,15 +128,23 @@ RemoteIOTest()
 
         # FTP protocol
         if [[ "$USE_CURL" == *ftp* ]]; then
-            errors=0
-            printf 'FTP READ '
-            for name in ${files[@]}; do
-                RemoteReadTest "ftp://"$EXIV2_AWSUBUNTU_USERNAME"_ftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/$name"
-            done
-            if [ $errors -eq 0 ]; then
-                printf '\nAll test cases passed\n'
+            # test connection
+            printf 'ftp test connection '
+            TEST_CON=$("$bin"/con-test ftp://"$EXIV2_AWSUBUNTU_USERNAME"_ftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/$testfile)
+            if [ "$TEST_CON" == "OK" ]; then
+                errors=0
+                printf 'OK\nFTP READ '
+                for name in ${files[@]}; do
+                    RemoteReadTest "ftp://"$EXIV2_AWSUBUNTU_USERNAME"_ftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/$name"
+                done
+                if [ $errors -eq 0 ]; then
+                    printf '\nAll test cases passed\n'
+                else
+                    echo $errors ' test cases failed!'
+                fi
             else
-                echo $errors ' test cases failed!'
+                echo $TEST_CON
+                printf "FAIL\nnot run FTP read\n"
             fi
         else
             echo 'Curl doesnt support FTP'

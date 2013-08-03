@@ -1,9 +1,10 @@
-// ***************************************************************** -*- C++ -*-
-// addmoddel.cpp, $Rev: 2286 $
-// Tester application for RemoteIo functions.
+// *****************************************************************
+// remotetest.cpp
+// Tester application for testing remote i/o.
+// It makes some modifications on the metadata of remote file, reads new metadata from that file
+// and reset the metadata back to the original status.
 
 #include <exiv2/exiv2.hpp>
-
 #include <iostream>
 #include <iomanip>
 #include <cassert>

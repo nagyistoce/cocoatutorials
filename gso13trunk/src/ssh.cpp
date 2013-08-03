@@ -10,7 +10,7 @@ namespace Exiv2 {
             throw Error(1, "Unable to create the the ssh session");
         }
 
-        long timeout = 20; // seconds
+        long timeout = 30; // seconds
         // try to connect
         ssh_options_set(session_, SSH_OPTIONS_HOST, host_.c_str());
         ssh_options_set(session_, SSH_OPTIONS_USER, user_.c_str());
@@ -39,7 +39,7 @@ namespace Exiv2 {
                 rc = ssh_channel_request_exec(channel, cmd.c_str());
                 if (rc == SSH_OK) {
                     while ((rc = ssh_channel_read(channel, buffer, sizeof(buffer), 0)) > 0) {
-                        output->append(buffer, sizeof(buffer));
+                        output->append(buffer, rc);
                     }
                 }
                 ssh_channel_send_eof(channel);

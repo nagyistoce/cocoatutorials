@@ -175,11 +175,11 @@ EXIV2EXE  = $(EXIV2MAIN:.cpp=$(EXEEXT))
 
 SAMPLEDIR = ../samples/
 
-# httptest application
-HTTPTEST  = httptest.cpp
-HTTPTOBJ  = $(SAMPLEDIR)$(HTTPTEST:.cpp=.o)
-HTTPTBIN  = $(HTTPTEST:.cpp=)
-HTTPTEXE  = $(HTTPTEST:.cpp=$(EXEEXT))
+# connection test application
+CONTEST  = con-test.cpp
+CONTOBJ  = $(SAMPLEDIR)$(CONTEST:.cpp=.o)
+CONTBIN  = $(CONTEST:.cpp=)
+CONTEXE  = $(CONTEST:.cpp=$(EXEEXT))
 
 # exifprint application
 EXIFPRINT = exifprint.cpp
@@ -199,7 +199,7 @@ DEP = $(CCSRC:%.cpp=$(DEPDIR)/%.d)      \
       $(BINSRC:%.cpp=$(DEPDIR)/%.d)     \
       $(EXIV2MAIN:%.cpp=$(DEPDIR)/%.d)  \
       $(EXIV2SRC:%.cpp=$(DEPDIR)/%.d)   \
-      $(HTTPTEST:%.cpp=$(DEPDIR)/%.d)   \
+      $(CONTEST:%.cpp=$(DEPDIR)/%.d)   \
       $(EXIFPRINT:%.cpp=$(DEPDIR)/%.d)  \
       $(REMOTETEST:%.cpp=$(DEPDIR)/%.d) \
       $(EXIVCSRC:%.c=$(DEPDIR)/%.d)
@@ -223,7 +223,7 @@ $(EXIV2OBJ): %.o: %.cpp
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
 
-$(HTTPTOBJ): %.o: %.cpp
+$(CONTOBJ): %.o: %.cpp
 	$(COMPILE.cc) -o $@ $<
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
@@ -268,7 +268,7 @@ $(SRC): ../include/exiv2/exv_conf.h
 $(LIBTOOL): $(LIBTOOL_DEPS)
 	$(SHELL) $(top_srcdir)/config.status --recheck
 
-bin: lib $(EXIV2BIN) $(HTTPTBIN) $(EXIFPBIN) $(REMOTETBIN)
+bin: lib $(EXIV2BIN) $(CONTBIN) $(EXIFPBIN) $(REMOTETBIN)
 
 lib: $(OBJ)
 	$(LIBTOOL) --mode=link $(LINK.cc) -o $(LIBRARY) $(LOBJ) -rpath $(libdir) -version-info $(EXIV2_LTVERSION) $(LIBS)
@@ -281,9 +281,9 @@ $(EXIV2BIN): lib $(EXIV2OBJ) $(EXIV2COBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
 	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(EXIV2OBJ) $(EXIV2COBJ) -rpath $(libdir)
 
-$(HTTPTBIN): lib $(HTTPTOBJ)
+$(CONTBIN): lib $(CONTOBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
-	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(HTTPTOBJ) -rpath $(libdir)
+	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(CONTOBJ) -rpath $(libdir)
 
 $(EXIFPBIN): lib $(EXIFPOBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
@@ -350,7 +350,7 @@ mostlyclean:
 	$(RM) lib
 	$(RM) include/exiv2/exv_conf.h
 	$(RM) $(CCSRC:%.cpp=.libs/%.d) $(CSRC:%.c=.libs/%.d)
-	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(HTTPTOBJ) $(EXIFPOBJ) $(REMOTETOBJ) )
+	@$(LIBTOOL) --mode=clean $(RM) $(LOBJ) $(sort $(EXIV2OBJ) $(EXIV2COBJ) $(CONTOBJ) $(EXIFPOBJ) $(REMOTETOBJ) )
 
 clean: mostlyclean
 	@$(LIBTOOL) --mode=clean $(RM) $(LIBRARY)

@@ -61,6 +61,7 @@ SshIOTest()
         exit 1
     fi
 
+    testfile="contest.jpg"
     files+=(remoteImg{0..9}.jpg)
     iopngfiles+=(remoteio{1..5}.png)
     iojpgfiles+=(remoteio{6..10}.jpg)
@@ -69,31 +70,47 @@ SshIOTest()
         #Skip remoteIo test cases
         echo 'Ssh is not used. Skip sshio test cases.'
     else
-        # SFTP protocol
-        errors=0
-        printf 'SFTP READ '
-        for name in ${files[@]}; do
-            SFTPReadTest "sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$name"
-        done
-        if [ $errors -eq 0 ]; then
-            printf '\nAll test cases passed\n'
+        # test connection
+        printf 'sftp test connection '
+        TEST_CON=$("$bin"/con-test sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$testfile)
+        if [ "$TEST_CON" == "OK" ]; then 
+            # SFTP protocol
+            errors=0
+            printf 'OK\nSFTP READ '
+            for name in ${files[@]}; do
+                SFTPReadTest "sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$name"
+            done
+            if [ $errors -eq 0 ]; then
+                printf '\nAll test cases passed\n'
+            else
+                echo $errors ' test cases failed!'
+            fi
         else
-            echo $errors ' test cases failed!'
+            echo $TEST_CON
+            printf "FAIL\nnot run SFTP read\n"
         fi
 
-        # SSH protocol
-        errors=0
-        printf 'SSH IO '
-        for name in ${iopngfiles[@]}; do
-            SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"
-        done
-        for name in ${iojpgfiles[@]}; do
-            SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"
-        done
-        if [ $errors -eq 0 ]; then
-            printf '\nAll test cases passed\n'
+        # test connection
+        printf 'ssh test connection '
+        TEST_CON=$("$bin"/con-test ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$testfile)
+        if [ "$TEST_CON" == "OK" ]; then 
+            # SSH protocol
+            errors=0
+            printf 'OK\nSSH IO '
+            for name in ${iopngfiles[@]}; do
+                SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"
+            done
+            for name in ${iojpgfiles[@]}; do
+                SshIOTest "ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$name"
+            done
+            if [ $errors -eq 0 ]; then
+                printf '\nAll test cases passed\n'
+            else
+                echo $errors ' test cases failed!'
+            fi
         else
-            echo $errors ' test cases failed!'
+            echo $TEST_CON
+            printf "FAIL\nnot run SSH read\n"
         fi
     fi
 )
