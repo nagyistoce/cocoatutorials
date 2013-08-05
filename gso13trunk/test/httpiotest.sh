@@ -33,14 +33,14 @@ httpIoTest()
     fi
 
     errors=0
-    testfile="http://$EXIV2_AWSUBUNTU_HOST/contest.jpg"
+    testfile="conntest.jpg"
     iopngfiles+=(remoteio{1..5}.png)
     iojpgfiles+=(remoteio{6..10}.jpg)
     
     # test connection (basic sanity test)
     printf 'http test connection '
-    TEST_CON=$("$bin"/con-test $testfile)
-    if [ "$TEST_CON" == "OK" ]; then
+    TEST_CON=$("$bin"/conntest http://$EXIV2_AWSUBUNTU_HOST/$testfile)
+    if [[ "$TEST_CON" == OK* ]]; then
         #Tests for httpIo 
         printf 'OK\nHTTP IO '
         for name in ${iopngfiles[@]}; do

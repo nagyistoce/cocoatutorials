@@ -138,7 +138,7 @@ int main(int argc,const char** argv)
     }
 
     if (!isOk)  cout << "The protocol is unsupported.\n";
-    else        cout << "OK";
+    else        cout << "OK.\n";
     return 0;
 }
 

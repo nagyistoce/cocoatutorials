@@ -61,7 +61,7 @@ SshIOTest()
         exit 1
     fi
 
-    testfile="contest.jpg"
+    testfile="conntest.jpg"
     files+=(remoteImg{0..9}.jpg)
     iopngfiles+=(remoteio{1..5}.png)
     iojpgfiles+=(remoteio{6..10}.jpg)
@@ -72,8 +72,8 @@ SshIOTest()
     else
         # test connection
         printf 'sftp test connection '
-        TEST_CON=$("$bin"/con-test sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$testfile)
-        if [ "$TEST_CON" == "OK" ]; then 
+        TEST_CON=$("$bin"/conntest sftp://"$EXIV2_AWSUBUNTU_USERNAME"_sftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/var/www/$testfile)
+        if [[ "$TEST_CON" == OK* ]]; then 
             # SFTP protocol
             errors=0
             printf 'OK\nSFTP READ '
@@ -92,8 +92,8 @@ SshIOTest()
 
         # test connection
         printf 'ssh test connection '
-        TEST_CON=$("$bin"/con-test ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$testfile)
-        if [ "$TEST_CON" == "OK" ]; then 
+        TEST_CON=$("$bin"/conntest ssh://$EXIV2_AWSUBUNTU_USERNAME:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/sshtest/$testfile)
+        if [[ "$TEST_CON" == OK* ]]; then 
             # SSH protocol
             errors=0
             printf 'OK\nSSH IO '

@@ -63,7 +63,7 @@ RemoteIOTest()
     fi
 
     errors=0
-    tesfile="contest.jpg"
+    tesfile="conntest.jpg"
     files+=(remoteImg{0..9}.jpg)
     iopngfiles+=(remoteio{1..5}.png)
     iojpgfiles+=(remoteio{6..10}.jpg)
@@ -76,8 +76,8 @@ RemoteIOTest()
         if [[ "$USE_CURL" == *http* ]]; then
             # test connection
             printf 'http test connection '
-            TEST_CON=$("$bin"/con-test http://$EXIV2_AWSUBUNTU_HOST/$testfile) 
-            if [ "$TEST_CON" == "OK" ]; then
+            TEST_CON=$("$bin"/conntest http://$EXIV2_AWSUBUNTU_HOST/$testfile) 
+            if [[ "$TEST_CON" == OK* ]]; then
                 errors=0
                 printf 'OK\nHTTP  IO '
                 for name in ${iopngfiles[@]}; do
@@ -103,8 +103,8 @@ RemoteIOTest()
         if [[ "$USE_CURL" == *https* ]]; then
             # test connection
             printf 'https test connection '
-            TEST_CON=$("$bin"/con-test https://$EXIV2_AWSUBUNTU_HOST/$testfile)
-            if [ "$TEST_CON" == "OK" ]; then
+            TEST_CON=$("$bin"/conntest https://$EXIV2_AWSUBUNTU_HOST/$testfile)
+            if [[ "$TEST_CON" == OK* ]]; then
                 errors=0
                 printf 'OK\nHTTPS IO '
                 for name in ${iopngfiles[@]}; do
@@ -130,8 +130,8 @@ RemoteIOTest()
         if [[ "$USE_CURL" == *ftp* ]]; then
             # test connection
             printf 'ftp test connection '
-            TEST_CON=$("$bin"/con-test ftp://"$EXIV2_AWSUBUNTU_USERNAME"_ftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/$testfile)
-            if [ "$TEST_CON" == "OK" ]; then
+            TEST_CON=$("$bin"/conntest ftp://"$EXIV2_AWSUBUNTU_USERNAME"_ftp:$EXIV2_AWSUBUNTU_PASSWORD@$EXIV2_AWSUBUNTU_HOST/$testfile)
+            if [[ "$TEST_CON" == OK* ]]; then
                 errors=0
                 printf 'OK\nFTP READ '
                 for name in ${files[@]}; do
