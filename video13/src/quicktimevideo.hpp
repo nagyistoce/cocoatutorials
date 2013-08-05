@@ -1,6 +1,6 @@
 // ***************************************************************** -*- C++ -*-
 /*
- * Copyright (C) 2004-2012 Andreas Huggel <ahuggel@gmx.net>
+ * Copyright (C) 2004-2013 Andreas Huggel <ahuggel@gmx.net>
  *
  * This program is part of the Exiv2 distribution.
  *
@@ -74,7 +74,6 @@ namespace Exiv2 {
         //@{
         void readMetadata();
         void writeMetadata();
-        void doWriteMetadata();
         //@}
 
         //! @name Accessors
@@ -222,6 +221,14 @@ namespace Exiv2 {
         //! Assignment operator
         QuickTimeVideo& operator=(const QuickTimeVideo& rhs);
         //@}
+        /*!
+              @brief Provides the main implementation of writeMetadata() by
+                    writing all buffered metadata to the provided BasicIo.
+              @param oIo BasicIo instance to write to (a temporary location).
+
+              @return 4 if opening or writing to the associated BasicIo fails
+             */
+        EXV_DLLLOCAL void doWriteMetadata();
 
     private:
         //! Variable which stores Time Scale unit, used to calculate time.

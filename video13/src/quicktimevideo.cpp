@@ -1,6 +1,6 @@
 // ***************************************************************** -*- C++ -*-
 /*
- * Copyright (C) 2004-2012 Andreas Huggel <ahuggel@gmx.net>
+ * Copyright (C) 2004-2013 Andreas Huggel <ahuggel@gmx.net>
  *
  * This program is part of the Exiv2 distribution.
  *
@@ -711,7 +711,6 @@ void QuickTimeVideo::writeMetadata()
         throw Error(9, io_->path(), strError());
     }
     IoCloser closer(*io_);
-
     doWriteMetadata();
 
     io_->close();
@@ -719,8 +718,13 @@ void QuickTimeVideo::writeMetadata()
 
 void QuickTimeVideo::doWriteMetadata()
 {
+    if (!io_->isopen())
+    {
+        throw Error(20);
+    }
     // Ensure that this is the correct image type
-    if (!isQTimeType(*io_, false)) {
+    if (!isQTimeType(*io_, false))
+    {
         if (io_->error() || io_->eof()) throw Error(14);
         throw Error(3, "QuickTime");
     }
@@ -729,7 +733,10 @@ void QuickTimeVideo::doWriteMetadata()
     m_modifyMetadata = true;
     continueTraversing_ = true;
 
-    while (continueTraversing_) decodeBlock();
+    while (continueTraversing_)
+    {
+        decodeBlock();
+    }
 }
 
 void QuickTimeVideo::readMetadata()
@@ -752,8 +759,10 @@ void QuickTimeVideo::readMetadata()
     xmpData_["Xmp.video.FileName"] = io_->path();
     xmpData_["Xmp.video.MimeType"] = mimeType();
 
-    while (continueTraversing_) decodeBlock();
-
+    while (continueTraversing_)
+    {
+        decodeBlock();
+    }
     aspectRatio();
 } // QuickTimeVideo::readMetadata
 
@@ -843,7 +852,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
         }
         else
         {
-            if (currentStream_ == Video && xmpData_["Xmp.video.URL"].count() >0)
+            if ((currentStream_ == Video) && (xmpData_["Xmp.video.URL"].count() >0))
             {
                 byte rawURL[size];
                 const std::string URL = xmpData_["Xmp.video.URL"].toString();
@@ -853,7 +862,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
                 }
                 io_->write(rawURL,size);
             }
-            else if (currentStream_ == Audio && xmpData_["Xmp.audio.URL"].count() >0)
+            else if ((currentStream_ == Audio) && (xmpData_["Xmp.audio.URL"].count() >0))
             {
                 byte rawURL[size];
                 const std::string URL = xmpData_["Xmp.audio.URL"].toString();
@@ -865,7 +874,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
             }
             else
             {
-                io_->seek(4,BasicIo::cur);
+                io_->seek(size,BasicIo::cur);
             }
         }
     }
@@ -882,7 +891,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
         }
         else
         {
-            if (currentStream_ == Video && xmpData_["Xmp.video.URN"].count() >0)
+            if ((currentStream_ == Video) && (xmpData_["Xmp.video.URN"].count() >0))
             {
                 byte rawURN[size];
                 const std::string URN = xmpData_["Xmp.video.URN"].toString();
@@ -892,7 +901,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
                 }
                 io_->write(rawURN,size);
             }
-            else if (currentStream_ == Audio && xmpData_["Xmp.audio.URN"].count() >0)
+            else if ((currentStream_ == Audio) && (xmpData_["Xmp.audio.URN"].count() >0))
             {
                 byte rawURN[size];
                 const std::string URN = xmpData_["Xmp.audio.URN"].toString();
@@ -904,7 +913,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
             }
             else
             {
-                io_->seek(4,BasicIo::cur);
+                io_->seek(size,BasicIo::cur);
             }
         }
     }
@@ -918,13 +927,20 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
         }
         else
         {
-            byte rawCompressor[size];
-            const std::string compressor = xmpData_["Xmp.video.Compressor"].toString();
-            for(int j=0; j<size; j++)
+            if(xmpData_["Xmp.video.Compressor"].count() >0)
             {
-                rawCompressor[j] = (byte)compressor[j];
+                byte rawCompressor[size];
+                const std::string compressor = xmpData_["Xmp.video.Compressor"].toString();
+                for(int j=0; j<size; j++)
+                {
+                    rawCompressor[j] = (byte)compressor[j];
+                }
+                io_->write(rawCompressor,size);
             }
-            io_->write(rawCompressor,size);
+            else
+            {
+                io_->seek(size,BasicIo::cur);
+            }
         }
     }
 
@@ -938,13 +954,20 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
         }
         else
         {
-            byte rawBalance[size];
-            const std::string balance = xmpData_["Xmp.audio.Balance"].toString();
-            for(int j=0; j<size; j++)
+            if(xmpData_["Xmp.audio.Balance"].count() >0)
             {
-                rawBalance[j] = (byte)balance[j];
+                byte rawBalance[4];
+                const std::string balance = xmpData_["Xmp.audio.Balance"].toString();
+                for(int j=0; j<4; j++)
+                {
+                    rawBalance[j] = (byte)balance[j];
+                }
+                io_->write(rawBalance,4);
             }
-            io_->write(rawBalance,size);
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
         }
     }
 
@@ -1008,12 +1031,12 @@ void QuickTimeVideo::previewTagDecoder(unsigned long size)
             DataBuf buf((unsigned long)5);
             byte rawPreviewAtomType[4] = {'P','I','C','T'};
             const std::string previewAtomType = xmpData_["Xmp.video.PreviewAtomType"].toString();
-            for(int j=0; j<4; j++)
-            {
-                buf.pData_[j] = previewAtomType[j];
-            }
             if(!equalsQTimeTag(buf, "PICT"))
             {
+                for(int j=0; j<4; j++)
+                {
+                    buf.pData_[j] = previewAtomType[j];
+                }
                 io_->write(buf.pData_,4);
             }
             else
@@ -1032,9 +1055,10 @@ void QuickTimeVideo::previewTagDecoder(unsigned long size)
 void QuickTimeVideo::keysTagDecoder(unsigned long size)
 {
     DataBuf buf(4);
+    uint64_t cur_pos = io_->tell();
+
     if(!m_modifyMetadata)
     {
-        uint64_t cur_pos = io_->tell();
         io_->read(buf.pData_, 4);
         xmpData_["Xmp.video.PreviewDate"] = getULong(buf.pData_, bigEndian);
         io_->read(buf.pData_, 2);
@@ -1094,6 +1118,7 @@ void QuickTimeVideo::keysTagDecoder(unsigned long size)
         {
             io_->seek(4,BasicIo::cur);
         }
+        io_->seek(cur_pos + size, BasicIo::beg);
     }
 } // QuickTimeVideo::keysTagDecoder
 
@@ -1108,7 +1133,8 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
         {
             io_->seek(static_cast<long>(4), BasicIo::cur); io_->read(buf.pData_, 4);
 
-            if(equalsQTimeTag(buf, "clef")) {
+            if(equalsQTimeTag(buf, "clef"))
+            {
                 io_->seek(static_cast<long>(4), BasicIo::cur);
                 io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
                 xmpData_["Xmp.video.CleanApertureWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
@@ -1118,7 +1144,8 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                         + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
             }
 
-            else if(equalsQTimeTag(buf, "prof")) {
+            else if(equalsQTimeTag(buf, "prof"))
+            {
                 io_->seek(static_cast<long>(4), BasicIo::cur);
                 io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
                 xmpData_["Xmp.video.ProductionApertureWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
@@ -1128,7 +1155,8 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                         + "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
             }
 
-            else if(equalsQTimeTag(buf, "enof")) {
+            else if(equalsQTimeTag(buf, "enof"))
+            {
                 io_->seek(static_cast<long>(4), BasicIo::cur);
                 io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
                 xmpData_["Xmp.video.EncodedPixelsWidth"]    =   Exiv2::toString(getUShort(buf.pData_, bigEndian))
@@ -1142,164 +1170,131 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
     }
     else
     {
-        io_->seek(4,BasicIo::cur);
-        io_->read(buf.pData_,4);
-        if(xmpData_["Xmp.video.CleanApertureWidth"].count() >0)
+        byte n = 3;
+        while(n--)
         {
-            if(equalsQTimeTag(buf, "clef"))
-            {
-                char rawCleanApertureWidthOne[4]; char rawCleanApertureWidthTwo[2];
-                byte rawCleanApertureWidth[6];
-                const std::string cleanApertureWidth =  xmpData_["Xmp.video.CleanApertureWidth"].toString();
-                vector<ushort> cleanApertureWidthValue = getNumberFromString(cleanApertureWidth,'.');
-                const long tmpValue = (long)cleanApertureWidthValue.at(0);
-                memcpy(rawCleanApertureWidthOne,&tmpValue,4);
-                memcpy(rawCleanApertureWidthTwo,&cleanApertureWidthValue.at(1),2);
-                for(int j=0; j<4; j++)
-                {
-                    rawCleanApertureWidth[j] = (byte)rawCleanApertureWidthOne[j];
-                }
-                rawCleanApertureWidth[4] =(byte) rawCleanApertureWidthTwo[0];
-                rawCleanApertureWidth[5] =(byte) rawCleanApertureWidthTwo[1];
-                io_->write(rawCleanApertureWidth,6);
-            }
-            else
-            {
-                io_->seek(6,BasicIo::cur);
-            }
-        }
-        else
-        {
-            io_->seek(6,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.video.CleanApertureHeight"].count() >0)
-        {
-            io_->seek(-10,BasicIo::cur);
-            io_->read(buf.pData_,4);
-            if(equalsQTimeTag(buf, "clef"))
-            {
-                byte rawCleanApertureHeightOne[4]; byte rawCleanApertureHeightTwo[2];
-                const std::string cleanApertureHeight = xmpData_["Xmp.video.CleanApertureHeight"].toString();
-                vector<ushort> cleanApertureHeightValue = getNumberFromString(cleanApertureHeight,'.');
-                const long tmpValue = (long)cleanApertureHeightValue.at(0);
-                memcpy(rawCleanApertureHeightOne,&tmpValue,4);
-                memcpy(rawCleanApertureHeightTwo,&cleanApertureHeightValue.at(1),2);
-                io_->write(rawCleanApertureHeightOne,4);
-                io_->seek(2,BasicIo::cur);
-                io_->write(rawCleanApertureHeightTwo,2);
-            }
-            else
-            {
-                io_->seek(2,BasicIo::cur);
-            }
-        }
-        else
-        {
-            io_->seek(2,BasicIo::cur);
-        }
+            io_->seek(static_cast<long>(4), BasicIo::cur); io_->read(buf.pData_, 4);
 
-        io_->seek(4,BasicIo::cur);
-        io_->read(buf.pData_,4);
-        if(xmpData_["Xmp.video.ProductionApertureWidth"].count() >0)
-        {
-            if(equalsQTimeTag(buf, "prof"))
+            if(equalsQTimeTag(buf, "clef"))
             {
-                char rawProductionApertureWidthOne[4]; char rawProductionApertureWidthTwo[2];
-                byte rawProductionApertureWidth[6];
-                const std::string ProductionApertureWidth = xmpData_["Xmp.video.ProductionApertureWidth"].toString();
-                vector<ushort> ProductionApertureWidthValue = getNumberFromString(ProductionApertureWidth,'.');
-                const long tmpValue =(long)ProductionApertureWidthValue.at(0);
-                memcpy(rawProductionApertureWidthOne,&tmpValue,4);
-                memcpy(rawProductionApertureWidthTwo,&ProductionApertureWidthValue.at(1),2);
-                for(int j=0; j<4; j++)
+                io_->seek(static_cast<long>(4), BasicIo::cur);
+                if(xmpData_["Xmp.video.CleanApertureWidth"].count() >0)
                 {
-                    rawProductionApertureWidth[j] = (byte)rawProductionApertureWidthOne[j];
+                    byte rawCleanApertureWidth[4]; byte rawCleanApertureWidthTmp[2];
+                    const std::string cleanApertureWidth =  xmpData_["Xmp.video.CleanApertureWidth"].toString();
+                    vector<ushort> cleanApertureWidthValue = getNumberFromString(cleanApertureWidth,'.');
+                    memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(0),2);
+                    rawCleanApertureWidth[0] = rawCleanApertureWidthTmp[0];
+                    rawCleanApertureWidth[1] = rawCleanApertureWidthTmp[1];
+                    memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(0),2);
+                    rawCleanApertureWidth[2] = rawCleanApertureWidthTmp[0];
+                    rawCleanApertureWidth[3] = rawCleanApertureWidthTmp[1];
+                    io_->write(rawCleanApertureWidth,4);
                 }
-                rawProductionApertureWidth[4] =(byte) rawProductionApertureWidthTwo[0];
-                rawProductionApertureWidth[5] =(byte) rawProductionApertureWidthTwo[1];
-                io_->write(rawProductionApertureWidth,6);
-            }
-            else
-            {
-                io_->seek(6,BasicIo::cur);
-            }
-        }
-        else
-        {
-            io_->seek(6,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.video.ProductionApertureHeight"].count() >0)
-        {
-            io_->seek(-10,BasicIo::cur);
-            io_->read(buf.pData_,4);
-            if(equalsQTimeTag(buf, "prof"))
-            {
-                byte rawProductionApertureHeightOne[4]; byte rawProductionApertureHeightTwo[2];
-                const std::string ProductionApertureHeight = xmpData_["Xmp.video.ProductionApertureHeight"].toString();
-                vector<ushort> ProductionApertureHeightValue = getNumberFromString(ProductionApertureHeight,'.');
-                const long tmpValue = (long)ProductionApertureHeightValue.at(0);
-                memcpy(rawProductionApertureHeightOne,&tmpValue,4);
-                memcpy(rawProductionApertureHeightTwo,&ProductionApertureHeightValue.at(1),2);
-                io_->write(rawProductionApertureHeightOne,4);
-                io_->seek(2,BasicIo::cur);
-                io_->write(rawProductionApertureHeightTwo,2);
-            }
-            else
-            {
-                io_->seek(2,BasicIo::cur);
-            }
-        }
-        else
-        {
-            io_->seek(2,BasicIo::cur);
-        }
-        io_->seek(4,BasicIo::cur);
-        io_->read(buf.pData_,4);
-        if(xmpData_["Xmp.video.EncodedPixelsWidth"].count() >0)
-        {
-            if(equalsQTimeTag(buf, "prof"))
-            {
-                char rawEncodedPixelsWidthOne[4]; char rawEncodedPixelsWidthTwo[2];
-                byte rawEncodedPixelsWidth[6];
-                const std::string EncodedPixelsWidth = xmpData_["Xmp.video.EncodedPixelsWidth"].toString();
-                vector<ushort> EncodedPixelsWidthValue = getNumberFromString(EncodedPixelsWidth,'.');
-                const long tmpValue = (long)EncodedPixelsWidthValue.at(0);
-                memcpy(rawEncodedPixelsWidthOne,&tmpValue,4);
-                memcpy(rawEncodedPixelsWidthTwo,&EncodedPixelsWidthValue.at(1),2);
-                for(int j=0; j<4; j++)
+                else
                 {
-                    rawEncodedPixelsWidth[j] = (byte)rawEncodedPixelsWidthOne[j];
+                    io_->seek(4,BasicIo::cur);
                 }
-                rawEncodedPixelsWidth[4] =(byte) rawEncodedPixelsWidthTwo[0];
-                rawEncodedPixelsWidth[5] =(byte) rawEncodedPixelsWidthTwo[1];
-                io_->write(rawEncodedPixelsWidth,6);
+
+                if(xmpData_["Xmp.video.CleanApertureHeight"].count() >0)
+                {
+                    byte rawCleanApertureHeight[4]; byte rawCleanApertureHeightTmp[2];
+                    const std::string cleanApertureHeight =  xmpData_["Xmp.video.CleanApertureHeight"].toString();
+                    vector<ushort> cleanApertureHeightValue = getNumberFromString(cleanApertureHeight,'.');
+                    memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(0),2);
+                    rawCleanApertureHeight[0] = rawCleanApertureHeightTmp[0];
+                    rawCleanApertureHeight[1] = rawCleanApertureHeightTmp[1];
+                    memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(0),2);
+                    rawCleanApertureHeight[2] = rawCleanApertureHeightTmp[0];
+                    rawCleanApertureHeight[3] = rawCleanApertureHeightTmp[1];
+                    io_->write(rawCleanApertureHeight,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
             }
-            else
+
+            else if(equalsQTimeTag(buf, "prof"))
             {
-                io_->seek(6,BasicIo::cur);
+                io_->seek(static_cast<long>(4), BasicIo::cur);
+                if(xmpData_["Xmp.video.ProductionApertureWidth"].count() >0)
+                {
+                    byte rawProductionApertureWidth[4]; byte rawProductionApertureWidthTmp[2];
+                    const std::string productionApertureWidth =  xmpData_["Xmp.video.ProductionApertureWidth"].toString();
+                    vector<ushort> productionApertureWidthValue = getNumberFromString(productionApertureWidth,'.');
+                    memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(0),2);
+                    rawProductionApertureWidth[0] = rawProductionApertureWidthTmp[0];
+                    rawProductionApertureWidth[1] = rawProductionApertureWidthTmp[1];
+                    memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(0),2);
+                    rawProductionApertureWidth[2] = rawProductionApertureWidthTmp[0];
+                    rawProductionApertureWidth[3] = rawProductionApertureWidthTmp[1];
+                    io_->write(rawProductionApertureWidth,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+
+                if(xmpData_["Xmp.video.ProductionApertureHeight"].count() >0)
+                {
+                    byte rawProductionApertureHeight[4]; byte rawProductionApertureHeightTmp[2];
+                    const std::string productionApertureHeight =  xmpData_["Xmp.video.ProductionApertureHeight"].toString();
+                    vector<ushort> productionApertureHeightValue = getNumberFromString(productionApertureHeight,'.');
+                    memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(0),2);
+                    rawProductionApertureHeight[0] = rawProductionApertureHeightTmp[0];
+                    rawProductionApertureHeight[1] = rawProductionApertureHeightTmp[1];
+                    memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(0),2);
+                    rawProductionApertureHeight[2] = rawProductionApertureHeightTmp[0];
+                    rawProductionApertureHeight[3] = rawProductionApertureHeightTmp[1];
+                    io_->write(rawProductionApertureHeight,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
             }
-        }
-        else
-        {
-            io_->seek(6,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.video.EncodedPixelsHeight"].count() >0)
-        {
-            io_->seek(-10,BasicIo::cur);
-            io_->read(buf.pData_,4);
-            if(equalsQTimeTag(buf, "prof"))
+            else if(equalsQTimeTag(buf, "enof"))
             {
-                byte rawEncodedPixelsHeightOne[4]; byte rawEncodedPixelsHeightTwo[2];
-                const std::string EncodedPixelsHeight = xmpData_["Xmp.video.EncodedPixelsHeight"].toString();
-                vector<ushort> EncodedPixelsHeightValue = getNumberFromString(EncodedPixelsHeight,'.');
-                const long tmpValue = (long)EncodedPixelsHeightValue.at(0);
-                memcpy(rawEncodedPixelsHeightOne,&tmpValue,4);
-                memcpy(rawEncodedPixelsHeightTwo,&EncodedPixelsHeightValue.at(1),2);
-                io_->write(rawEncodedPixelsHeightOne,4);
-                io_->seek(2,BasicIo::cur);
-                io_->write(rawEncodedPixelsHeightTwo,2);
+                io_->seek(static_cast<long>(4), BasicIo::cur);
+                if(xmpData_["Xmp.video.EncodedPixelsWidth"].count() >0)
+                {
+                    byte rawEncodedPixelsWidth[4]; byte rawEncodedPixelsWidthTmp[2];
+                    const std::string encodedPixelsWidth =  xmpData_["Xmp.video.EncodedPixelsWidth"].toString();
+                    vector<ushort> encodedPixelsWidthValue = getNumberFromString(encodedPixelsWidth,'.');
+                    memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(0),2);
+                    rawEncodedPixelsWidth[0] = rawEncodedPixelsWidthTmp[0];
+                    rawEncodedPixelsWidth[1] = rawEncodedPixelsWidthTmp[1];
+                    memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(0),2);
+                    rawEncodedPixelsWidth[2] = rawEncodedPixelsWidthTmp[0];
+                    rawEncodedPixelsWidth[3] = rawEncodedPixelsWidthTmp[1];
+                    io_->write(rawEncodedPixelsWidth,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+
+                if(xmpData_["Xmp.video.EncodedPixelsHeight"].count() >0)
+                {
+                    byte rawEncodedPixelsHeight[4]; byte rawEncodedPixelsHeightTmp[2];
+                    const std::string encodedPixelsHeight =  xmpData_["Xmp.video.EncodedPixelsHeight"].toString();
+                    vector<ushort> encodedPixelsHeightValue = getNumberFromString(encodedPixelsHeight,'.');
+                    memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(0),2);
+                    rawEncodedPixelsHeight[0] = rawEncodedPixelsHeightTmp[0];
+                    rawEncodedPixelsHeight[1] = rawEncodedPixelsHeightTmp[1];
+                    memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(0),2);
+                    rawEncodedPixelsHeight[2] = rawEncodedPixelsHeightTmp[0];
+                    rawEncodedPixelsHeight[3] = rawEncodedPixelsHeightTmp[1];
+                    io_->write(rawEncodedPixelsHeight,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
             }
         }
+        io_->seek(static_cast<long>(cur_pos + size), BasicIo::beg);
     }
 } // QuickTimeVideo::trackApertureTagDecoder
 
@@ -1409,17 +1404,25 @@ void QuickTimeVideo::CameraTagsDecoder(unsigned long size_external)
             }
             if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
             {
-                byte rawWhiteBalance[2];
+                byte rawWhiteBalance[4];
                 const std::string whiteBalance = xmpData_["Xmp.video.WhiteBalance"].toString();
                 char *whiteBalanceData = (char *)malloc(xmpData_["Xmp.video.WhiteBalance"].size());
-                for(int j=0; j<xmpData_["Xmp.video.GraphicsMode"].size(); j++)
+                for(int j=0; j<4; j++)
                 {
                     whiteBalanceData[j] = whiteBalance[j];
                 }
                 rtd = find(revTagDetails,whiteBalanceData);
-                short sWhiteBalance = (short)rtd->val_;
-                memcpy(rawWhiteBalance,&sWhiteBalance,2);
-                io_->write(rawWhiteBalance,2);}
+                if(rtd)
+                {
+                    const long sWhiteBalance = (long)rtd->val_;
+                    memcpy(rawWhiteBalance,&sWhiteBalance,4);
+                    io_->write(rawWhiteBalance,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+            }
             else
             {
                 io_->seek(4,BasicIo::cur);
@@ -1459,6 +1462,7 @@ void QuickTimeVideo::CameraTagsDecoder(unsigned long size_external)
                 io_->write(rawISO,4);
             }
         }
+        io_->seek(cur_pos + size_external, BasicIo::beg);
     }
 } // QuickTimeVideo::CameraTagsDecoder
 
@@ -1467,14 +1471,13 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
     uint64_t cur_pos = io_->tell();
     const TagVocabulary* td;
     const TagVocabulary* tv, *tv_internal;
+    const long bufMinSize = 100;
+    DataBuf buf(bufMinSize);
+    unsigned long size = 0, size_internal = size_external;
+    std::memset(buf.pData_, 0x0, buf.size_);
 
     if(!m_modifyMetadata)
     {
-        const long bufMinSize = 100;
-        DataBuf buf(bufMinSize);
-        unsigned long size = 0, size_internal = size_external;
-        std::memset(buf.pData_, 0x0, buf.size_);
-
         while((size_internal/4 != 0) && (size_internal > 0))
         {
 
@@ -1506,12 +1509,14 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
 
             else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
                     || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
-                    || equalsQTimeTag(buf, "FFMV")) {
+                    || equalsQTimeTag(buf, "FFMV"))
+            {
                 io_->read(buf.pData_, size - 8);
                 xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
             }
 
-            else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo")) {
+            else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo"))
+            {
                 io_->read(buf.pData_, 2);
                 buf.pData_[2] = '\0' ;
                 tv_internal = find(cameraByteOrderTags, Exiv2::toString( buf.pData_));
@@ -1522,7 +1527,8 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
                     xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
             }
 
-            else if(tv) {
+            else if(tv)
+            {
                 io_->read(buf.pData_, 4);
                 io_->read(buf.pData_, size-12);
                 xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
@@ -1531,18 +1537,12 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
             else if(td)
                 tagDecoder(buf,size-8);
         }
-
         io_->seek(cur_pos + size_external, BasicIo::beg);
     }
     else
     {
-        const long bufMinSize = 100;
-        DataBuf buf(bufMinSize);
-        unsigned long size = 0, size_internal = size_external;
-        std::memset(buf.pData_, 0x0, buf.size_);
-
-        while((size_internal/4 != 0) && (size_internal > 0)) {
-
+        while((size_internal/4 != 0) && (size_internal > 0))
+        {
             buf.pData_[4] = '\0' ;
             io_->read(buf.pData_, 4);
             size = Exiv2::getULong(buf.pData_, bigEndian);
@@ -1575,17 +1575,17 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
             {
                 if(xmpData_[exvGettext(tv->label_)].count() > 0)
                 {
-                    byte rawTagData[size-12];
+                    byte rawTagData[size-8];
                     const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
-                    for(int j=0; j <(size-12); j++)
+                    for(int j=0; j <(size-8); j++)
                     {
                         rawTagData[j] = tagData[j];
                     }
-                    io_->write(rawTagData,(size-12));
+                    io_->write(rawTagData,(size-8));
                 }
                 else
                 {
-                    io_->seek((size-12),BasicIo::cur);
+                    io_->seek((size-8),BasicIo::cur);
                 }
             }
 
@@ -1607,8 +1607,13 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
                     }
                     io_->write(rawtagData,(size-12));
                 }
+                else
+                {
+                    io_->seek((size-12),BasicIo::cur);
+                }
             }
         }
+        io_->seek(cur_pos + size_external, BasicIo::beg);
     }
 } // QuickTimeVideo::userDataDecoder
 
@@ -1635,7 +1640,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
             std::memset(buf.pData_, 0x0, buf.size_);
             io_->read(buf.pData_, 2);
 
-            if(TagID == 0x2000023) {
+            if(TagID == 0x2000023)
+            {
                 uint64_t local_pos = io_->tell();
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
                 std::memset(buf.pData_, 0x0, buf.size_);
@@ -1707,7 +1713,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 io_->seek(local_pos + dataLength, BasicIo::beg);
             }
 
-            else if(TagID == 0x2000024) {
+            else if(TagID == 0x2000024)
+            {
                 uint64_t local_pos = io_->tell();
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
                 std::memset(buf.pData_, 0x0, buf.size_);
@@ -1726,12 +1733,14 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 io_->seek(local_pos + dataLength, BasicIo::beg);
             }
 
-            else if(dataType == 2 || dataType == 7) {
+            else if(dataType == 2 || dataType == 7)
+            {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
                 std::memset(buf.pData_, 0x0, buf.size_);
 
                 // Sanity check with an "unreasonably" large number
-                if (dataLength > 200) {
+                if (dataLength > 200)
+                {
 #ifndef SUPPRESS_WARNINGS
                     EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be larger than 200."
                               << " Entries considered invalid. Not Processed.\n";
@@ -1744,7 +1753,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 if(td)
                     xmpData_[exvGettext(td->label_)] = Exiv2::toString(buf.pData_);
             }
-            else if(dataType == 4)  {
+            else if(dataType == 4)
+            {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 4);
@@ -1752,7 +1762,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                     xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getULong( buf.pData_, bigEndian));
 
                 // Sanity check with an "unreasonably" large number
-                if (dataLength > 200 || dataLength < 4) {
+                if (dataLength > 200 || dataLength < 4)
+                {
 #ifndef SUPPRESS_WARNINGS
                     EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
                               << " Entries considered invalid. Not Processed.\n";
@@ -1762,7 +1773,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 else
                     io_->read(buf.pData_, dataLength - 4);
             }
-            else if(dataType == 3)  {
+            else if(dataType == 3)
+            {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 2);
@@ -1770,7 +1782,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                     xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian));
 
                 // Sanity check with an "unreasonably" large number
-                if (dataLength > 200 || dataLength < 2) {
+                if (dataLength > 200 || dataLength < 2)
+                {
 #ifndef SUPPRESS_WARNINGS
                     EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
                               << " Entries considered invalid. Not Processed.\n";
@@ -1780,7 +1793,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 else
                     io_->read(buf.pData_, dataLength - 2);
             }
-            else if(dataType == 5) {
+            else if(dataType == 5)
+            {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 8;
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 4);
@@ -1789,7 +1803,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                     xmpData_[exvGettext(td->label_)] = Exiv2::toString((double)Exiv2::getULong( buf.pData_, bigEndian) / (double)Exiv2::getULong( buf2.pData_, bigEndian));
 
                 // Sanity check with an "unreasonably" large number
-                if (dataLength > 200 || dataLength < 8) {
+                if (dataLength > 200 || dataLength < 8)
+                {
 #ifndef SUPPRESS_WARNINGS
                     EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
                               << " Entries considered invalid. Not Processed.\n";
@@ -1799,7 +1814,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 else
                     io_->read(buf.pData_, dataLength - 8);
             }
-            else if(dataType == 8) {
+            else if(dataType == 8)
+            {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 2);
@@ -1808,7 +1824,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                     xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian) ) + " " + Exiv2::toString(Exiv2::getUShort( buf2.pData_, bigEndian));
 
                 // Sanity check with an "unreasonably" large number
-                if (dataLength > 200 || dataLength < 4) {
+                if (dataLength > 200 || dataLength < 4)
+                {
 #ifndef SUPPRESS_WARNINGS
                     EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be of inapropriate size."
                               << " Entries considered invalid. Not Processed.\n";
@@ -2249,6 +2266,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
         else if(dataType == 8)
         {//TODO : writesupport for datatype8
         }
+
+        io_->seek(cur_pos + size_external, BasicIo::beg);
     }
 } // QuickTimeVideo::NikonTagsDecoder
 
@@ -2323,7 +2342,8 @@ void QuickTimeVideo::sampleDesc(unsigned long size)
     uint64_t noOfEntries;
     noOfEntries = returnUnsignedBufValue(buf);
 
-    for(unsigned long i = 1; i <= noOfEntries; i++) {
+    for(unsigned long i = 1; i <= noOfEntries; i++)
+    {
         if (currentStream_ == Video)
             imageDescDecoder();
         else if (currentStream_ == Audio)
@@ -2344,9 +2364,11 @@ void QuickTimeVideo::audioDescDecoder()
 
     if(!m_modifyMetadata)
     {
-        for (int i = 0; size/4 != 0 ; size -= 4, i++) {
+        for (int i = 0; size/4 != 0 ; size -= 4, i++)
+        {
             io_->read(buf.pData_, 4);
-            switch(i) {
+            switch(i)
+            {
             case AudioFormat:
                 td = find(qTimeFileType, Exiv2::toString( buf.pData_));
                 if(td)
@@ -2376,86 +2398,105 @@ void QuickTimeVideo::audioDescDecoder()
     {
         TagVocabulary revTagVocabulary[(sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))];
         reverseTagVocabulary(qTimeFileType,revTagVocabulary,((sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))));
-        if(xmpData_["Xmp.audio.Compressor"].count() > 0)
-        {
-            byte rawCompressor[4];
-            td = find(qTimeFileType,xmpData_["Xmp.audio.Compressor"].toString());
-            const char* compressor = td->voc_;
-            if(td)
-            {
-                for(int j=0; j<4; j++)
-                {
-                    rawCompressor[j] = compressor[j];
-                }
-                io_->write(rawCompressor,4);
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
-        }
-        else
-        {
-            io_->seek(4,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.audio.VendorID"].count() >0)
-        {
-            byte rawVendorID[4];
-            td = find(qTimeFileType,xmpData_["Xmp.audio.VendorID"].toString());
-            const char* vendorID = td->voc_;
-            if(td)
-            {
-                for(int j=0; j<4; j++)
-                {
-                    rawVendorID[j] = vendorID[j];
-                }
-                io_->write(rawVendorID,4);
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
-        }
-        else
-        {
-            io_->seek(4,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.audio.ChannelType"].count() >0)
-        {
-            byte rawChannelType[2];
-            ushort channelType =(ushort) xmpData_["Xmp.audio.ChannelType"].toLong();
-            memcpy(rawChannelType,&channelType,2);
-            io_->write(rawChannelType,2);
-        }
-        else
-        {
-            io_->seek(2,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.audio.BitsPerSample"].count() >0)
-        {
-            byte rawBitsPerSample[2];
-            ushort bitsPerSample =(ushort) (xmpData_["Xmp.audio.BitsPerSample"].toLong()/256);
-            memcpy(rawBitsPerSample,&bitsPerSample,2);
-            io_->write(rawBitsPerSample,2);
-        }
-        else
-        {
-            io_->seek(2,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.audio.SampleRate"].count() >0)
-        {
-            byte rawSampleRate[4];
-            byte tmpRawData[2];
-            xmpData_["Xmp.audio.SampleRate"].toLong();
-            ushort sampleRateBase = (ushort) (xmpData_["Xmp.audio.SampleRate"].toLong()/512);
-            memcpy(tmpRawData,&sampleRateBase,2);
-            rawSampleRate[0] = tmpRawData[0] ; rawSampleRate[1] = tmpRawData[1];
-            //TODO calculations and logic
-        }
-        else
-        {
 
+        for (int i = 0; size/4 != 0 ; size -= 4, i++)
+        {
+            switch(i)
+            {
+            case AudioFormat:
+                if(xmpData_["Xmp.audio.Compressor"].count() > 0)
+                {
+                    byte rawCompressor[4];
+                    td = find(qTimeFileType,xmpData_["Xmp.audio.Compressor"].toString());
+                    if(td)
+                    {
+                        const char* compressor = td->voc_;
+                        for(int j=0; j<4; j++)
+                        {
+                            rawCompressor[j] = compressor[j];
+                        }
+                        io_->write(rawCompressor,4);
+                    }
+                    else
+                    {
+                        io_->seek(4,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+                break;
+            case AudioVendorID:
+                if(xmpData_["Xmp.audio.VendorID"].count() >0)
+                {
+                    byte rawVendorID[4];
+                    td = find(qTimeFileType,xmpData_["Xmp.audio.VendorID"].toString());
+                    if(td)
+                    {
+                        const char* vendorID = td->voc_;
+                        for(int j=0; j<4; j++)
+                        {
+                            rawVendorID[j] = vendorID[j];
+                        }
+                        io_->write(rawVendorID,4);
+                    }
+                    else
+                    {
+                        io_->seek(4,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+                break;
+            case AudioChannels:
+                if(xmpData_["Xmp.audio.ChannelType"].count() >0)
+                {
+                    byte rawChannelType[2];
+                    ushort channelType =(ushort) xmpData_["Xmp.audio.ChannelType"].toLong();
+                    memcpy(rawChannelType,&channelType,2);
+                    io_->write(rawChannelType,2);
+                }
+                else
+                {
+                    io_->seek(2,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.audio.BitsPerSample"].count() >0)
+                {
+                    byte rawBitsPerSample[2];
+                    ushort bitsPerSample =(ushort) (xmpData_["Xmp.audio.BitsPerSample"].toLong()/256);
+                    memcpy(rawBitsPerSample,&bitsPerSample,2);
+                    io_->write(rawBitsPerSample,2);
+                }
+                else
+                {
+                    io_->seek(2,BasicIo::cur);
+                }
+                break;
+            case AudioSampleRate:
+                if(xmpData_["Xmp.audio.SampleRate"].count() >0)
+                {
+                    byte rawSampleRate[4];
+                    byte tmpRawData[2];
+                    xmpData_["Xmp.audio.SampleRate"].toLong();
+                    ushort sampleRateBase = (ushort) (xmpData_["Xmp.audio.SampleRate"].toLong()/512);
+                    memcpy(tmpRawData,&sampleRateBase,2);
+                    rawSampleRate[0] = tmpRawData[0] ; rawSampleRate[1] = tmpRawData[1];
+                    io_->seek(4,BasicIo::cur);//TODO calculations and logic
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+                break;
+            default:
+                io_->seek(4,BasicIo::cur);
+                break;
+            }
         }
+        io_->seek(static_cast<long>(size % 4),BasicIo::cur);
     }
 } // QuickTimeVideo::audioDescDecoder
 
@@ -2475,7 +2516,8 @@ void QuickTimeVideo::imageDescDecoder()
         {
             io_->read(buf.pData_, 4);
 
-            switch(i) {
+            switch(i)
+            {
             case codec:
                 td = find(qTimeFileType, Exiv2::toString( buf.pData_));
                 if(td)
@@ -2591,7 +2633,6 @@ void QuickTimeVideo::imageDescDecoder()
             case XResolution:
                 if(xmpData_["Xmp.video.XResolution"].count() >0)
                 {
-                    cout << "here" << endl;
                     DataBuf tmpBuf((unsigned long)5);
                     tmpBuf.pData_[3] ='\0';
                     DataBuf imageWidth = returnBuf((int64_t)xmpData_["Xmp.video.XResolution"].toLong());
@@ -2616,7 +2657,7 @@ void QuickTimeVideo::imageDescDecoder()
                     tmpBuf.pData_[3] ='\0';
                     DataBuf imageHeight = returnBuf((int64_t)xmpData_["Xmp.video.YResolution"].toLong());
                     tmpBuf = returnBuf((uint64_t)(xmpData_["Xmp.video.YResolution"].toLong() -
-                                         xmpData_["Xmp.video.YResolution"].toLong()/65536));
+                                                  xmpData_["Xmp.video.YResolution"].toLong()/65536));
                     imageHeight.pData_[2] = tmpBuf.pData_[2];
                     tmpBuf = returnBuf((uint64_t)(xmpData_["Xmp.video.YResolution"].toLong() -
                                                   xmpData_["Xmp.video.YResolution"].toLong()/65536 -
@@ -2653,8 +2694,7 @@ void QuickTimeVideo::imageDescDecoder()
                 break;
             }
         }
-        io_->read(buf.pData_, static_cast<long>(size % 4));
-        xmpData_["Xmp.video.BitDepth"] = returnBufValue(buf, 1);
+        io_->seek(static_cast<long>(size % 4),BasicIo::cur);
     }
 } // QuickTimeVideo::imageDescDecoder
 
@@ -2723,9 +2763,16 @@ void QuickTimeVideo::videoHeaderDecoder(unsigned long size)
                         graphicsModeData[j] = graphicsMode[j];
                     }
                     rtd = find(revTagDetails,graphicsModeData);
-                    short sGraphicsMode = (short)rtd->val_;
-                    memcpy(rawGraphicsMode,&sGraphicsMode,2);
-                    io_->write(rawGraphicsMode,2);
+                    if(rtd)
+                    {
+                        short sGraphicsMode = (short)rtd->val_;
+                        memcpy(rawGraphicsMode,&sGraphicsMode,2);
+                        io_->write(rawGraphicsMode,2);
+                    }
+                    else
+                    {
+                        io_->seek(2,BasicIo::cur);
+                    }
                 }
                 else
                 {
@@ -2741,13 +2788,17 @@ void QuickTimeVideo::videoHeaderDecoder(unsigned long size)
                     rawOpColor = returnBuf(opColor);
                     io_->write(rawOpColor.pData_,2);
                 }
+                else
+                {
+                    io_->seek(2,BasicIo::cur);
+                }
                 break;
             default:
                 io_->seek(2,BasicIo::cur);
                 break;
             }
         }
-        io_->read(buf.pData_, size % 2);
+        io_->seek(size % 2,BasicIo::cur);
     }
 } // QuickTimeVideo::videoHeaderDecoder
 
@@ -2770,7 +2821,8 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
             {
             case HandlerClass:
                 tv = find(handlerClassTags, Exiv2::toString( buf.pData_));
-                if(tv) {
+                if(tv)
+                {
                     if (currentStream_ == Video)
                         xmpData_["Xmp.video.HandlerClass"] = exvGettext(tv->label_);
                     else if (currentStream_ == Audio)
@@ -2779,7 +2831,8 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                 break;
             case HandlerType:
                 tv = find(handlerTypeTags, Exiv2::toString( buf.pData_));
-                if(tv) {
+                if(tv)
+                {
                     if (currentStream_ == Video)
                         xmpData_["Xmp.video.HandlerType"] = exvGettext(tv->label_);
                     else if (currentStream_ == Audio)
@@ -2788,12 +2841,15 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                 break;
             case HandlerVendorID:
                 tv = find(vendorIDTags, Exiv2::toString( buf.pData_));
-                if(tv) {
+                if(tv)
+                {
                     if (currentStream_ == Video)
                         xmpData_["Xmp.video.HandlerVendorID"] = exvGettext(tv->label_);
                     else if (currentStream_ == Audio)
                         xmpData_["Xmp.audio.HandlerVendorID"] = exvGettext(tv->label_);
                 }
+                break;
+            default:
                 break;
             }
         }
@@ -2807,8 +2863,6 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
 
         for (int i = 0; i < 5 ; i++)
         {
-            io_->read(buf.pData_, 4);
-
             switch(i)
             {
             case HandlerClass:
@@ -2818,12 +2872,19 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerClass[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString());
-                        const std::string handlerClass = tv->label_;
-                        for(int j=0; j<4; j++)
+                        if(tv)
                         {
-                            rawHandlerClass[j] = handlerClass[j];
+                            const std::string handlerClass = tv->label_;
+                            for(int j=0; j<4; j++)
+                            {
+                                rawHandlerClass[j] = handlerClass[j];
+                            }
+                            io_->write(rawHandlerClass,4);
                         }
-                        io_->write(rawHandlerClass,4);
+                        else
+                        {
+                            io_->seek(4,BasicIo::cur);
+                        }
                     }
                     else
                     {
@@ -2836,17 +2897,28 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerClass[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerClass"].toString());
-                        const std::string handlerClass = tv->label_;
-                        for(int j=0; j<4; j++)
+                        if(tv)
                         {
-                            rawHandlerClass[j] = handlerClass[j];
+                            const std::string handlerClass = tv->label_;
+                            for(int j=0; j<4; j++)
+                            {
+                                rawHandlerClass[j] = handlerClass[j];
+                            }
+                            io_->write(rawHandlerClass,4);
                         }
-                        io_->write(rawHandlerClass,4);
+                        else
+                        {
+                            io_->seek(4,BasicIo::cur);
+                        }
                     }
                     else
                     {
                         io_->seek(4,BasicIo::cur);
                     }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case HandlerType:
@@ -2856,12 +2928,19 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerType[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerType"].toString());
-                        const std::string handlerType = tv->label_;
-                        for(int j=0; j<4; j++)
+                        if(tv)
                         {
-                            rawHandlerType[j] = handlerType[j];
+                            const std::string handlerType = tv->label_;
+                            for(int j=0; j<4; j++)
+                            {
+                                rawHandlerType[j] = handlerType[j];
+                            }
+                            io_->write(rawHandlerType,4);
                         }
-                        io_->write(rawHandlerType,4);
+                        else
+                        {
+                            io_->seek(4,BasicIo::cur);
+                        }
                     }
                     else
                     {
@@ -2874,17 +2953,28 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerType[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerType"].toString());
-                        const std::string handlerType = tv->label_;
-                        for(int j=0; j<4; j++)
+                        if(tv)
                         {
-                            rawHandlerType[j] = handlerType[j];
+                            const std::string handlerType = tv->label_;
+                            for(int j=0; j<4; j++)
+                            {
+                                rawHandlerType[j] = handlerType[j];
+                            }
+                            io_->write(rawHandlerType,4);
                         }
-                        io_->write(rawHandlerType,4);
+                        else
+                        {
+                            io_->seek(4,BasicIo::cur);
+                        }
                     }
                     else
                     {
                         io_->seek(4,BasicIo::cur);
                     }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case HandlerVendorID:
@@ -2894,12 +2984,23 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerVendorID[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerVendorID"].toString());
-                        const std::string handlerVendorID = tv->label_;
-                        for(int j=0; j<4; j++)
+                        if(tv)
                         {
-                            rawHandlerVendorID[j] = handlerVendorID[j];
+                            const std::string handlerVendorID = tv->label_;
+                            for(int j=0; j<4; j++)
+                            {
+                                rawHandlerVendorID[j] = handlerVendorID[j];
+                            }
+                            io_->write(rawHandlerVendorID,4);
                         }
-                        io_->write(rawHandlerVendorID,4);
+                        else
+                        {
+                            io_->seek(4,BasicIo::cur);
+                        }
+                    }
+                    else
+                    {
+                        io_->seek(4,BasicIo::cur);
                     }
                 }
                 else if (currentStream_ == Audio)
@@ -2908,14 +3009,32 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerVendorID[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerVendorID"].toString());
-                        const std::string handlerVendorID = tv->label_;
-                        for(int j=0; j<4; j++)
+                        if(tv)
                         {
-                            rawHandlerVendorID[j] = handlerVendorID[j];
+                            const std::string handlerVendorID = tv->label_;
+                            for(int j=0; j<4; j++)
+                            {
+                                rawHandlerVendorID[j] = handlerVendorID[j];
+                            }
+                            io_->write(rawHandlerVendorID,4);
                         }
-                        io_->write(rawHandlerVendorID,4);
+                        else
+                        {
+                            io_->seek(4,BasicIo::cur);
+                        }
+                    }
+                    else
+                    {
+                        io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+                break;
+            default:
+                io_->seek(4,BasicIo::cur);
                 break;
             }
         }
@@ -3094,8 +3213,6 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
     {
         for (int i = 0; size/4 != 0 ; size -=4, i++)
         {
-            io_->read(buf.pData_, 4);
-
             switch(i)
             {
             case MediaHeaderVersion:
@@ -3122,6 +3239,10 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                     {
                         io_->seek(4,BasicIo::cur);
                     }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case MediaCreateDate:
@@ -3150,6 +3271,10 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case MediaModifyDate:
                 //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
@@ -3176,6 +3301,10 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                     {
                         io_->seek(4,BasicIo::cur);
                     }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case MediaTimeScale:
@@ -3231,14 +3360,18 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->read(buf.pData_,4);
+                    time_scale = returnBufValue(buf);
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case MediaLanguageCode:
                 if(currentStream_ == Video)
                 {
                     if(xmpData_["Xmp.video.MediaLangCode"].count() > 0)
                     {
-                        io_->read(buf.pData_,4);
-                        time_scale = returnBufValue(buf);
                         buf = returnBuf((uint64_t)xmpData_["Xmp.video.MediaLangCode"].toLong()*time_scale);
                         io_->write(buf.pData_,4);
                     }
@@ -3251,8 +3384,6 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                 {
                     if(xmpData_["Xmp.audio.MediaLangCode"].count() > 0)
                     {
-                        io_->read(buf.pData_,4);
-                        time_scale = returnBufValue(buf);
                         buf = returnBuf((uint64_t)xmpData_["Xmp.audio.MediaLangCode"].toLong()*time_scale);
                         io_->write(buf.pData_,4);
                     }
@@ -3261,12 +3392,17 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             default:
+                io_->seek(4,BasicIo::cur);
                 break;
             }
         }
-        io_->read(buf.pData_, size%4);
+        io_->seek(size%4,BasicIo::cur);
     }
 } // QuickTimeVideo::mediaHeaderDecoder
 
@@ -3330,7 +3466,8 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                     xmpData_["Xmp.audio.TrackVolume"] = (returnBufValue(buf, 1) + (buf.pData_[2] * 0.1)) * 100;
                 break;
             case ImageWidth:
-                if(currentStream_ == Video) {
+                if(currentStream_ == Video)
+                {
                     temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
                     xmpData_["Xmp.video.Width"] = temp;
                     width_ = temp;
@@ -3382,6 +3519,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case TrackCreateDate:
                 //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
@@ -3410,6 +3551,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                     {
                         io_->seek(4,BasicIo::cur);
                     }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackModifyDate:
@@ -3440,6 +3585,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case TrackID:
                 if(currentStream_ == Video)
@@ -3468,6 +3617,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case TrackDuration:
                 if(currentStream_ == Video)
@@ -3495,6 +3648,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                     {
                         io_->seek(4,BasicIo::cur);
                     }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
                 //TODO:modify below 3 values before writing to file
@@ -3525,6 +3682,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case TrackVolume:
                 if(currentStream_ == Video)
@@ -3553,6 +3714,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                         io_->seek(4,BasicIo::cur);
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case ImageWidth:
                 if(currentStream_ == Video)
@@ -3569,6 +3734,10 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
 
                     }
                 }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
                 break;
             case ImageHeight:
                 if(currentStream_ == Video)
@@ -3579,6 +3748,15 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                         buf = returnBuf(Height);
                         io_->write(buf.pData_,4);
                     }
+                    else
+                    {
+                        io_->seek(4,BasicIo::cur);
+
+                    }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             default:

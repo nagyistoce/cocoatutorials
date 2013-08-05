@@ -268,9 +268,9 @@ private:
 
           @return 4 if opening or writing to the associated BasicIo fails
          */
+    EXV_DLLLOCAL void doWriteMetadata();
     std::vector<long> findChunkPositions(const char *chunkId);
     std::vector<long> findHeaderPositions(const char* headerId);
-    EXV_DLLLOCAL void doWriteMetadata();
 
 private:
     //! Variable to check the end of metadata traversing.
