@@ -568,16 +568,18 @@ void reverseTagDetails(const TagDetails inputTagVocabulary[],RevTagDetails  outp
 
 const std::vector<ushort> getNumberFromString(const std::string stringData,char seperator )
 {
+    int counter = (stringData.size() - 1);
     vector<ushort> shortValues;
     for(int i=0; i<2; i++)
     {
-        int counter =0;
-        byte tmpValue[4];
-        while((counter < stringData.size()) && (stringData[counter] != seperator) && (stringData[counter] != '\0'))
+        int tmpValueIndex = 3;
+        byte tmpValue[4] = {};
+        while((counter >= 0) && (stringData[counter] != seperator) && (tmpValueIndex >=0))
         {
-            tmpValue[counter] = stringData[counter];
-            counter++;
+            tmpValue[tmpValueIndex] = stringData[counter];
+            counter--;tmpValueIndex--;
         }
+        counter--;
         shortValues.push_back((short)Exiv2::getShort(tmpValue, bigEndian));
     }
     return shortValues;
@@ -585,16 +587,18 @@ const std::vector<ushort> getNumberFromString(const std::string stringData,char 
 
 const std::vector<long> getLongFromString(const std::string stringData,char seperator )
 {
+    int counter = (stringData.size() - 1);
     vector<long> longValues;
     for(int i=0; i<2; i++)
     {
-        int counter =0;
-        byte tmpValue[4];
-        while((counter < stringData.size()) && (stringData[counter] != seperator) && (stringData[counter] != '\0'))
+        int tmpValueIndex = 3;
+        byte tmpValue[4]={};
+        while((counter >= 0) && (stringData[counter] != seperator) && (tmpValueIndex >=0))
         {
-            tmpValue[counter] = stringData[counter];
-            counter++;
+            tmpValue[tmpValueIndex] = stringData[counter];
+            counter--;tmpValueIndex--;
         }
+        counter--;
         longValues.push_back((long)Exiv2::getLong(tmpValue, bigEndian));
     }
     return longValues;
@@ -621,14 +625,15 @@ DataBuf returnBuf(int64_t intValue,int n=4)
 {
     DataBuf buf((unsigned long)(n+1));
     buf.pData_[n] = '\0';
-    for(int i = 0; i < n; i++)
+    for(int i = n - 1; i >= 0; i--)
     {
 #ifdef _MSC_VER
-        buf.pData_[n-i-1] = static_cast<byte> (intValue - (intValue/(pow(static_cast<float>(256), n-i))));
-        intValue = static_cast<int64_t>(intValue/(pow(static_cast<float>(256), n-i)));
+        buf.pData_[n-i-1] = static_cast<byte> static_cast<ushort>
+                static_cast<long> ushort intValue % (pow(static_cast<long>(256), n-i-1));
+        intValue = static_cast<long> intValue/(pow(static_cast<long>(256), n-i-1)));
 #else
-        buf.pData_[n-i-1] = (byte)(intValue - intValue/(pow((float)256,n-i)));
-        intValue = (int64_t) (intValue/(pow((float)256,n-i)));
+        buf.pData_[n-i-1] = (byte)(ushort) ((long)intValue % (long)pow(256,n-i-1));
+        intValue = (int64_t) (intValue/(pow((long)256,n-i-1)));
 #endif
     }
     return buf;
@@ -651,18 +656,19 @@ uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int n = 4) {
     return temp;
 }
 
-DataBuf returnBuf(uint64_t intValue,int n=4)
+DataBuf returnUnsignedBuf(uint64_t intValue,int n=4)
 {
     DataBuf buf((unsigned long)(n+1));
     buf.pData_[n] = '\0';
-    for(int i = 0; i < n; i++)
+    for(int i = n - 1; i >= 0; i--)
     {
 #ifdef _MSC_VER
-        buf.pData_[n-i-1] = static_cast<byte> (intValue - (intValue/(pow(static_cast<float>(256), n-i))));
-        intValue = static_cast<uint64_t>(intValue/(pow(static_cast<float>(256), n-i)));
+        buf.pData_[n-i-1] = static_cast<byte> static_cast<ushort>
+                static_cast<unsigned long> ushort intValue % (pow(static_cast<unsigned long>(256), n-i-1));
+        intValue = static_cast<unsigned long> intValue/(pow(static_cast<unsigned long>(256), n-i-1)));
 #else
-        buf.pData_[n-i-1] = (byte)(intValue - intValue/(pow((float)256,n-i)));
-        intValue = (uint64_t) (intValue/(pow((float)256,n-i)));
+        buf.pData_[n-i-1] = (byte)(ushort) ((unsigned long)intValue % (unsigned long)pow(256,n-i-1));
+        intValue = (int64_t) (intValue/(pow((unsigned long)256,n-i-1)));
 #endif
     }
     return buf;
@@ -2306,29 +2312,24 @@ void QuickTimeVideo::timeToSampleDecoder()
     uint64_t noOfEntries, totalframes = 0, timeOfFrames = 0;
     noOfEntries = returnUnsignedBufValue(buf);
     uint64_t temp;
-
+    for(unsigned long i = 1; i <= noOfEntries; i++)
+    {
+        io_->read(buf.pData_, 4);
+        temp = returnBufValue(buf);
+        totalframes += temp;
+        io_->read(buf.pData_, 4);
+        timeOfFrames += temp * returnBufValue(buf);
+    }
     if(!m_modifyMetadata)
     {
-        for(unsigned long i = 1; i <= noOfEntries; i++)
-        {
-            io_->read(buf.pData_, 4);
-            temp = returnBufValue(buf);
-            totalframes += temp;
-            io_->read(buf.pData_, 4);
-            timeOfFrames += temp * returnBufValue(buf);
-        }
         if (currentStream_ == Video)
             xmpData_["Xmp.video.FrameRate"] = (double)totalframes * (double)timeScale_ / (double)timeOfFrames;
     }
     else
     {
-        for(unsigned long i = 1; i <= noOfEntries; i++)
-        {
-            io_->seek(8, BasicIo::cur);
-        }
         if(xmpData_["Xmp.video.FrameRate"].count() >0)
         {
-            //TODO calculation
+
         }
     }
 } // QuickTimeVideo::timeToSampleDecoder
