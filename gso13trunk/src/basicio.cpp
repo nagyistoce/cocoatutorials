@@ -32,8 +32,6 @@ EXIV2_RCSID("@(#) $Id: basicio.cpp 2883 2012-09-21 15:43:19Z robinwmills $")
 #include "exv_conf.h"
 
 #include "basicio.hpp"
-#include "futils.hpp"
-#include "types.hpp"
 #include "error.hpp"
 #include "http.hpp"
 
@@ -1294,9 +1292,24 @@ namespace Exiv2 {
 
     }
 
-#if STDIN_MEMIO
-    StdinIo::StdinIo()
-    {
+#if XPATH_MEMIO
+    XPathIo::XPathIo(const std::string& path) {
+        Protocol prot = fileProtocol(path);
+
+        if (prot == pStdin)         ReadStdin();
+        else if (prot == pDataUri)  ReadDataUri(path);
+    }
+#ifdef EXV_UNICODE_PATH
+    XPathIo::XPathIo(const std::wstring& wpath) {
+        std::string path;
+        path.assign(wpath.begin(), wpath.end());
+        Protocol prot = fileProtocol(path);
+        if (prot == pStdin)         ReadStdin();
+        else if (prot == pDataUri)  ReadDataUri(path);
+    }
+#endif
+
+    void XPathIo::ReadStdin() {
         if (isatty(fileno(stdin)))
             throw Error(53);
 
@@ -1316,27 +1329,50 @@ namespace Exiv2 {
             }
         } while(readBufSize);
     }
-#else
-    const std::string StdinIo::TEMP_FILE_EXT = ".exiv2_temp";
-    const std::string StdinIo::GEN_FILE_EXT  = ".exiv2";
 
-    StdinIo::StdinIo() : FileIo(StdinIo::writeStdinToFile()) {
+    void XPathIo::ReadDataUri(const std::string& path) {
+        size_t base64Pos = path.find("base64,");
+        if (base64Pos == std::string::npos)
+            throw Error(1, "No base64 data");
+
+        std::string data = path.substr(base64Pos+7);
+        char* decodeData = new char[data.length()];
+        long size = base64decode(data.c_str(), decodeData, data.length());
+        if (size > 0)
+            write((byte*)decodeData, size);
+        else
+            throw Error(1, "Unable to decode base 64.");
+        delete[] decodeData;
+    }
+
+#else
+    const std::string XPathIo::TEMP_FILE_EXT = ".exiv2_temp";
+    const std::string XPathIo::GEN_FILE_EXT  = ".exiv2";
+
+    XPathIo::XPathIo(const std::string& orgPath) : FileIo(XPathIo::writeDataToFile(orgPath)) {
         isTemp_ = true;
         tempFilePath_ = path();
     }
 
-    StdinIo::~StdinIo() {
+#ifdef EXV_UNICODE_PATH
+    XPathIo::XPathIo(const std::wstring& wOrgPathpath) : FileIo(XPathIo::writeDataToFile(orgPath)) {
+        isTemp_ = true;
+        tempFilePath_ = path();
+    }
+#endif
+
+    XPathIo::~XPathIo() {
         if (isTemp_ && remove(tempFilePath_.c_str()) != 0) {
             // error when removing file
             // printf ("Warning: Unable to remove the temp file %s.\n", tempFilePath_.c_str());
         }
     }
 
-    void StdinIo::transfer(BasicIo& src) {
+    void XPathIo::transfer(BasicIo& src) {
         if (isTemp_) {
             // replace temp path to gent path.
             std::string currentPath = path();
-            setPath(ReplaceStringInPlace(currentPath, StdinIo::TEMP_FILE_EXT, StdinIo::GEN_FILE_EXT));
+            setPath(ReplaceStringInPlace(currentPath, XPathIo::TEMP_FILE_EXT, XPathIo::GEN_FILE_EXT));
             // rename the file
             tempFilePath_ = path();
             if (rename(currentPath.c_str(), tempFilePath_.c_str()) != 0) {
@@ -1348,33 +1384,62 @@ namespace Exiv2 {
         }
     }
 
-    std::string StdinIo::writeStdinToFile() {
-        if (isatty(fileno(stdin)))
-            throw Error(53);
-#ifdef _MSC_VER
-        // convert stdin to binary
-        if (_setmode(_fileno(stdin), _O_BINARY) == -1)
-            throw Error(54);
-#endif
+    std::string XPathIo::writeDataToFile(const std::string& orgPath) {
+        Protocol prot = fileProtocol(orgPath);
+
         // generating the name for temp file.
         std::time_t timestamp = std::time(NULL);
         std::stringstream ss;
-        ss << timestamp << StdinIo::TEMP_FILE_EXT;
+        ss << timestamp << XPathIo::TEMP_FILE_EXT;
         std::string path = ss.str();
         std::ofstream fs(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
-        // read stdin and write to the temp file.
-        char readBuf[100*1024];
-        std::streamsize readBufSize = 0;
-        do {
-            std::cin.read(readBuf, sizeof(readBuf));
-            readBufSize = std::cin.gcount();
-            if (readBufSize > 0) {
-                fs.write (readBuf, readBufSize);
-            }
-        } while(readBufSize);
+
+        if (prot == pStdin) {
+            if (isatty(fileno(stdin)))
+                throw Error(53);
+#ifdef _MSC_VER
+            // convert stdin to binary
+            if (_setmode(_fileno(stdin), _O_BINARY) == -1)
+                throw Error(54);
+#endif
+            // read stdin and write to the temp file.
+            char readBuf[100*1024];
+            std::streamsize readBufSize = 0;
+            do {
+                std::cin.read(readBuf, sizeof(readBuf));
+                readBufSize = std::cin.gcount();
+                if (readBufSize > 0) {
+                    fs.write (readBuf, readBufSize);
+                }
+            } while(readBufSize);
+        } else if (prot == pDataUri) {
+            // read data uri and write to the temp file.
+            size_t base64Pos = orgPath.find("base64,");
+            if (base64Pos == std::string::npos)
+                throw Error(1, "No base64 data");
+
+            std::string data = orgPath.substr(base64Pos+7);
+            char* decodeData = new char[data.length()];
+            long size = base64decode(data.c_str(), decodeData, data.length());
+            if (size > 0)
+                fs.write(decodeData, size);
+            else
+                throw Error(1, "Unable to decode base 64.");
+            delete[] decodeData;
+        }
+
         fs.close();
         return path;
     }
+
+#ifdef EXV_UNICODE_PATH
+    std::string XPathIo::writeDataToFile(const std::string& wOrgPath) {
+        std::string orgPath;
+        path.assign(wOrgPath.begin(), wOrgPath.end());
+        return XPathIo::writeDataToFile(orgPath);
+    }
+#endif
+
 #endif
 
     //! Internal Pimpl abstract structure of class RemoteIo.

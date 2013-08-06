@@ -54,7 +54,7 @@ namespace Exiv2 {
     //! the name of environmental variables.
     enum    EnVar       { envHTTPPOST = 0};
     //! the collection of protocols.
-    enum    Protocol    { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh};
+    enum    Protocol    { pFile = 0, pHttp, pFtp, pHttps, pSftp, pSsh, pFileUri, pDataUri, pStdin};
     //! the dictionary type for the protcol identifer strings.
     typedef std::map<std::string,Protocol>           protDict_t;
     //! the dictionary iterator for protcol identifer strings.
@@ -108,16 +108,26 @@ namespace Exiv2 {
      */
     EXIV2API void urldecode(std::string& str);
     /*!
-      @brief Encode in base64 the data in data_buf and puts the resulting string in result.
+      @brief Encode in base64 the data in data_buf and put the resulting string in result.
       @param data_buf The data need to encode
       @param dataLength Size in bytes of the in buffer
-      @param result The container for the result
+      @param result The container for the result, NULL if it fails
       @param resultSize Size in bytes of the out string, it should be at least ((dataLength + 2) / 3) * 4 + 1
-      @return the string containing the encoded data, or NULL in case of error.
+      @return 1 indicate success
 
       @note Source: http://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
       */
     EXIV2API int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize);
+    /*!
+      @brief Decode base64 data and put the resulting string in out.
+      @param in The data need to decode.
+      @param out The container for the result, it should be large enough to contain the result.
+      @param out_size The size of out in bytes.
+      @return the size of the resulting string. If it fails, return -1.
+
+      @note Source: https://github.com/davidgaleano/libwebsockets/blob/master/lib/base64-decode.c
+      */
+    EXIV2API long base64decode(const char *in, char *out, size_t out_size);
     /*!
       @brief Return the protocol of the path.
       @param path The path of file to extract the protocol.

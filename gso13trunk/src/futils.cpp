@@ -192,15 +192,63 @@ namespace Exiv2 {
         return 1;   /* indicate success */
     } // base64encode
 
+    long base64decode(const char *in, char *out, size_t out_size) {
+        static const char decode[] = "|$$$}rstuvwxyz{$$$$$$$>?@ABCDEFGHIJKLMNOPQRSTUVW"
+                         "$$$$$$XYZ[\\]^_`abcdefghijklmnopq";
+        long len;
+        long i;
+        long done = 0;
+        unsigned char v;
+        unsigned char quad[4];
+
+        while (*in) {
+            len = 0;
+            for (i = 0; i < 4 && *in; i++) {
+                v = 0;
+                while (*in && !v) {
+                    v = *in++;
+                    v = (v < 43 || v > 122) ? 0 : decode[v - 43];
+                    if (v)
+                        v = (v == '$') ? 0 : v - 61;
+                    if (*in) {
+                        len++;
+                        if (v)
+                            quad[i] = v - 1;
+                    } else
+                        quad[i] = 0;
+                }
+            }
+            if (!len)
+                continue;
+            if (out_size < (done + len - 1))
+                /* out buffer is too small */
+                return -1;
+            if (len >= 2)
+                *out++ = quad[0] << 2 | quad[1] >> 4;
+            if (len >= 3)
+                *out++ = quad[1] << 4 | quad[2] >> 2;
+            if (len >= 4)
+                *out++ = ((quad[2] << 6) & 0xc0) | quad[3];
+            done += len - 1;
+        }
+        if (done + 1 >= out_size)
+            return -1;
+        *out++ = '\0';
+        return done;
+    } // base64decode
+
     Protocol fileProtocol(const std::string& path) {
         Protocol result = pFile ;
         static Exiv2::protDict_t protDict;
         if (!protDict.size()) {
-             protDict["http://"]  = pHttp;
-             protDict["ftp://"]   = pFtp;
-             protDict["https://"] = pHttps;
-             protDict["sftp://"]  = pSftp;
-             protDict["ssh://"]   = pSsh;
+             protDict["http://" ]   = pHttp;
+             protDict["ftp://"  ]   = pFtp;
+             protDict["https://"]   = pHttps;
+             protDict["sftp://" ]   = pSftp;
+             protDict["ssh://"  ]   = pSsh;
+             protDict["file:///"]   = pFileUri;
+             protDict["data:"   ]   = pDataUri;
+             protDict["-"       ]   = pStdin;
         }
         for (Exiv2::protDict_i it = protDict.begin(); it != protDict.end(); it++) {
             if (path.find(it->first) == 0)
@@ -213,10 +261,14 @@ namespace Exiv2 {
         Protocol result = pFile ;
         static wprotDict_t protDict;
         if (!protDict.size()) {
-             protDict[L"http://"]  = pHttp;
-             protDict[L"ftp://"]   = pFtp;
-             protDict[L"https://"] = pHttps;
-             protDict[L"sftp://"]  = pSftp;
+             protDict[L"http://"  ]  = pHttp;
+             protDict[L"ftp://"   ]  = pFtp;
+             protDict[L"https://" ]  = pHttps;
+             protDict[L"sftp://"  ]  = pSftp;
+             protDict[L"ssh://"   ]  = pSsh;
+             protDict[L"file:///" ]  = pFileUri;
+             protDict[L"data:"    ]  = pDataUri;
+             protDict[L"-"        ]  = pStdin;
         }
         for (wprotDict_i it = protDict.begin(); it != protDict.end(); it++) {
             if (wpath.find(it->first) == 0) {

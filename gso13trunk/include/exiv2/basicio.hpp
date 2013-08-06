@@ -29,14 +29,15 @@
 #ifndef BASICIO_HPP_
 #define BASICIO_HPP_
 
-// The way to handle data from stdin. If STDIN_MEMIO = 1, it uses MemIo. Otherwises, it uses FileIo.
-#ifndef STDIN_MEMIO
-#define STDIN_MEMIO 0
+// The way to handle data from stdin or data uri path. If XPATH_MEMIO = 1, it uses MemIo. Otherwises, it uses FileIo.
+#ifndef XPATH_MEMIO
+#define XPATH_MEMIO 0
 #endif
 
 // *****************************************************************************
 // included header files
 #include "types.hpp"
+#include "futils.hpp"
 
 // + standard includes
 #include <string>
@@ -734,41 +735,65 @@ namespace Exiv2 {
     }; // class MemIo
 
     /*!
-      @brief Provides binary IO for the data from stdin.
+      @brief Provides binary IO for the data from stdin and data uri path.
      */
-#if STDIN_MEMIO
-    class EXIV2API StdinIo : public MemIo {
+#if XPATH_MEMIO
+    class EXIV2API XPathIo : public MemIo {
     public:
         //! @name Creators
         //@{
+        //! Default constructor
+        XPathIo(const std::string& path);
+#ifdef EXV_UNICODE_PATH
         /*!
-            @brief Default constructor that reads the data from stdin and write the data to memory.
-            @throw Error if there is no data from stdin or it can't convert data to binary.
+          @brief Like XPathIo(const std::string& path) but accepts a
+              unicode url in an std::wstring.
+          @note This constructor is only available on Windows.
          */
-        StdinIo();
+        XPathIo(const std::wstring& wpath);
+#endif
         //@}
-    }; // class StdinIo
+    private:
+        /*!
+            @brief Read data from stdin and write the data to memory.
+            @throw Error if it can't convert stdin to binary.
+         */
+        void ReadStdin();
+        /*!
+            @brief Read the data from data uri path and write the data to memory.
+            @param path The data uri.
+            @throw Error if no base64 data in path.
+         */
+        void ReadDataUri(const std::string& path);
+    }; // class XPathIo
 #else
-    class EXIV2API StdinIo : public FileIo {
+    class EXIV2API XPathIo : public FileIo {
     public:
         /*!
             @brief The extention of the temporary file which is created when getting input data
-                    from stdin to read metadata. This file will be deleted in destructor.
+                    to read metadata. This file will be deleted in destructor.
         */
         static const std::string TEMP_FILE_EXT;
         /*!
-            @brief The extention of the generated file which is created when getting input data from
-                    stdin to add or modify the metadata.
+            @brief The extention of the generated file which is created when getting input data
+                    to add or modify the metadata.
         */
         static const std::string GEN_FILE_EXT;
 
         //! @name Creators
         //@{
-        //! Default constructor that reads data from stdin, writes them to the temp file.
-        StdinIo();
-
+        //! Default constructor that reads data from stdin/data uri, writes them to the temp file.
+        XPathIo(const std::string& orgPath);
+#ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like XPathIo(const std::string& orgPath) but accepts a
+              unicode url in an std::wstring.
+          @note This constructor is only available on Windows.
+         */
+        XPathIo(const std::wstring& wOrgPathpath);
+#endif
         //! Destructor. Releases all managed memory and removes the temp file.
-        virtual ~StdinIo();
+        virtual ~XPathIo();
         //@}
 
         //! @name Manipulators
@@ -784,17 +809,25 @@ namespace Exiv2 {
         //! @name Static methods
         //@{
         /*!
-            @brief Read the data from stdin and write them to the file.
+            @brief Read the data from stdin/data uri and write them to the file.
             @return the name of the new file.
-            @throw Error if it can't convert stdin to binary.
+            @throw Error if it fails.
          */
-        static std::string writeStdinToFile();
+        static std::string writeDataToFile(const std::string& orgPath);
+#ifdef EXV_UNICODE_PATH
+        /*!
+          @brief Like writeDataToFile(const std::string& orgPath) but accepts a
+              unicode url in an std::wstring.
+          @note This constructor is only available on Windows.
+         */
+        static std::string writeDataToFile(const std::string& wOrgPath);
+#endif
         //@}
 
     private:
         bool isTemp_;
         std::string tempFilePath_;
-    }; // class StdinIo
+    }; // class XPathIo
 #endif
 
     /*!

@@ -89,11 +89,14 @@ namespace Util {
 
     std::string dirname(const std::string& path)
     {
-        if (path == "") return ".";
-        if (Exiv2::fileProtocol(path)) return "."; // for remote files
-
+        Exiv2::Protocol fileProt = Exiv2::fileProtocol(path);
         // Strip trailing slashes or backslashes
         std::string p = path;
+        if (path == "" || fileProt != Exiv2::pFile || fileProt != Exiv2::pFileUri)
+            return "."; // for remote files, get current dir
+        if (fileProt == Exiv2::pFileUri)
+            p = path.substr(8);
+
         while (   p.length() > 1
                && (p[p.length()-1] == '\\' || p[p.length()-1] == '/')) {
             p = p.substr(0, p.length()-1);

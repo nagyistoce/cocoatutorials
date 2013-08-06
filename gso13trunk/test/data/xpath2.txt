@@ -1,0 +1,38 @@
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  72
+Exif.Image.YResolution                       Rational    1  72
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.Software                          Ascii      30  Adobe Photoshop CS3 Macintosh
+Exif.Image.DateTime                          Ascii      20  2008:03:12 15:47:10
+Exif.Image.ExifTag                           Long        1  164
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Long        1  236
+Exif.Photo.PixelYDimension                   Long        1  286
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  72
+Exif.Thumbnail.YResolution                   Rational    1  72
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  302
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  7392
+Xmp.dc.format                                XmpText    10  image/jpeg
+Xmp.xmp.CreatorTool                          XmpText    29  Adobe Photoshop CS3 Macintosh
+Xmp.xmp.CreateDate                           XmpText    25  2008-03-12T15:47:10-05:00
+Xmp.xmp.ModifyDate                           XmpText    25  2008-03-12T15:47:10-05:00
+Xmp.xmp.MetadataDate                         XmpText    25  2008-03-12T15:47:10-05:00
+Xmp.xmpMM.DocumentID                         XmpText    37  uuid:E0587C44D5F1DC1191D5B0663429D540
+Xmp.xmpMM.InstanceID                         XmpText    37  uuid:E1587C44D5F1DC1191D5B0663429D540
+Xmp.xmpMM.DerivedFrom                        XmpText     0  type="Struct"
+Xmp.xmpMM.DerivedFrom/stRef:instanceID       XmpText    37  uuid:DE587C44D5F1DC1191D5B0663429D540
+Xmp.xmpMM.DerivedFrom/stRef:documentID       XmpText    37  uuid:DE587C44D5F1DC1191D5B0663429D540
+Xmp.photoshop.ColorMode                      XmpText     1  3
+Xmp.photoshop.ICCProfile                     XmpText    17  sRGB IEC61966-2.1
+Xmp.photoshop.History                        XmpText     0  
+Xmp.tiff.Orientation                         XmpText     1  top, left
+Xmp.tiff.XResolution                         XmpText    12  72
+Xmp.tiff.YResolution                         XmpText    12  72
+Xmp.tiff.ResolutionUnit                      XmpText     1  inch
+Xmp.tiff.NativeDigest                        XmpText   134  256,257,258,259,262,274,277,284,530,531,282,283,296,301,318,319,529,532,306,270,271,272,305,315,33432;03D6BAD5005E3122720DFA9305DA1967
+Xmp.exif.PixelXDimension                     XmpText     3  236
+Xmp.exif.PixelYDimension                     XmpText     3  286
+Xmp.exif.ColorSpace                          XmpText     1  sRGB
+Xmp.exif.NativeDigest                        XmpText   414  36864,40960,40961,37121,37122,40962,40963,37510,40964,36867,36868,33434,33437,34850,34852,34855,34856,37377,37378,37379,37380,37381,37382,37383,37384,37385,37386,37396,41483,41484,41486,41487,41488,41492,41493,41495,41728,41729,41730,41985,41986,41987,41988,41989,41990,41991,41992,41993,41994,41995,41996,42016,0,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,22,23,24,25,26,27,28,30;593C0F48A61634BA3DA1658D91851C04

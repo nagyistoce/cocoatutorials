@@ -414,47 +414,48 @@ namespace Exiv2 {
     } // ImageFactory::getType
 
     BasicIo::AutoPtr ImageFactory::createIo(const std::string& path, bool useCurl)
-	{
-		if (path.compare("-") == 0) {
-            return BasicIo::AutoPtr(new StdinIo()); // may throw
-        } else {
-            Protocol fProt = fileProtocol(path);
+    {
+        Protocol fProt = fileProtocol(path);
 #if EXV_USE_SSH == 1
-            if (fProt == pSsh || fProt == pSftp) {
-                return BasicIo::AutoPtr(new SshIo(path)); // may throw
-            }
+        if (fProt == pSsh || fProt == pSftp) {
+            return BasicIo::AutoPtr(new SshIo(path)); // may throw
+        }
 #endif
 #if EXV_USE_CURL == 1
-            if (useCurl && fProt != pFile && fProt != pSsh && fProt != pSftp) {
-                return BasicIo::AutoPtr(new CurlIo(path)); // may throw
-            }
+        if (useCurl && (fProt == pHttp || fProt == pHttps || fProt == pFtp)) {
+            return BasicIo::AutoPtr(new CurlIo(path)); // may throw
+        }
 #endif
-            if (fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(path)); // may throw
+        if (fProt == pHttp)
+            return BasicIo::AutoPtr(new HttpIo(path)); // may throw
+        if (fProt == pFileUri)
+            return BasicIo::AutoPtr(new FileIo(path.substr(8)));
+        if (fProt == pStdin || fProt == pDataUri)
+            return BasicIo::AutoPtr(new XPathIo(path)); // may throw
 
-			return BasicIo::AutoPtr(new FileIo(path));
-		}
+        return BasicIo::AutoPtr(new FileIo(path));
     } // ImageFactory::createIo
 #ifdef EXV_UNICODE_PATH
     BasicIo::AutoPtr ImageFactory::createIo(const std::wstring& wpath, bool useCurl)
 	{
-		if (wpath.compare(L"-") == 0) {
-            return BasicIo::AutoPtr(new StdinIo());
-        } else {
-            Protocol fProt = fileProtocol(wpath);
+        Protocol fProt = fileProtocol(wpath);
 #if EXV_USE_SSH == 1
-            if (fProt == pSsh || fProt == pSftp) {
-                return BasicIo::AutoPtr(new SshIo(wpath));
-            }
+        if (fProt == pSsh || fProt == pSftp) {
+            return BasicIo::AutoPtr(new SshIo(wpath));
+        }
 #endif
 #if EXV_USE_CURL == 1
-            if (useCurl && fProt != pFile && fProt != pSsh && fProt != pSftp) {
-                return BasicIo::AutoPtr(new CurlIo(wpath));
-            }
+        if (useCurl && (fProt == pHttp || fProt == pHttps || fProt == pFtp)) {
+            return BasicIo::AutoPtr(new CurlIo(wpath));
+        }
 #endif
-            if(fProt == pHttp) return BasicIo::AutoPtr(new HttpIo(wpath));
-
-			return BasicIo::AutoPtr(new FileIo(wpath));
-		}
+        if (fProt == pHttp)
+            return BasicIo::AutoPtr(new HttpIo(wpath));
+        if (fProt == pFileUri)
+            return BasicIo::AutoPtr(new FileIo(wpath.substr(8)));
+        if (fProt == pStdin || fProt == pDataUri)
+            return BasicIo::AutoPtr(new XPathIo(wpath)); // may throw
+        return BasicIo::AutoPtr(new FileIo(wpath));
     } // ImageFactory::createIo
 #endif
     Image::AutoPtr ImageFactory::open(const std::string& path, bool useCurl)
