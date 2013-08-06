@@ -54,6 +54,21 @@ namespace Exiv2 {
     class EXIV2API QuickTimeVideo:public Image
     {
     public:
+        /*!
+         * \brief The QuickAtom class:
+         *Object of this class is intended to contain data about the premitive atom inside
+         *any atom
+         */
+        class QuickAtom
+        {
+        public:
+            QuickAtom(){}
+            ~QuickAtom(){}
+        public:
+            unsigned long m_AtomLocation;
+            unsigned long m_AtomSize;
+        };
+    public:
         //! @name Creators
         //@{
         /*!
@@ -243,6 +258,13 @@ namespace Exiv2 {
         bool m_modifyMetadata;
         //! Variable to decide decode/skip metadata
         bool m_decodeMetadata;
+
+        /*!
+         * \brief m_QuickSkeleton
+         * A container which hold the entire information about all premitive atoms inside quicktime
+         * structure
+         */
+        std::vector<QuickAtom> m_QuickSkeleton;
 
     }; //QuickTimeVideo End
 
