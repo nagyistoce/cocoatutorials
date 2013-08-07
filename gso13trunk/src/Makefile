@@ -283,7 +283,7 @@ $(EXIV2BIN): lib $(EXIV2OBJ) $(EXIV2COBJ)
 
 $(CONNTBIN): lib $(CONNTOBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
-	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(CONNTOBJ) -rpath $(libdir)
+	@$(LIBTOOL) --mode=link $(LINK.cc) -o ../bin/$@ $(LIBRARY) $(CONNTOBJ) -rpath $(libdir) $(LIBS)
 
 $(EXIFPBIN): lib $(EXIFPOBJ)
 	mkdir -pv ../bin 2>&1 > /dev/null
