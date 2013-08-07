@@ -57,8 +57,8 @@ extern int strerror_r(int errnum, char *buf, size_t n);
 #endif
 
 namespace Exiv2 {
-    const char* ENVARDEF[] = {"exiv2.php"};
-    const char* ENVARKEY[] = {"EXIV2_HTTP_POST"};
+    const char* ENVARDEF[] = {"exiv2.php", "40"};
+    const char* ENVARKEY[] = {"EXIV2_HTTP_POST", "EXIV2_TIMEOUT"};
 // *****************************************************************************
 // free functions
     std::string getEnv(EnVar var) {

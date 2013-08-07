@@ -6,6 +6,7 @@
 #include <string>
 #include "error.hpp"
 #include "types.hpp"
+#include "futils.hpp"
 
 namespace Exiv2 {
     /*!
@@ -15,10 +16,6 @@ namespace Exiv2 {
      */
     class EXIV2API SSH {
     public:
-        /*!
-            @brief The number of seconds to wait while trying to connect.
-        */
-        static const long TIMEOUT;
         //! @name Creators
         //@{
         /*!
@@ -68,6 +65,8 @@ namespace Exiv2 {
          */
         void openSftp();
         // DATA
+        //! The number of seconds to wait while trying to connect.
+        long timeout_;
         //! the ssh server host
         std::string host_;
         //! the username

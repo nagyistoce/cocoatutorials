@@ -2025,11 +2025,6 @@ namespace Exiv2 {
     //! Internal Pimpl structure of class RemoteIo.
     class CurlIo::CurlImpl : public Impl  {
     public:
-        /*!
-            @brief The number of seconds to wait while trying to connect.
-        */
-        static const long TIMEOUT;
-
         //! Constructor
         CurlImpl(const std::string&  path, size_t blockSize);
 #ifdef EXV_UNICODE_PATH
@@ -2076,9 +2071,9 @@ namespace Exiv2 {
         // NOT IMPLEMENTED
         CurlImpl(const CurlImpl& rhs); //!< Copy constructor
         CurlImpl& operator=(const CurlImpl& rhs); //!< Assignment
+    private:
+        long timeout_; //!< The number of seconds to wait while trying to connect.
     }; // class RemoteIo::Impl
-
-    const long CurlIo::CurlImpl::TIMEOUT = 40; // seconds
 
     CurlIo::CurlImpl::CurlImpl(const std::string& url, size_t blockSize):Impl(url, blockSize)
     {
@@ -2093,6 +2088,12 @@ namespace Exiv2 {
         // so we need the large block size to reduce the overhead of creating the connection.
         if (blockSize_ == 0) {
             blockSize_ = protocol_ == pFtp ? 102400 : 1024;
+        }
+
+        std::string timeout = getEnv(envTIMEOUT);
+        timeout_ = atol(timeout.c_str());
+        if (timeout_ == 0) {
+            throw Error(1, "Timeout Environmental Variable must be a positive integer.");
         }
     }
 #ifdef EXV_UNICODE_PATH
@@ -2127,7 +2128,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
-        curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, CurlIo::CurlImpl::TIMEOUT);
+        curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, timeout_);
         //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
 
         /* Perform the request, res will get the return code */
@@ -2155,7 +2156,7 @@ namespace Exiv2 {
         curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, curlWriter);
         curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, 60L);
+        curl_easy_setopt(curl_, CURLOPT_CONNECTTIMEOUT, timeout_);
         //curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1); // debugging mode
 
         if (lowBlock > -1 && highBlock> -1) {

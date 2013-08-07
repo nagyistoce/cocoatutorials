@@ -782,7 +782,7 @@ namespace Exiv2 {
 
         //! @name Creators
         //@{
-        //! Default constructor that reads data from stdin/data uri, writes them to the temp file.
+        //! Default constructor that reads data from stdin/data uri path and writes them to the temp file.
         XPathIo(const std::string& orgPath);
 #ifdef EXV_UNICODE_PATH
         /*!
@@ -809,7 +809,8 @@ namespace Exiv2 {
         //! @name Static methods
         //@{
         /*!
-            @brief Read the data from stdin/data uri and write them to the file.
+            @brief Read the data from stdin/data uri path and write them to the file.
+            @param orgPath It equals "-" if the input data's from stdin. Otherwise, it's data uri path.
             @return the name of the new file.
             @throw Error if it fails.
          */
@@ -825,6 +826,7 @@ namespace Exiv2 {
         //@}
 
     private:
+        // True if the file is a temporary file and it should be deleted in destructor.
         bool isTemp_;
         std::string tempFilePath_;
     }; // class XPathIo

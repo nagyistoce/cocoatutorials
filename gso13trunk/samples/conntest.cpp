@@ -16,7 +16,6 @@
 #include <stdlib.h>
 using namespace std;
 
-
 void httpcon(const std::string& url) {
     Exiv2::dict_t response;
     Exiv2::dict_t request;
@@ -42,14 +41,20 @@ void curlcon(const std::string& url) {
         throw Exiv2::Error(1, "Uable to init libcurl.");
     }
 
+    // get the timeout value
+    std::string timeoutStr = Exiv2::getEnv(Exiv2::envTIMEOUT);
+    long timeout = atol(timeoutStr.c_str());
+    if (timeout == 0) {
+        throw Exiv2::Error(1, "Timeout Environmental Variable must be a positive integer.");
+    }
+
     string response;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Exiv2::curlWriter);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
-
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, timeout);
 
     /* Perform the request, res will get the return code */
     CURLcode res = curl_easy_perform(curl);
