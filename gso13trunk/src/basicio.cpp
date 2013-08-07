@@ -1355,7 +1355,7 @@ namespace Exiv2 {
     }
 
 #ifdef EXV_UNICODE_PATH
-    XPathIo::XPathIo(const std::wstring& wOrgPathpath) : FileIo(XPathIo::writeDataToFile(orgPath)) {
+    XPathIo::XPathIo(const std::wstring& wOrgPathpath) : FileIo(XPathIo::writeDataToFile(wOrgPathpath)) {
         isTemp_ = true;
         tempFilePath_ = path();
     }
@@ -1433,9 +1433,9 @@ namespace Exiv2 {
     }
 
 #ifdef EXV_UNICODE_PATH
-    std::string XPathIo::writeDataToFile(const std::string& wOrgPath) {
+    std::string XPathIo::writeDataToFile(const std::wstring& wOrgPath) {
         std::string orgPath;
-        path.assign(wOrgPath.begin(), wOrgPath.end());
+        orgPath.assign(wOrgPath.begin(), wOrgPath.end());
         return XPathIo::writeDataToFile(orgPath);
     }
 #endif

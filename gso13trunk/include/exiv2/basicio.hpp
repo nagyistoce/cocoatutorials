@@ -821,7 +821,7 @@ namespace Exiv2 {
               unicode url in an std::wstring.
           @note This constructor is only available on Windows.
          */
-        static std::string writeDataToFile(const std::string& wOrgPath);
+        static std::string writeDataToFile(const std::wstring& wOrgPath);
 #endif
         //@}
 
