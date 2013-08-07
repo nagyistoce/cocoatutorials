@@ -65,6 +65,7 @@ namespace Exiv2 {
             QuickAtom(){}
             ~QuickAtom(){}
         public:
+            byte m_AtomId[5];
             unsigned long m_AtomLocation;
             unsigned long m_AtomSize;
         };
@@ -244,6 +245,12 @@ namespace Exiv2 {
               @return 4 if opening or writing to the associated BasicIo fails
              */
         EXV_DLLLOCAL void doWriteMetadata();
+        /*!
+         * \brief findAtomPositions
+         * \param atomId
+         * \return all the locations where atoms with atomId exist.
+         */
+        std::vector< pair<unsigned long,unsigned long> > findAtomPositions(const char *atomId);
 
     private:
         //! Variable which stores Time Scale unit, used to calculate time.
@@ -264,7 +271,7 @@ namespace Exiv2 {
          * A container which hold the entire information about all premitive atoms inside quicktime
          * structure
          */
-        std::vector<QuickAtom> m_QuickSkeleton;
+        std::vector<QuickAtom*> m_QuickSkeleton;
 
     }; //QuickTimeVideo End
 

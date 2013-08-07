@@ -467,31 +467,39 @@ extern const TagDetails whiteBalance[] = {
     {   5, "Manual" },
 };
 
-enum movieHeaderTags {
+enum movieHeaderTags
+{
     MovieHeaderVersion, CreateDate, ModifyDate, TimeScale, Duration, PreferredRate, PreferredVolume,
     PreviewTime = 18, PreviewDuration,PosterTime, SelectionTime, SelectionDuration, CurrentTime, NextTrackID
 };
-enum trackHeaderTags {
+enum trackHeaderTags
+{
     TrackHeaderVersion, TrackCreateDate, TrackModifyDate, TrackID, TrackDuration = 5, TrackLayer = 8,
     TrackVolume, ImageWidth = 19, ImageHeight
 };
-enum mediaHeaderTags {
+enum mediaHeaderTags
+{
     MediaHeaderVersion, MediaCreateDate, MediaModifyDate, MediaTimeScale, MediaDuration, MediaLanguageCode
 };
-enum handlerTags {
+enum handlerTags
+{
     HandlerClass = 1, HandlerType, HandlerVendorID
 };
-enum videoHeaderTags {
+enum videoHeaderTags
+{
     GraphicsMode = 2, OpColor
 };
-enum stream {
+enum stream
+{
     Video, Audio, Hint, Null, GenMediaHeader
 };
-enum imageDescTags {
+enum imageDescTags
+{
     codec, VendorID = 4, SourceImageWidth_Height = 7,  XResolution,
     YResolution, CompressorName = 10, BitDepth
 };
-enum audioDescTags {
+enum audioDescTags
+{
     AudioFormat, AudioVendorID = 4, AudioChannels, AudioSampleRate = 7, MOV_AudioFormat = 13
 };
 
@@ -502,20 +510,41 @@ enum audioDescTags {
       @param str char* Pointer to string
       @return Returns true if the buffer value is equal to string.
      */
-bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str) {
+bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
+{
     for(int i = 0; i < 4; ++i)
         if(tolower(buf.pData_[i]) != tolower(str[i]))
             return false;
     return true;
 }
 
+bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int arraysize)
+{
+    for (int i=0; i< arraysize; i++)
+    {
+        bool matched = true;
+        for(int j = 0; j < 4; j++ )
+        {
+            if(tolower(buf.pData_[j]) != arr[i][j])
+            {
+                matched = false;
+                break;
+            }
+        }
+        if(matched)
+        {
+            return true;
+        }
+    }
+}
 /*!
       @brief Function used to ignore Tags and values stored in them,
           since they are not necessary as metadata information
       @param buf Data buffer that will contain Tag to compare
       @return Returns true, if Tag is found in the ignoreList[]
      */
-bool ignoreList (Exiv2::DataBuf& buf) {
+bool ignoreList (Exiv2::DataBuf& buf)
+{
     const char ignoreList[13][5] = {
         "mdat", "edts", "junk", "iods", "alis", "stsc", "stsz", "stco", "ctts", "stss",
         "skip", "wide", "cmvd",
@@ -535,7 +564,8 @@ bool ignoreList (Exiv2::DataBuf& buf) {
       @param buf Data buffer that will contain Tag to compare
       @return Returns true, if Tag is found in the ignoreList[]
      */
-bool dataIgnoreList (Exiv2::DataBuf& buf) {
+bool dataIgnoreList (Exiv2::DataBuf& buf)
+{
     const char ignoreList[8][5] = {
         "moov", "mdia", "minf", "dinf", "alis", "stbl", "cmov",
         "meta",
@@ -609,7 +639,8 @@ const std::vector<long> getLongFromString(const std::string stringData,char sepe
       @param buf Data buffer that will contain data to be converted
       @return Returns a signed 64-bit integer
      */
-int64_t returnBufValue(Exiv2::DataBuf& buf, int n = 4) {
+int64_t returnBufValue(Exiv2::DataBuf& buf, int n = 4)
+{
     int64_t temp = 0;
     for(int i = n - 1; i >= 0; i--)
 #ifdef _MSC_VER
@@ -644,7 +675,8 @@ DataBuf returnBuf(int64_t intValue,int n=4)
       @param buf Data buffer that will contain data to be converted
       @return Returns an unsigned 64-bit integer
      */
-uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int n = 4) {
+uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int n = 4)
+{
     uint64_t temp = 0;
     for(int i = n-1; i >= 0; i--)
 #if _MSC_VER
@@ -680,7 +712,8 @@ DataBuf returnUnsignedBuf(uint64_t intValue,int n=4)
       @param a, b, c, d - characters used to compare
       @return Returns true, if Tag is found in the list qTimeTags
      */
-bool isQuickTimeType (char a, char b, char c, char d) {
+bool isQuickTimeType (char a, char b, char c, char d)
+{
     char qTimeTags[][5] = {
         "PICT", "free", "ftyp", "junk", "mdat",
         "moov", "pict", "pnot", "skip",  "uuid", "wide"
@@ -692,9 +725,12 @@ bool isQuickTimeType (char a, char b, char c, char d) {
     return false;
 }
 
-}}                                      // namespace Internal, Exiv2
+}
 
-namespace Exiv2 {
+}                                      // namespace Internal, Exiv2
+
+namespace Exiv2
+{
 
 using namespace Exiv2::Internal;
 
@@ -704,6 +740,25 @@ QuickTimeVideo::QuickTimeVideo(BasicIo::AutoPtr io)
     m_decodeMetadata = true;
     m_modifyMetadata = false;
 } // QuickTimeVideo::QuickTimeVideo
+
+std::vector< pair<unsigned long,unsigned long> > QuickTimeVideo::findAtomPositions(const char* atomId)
+{
+    DataBuf hdrId((unsigned long)5);
+    hdrId.pData_[4] = '\0';
+
+    std::vector< pair<unsigned long,unsigned long> > atomsDetails;
+    for (int i=0; i < m_QuickSkeleton.size();i++)
+    {
+        io_->seek((m_QuickSkeleton[i]->m_AtomLocation - 4),BasicIo::beg);
+        io_->read(hdrId.pData_,4);
+        if(equalsQTimeTag(hdrId,atomId))
+        {
+            atomsDetails.push_back(make_pair((unsigned long)io_->tell(),
+                                             (unsigned long)(m_QuickSkeleton[i]->m_AtomSize)));
+        }
+    }
+    return atomsDetails;
+}
 
 std::string QuickTimeVideo::mimeType() const
 {
@@ -742,6 +797,97 @@ void QuickTimeVideo::doWriteMetadata()
     while (continueTraversing_)
     {
         decodeBlock();
+    }
+    /*commented atom types need to be revised again*/
+    /*
+    std::vector< pair<unsigned long,unsigned long> > ftypPositions = findAtomPositions("ftyp");
+    for(int i=0; i<ftypPositions.size(); i++)
+    {
+        io_->seek(ftypPositions[i].first,BasicIo::beg);
+        fileTypeDecoder(ftypPositions[i].second);
+    }
+
+
+    std::vector< pair<unsigned long,unsigned long> > mvhdPositions = findAtomPositions("mvhd");
+    cout << mvhdPositions.size() << endl;
+    for(int i=0; i<mvhdPositions.size(); i++)
+    {
+        io_->seek(mvhdPositions[i].first,BasicIo::beg);
+        movieHeaderDecoder(mvhdPositions[i].second);
+    }
+    */
+
+    std::vector< pair<unsigned long,unsigned long> > trakPositions = findAtomPositions("trak");
+    /*
+    std::vector< pair<unsigned long,unsigned long> > tkhdPositions = findAtomPositions("tkhd");
+    for(int i=0; i<tkhdPositions.size(); i++)
+    {
+        io_->seek(trakPositions[i].first,BasicIo::beg);
+        setMediaStream();
+        io_->seek(tkhdPositions[i].first,BasicIo::beg);
+        trackHeaderDecoder(tkhdPositions[i].second);
+    }
+
+    std::vector< pair<unsigned long,unsigned long> > mdhdPositions = findAtomPositions("mdhd");
+    for(int i=0; i<mdhdPositions.size(); i++)
+    {
+        io_->seek(mdhdPositions[i].first,BasicIo::beg);
+        mediaHeaderDecoder(mdhdPositions[i].second);
+    }
+
+    std::vector< pair<unsigned long,unsigned long> > hdlrPositions = findAtomPositions("hdlr");
+    for(int i=0; i<hdlrPositions.size(); i++)
+    {
+        io_->seek(hdlrPositions[i].first,BasicIo::beg);
+        handlerDecoder(hdlrPositions[i].second);
+    }
+
+    std::vector< pair<unsigned long,unsigned long> > vmhdPositions = findAtomPositions("vmhd");
+    for(int i=0; i<vmhdPositions.size(); i++)
+    {
+        io_->seek(vmhdPositions[i].first,BasicIo::beg);
+        videoHeaderDecoder(vmhdPositions[i].second);
+    }
+  */
+    std::vector< pair<unsigned long,unsigned long> > udtaPositions = findAtomPositions("udta");
+    for(int i=0; i<udtaPositions.size(); i++)
+    {
+        io_->seek(udtaPositions[i].first,BasicIo::beg);
+        userDataDecoder(udtaPositions[i].second);
+    }
+    /*
+    std::vector< pair<unsigned long,unsigned long> > drefPositions = findAtomPositions("dref");
+    std::vector< pair<unsigned long,unsigned long> > sttsPositions = findAtomPositions("stts");
+
+    std::vector< pair<unsigned long,unsigned long> > pnotPositions = findAtomPositions("pnot");
+    for(int i=0; i<pnotPositions.size(); i++)
+    {
+        io_->seek(pnotPositions[i].first,BasicIo::beg);
+        previewTagDecoder(pnotPositions[i].second);
+    }
+
+    std::vector< pair<unsigned long,unsigned long> > taptPositions = findAtomPositions("tapt");
+    for(int i=0; i<taptPositions.size(); i++)
+    {
+        io_->seek(taptPositions[i].first,BasicIo::beg);
+        trackApertureTagDecoder(taptPositions[i].second);
+    }
+
+    std::vector< pair<unsigned long,unsigned long> > keysPositions = findAtomPositions("keys");
+    for(int i=0; i<keysPositions.size(); i++)
+    {
+        io_->seek(keysPositions[i].first,BasicIo::beg);
+        keysTagDecoder(keysPositions[i].second);
+    }
+    */
+    std::vector< pair<unsigned long,unsigned long> > stsdPositions = findAtomPositions("stsd");
+    for(int i=0; i<stsdPositions.size(); i++)
+    {
+        //Assumption stsd atom exists inside trak atom Abhinav correct me if I am wrong
+        io_->seek(trakPositions[i].first,BasicIo::beg);
+        setMediaStream();
+        io_->seek(stsdPositions[i].first,BasicIo::beg);
+        sampleDesc(stsdPositions[i].second);
     }
 }
 
@@ -798,7 +944,18 @@ void QuickTimeVideo::decodeBlock()
 
 void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
 {
-    if (ignoreList(buf))
+    const char allAtomFlags[][5]={"ftyp","mvhd","tkhd","mdhd","hdlr","vmhd","udta","dref","stsd","stts","pnot",
+                                  "tapt","keys","url ","urn ","dcom","smhd"};
+    if((!m_decodeMetadata) && (equalsQTimeTag(buf,allAtomFlags,(int)(sizeof(allAtomFlags)/5))))
+    {
+        QuickAtom *tmpAtom = new QuickAtom();
+        tmpAtom->m_AtomLocation = io_->tell();
+        tmpAtom->m_AtomSize = size;
+        memcpy((byte *)tmpAtom->m_AtomId,(const byte*)buf.pData_,5);
+        m_QuickSkeleton.push_back(tmpAtom);
+        io_->seek(size,BasicIo::cur);
+    }
+    else if (ignoreList(buf))
         discard(size);
 
     else if (dataIgnoreList(buf))
@@ -808,7 +965,14 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
         fileTypeDecoder(size);
 
     else if (equalsQTimeTag(buf, "trak"))
+    {
+        QuickAtom *tmpAtom = new QuickAtom();
+        tmpAtom->m_AtomLocation = io_->tell();
+        tmpAtom->m_AtomSize = size;
+        memcpy((byte *)tmpAtom->m_AtomId,(const byte*)buf.pData_,5);
+        m_QuickSkeleton.push_back(tmpAtom);
         setMediaStream();
+    }
 
     else if (equalsQTimeTag(buf, "mvhd"))
         movieHeaderDecoder(size);
@@ -2328,8 +2492,7 @@ void QuickTimeVideo::timeToSampleDecoder()
     else
     {
         if(xmpData_["Xmp.video.FrameRate"].count() >0)
-        {
-
+        {//TODO:implement write
         }
     }
 } // QuickTimeVideo::timeToSampleDecoder
@@ -2555,6 +2718,8 @@ void QuickTimeVideo::imageDescDecoder()
     }
     else
     {
+        cout << "hi..." << endl;
+
         TagVocabulary revTagVocabulary[(sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))];
         reverseTagVocabulary(qTimeFileType,revTagVocabulary,((sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))));
 
@@ -2665,10 +2830,11 @@ void QuickTimeVideo::imageDescDecoder()
                                                   xmpData_["Xmp.video.YResolution"].toLong()/ 16777216));
                     imageHeight.pData_[3] = tmpBuf.pData_[3];
                     io_->write(imageHeight.pData_,4);
+                    io_->seek(3,BasicIo::cur);
                 }
                 else
                 {
-                    io_->seek(4,BasicIo::cur);
+                    io_->seek(7,BasicIo::cur);
                 }
                 size -= 3;
                 break;
@@ -3829,8 +3995,9 @@ void QuickTimeVideo::movieHeaderDecoder(unsigned long size)
                 if(xmpData_["Xmp.video.MovieHeaderVersion"].count() > 0)
                 {
                     int64_t movieHeaderVersion  = (int64_t)xmpData_["Xmp.video.MovieHeaderVersion"].toLong();
-                    buf = returnBuf(movieHeaderVersion);
-                    io_->write(buf.pData_,4);
+                    buf = returnBuf(movieHeaderVersion,1);
+                    io_->write(buf.pData_,1);
+                    io_->seek(3,BasicIo::cur);
                 }
                 else
                 {
@@ -3864,19 +4031,23 @@ void QuickTimeVideo::movieHeaderDecoder(unsigned long size)
             case TimeScale:
                 if(xmpData_["Xmp.video.TimeScale"].count() > 0)
                 {
-                    uint64_t timeScale  = (uint64_t)xmpData_["Xmp.video.TimeScale"].toLong();
-                    buf = returnBuf(timeScale);
+                    io_->read(buf.pData_,4);
+                    timeScale_ = returnBufValue(buf);
+                    io_->seek(-4,BasicIo::cur);
+                    uint64_t tmpTimeScale  = (uint64_t)xmpData_["Xmp.video.TimeScale"].toLong();
+                    buf = returnBuf(tmpTimeScale);
                     io_->write(buf.pData_,4);
                 }
                 else
                 {
-                    io_->seek(4,BasicIo::cur);
+                    io_->read(buf.pData_,4);
+                    timeScale_ = returnBufValue(buf);
                 }
                 break;
             case Duration:
                 if(xmpData_["Xmp.video.Duration"].count() > 0)
                 {
-                    int64_t duration  = (int64_t)xmpData_["Xmp.video.Duration"].toLong();
+                    int64_t duration  = (int64_t)(xmpData_["Xmp.video.Duration"].toLong()*timeScale_/1000);
                     buf = returnBuf(duration);
                     io_->write(buf.pData_,4);
                 }
@@ -3889,7 +4060,9 @@ void QuickTimeVideo::movieHeaderDecoder(unsigned long size)
                 if(xmpData_["Xmp.video.PreferredRate"].count() > 0)
                 {
                     int64_t preferredRate  = (int64_t)xmpData_["Xmp.video.PreferredRate"].toLong();
-                    buf = returnBuf(preferredRate);
+                    buf = returnBuf(preferredRate,2);
+                    buf.pData_[2] = (byte)(short)((preferredRate % (256*256))/256);
+                    buf.pData_[3] = (byte)(short)(preferredRate%256);
                     io_->write(buf.pData_,4);
                 }
                 else
