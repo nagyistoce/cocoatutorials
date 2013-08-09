@@ -962,7 +962,7 @@ void QuickTimeVideo::doWriteMetadata()
         io_->seek(udtaPositions[i].first,BasicIo::beg);
         userDataDecoder(udtaPositions[i].second);
     }
-    /*
+
     std::vector< pair<unsigned long,unsigned long> > drefPositions = findAtomPositions("dref");
     std::vector< pair<unsigned long,unsigned long> > sttsPositions = findAtomPositions("stts");
 
@@ -979,7 +979,7 @@ void QuickTimeVideo::doWriteMetadata()
         io_->seek(taptPositions[i].first,BasicIo::beg);
         trackApertureTagDecoder(taptPositions[i].second);
     }
-
+/*
     std::vector< pair<unsigned long,unsigned long> > keysPositions = findAtomPositions("keys");
     for(int i=0; i<keysPositions.size(); i++)
     {
