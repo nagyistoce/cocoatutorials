@@ -3038,8 +3038,6 @@ void QuickTimeVideo::videoHeaderDecoder(unsigned long size)
                     rtd = find(revTagDetails,graphicsModeData);
                     if(rtd)
                     {
-                        cout << graphicsModeData << endl;
-
                         short sGraphicsMode = (short)rtd->val_;
                         memcpy(rawGraphicsMode,&sGraphicsMode,2);
                         io_->write(rawGraphicsMode,2);
@@ -3148,7 +3146,6 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                         tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString());
                         if(tv)
                         {
-                            cout << "yes " << tv->label_ << endl;
                             const std::string handlerClass = tv->label_;
                             for(int j=0; j<4; j++)
                             {
