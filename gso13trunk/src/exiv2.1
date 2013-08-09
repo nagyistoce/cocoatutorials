@@ -67,6 +67,27 @@ image are determined.
 .IP \(bu 2
 Reading other TIFF-like RAW image formats, which are not listed in the
 table, may also work.
+.PP
+The following protocols are supported:
+.TS
+lB lB lB
+_	_	_
+l l l.
+Protocol	Support	Require
+File Path	Read/Write	
+File Uri Scheme	Read/Write	
+Data Uri Scheme	Read/Write	the data must be encoded as base64
+Stdin	Read/Write	"-" as path
+HTTP	Read/Write	
+HTTPS	Read/Write	libcurl
+FTP	READ	libcurl
+SSH	Read/Write	libssh
+SFTP	Read	libssh
+.TE
+.IP \(bu 2
+HTTP, HTTPS write access: the data are submitted via POST. There must be a 
+script on the server to handle submitted data. A sample script can be found at
+.I http://www.exiv2.org
 .SH ACTIONS
 The \fIaction\fP argument is only required if it is not clear from the
 \fIoptions\fP which action is implied.
@@ -439,6 +460,14 @@ An additional command is available to register XMP namespaces:
 .SS Command file format
 Empty lines and lines starting with \fB#\fP in a command file are
 ignored (comments). Remaining lines are commands as described above.
+.SH ENVIRONMENT
+.TP
+EXIV2_HTTP_POST
+The file on the http server handles the submitted write-access data.
+If it's not set, "exiv2.php" is used as the default value.
+.TP
+EXIV2_TIMEOUT
+The maximum time in seconds that you allow the connection to the server to take. This only limits the connection phase, once it has connected, this option is of no more use. The default value is 40 seconds.
 .SH EXAMPLES
 .TP
 exiv2 *.jpg
