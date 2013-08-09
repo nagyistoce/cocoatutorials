@@ -216,7 +216,116 @@ extern const TagDetails graphicsModetags[] = {
     {   0x110, "Component Alpha" }
 };
 
-
+extern const TagDetails mediaLanguageCode[] = {
+    { 0x0, "English" },
+    { 0x1, "French" },
+    { 0x2, "German" },
+    { 0x3, "Italian" },
+    { 0x4, "Dutch" },
+    { 0x5, "Swedish" },
+    { 0x6, "Spanish" },
+    { 0x7, "Danish" },
+    { 0x8, "Portuguese" },
+    { 0x9, "Norwegian" },
+    { 0xa, "Hebrew" },
+    { 0xb, "Japanese" },
+    { 0xc, "Arabic" },
+    { 0xd, "Finnish" },
+    { 0xe, "Greek" },
+    { 0xf, "Icelandic" },
+    { 0x10, "Maltese" },
+    { 0x11, "Turkish" },
+    { 0x12, "Croatian" },
+    { 0x13, "Traditional Chinese" },
+    { 0x14, "Urdu" },
+    { 0x15, "Hindi" },
+    { 0x16, "Thai" },
+    { 0x17, "Korean" },
+    { 0x18, "Lithuanian" },
+    { 0x19, "Polish" },
+    { 0x1a, "Hungarian" },
+    { 0x1b, "Estonian" },
+    { 0x1c, "Lettish" },
+    { 0x1c, "Latvian" },
+    { 0x1d, "Saami" },
+    { 0x1d, "Sami" },
+    { 0x1e, "Faroese" },
+    { 0x1f, "Farsi" },
+    { 0x20, "Russian" },
+    { 0x21, "Simplified Chinese" },
+    { 0x22, "Flemish" },
+    { 0x23, "Irish" },
+    { 0x24, "Albanian" },
+    { 0x25, "Romanian" },
+    { 0x26, "Czech" },
+    { 0x27, "Slovak" },
+    { 0x28, "Slovenian" },
+    { 0x29, "Yiddish" },
+    { 0x2a, "Serbian" },
+    { 0x2b, "Macedonian" },
+    { 0x2c, "Bulgarian" },
+    { 0x2d, "Ukrainian" },
+    { 0x2e, "Belarusian" },
+    { 0x2f, "Uzbek" },
+    { 0x30, "Kazakh" },
+    { 0x31, "Azerbaijani" },
+    { 0x32, "AzerbaijanAr" },
+    { 0x33, "Armenian" },
+    { 0x34, "Georgian" },
+    { 0x35, "Moldavian" },
+    { 0x36, "Kirghiz" },
+    { 0x37, "Tajiki" },
+    { 0x38, "Turkmen" },
+    { 0x39, "Mongolian" },
+    { 0x3a, "MongolianCyr" },
+    { 0x3b, "Pashto" },
+    { 0x3c, "Kurdish" },
+    { 0x3d, "Kashmiri" },
+    { 0x3e, "Sindhi" },
+    { 0x3f, "Tibetan" },
+    { 0x40, "Nepali" },
+    { 0x41, "Sanskrit" },
+    { 0x42, "Marathi" },
+    { 0x43, "Bengali" },
+    { 0x44, "Assamese" },
+    { 0x45, "Gujarati" },
+    { 0x46, "Punjabi" },
+    { 0x47, "Oriya" },
+    { 0x48, "Malayalam" },
+    { 0x49, "Kannada" },
+    { 0x4a, "Tamil" },
+    { 0x4b, "Telugu" },
+    { 0x4c, "Sinhala" },
+    { 0x4d, "Burmese" },
+    { 0x4e, "Khmer" },
+    { 0x4f, "Lao" },
+    { 0x50, "Vietnamese" },
+    { 0x51, "Indonesian" },
+    { 0x52, "Tagalog" },
+    { 0x53, "MalayRoman" },
+    { 0x54, "MalayArabic" },
+    { 0x55, "Amharic" },
+    { 0x56, "Galla" },
+    { 0x57, "Oromo" },
+    { 0x58, "Somali" },
+    { 0x59, "Swahili" },
+    { 0x5a, "Kinyarwanda" },
+    { 0x5b, "Rundi" },
+    { 0x5c, "Nyanja" },
+    { 0x5d, "Malagasy" },
+    { 0x5e, "Esperanto" },
+    { 0x80, "Welsh" },
+    { 0x81, "Basque" },
+    { 0x82, "Catalan" },
+    { 0x83, "Latin" },
+    { 0x84, "Quechua" },
+    { 0x85, "Guarani" },
+    { 0x86, "Aymara" },
+    { 0x87, "Tatar" },
+    { 0x88, "Uighur" },
+    { 0x89, "Dzongkha" },
+    { 0x8a, "JavaneseRom" }
+};
 extern const TagVocabulary userDatatags[] = {
     {   "AllF", "PlayAllFrames" },
     {   "CNCV", "CompressorVersion" },
@@ -821,14 +930,16 @@ void QuickTimeVideo::doWriteMetadata()
         io_->seek(tkhdPositions[i].first,BasicIo::beg);
         trackHeaderDecoder(tkhdPositions[i].second);
     }
-/*
+
     std::vector< pair<unsigned long,unsigned long> > mdhdPositions = findAtomPositions("mdhd");
     for(int i=0; i<mdhdPositions.size(); i++)
     {
+        io_->seek(trakPositions[i].first,BasicIo::beg);
+        setMediaStream();
         io_->seek(mdhdPositions[i].first,BasicIo::beg);
         mediaHeaderDecoder(mdhdPositions[i].second);
     }
-
+    /*
     std::vector< pair<unsigned long,unsigned long> > hdlrPositions = findAtomPositions("hdlr");
     for(int i=0; i<hdlrPositions.size(); i++)
     {
@@ -3313,6 +3424,7 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
     std::memset(buf.pData_, 0x0, buf.size_);
     buf.pData_[4] = '\0';
     int64_t time_scale = 1;
+    const TagDetails *td;
 
     if(!m_modifyMetadata)
     {
@@ -3357,9 +3469,31 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                 break;
             case MediaLanguageCode:
                 if(currentStream_ == Video)
+                {
+                    DataBuf tmpBuf((unsigned long)5);
+                    tmpBuf.pData_[1] = buf.pData_[2];
+                    tmpBuf.pData_[0] = buf.pData_[3];
+                    xmpData_["Xmp.video.Quality"] = returnUnsignedBufValue(tmpBuf,2);
                     xmpData_["Xmp.video.MediaLangCode"] = returnUnsignedBufValue(buf,2);
+                    td = find(mediaLanguageCode,returnUnsignedBufValue(buf,2));
+                    if(td)
+                    {
+                        xmpData_["Xmp.video.MediaLanguage"] = Exiv2::StringValue(td->label_);
+                    }
+                }
                 else if (currentStream_ == Audio)
+                {
+                    DataBuf tmpBuf((unsigned long)5);
+                    tmpBuf.pData_[1] = buf.pData_[2];
+                    tmpBuf.pData_[0] = buf.pData_[3];
+                    xmpData_["Xmp.audio.Quality"] = returnUnsignedBufValue(tmpBuf,2);
                     xmpData_["Xmp.audio.MediaLangCode"] = returnUnsignedBufValue(buf,2);
+                    td = find(mediaLanguageCode,returnUnsignedBufValue(buf,2));
+                    if(td)
+                    {
+                        xmpData_["Xmp.audio.MediaLanguage"] = Exiv2::StringValue(td->label_);
+                    }
+                }
                 break;
 
             default:
@@ -3531,24 +3665,42 @@ void QuickTimeVideo::mediaHeaderDecoder(unsigned long size) {
                 {
                     if(xmpData_["Xmp.video.MediaLangCode"].count() > 0)
                     {
-                        buf = returnBuf((uint64_t)xmpData_["Xmp.video.MediaLangCode"].toLong()*time_scale);
-                        io_->write(buf.pData_,4);
+                        buf = returnBuf((uint64_t)xmpData_["Xmp.video.MediaLangCode"].toLong(),2);
+                        io_->write(buf.pData_,2);
                     }
                     else
                     {
-                        io_->seek(4,BasicIo::cur);
+                        io_->seek(2,BasicIo::cur);
+                    }
+                    if(xmpData_["Xmp.video.Quality"].count() >0)
+                    {
+                        buf = returnBuf((uint64_t)xmpData_["Xmp.video.Quality"].toLong(),2);
+                        io_->write(buf.pData_,2);
+                    }
+                    else
+                    {
+                        io_->seek(2,BasicIo::cur);
                     }
                 }
                 else if (currentStream_ == Audio)
                 {
                     if(xmpData_["Xmp.audio.MediaLangCode"].count() > 0)
                     {
-                        buf = returnBuf((uint64_t)xmpData_["Xmp.audio.MediaLangCode"].toLong()*time_scale);
-                        io_->write(buf.pData_,4);
+                        buf = returnBuf((uint64_t)xmpData_["Xmp.audio.MediaLangCode"].toLong(),2);
+                        io_->write(buf.pData_,2);
                     }
                     else
                     {
                         io_->seek(4,BasicIo::cur);
+                    }
+                    if(xmpData_["Xmp.audio.Quality"].count() >0)
+                    {
+                        buf = returnBuf((uint64_t)xmpData_["Xmp.audio.Quality"].toLong(),2);
+                        io_->write(buf.pData_,2);
+                    }
+                    else
+                    {
+                        io_->seek(2,BasicIo::cur);
                     }
                 }
                 else
@@ -3620,21 +3772,22 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 break;
             case TrackVolume:
                 if(currentStream_ == Video)
-                    xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 2)/256)* 100;
+                    xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 2)/256);// * 100;
                 else if(currentStream_ == Audio)
-                    xmpData_["Xmp.audio.TrackVolume"] = (returnBufValue(buf, 2)/256)* 100;
+                    xmpData_["Xmp.audio.TrackVolume"] = (returnBufValue(buf, 2)/256);// * 100;
                 break;
             case ImageWidth:
                 if(currentStream_ == Video)
                 {
-                    temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                    temp = (returnBufValue(buf, 4)/(256*256));
                     xmpData_["Xmp.video.Width"] = temp;
                     width_ = temp;
                 }
                 break;
             case ImageHeight:
-                if(currentStream_ == Video) {
-                    temp = returnBufValue(buf, 2) + static_cast<int64_t>((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                if(currentStream_ == Video)
+                {
+                    temp = (returnBufValue(buf, 4)/(256*256));
                     xmpData_["Xmp.video.Height"] = temp;
                     height_ = temp;
                 }
@@ -3788,7 +3941,7 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 {
                     if(xmpData_["Xmp.video.TrackDuration"].count() >0)
                     {
-                        int64_t trackDuration= xmpData_["Xmp.video.TrackDuration"].toLong();
+                        int64_t trackDuration= xmpData_["Xmp.video.TrackDuration"].toLong()*timeScale_;
                         buf = returnBuf(trackDuration);
                         io_->write(buf.pData_,4);
                     }
@@ -3801,7 +3954,7 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 {
                     if(xmpData_["Xmp.audio.TrackDuration"].count() >0)
                     {
-                        int64_t trackDuration= xmpData_["Xmp.audio.TrackDuration"].toLong();
+                        int64_t trackDuration= xmpData_["Xmp.audio.TrackDuration"].toLong()*timeScale_;
                         buf = returnBuf(trackDuration);
                         io_->write(buf.pData_,4);
                     }
@@ -3815,7 +3968,6 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                     io_->seek(4,BasicIo::cur);
                 }
                 break;
-                //TODO:modify below 3 values before writing to file
             case TrackLayer:
                 if(currentStream_ == Video)
                 {
@@ -3855,7 +4007,7 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 {
                     if(xmpData_["Xmp.video.TrackVolume"].count() >0)
                     {
-                        int64_t trackVolume = (int64_t)(xmpData_["Xmp.video.TrackVolume"].toLong()*256/100);
+                        int64_t trackVolume = (int64_t)(xmpData_["Xmp.video.TrackVolume"].toLong()*256);
                         buf = returnBuf(trackVolume,2);
                         io_->write(buf.pData_,2);
                         io_->seek(2,BasicIo::cur);
@@ -3869,7 +4021,7 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 {
                     if(xmpData_["Xmp.audio.TrackVolume"].count() >0)
                     {
-                        int64_t trackVolume = (int64_t)(xmpData_["Xmp.audio.TrackVolume"].toLong()*256/100);
+                        int64_t trackVolume = (int64_t)(xmpData_["Xmp.audio.TrackVolume"].toLong()*256);
                         buf = returnBuf(trackVolume,2);
                         io_->write(buf.pData_,2);
                         io_->seek(2,BasicIo::cur);
@@ -3889,7 +4041,7 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 {
                     if(xmpData_["Xmp.video.Width"].count() >0)
                     {
-                        int64_t width = xmpData_["Xmp.video.Width"].toLong();
+                        int64_t width = xmpData_["Xmp.video.Width"].toLong()*(256*256);
                         buf = returnBuf(width);
                         io_->write(buf.pData_,4);
                     }
@@ -3909,7 +4061,7 @@ void QuickTimeVideo::trackHeaderDecoder(unsigned long size)
                 {
                     if(xmpData_["Xmp.video.Height"].count() >0)
                     {
-                        int64_t Height = xmpData_["Xmp.video.Height"].toLong();
+                        int64_t Height = xmpData_["Xmp.video.Height"].toLong()*(256*256);
                         buf = returnBuf(Height);
                         io_->write(buf.pData_,4);
                     }
