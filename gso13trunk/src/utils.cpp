@@ -95,7 +95,7 @@ namespace Util {
         if (path == "" || (fileProt != Exiv2::pFile && fileProt != Exiv2::pFileUri))
             return "."; // for remote files, get current dir
         if (fileProt == Exiv2::pFileUri)
-            p = path.substr(8);
+            p = Exiv2::pathOfFileUrl(path);
 
         while (   p.length() > 1
                && (p[p.length()-1] == '\\' || p[p.length()-1] == '/')) {

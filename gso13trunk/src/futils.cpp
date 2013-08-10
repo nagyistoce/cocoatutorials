@@ -246,7 +246,7 @@ namespace Exiv2 {
              protDict["https://"]   = pHttps;
              protDict["sftp://" ]   = pSftp;
              protDict["ssh://"  ]   = pSsh;
-             protDict["file:///"]   = pFileUri;
+             protDict["file://" ]   = pFileUri;
              protDict["data:"   ]   = pDataUri;
              protDict["-"       ]   = pStdin;
         }
@@ -308,6 +308,20 @@ namespace Exiv2 {
         return true;
     } // fileExists
 
+#endif
+    std::string pathOfFileUrl(const std::string& url) {
+        std::string path = url.substr(7);
+        size_t found = path.find("/");
+        if (found == std::string::npos) return path;
+        else return path.substr(found);
+    }
+#ifdef EXV_UNICODE_PATH
+    std::wstring pathOfFileUrl(const std::wstring& wurl) {
+        std::wstring path = wurl.substr(7);
+        size_t found = path.find("/");
+        if (found == std::wstring::npos) return path;
+        else return path.substr(found);
+    }
 #endif
     std::string strError()
     {

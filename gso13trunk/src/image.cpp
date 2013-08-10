@@ -429,7 +429,7 @@ namespace Exiv2 {
         if (fProt == pHttp)
             return BasicIo::AutoPtr(new HttpIo(path)); // may throw
         if (fProt == pFileUri)
-            return BasicIo::AutoPtr(new FileIo(path.substr(8)));
+            return BasicIo::AutoPtr(new FileIo(pathOfFileUrl(path)));
         if (fProt == pStdin || fProt == pDataUri)
             return BasicIo::AutoPtr(new XPathIo(path)); // may throw
 
@@ -452,7 +452,7 @@ namespace Exiv2 {
         if (fProt == pHttp)
             return BasicIo::AutoPtr(new HttpIo(wpath));
         if (fProt == pFileUri)
-            return BasicIo::AutoPtr(new FileIo(wpath.substr(8)));
+            return BasicIo::AutoPtr(new FileIo(pathOfFileUrl(wpath)));
         if (fProt == pStdin || fProt == pDataUri)
             return BasicIo::AutoPtr(new XPathIo(wpath)); // may throw
         return BasicIo::AutoPtr(new FileIo(wpath));
