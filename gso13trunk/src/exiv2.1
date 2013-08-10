@@ -75,8 +75,8 @@ _	_	_
 l l l.
 Protocol	Support	Require
 File Path	Read/Write	
-File Uri Scheme	Read/Write	
-Data Uri Scheme	Read/Write	the data must be encoded as base64
+File Uri	Read/Write	
+Data Uri	Read/Write	the data must be encoded as base64
 Stdin	Read/Write	"-" as path
 HTTP	Read/Write	
 HTTPS	Read/Write	libcurl
@@ -467,7 +467,7 @@ The file on the http server handles the submitted write-access data.
 If it's not set, "exiv2.php" is used as the default value.
 .TP
 EXIV2_TIMEOUT
-The maximum time in seconds that you allow the connection to the server to take. This only limits the connection phase, once it has connected, this option is of no more use. The default value is 40 seconds.
+The maximum time in seconds that you allow the connection to the server to take. This only limits the connection phase, once it has connected, this value is of no more use. The default value is 40 seconds.
 .SH EXAMPLES
 .TP
 exiv2 *.jpg
@@ -475,6 +475,18 @@ Prints a summary of the Exif information for all JPEG files in the directory.
 .TP
 exiv2 \-pi image.jpg
 Prints the IPTC metadata of the image.
+.TP
+exiv2 \-pi -
+Prints the IPTC metadata of stdin. "-" implies the image data from stdin.
+.TP
+exiv2 \-pi ftp://username:password@example.com/photos/image.jpg
+Prints the IPTC metadata of the image from FTP protocol. Username and password should be url-encoded.
+.TP
+exiv2 \-pi "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"
+Prints the IPTC metadata of data uri.
+.TP
+exiv2 \-pi file:///etc/photos/image.jpg
+Prints the IPTC metadata of file uri.
 .TP
 exiv2 rename img_1234.jpg
 Renames img_1234.jpg (taken on 13\-Nov\-05 at 22:58:31) to 20051113_225831.jpg
