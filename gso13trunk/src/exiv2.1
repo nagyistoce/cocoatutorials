@@ -3,7 +3,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH EXIV2 1 "Nov 11, 2012"
+.TH EXIV2 1 "Aug 11, 2013"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -70,24 +70,27 @@ table, may also work.
 .PP
 The following protocols are supported:
 .TS
-lB lB lB
-_	_	_
-l l l.
-Protocol	Support	Require
-File Path	Read/Write	
-File Uri	Read/Write	
-Data Uri	Read/Write	the data must be encoded as base64
-Stdin	Read/Write	"-" as path
-HTTP	Read/Write	
-HTTPS	Read/Write	libcurl
-FTP	READ	libcurl
-SSH	Read/Write	libssh
-SFTP	Read	libssh
+lB lB lB lB
+_	_	_	_
+l l 1 l.
+Protocol	Support	Example	Library
+File Path	Read/Write	~/foo.jpg (or c:\\foo\.jpg on Windows)
+File Uri	Read/Write	file://home/rmills/foo.jpg
+Stdin	Read/Write	-
+Data Uri	Read/Write	data:image/jpeg;base64,/9j/4AAQSkZJRgA... (data is base64 encoded)
+HTTP	Read/Write	http://clanmills.com/files/LargsPanorama.jpg
+HTTPS	Read/Write	https://clanmills.com/files/LargsPanorama.jpg	libcurl
+FTP	Read	ftp://username:password@clanmills.com/files/LargsPanorama.jpg	libcurl
+SSH	Read/Write	ssh://username:password@clanmills.com/files/LargsPanorama.jpg	libssh
+SFTP	Read	sftp://username:password@clanmills.com/files/LargsPanorama.jpg	libssh
 .TE
 .IP \(bu 2
 HTTP, HTTPS write access: the data are submitted via POST. There must be a 
-script on the server to handle submitted data. A sample script can be found at
-.I http://www.exiv2.org
+script on the server to handle submitted data.
+A sample script can be found at
+.I http://www.exiv2.org/somewhere/foo.sh
+.IP \(bu 2
+Examine the output of exiv2 --verbose --version to determine libraries linked to exiv2.
 .SH ACTIONS
 The \fIaction\fP argument is only required if it is not clear from the
 \fIoptions\fP which action is implied.
@@ -319,7 +322,8 @@ file. Possible are Exif, IPTC and XMP and the default is all of these.
 .TP
 .B \-g \fImatch\fP
 Report only keys which match.  This is sub-string match and not grep, although
-the \fB\-g\fP option is intended to help you remember this as grep. The match is case-sensitive.
+the \fB\-g\fP option is intended to help you remember this as grep.
+The match is case-sensitive.
 .br
 .sp 1
 .nf
