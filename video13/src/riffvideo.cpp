@@ -721,8 +721,8 @@ void RiffVideo::readMetadata()
         throw Error(3, "RIFF");
     }
 
-    clearMetadata();
     IoCloser closer(*io_);
+    clearMetadata();
 
     xmpData_["Xmp.video.FileSize"] = (double)io_->size()/(double)1048576;
     xmpData_["Xmp.video.FileName"] = io_->path();
@@ -733,6 +733,7 @@ void RiffVideo::readMetadata()
     DataBuf chkHeader((const long)5);
 
     chkId.pData_[4] = '\0';
+    chkHeader.pData_[4] = '\0';
 
     io_->read(chkId.pData_, 4);
     xmpData_["Xmp.video.Container"] = chkId.pData_;
@@ -1295,13 +1296,13 @@ void RiffVideo::nikonTagsHandler()
                         break;
                     case 0x0008: case 0x0009: case 0x000a: case 0x000b:
                     case 0x000f: case 0x001b: case 0x0016:
-                        buf2.pData_[0] = buf.pData_[4]; buf2.pData_[1] = buf.pData_[5];
-                        buf2.pData_[2] = buf.pData_[6]; buf2.pData_[3] = buf.pData_[7];
-                        denominator = (double)Exiv2::getLong(buf2.pData_, littleEndian);
 
                         if(!m_modifyMetadata)
                         {
                             io_->read(buf.pData_, dataSize);
+                            buf2.pData_[0] = buf.pData_[4]; buf2.pData_[1] = buf.pData_[5];
+                            buf2.pData_[2] = buf.pData_[6]; buf2.pData_[3] = buf.pData_[7];
+                            denominator = (double)Exiv2::getLong(buf2.pData_, littleEndian);
                             if (denominator != 0)
                                 xmpData_[exvGettext(td->label_)] = (double)Exiv2::getLong(buf.pData_, littleEndian) / denominator;
                             else
