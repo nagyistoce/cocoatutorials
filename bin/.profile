@@ -55,8 +55,8 @@ fi
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
-export PATH=".:${BIN}:$BIN/$PLATFORM:/sbin:/usr/sbin:/opt/subversion/bin:/usr/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec"
-export MANPATH="/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
+export PATH=".:${BIN}:$BIN/$PLATFORM:/sbin:/usr/sbin:/usr/local/bin:/opt/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:/opt/subversion/bin:"
+export MANPATH="/usr/local/share/man:/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/opt/local/lib/pkgconfig
@@ -476,7 +476,7 @@ export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 ##
 
 # MacPorts Installer addition on 2012-11-02_at_21:07:59: adding an appropriate PATH variable for use with MacPorts.
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 # Finished adapting your PATH environment variable for use with MacPorts.
 
 
@@ -485,6 +485,15 @@ export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 ##
 
 # MacPorts Installer addition on 2013-05-17_at_13:58:40: adding an appropriate PATH variable for use with MacPorts.
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+
+##
+# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2013-07-18_at_20:22:40
+##
+
+# MacPorts Installer addition on 2013-07-18_at_20:22:40: adding an appropriate PATH variable for use with MacPorts.
+#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 # Finished adapting your PATH environment variable for use with MacPorts.
 
