@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/opt/local/bin/perl
 
 my $VERSION='0.1';
 
@@ -150,7 +150,7 @@ Collage::OK($collage,$force);
 
 ##
 # open and resample the image
-my $image = Imager->new(file=>$photo) or die "Cannot load $photo: ", $image->errstr;
+my $image = Imager->new(file=>$photo) or die "Cannot load $photo: ";#, $image->errstr;
 my $W     =   $image->getwidth;
 my $H     =   $image->getheight;
    

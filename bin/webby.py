@@ -885,6 +885,8 @@ def main(argv):
             if caption==0:
                 if re.compile(r"[A-Z][A-Z][A-Z]_[0-9][0-9][0-9][0-9]").match(pname):
                     caption='&nbsp;'
+                if re.compile(r"[a-z][a-z][a-z]_[0-9][0-9][0-9][0-9]").match(pname):
+                    caption='&nbsp;'
 
             subs['pname' ]  = pname
             captions.append(caption)

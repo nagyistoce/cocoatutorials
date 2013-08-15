@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo vi /etc/hosts 
+sudo edit /etc/hosts 
 
 # That's all Folks!
 ##
