@@ -98,7 +98,7 @@ if [  $y -lt 100 ]; then let y=$((y+2000)) ; fi
 if [ "$(( y==((y/4)*4) ))" -ne 0 ]; then T=29; else T=28; fi
 if [ "$f"                  -lt 1 ]; then f=1            ; fi
 
-let m=$m
+let m=$(expr $m)
 case $m in
 	# 1|3|5|7|8|10|12) ;;
 	4|6|9|11) if [ "$t" -gt 30   ]; then t=30; fi ;;
@@ -145,7 +145,26 @@ for m in $(seq $m1 $m2); do
 	done
 done
 
-# That's all Folks!! (data follows script)
+##
+# #!/usr/bin/python
+# Script to convert GlobalAirportDatabase to correct format
+# http://www.partow.net/miscellaneous/airportdatabase/
+# # ('EFHK', 'HEL', 'HELSINKI VANTAA', 'HELSINKI', 'FINLAND', '60', '19', '12', 'N', '24', '57', '22', 'E', '0179')
+# for line in open('GlobalAirportDatabase.txt'):
+#	d=tuple(line.strip().split(':'))
+#	n=5                           # index of north
+#	e=9                           # index of east
+#	a=0  if d[1]=='N/A' else  1   # Airport index
+#	ns=1 if d[n+3]=='N' else -1   # N/S multiplier
+#	ew=1 if d[e+3]=='E' else -1   # E/W
+#	s='' if len(d[a])==4 else ' ' # spacer
+#	N = ns * ( float(d[n]) + float(d[n+1])/60.0 )
+#	E = ew * ( float(d[e]) + float(d[e+1])/60.0 )
+	
+#	if N != 0.0 and E != 0.0:
+#		print '[%s]%s %6.2f %6.2f %s,%s' % (d[a],s,N ,E ,d[3].title(),d[4].title())
+
+# That's all Folks!
 ##
 
 wc -l 2>&1 >> /dev/null << EOF
@@ -1527,6 +1546,4193 @@ Wyoming
 [SHR]  44.77  106.97  Sheridan,WY
 [WRL]  43.97  107.97  Worland,WY
 [P60]  44.55  110.42  Yellowstone,WY
+
+
+[GKA]   -6.07 145.38 Goroka,Papua New Guinea
+[MAG]   -5.20 145.78 Madang,Papua New Guinea
+[HGU]   -5.82 144.28 Mount Hagen,Papua New Guinea
+[LAE]   -6.57 146.72 Nadzab,Papua New Guinea
+[POM]   -9.43 147.22 Port Moresby,Papua New Guinea
+[WWK]   -3.58 143.67 Wewak,Papua New Guinea
+[UAK]   61.15 -45.42 Narssarssuaq,Greenland
+[BGCO]  70.73 -22.63 Nerlerit Inaat,Greenland
+[GOH]   64.18 -51.67 Godthaab,Greenland
+[JAV]   69.23 -51.07 Jakobshavn,Greenland
+[KUS]   65.58 -37.15 Kulusuk,Greenland
+[SFJ]   67.02 -50.68 Sondrestrom,Greenland
+[THU]   76.52 -68.70 Thule,Greenland
+[AEY]   65.65 -18.07 Akureyri,Iceland
+[EGS]   65.28 -14.40 Egilsstadir,Iceland
+[HFN]   64.28 -15.22 Hofn,Iceland
+[HZK]   65.95 -17.42 Husavik,Iceland
+[IFJ]   66.05 -23.13 Isafjordur,Iceland
+[KEF]   63.98 -22.60 Keflavik,Iceland
+[OPA]   66.30 -16.45 Kopasker,Iceland
+[PFJ]   65.55 -23.95 Patreksfjordur,Iceland
+[RKV]   64.12 -21.93 Reykjavik,Iceland
+[SIJ]   66.13 -18.92 Siglufjordur,Iceland
+[VEY]   63.42 -20.27 Vestmannaeyjar,Iceland
+[YAM]   46.48 -84.50 Sault Sainte Marie,Canada
+[YAV]   50.05 -97.02 Winnipeg,Canada
+[YAW]   44.63 -63.48 Halifax,Canada
+[YAY]   51.38 -56.08 St. Anthony,Canada
+[YAZ]   49.07 -125.77 Tofino,Canada
+[YBB]   68.53 -89.80 Pelly Bay,Canada
+[YBC]   49.12 -68.20 Baie Comeau,Canada
+[YBG]   48.32 -70.98 Bagotville,Canada
+[YBK]   64.28 -96.07 Baker Lake,Canada
+[YBL]   49.95 -125.27 Campbell River,Canada
+[YBR]   49.90 -99.95 Brandon,Canada
+[YCB]   69.10 -105.13 Cambridge Bay,Canada
+[YCD]   49.05 -123.87 Nanaimo,Canada
+[YCG]   49.28 -117.62 Castlegar,Canada
+[YCH]   47.00 -65.43 Chatham,Canada
+[YCL]   47.98 -66.32 Charlo,Canada
+[YCO]   67.82 -115.13 Coppermine,Canada
+[YCT]   52.07 -111.43 Coronation,Canada
+[YCW]   49.15 -121.93 Chilliwack,Canada
+[YCY]   70.48 -68.52 Clyde River,Canada
+[YZS]   50.32 -115.87 Coral Harbour,Canada
+[YDA]   64.03 -139.12 Dawson,Canada
+[YDB]   61.37 -139.03 Burwash,Canada
+[YDC]   49.47 -120.50 Princeton,Canada
+[YDF]   49.20 -57.38 Deer Lake,Canada
+[YDL]   58.42 -130.02 Dease Lake,Canada
+[YDN]   51.10 -100.05 Dauphin,Canada
+[YDQ]   55.73 -120.17 Dawson Creek,Canada
+[YED]   53.67 -113.47 Edmonton,Canada
+[YEG]   53.30 -113.57 Edmonton,Canada
+[YEK]   61.08 -94.07 Eskimo Point,Canada
+[YEN]   49.20 -102.95 Estevan,Canada
+[YET]   53.57 -116.45 Edson,Canada
+[YEU]   79.98 -85.80 Eureka,Canada
+[YEV]   68.30 -133.47 Inuvik,Canada
+[YFB]   63.75 -68.55 Iqaluit,Canada
+[YFC]   45.87 -66.52 Fredericton,Canada
+[CYFE]  48.73 -69.08 Forestville,Canada
+[YFO]   54.67 -101.67 Flin Flon,Canada
+[YFR]   61.17 -113.68 Fort Resolution,Canada
+[YFS]   61.75 -121.23 Fort Simpson,Canada
+[YGK]   44.22 -76.58 Kingston,Canada
+[YGL]   53.62 -77.70 La Grande Riviere,Canada
+[YGP]   48.77 -64.47 Gaspe,Canada
+[YGQ]   49.77 -86.93 Geraldton,Canada
+[YGR]   47.42 -61.77 Iles De La Madeleine,Canada
+[YGW]   55.28 -77.77 Kuujjuararapik,Canada
+[YGX]   56.35 -94.70 Gillam,Canada
+[YHB]   52.82 -102.30 Hudson Bay,Canada
+[YHD]   49.82 -92.73 Dryden,Canada
+[YHI]   70.75 -117.80 Holman Island,Canada
+[YHK]   68.63 -95.83 Gjoa Haven,Canada
+[YHM]   43.17 -79.93 Hamilton,Canada
+[YHU]   45.52 -73.42 Montreal,Canada
+[YHY]   60.83 -115.77 Hay River,Canada
+[YHZ]   44.87 -63.50 Halifax,Canada
+[YIB]   48.77 -91.63 Atikokan,Canada
+[YIO]   72.68 -77.97 Pond Inlet,Canada
+[YJN]   45.28 -73.27 St. Jean,Canada
+[YJT]   48.53 -58.55 Stephenville,Canada
+[YKA]   50.70 -120.43 Kamloops,Canada
+[YKF]   43.45 -80.38 Waterloo,Canada
+[YKL]   54.80 -66.80 Schefferville,Canada
+[YKY]   51.52 -109.17 Kindersley,Canada
+[YKZ]   43.85 -79.37 Toronto,Canada
+[YLD]   47.82 -83.33 Chapleau,Canada
+[YLJ]   54.12 -108.52 Meadow Lake,Canada
+[YLL]   53.30 -110.07 Lloydminster,Canada
+[YLT]   82.52 -62.27 Alert,Canada
+[YLW]   49.95 -119.37 Kelowna,Canada
+[YMA]   63.62 -135.87 Mayo,Canada
+[YMJ]   50.32 -105.55 Moose Jaw,Canada
+[YMM]   56.65 -111.22 Fort Mcmurray,Canada
+[YMO]   51.28 -80.60 Moosonee,Canada
+[YMW]   46.27 -75.98 Maniwaki,Canada
+[YMX]   45.67 -74.03 Montreal,Canada
+[YNA]   50.18 -61.78 Natashquan,Canada
+[YND]   45.52 -75.55 Gatineau,Canada
+[YNM]   49.75 -77.80 Matagami,Canada
+[YOC]   67.57 -139.83 Old Crow,Canada
+[YOD]   54.40 -110.27 Cold Lake,Canada
+[YOJ]   58.62 -117.15 High Level,Canada
+[YOW]   45.32 -75.67 Ottawa,Canada
+[YPA]   53.20 -105.67 Prince Albert,Canada
+[YPE]   56.22 -117.43 Peace River,Canada
+[YPG]   49.90 -98.27 Portage-La-Prairie,Canada
+[CYPK]  49.20 -122.70 Pitt Meadows,Canada
+[YPL]   51.43 -90.20 Pickle Lake,Canada
+[YPN]   49.83 -64.28 Port Menier,Canada
+[YPQ]   44.22 -78.35 Peterborough,Canada
+[YPR]   54.28 -130.43 Prince Pupert,Canada
+[YPY]   58.77 -111.12 Fort Chipewyan,Canada
+[YQA]   44.97 -79.30 Muskoka,Canada
+[YQB]   46.78 -71.38 Quebec,Canada
+[YQF]   52.17 -113.88 Red Deer Industrial,Canada
+[YQG]   42.27 -82.95 Windsor,Canada
+[YQH]   60.12 -128.82 Watson Lake,Canada
+[YQK]   49.78 -94.35 Kenora,Canada
+[YQL]   49.62 -112.78 Lethbridge,Canada
+[YQM]   46.10 -64.67 Moncton,Canada
+[CYQN]  50.17 -86.68 Nakina,Canada
+[YQQ]   49.70 -124.88 Comox,Canada
+[YQR]   50.42 -104.65 Regina,Canada
+[YQT]   48.37 -89.32 Thunder Bay,Canada
+[YQU]   55.17 -118.88 Grande Prairie,Canada
+[YQV]   51.25 -102.45 Yorkton,Canada
+[YQW]   52.77 -108.23 North Battleford,Canada
+[YQX]   48.93 -54.57 Gander,Canada
+[YQY]   46.15 -60.03 Sydney,Canada
+[YQZ]   53.02 -122.50 Quesnel,Canada
+[YRB]   74.72 -94.97 Resolute,Canada
+[YRI]   47.75 -69.58 Riviere Du Loup,Canada
+[YRJ]   48.52 -72.25 Roberval,Canada
+[YRM]   52.42 -114.90 Rocky Mountain House,Canada
+[YRT]   62.80 -92.10 Rankin Inlet,Canada
+[YSB]   46.62 -80.78 Sudbury,Canada
+[YSC]   45.43 -71.68 Sherbrooke,Canada
+[YSJ]   45.30 -65.88 St. John,Canada
+[YSM]   60.02 -111.95 Fort Smith,Canada
+[YSR]   72.97 -84.60 Nanisivik,Canada
+[YSU]   46.43 -63.82 Summerside,Canada
+[YSY]   71.98 -125.23 Sachs Harbour,Canada
+[YTE]   64.22 -76.52 Cape Dorset,Canada
+[YTH]   55.80 -97.85 Thompson,Canada
+[YTR]   44.12 -77.52 Trenton,Canada
+[YTS]   48.57 -81.37 Timmins,Canada
+[YTZ]   43.62 -79.38 Toronto,Canada
+[YUB]   69.43 -133.02 Tuktoyaktuk,Canada
+[YUL]   45.47 -73.73 Montreal,Canada
+[YUT]   66.52 -86.22 Repulse Bay,Canada
+[YUX]   68.77 -81.23 Hall Beach,Canada
+[YUY]   48.20 -78.83 Rouyn,Canada
+[YVC]   55.15 -105.25 La Ronge,Canada
+[YVG]   53.35 -110.82 Vermillion,Canada
+[YVM]   67.53 -64.02 Broughton Island,Canada
+[YVO]   48.05 -77.77 Val D'Or,Canada
+[YVP]   58.08 -68.42 Quujjuaq,Canada
+[YVQ]   65.27 -126.80 Norman Wells,Canada
+[YVR]   49.18 -123.17 Vancouver,Canada
+[YVT]   55.83 -108.42 Buffalo Narrows,Canada
+[YVV]   44.73 -81.10 Wiarton,Canada
+[YWA]   45.95 -77.32 Petawawa,Canada
+[YWG]   49.90 -97.23 Winnipeg,Canada
+[YWK]   52.92 -66.85 Wabush,Canada
+[YWL]   52.17 -122.05 Williams Lake,Canada
+[YWY]   63.20 -123.43 Wrigley,Canada
+[YXC]   49.60 -115.77 Cranbrook,Canada
+[YXD]   53.57 -113.52 Edmonton,Canada
+[YXE]   52.17 -106.68 Saskatoon,Canada
+[YXH]   50.02 -110.72 Medicine Hat,Canada
+[YXJ]   56.23 -120.73 Fort Saint John,Canada
+[YXL]   50.10 -91.90 Sioux Lookout,Canada
+[YXP]   66.13 -65.70 Pangnirtung,Canada
+[YXR]   47.68 -79.83 Earlton,Canada
+[YXS]   53.88 -122.67 Prince George,Canada
+[YXT]   54.45 -128.57 Terrace,Canada
+[YXU]   43.03 -81.15 London,Canada
+[YXX]   49.02 -122.35 Abbotsford,Canada
+[YXY]   60.70 -135.07 Whitehorse,Canada
+[YYB]   46.35 -79.42 North Bay,Canada
+[YYC]   51.10 -114.02 Calgary,Canada
+[YYD]   54.82 -127.17 Smithers,Canada
+[YYE]   58.83 -122.58 Fort Nelson,Canada
+[YYF]   49.45 -119.60 Penticton,Canada
+[YYG]   46.28 -63.12 Charlottetown,Canada
+[YYH]   69.53 -93.57 Spence Bay,Canada
+[YYJ]   48.63 -123.42 Victoria,Canada
+[YYL]   56.85 -101.07 Lynn Lake,Canada
+[YYN]   50.28 -107.68 Swift Current,Canada
+[YYQ]   58.73 -94.05 Churchill,Canada
+[YYR]   53.32 -60.42 Goose Bay,Canada
+[YYT]   47.62 -52.75 St. John'S,Canada
+[YYU]   49.40 -82.47 Kapuskasing,Canada
+[YYW]   50.28 -88.90 Armstrong,Canada
+[YYY]   48.60 -68.20 Mont Joli,Canada
+[YYZ]   43.67 -79.62 Toronto,Canada
+[YZD]   43.73 -79.45 Toronto,Canada
+[YZE]   45.88 -82.57 Gore Bay,Canada
+[YZF]   62.45 -114.43 Yellowknife,Canada
+[YZH]   55.28 -114.77 Slave Lake,Canada
+[YZP]   53.25 -131.80 Sandspit,Canada
+[YZR]   42.98 -82.30 Sarnia,Canada
+[YZT]   50.67 -127.37 Port Hardy,Canada
+[YZU]   54.13 -115.78 Whitecourt,Canada
+[YZV]   50.22 -66.25 Sept-Iles,Canada
+[YZW]   60.17 -132.73 Teslin,Canada
+[YZX]   44.98 -64.92 Greenwood,Canada
+[ZFA]   62.20 -133.37 Faro,Canada
+[ZFM]   67.40 -134.85 Fort Mcpherson,Canada
+[DAAB]  36.50   2.80 Blida,Algeria
+[DAAD]  35.32   4.20 Bou Saada,Algeria
+[BJA]   36.70   5.07 Bejaja,Algeria
+[ALG]   36.68   3.20 Algier,Algeria
+[DJG]   24.28   9.45 Djanet,Algeria
+[DAAK]  36.53   2.87 Boufarik,Algeria
+[DAAM]  36.10   6.35 Telergma,Algeria
+[DAAN]  26.70   0.28 Reggan,Algeria
+[VVZ]   26.57   8.48 Illizi,Algeria
+[DAAQ]  35.52   2.87 Ain Oussera,Algeria
+[GSF]   36.17   5.32 Setif,Algeria
+[TMR]   22.80   5.45 Tamanrasset,Algeria
+[GJL]   36.78   5.87 Jijel,Algeria
+[DAAY]  33.53  -0.23 Mecheria,Algeria
+[DAAZ]  35.75   0.62 Relizane,Algeria
+[AAE]   36.82   7.80 Annaba,Algeria
+[CZL]   36.27   6.62 Constantine,Algeria
+[TEE]   35.42   8.12 Tebessa,Algeria
+[HRM]   32.92   3.30 Tilrempt,Algeria
+[TID]   35.33   1.45 Tiaret,Algeria
+[DAOE]  35.73  -0.80 Bou Sfer,Algeria
+[TIN]   27.70  -8.17 Tindouf,Algeria
+[QAS]   36.20   1.32 Ech-Cheliff,Algeria
+[TAF]   35.53  -0.52 Oran,Algeria
+[TLM]   35.02  -1.45 Tlemcen,Algeria
+[ORN]   35.62  -0.62 Oran,Algeria
+[DAOS]  35.17  -0.58 Sidi Bel Abbes,Algeria
+[MUW]   35.20   0.13 Ghriss,Algeria
+[AZR]   27.83  -0.18 Adrar,Algeria
+[BSK]   34.78   5.73 Biskra,Algeria
+[ELG]   30.57   2.85 El Golea,Algeria
+[GHA]   32.38   3.78 Ghardaia,Algeria
+[HME]   31.67   6.13 Hassi-Messaoud,Algeria
+[INZ]   27.25   2.50 In Salah,Algeria
+[TGR]   33.07   6.08 Touggourt,Algeria
+[LOO]   33.75   2.92 Laghouat,Algeria
+[TMX]   29.23   0.27 Timimoun,Algeria
+[OGX]   31.92   5.40 Ouargla,Algeria
+[IAM]   28.05   9.63 Zarzaitine,Algeria
+[COO]    6.35   2.38 Cotonou,Benin
+[PKO]    9.35   2.60 Parakou,Benin
+[OUA]   12.35  -1.50 Ouagadougou,Burkina Faso
+[BOY]   11.15  -4.32 Bobo-Dioulasso,Burkina Faso
+[ACC]    5.60  -0.17 Accra,Ghana
+[TML]    9.55  -0.85 Tamale,Ghana
+[DGLW]  10.07  -2.50 Wa,Ghana
+[NYI]    7.35  -2.32 Sunyani,Ghana
+[TKD]    4.88  -1.77 Takoradi,Ghana
+[ABJ]    5.25  -3.92 Abidjan,Ivory Coast
+[BYK]    7.73  -5.07 Bouake,Ivory Coast
+[DJO]    6.78  -6.47 Daloa,Ivory Coast
+[HGO]    9.38  -5.55 Korhogo,Ivory Coast
+[MJC]    7.27  -7.58 Man,Ivory Coast
+[SPY]    4.73  -6.65 San Pedro,Ivory Coast
+[ASK]    6.90  -5.35 Yamoussoukro,Ivory Coast
+[ABV]    9.00   7.25 Abuja,Nigeria
+[AKR]    7.23   5.30 Akure,Nigeria
+[BNI]    6.32   5.58 Benin,Nigeria
+[CBQ]    4.97   8.33 Calabar,Nigeria
+[ENU]    6.47   7.55 Enugu,Nigeria
+[QUS]   12.17   6.68 Gusau,Nigeria
+[IBA]    7.35   3.97 Ibadan,Nigeria
+[ILR]    8.43   4.48 Ilorin,Nigeria
+[JOS]    9.63   8.87 Jos,Nigeria
+[KAD]   10.68   7.32 Kaduna,Nigeria
+[KAN]   12.03   8.52 Kano,Nigeria
+[MIU]   11.85  13.07 Maiduguri,Nigeria
+[MDI]    7.70   8.60 Makurdi,Nigeria
+[LOS]    6.57   3.32 Lagos,Nigeria
+[MXJ]    9.65   6.45 Minna,Nigeria
+[PHC]    5.00   6.93 Port Hartcourt,Nigeria
+[SKO]   12.90   5.20 Sokoto,Nigeria
+[YOL]    9.25  12.42 Yola,Nigeria
+[ZAR]   11.12   7.68 Zaria,Nigeria
+[MFG]   13.50   7.12 Maradi,Niger
+[NIM]   13.47   2.18 Niamey,Niger
+[THZ]   14.87   5.25 Tahoua,Niger
+[AJY]   16.95   7.98 Agadez,Niger
+[DRZD]  18.97  12.87 Dirkou,Niger
+[DRZF]  13.37  12.62 Diffa,Niger
+[ZND]   13.77   8.98 Zinder,Niger
+[DRZT]  14.98   8.77 Tanout,Niger
+[MIR]   35.75  10.75 Monastir,Tunisia
+[TUN]   36.85  10.22 Tunis,Tunisia
+[DTTB]  37.23   9.78 Bizerte,Tunisia
+[DTTD]  32.30  10.37 Remada,Tunisia
+[GAF]   34.42   8.82 Gafsa,Tunisia
+[GAE]   33.87  10.10 Gabes,Tunisia
+[DTTI]  36.72   9.93 Bordj El Amri,Tunisia
+[DJE]   33.87  10.77 Djerba,Tunisia
+[EBM]   31.70   9.25 El Borma,Tunisia
+[SFA]   34.72  10.68 Sfax,Tunisia
+[TOE]   33.93   8.10 Tozeur,Tunisia
+[LRL]    9.77   1.08 Niatougou,Togo
+[LFW]    6.15   1.25 Lome,Togo
+[ANR]   51.18   4.45 Antwerp,Belgium
+[EBBE]  50.75   4.77 Beauvechain,Belgium
+[EBBL]  51.17   5.47 Kleine Brogel,Belgium
+[BRU]   50.90   4.48 Brussels,Belgium
+[EBBT]  51.33   4.50 Brasschaat,Belgium
+[EBBX]  49.88   5.22 Bertrix,Belgium
+[CRL]   50.45   4.45 Charleroi,Belgium
+[EBCV]  50.57   3.82 Chievres,Belgium
+[EBFN]  51.08   2.65 Koksijde,Belgium
+[EBFS]  50.23   4.63 Florennes,Belgium
+[QKT]   50.82   3.20 Kortrijk-Vevelgem,Belgium
+[LGG]   50.63   5.43 Liege,Belgium
+[OST]   51.18   2.85 Ostend,Belgium
+[EBSL]  50.93   5.58 Zutendaal,Belgium
+[EBST]  50.78   5.18 Sint-Truiden,Belgium
+[EBUL]  51.13   3.47 Ursel,Belgium
+[EBWE]  51.38   4.95 Weelde,Belgium
+[EBZR]  51.25   4.75 Zoersel,Belgium
+[BBJ]   51.18  14.52 Bautzen,Germany
+[AOC]   50.97  12.50 Altenburg,Germany
+[EDAD]  51.82  12.18 Dessau,Germany
+[EDAE]  52.18  14.58 Eisenhuettenstadt,Germany
+[EDAH]  53.87  14.15 Heringsdorf,Germany
+[EDAK]  51.30  13.55 Suhl,Germany
+[EDAM]  51.35  11.93 Muehlhausen,Germany
+[EDAQ]  51.55  12.05 Halle,Germany
+[EDAU]  51.28  13.35 Riesa,Germany
+[EDAX]  53.30  12.75 Rechlin-Laerz,Germany
+[EDAY]  52.57  13.90 Strausberg,Germany
+[EDAZ]  52.20  13.15 Schoenhagen,Germany
+[EDBC]  51.85  11.42 Cochstedt,Germany
+[GWW]   35.45 -77.95 Gotha Ost,Germany
+[EDBH]  54.33  12.70 Barth,Germany
+[EDBJ]  50.92  11.70 Jena,Germany
+[EDBK]  52.92  12.42 Kyritz,Germany
+[EDBM]  52.07  11.62 Magdeburg,Germany
+[EDBN]  51.32  12.65 Neubrandenburg,Germany
+[EDBR]  51.35  14.95 Rothenburg/Ol,Germany
+[EDCA]  53.82  13.67 Anklam,Germany
+[EDCD]  51.88  14.52 Cottbus,Germany
+[EDCK]  51.72  11.95 Koethen,Germany
+[EDCM]  51.28  14.12 Kamenz,Germany
+[SXF]   52.37  13.52 Berlin,Germany
+[DRS]   51.12  13.77 Dresden,Germany
+[ERF]   50.97  10.95 Erfurt,Germany
+[FRA]   50.02   8.53 Frankfurt,Germany
+[FMO]   52.13   7.68 Muenster/Osnabrueck,Germany
+[HAM]   53.62   9.98 Hamburg,Germany
+[THF]   52.47  13.40 Berlin,Germany
+[CGN]   50.85   7.13 Cologne,Germany
+[DUS]   51.28   6.77 Duesseldorf,Germany
+[MUC]   48.35  11.78 Munich,Germany
+[NUE]   49.48  11.07 Nuernberg,Germany
+[LEJ]   51.42  12.23 Leipzig,Germany
+[SCN]   49.20   7.10 Saarbruecken,Germany
+[STR]   48.68   9.22 Stuttgart,Germany
+[TXL]   52.55  13.28 Berlin,Germany
+[HAJ]   52.45   9.68 Hannover,Germany
+[BRE]   53.03   8.78 Bremen,Germany
+[EDFE]  49.95   8.63 Egelsbach,Germany
+[HHN]   49.93   7.25 Hahn,Germany
+[MHG]   49.47   8.50 Mannheim,Germany
+[EDFQ]  51.03   8.67 Allendorf,Germany
+[EDFV]  49.60   8.37 Worms,Germany
+[EDFZ]  49.97   8.13 Mainz,Germany
+[EDGE]  50.98  10.47 Eisenach,Germany
+[EDGS]  50.70   8.07 Siegerland,Germany
+[XFW]   53.53   9.83 Hamburg,Germany
+[KEL]   54.37  10.13 Kiel,Germany
+[LBC]   53.80  10.72 Luebeck,Germany
+[AAH]   50.82   6.18 Aachen,Germany
+[EDKV]  50.40   6.52 Dahlemer Binz,Germany
+[EDKZ]  51.08   7.60 Meinerzhagen,Germany
+[ZCA]   51.48   7.88 Arnsberg,Germany
+[EDLC]  51.52   6.53 Kamp,Germany
+[ESS]   51.40   6.93 Essen,Germany
+[MGL]   51.22   6.50 Moenchengladbach,Germany
+[PAD]   51.60   8.60 Paderborn,Germany
+[EDLS]  51.98   6.83 Stadtlohn,Germany
+[DTM]   51.52   7.60 Dortmund,Germany
+[AGB]   48.42  10.92 Augsburg,Germany
+[EDMB]  48.10   9.75 Biberach,Germany
+[EDME]  48.38  12.72 Eggenfelden,Germany
+[OBF]   48.07  11.28 Oberpfaffenhofen,Germany
+[EDMS]  48.90  12.52 Straubing,Germany
+[EDMV]  48.63  13.18 Vilshofen,Germany
+[EDNL]  47.85  10.00 Leutkirch,Germany
+[FDH]   47.67   9.50 Friedrichshafen,Germany
+[SZW]   53.42  11.78 Parchim,Germany
+[EDOV]  52.62  11.82 Stendal,Germany
+[EDPA]  48.77  10.25 Aalen-Heidenheim,Germany
+[EDQC]  50.25  10.98 Coburg,Germany
+[BYU]   49.98  11.63 Bayreuth,Germany
+[EDQE]  49.78  11.12 Burg Feuerstein,Germany
+[HOQ]   50.28  11.85 Hof,Germany
+[EDQP]  49.85  11.78 Rosenthal,Germany
+[EDQT]  50.02  10.52 Hassfurt,Germany
+[ZNV]   50.32   7.52 Koblenz,Germany
+[ZQF]   49.85   6.78 Trier,Germany
+[ZQC]   49.30   8.45 Speyer,Germany
+[EDRZ]  49.20   7.40 Zweibruecken,Germany
+[ZCC]   48.78   8.18 Baden-Baden,Germany
+[ZQL]   47.97   8.52 Donaueschingen,Germany
+[EDTF]  48.02   7.83 Freiburg,Germany
+[EDTK]  48.97   8.33 Karlsruhe,Germany
+[EDTM]  48.05   9.37 Mengen,Germany
+[EDTY]  49.12   9.77 Schwaebisch Hall,Germany
+[EDUS]  51.60  13.73 Soest,Germany
+[BWE]   52.32  10.55 Braunschweig,Germany
+[KSF]   51.40   9.37 Kassel,Germany
+[EDVM]  52.17   9.93 Hildesheim,Germany
+[BRV]   53.50   8.57 Bremerhaven,Germany
+[LEM]   53.13   8.62 Lemwerder,Germany
+[EME]   53.38   7.22 Emden,Germany
+[EDWF]  53.27   7.43 Leer,Germany
+[WVN]   53.50   8.05 Wilhelmshaven,Germany
+[BMK]   53.58   6.70 Borkum,Germany
+[NRD]   53.70   7.22 Norderney,Germany
+[EDXF]  54.77   9.37 Flensburg,Germany
+[EDXR]  54.22   9.60 Rendsburg,Germany
+[GWT]   54.90   8.33 Westerland,Germany
+[EEEI]  59.25  24.20 Armari Air Force Base,Estonia
+[EEKA]  58.98  22.82 Kardla,Estonia
+[EEKE]  58.22  22.50 Kuressaare,Estonia
+[EEPU]  58.42  24.47 Parnu,Estonia
+[TLL]   59.40  24.82 Tallinn-Ulemiste International,Estonia
+[EETU]  58.30  26.68 Tartu-Ulenurme,Estonia
+[ENF]   68.35  23.42 Enontekio,Finland
+[EFEU]  61.10  22.20 Eura,Finland
+[KEV]   61.85  24.78 Halli,Finland
+[HEM]   60.25  25.03 Helsinki,Finland
+[HEL]   60.32  24.95 Helsinki,Finland
+[EFHM]  61.68  23.07 Hameenkyro,Finland
+[EFHN]  59.83  23.08 Hanko,Finland
+[EFHV]  60.65  24.87 Hyvinkaa,Finland
+[EFIK]  60.45  23.65 Kikala,Finland
+[EFIM]  61.23  28.90 Immola,Finland
+[EFIT]  62.15  30.07 Kitee,Finland
+[IVL]   68.60  27.40 Ivalo,Finland
+[JOE]   62.65  29.62 Joensuu,Finland
+[JYV]   62.38  25.67 Jyvaskyla,Finland
+[KAU]   63.12  23.05 Kauhava,Finland
+[KEM]   65.77  24.58 Kemi,Finland
+[KAJ]   64.28  27.68 Kajaani,Finland
+[EFKJ]  62.45  22.38 Kauhajoki,Finland
+[KOK]   63.72  23.13 Kruunupyy,Finland
+[EFKM]  66.70  27.15 Kemijarvi,Finland
+[KAO]   65.98  29.23 Kuusamo,Finland
+[KTT]   67.70  24.83 Kittila,Finland
+[KUO]   63.00  27.78 Kuopio,Finland
+[EFLA]  61.13  25.68 Vesivehmaa,Finland
+[LPP]   61.03  28.13 Lappeenranta,Finland
+[MHQ]   60.12  19.88 Mariehamn,Finland
+[EFME]  62.93  23.52 Menkijarvi,Finland
+[MIK]   61.68  27.20 Mikkeli,Finland
+[EFNU]  60.33  24.28 Nummela,Finland
+[OUL]   64.92  25.35 Oulu,Finland
+[EFPI]  61.23  22.18 Piikajarvi,Finland
+[POR]   61.45  21.78 Pori,Finland
+[EFPU]  65.40  26.93 Pudasjarvi,Finland
+[EFPY]  63.72  25.92 Pyhasalmi,Finland
+[EFRH]  64.68  24.68 Pattijoki,Finland
+[EFRN]  62.05  28.35 Rantasalmi,Finland
+[RVN]   66.55  25.82 Rovaniemi,Finland
+[EFRY]  60.73  24.10 Rayskala,Finland
+[SVL]   61.93  28.93 Savonlinna,Finland
+[EFSE]  61.05  26.78 Selanpaa,Finland
+[SOT]   67.38  26.62 Sodankyla,Finland
+[TMP]   61.40  23.60 Tampere,Finland
+[EFTS]  61.77  24.02 Teisko,Finland
+[TKU]   60.50  22.25 Turku,Finland
+[QVY]   60.88  26.93 Utti,Finland
+[VAA]   63.05  21.75 Vaasa,Finland
+[VRK]   62.17  27.87 Varkaus,Finland
+[EFYL]  64.05  24.70 Ylivieska-Raudaskyla,Finland
+[BFS]   54.65  -6.20 Belfast,North Ireland
+[ENK]   54.38  -7.65 Enniskillen,England
+[BHD]   54.62  -5.87 Belfast,North Ireland
+[LDY]   55.03  -7.15 Londonderry,North Ireland
+[BHX]   52.45  -1.73 Birmingham,England
+[CVT]   52.37  -1.47 Coventry,England
+[EGBG]  52.60  -1.02 Leicester,England
+[GLO]   51.88  -2.17 Golouchestershire,England
+[EGBN]  52.92  -1.07 Nottingham,England
+[EGBO]  52.52  -2.25 Halfpenny Green,England
+[EGBP]  51.67  -2.05 Pailton,U.K.
+[EGBT]  52.03  -1.08 Turweston,U.K.
+[MAN]   53.35  -2.27 Manchester,England
+[EGCD]  53.33  -2.13 Woodfort,England
+[EGCF]  53.55  -0.85 Sandtoft,U.K.
+[EGDC]  51.08  -4.15 Chivenor,England
+[NQY]   50.43  -4.98 Newquai,England
+[LYE]   51.50  -1.98 Lyneham,U.K.
+[EGDM]  51.15  -1.73 Boscombe Down,England
+[EGDR]  50.08  -5.25 Culdrose,England
+[EGDX]  51.40  -3.43 St. Athan,U.K.
+[YEO]   51.00  -2.63 Yeovilton,U.K.
+[EGFE]  51.82  -4.95 Haverfordwest,England
+[CWL]   51.38  -3.33 Cardiff,Wales
+[SWS]   51.60  -4.07 Swansea,England
+[BRS]   51.37  -2.72 Bristol,England
+[LPL]   53.33  -2.83 Liverpool,England
+[LTN]   51.87  -0.37 London,England
+[PLH]   50.42  -4.10 Plymouth,England
+[BOH]   50.77  -1.83 Bournemouth,England
+[SOU]   50.95  -1.35 Southampton,England
+[QLA]   51.18  -1.02 Lasham,England
+[GCI]   49.43  -2.60 Guernsey,Guernsey Isld.
+[JER]   49.20  -2.18 Jersey,England
+[ESH]   50.83  -0.28 Shoreham By Sea,England
+[BQH]   51.32   0.02 Biggin Hill,England
+[LGW]   51.13  -0.18 London,England
+[LCY]   51.50   0.05 London,England
+[FAB]   51.27  -0.77 Farnborough,England
+[EGLJ]  51.67  -1.07 Chalsgrove,England
+[BBS]   51.32  -0.83 Blackbushe,England
+[LHR]   51.47  -0.45 London,Engalnd
+[SEN]   51.57   0.68 Southend,England
+[LYX]   50.95   0.93 Lydd,U.K.
+[MSE]   51.33   1.33 Manston,England
+[EGNB]  53.72  -0.55 Brough,England
+[CAX]   54.93  -2.80 Carlisle,England
+[BLK]   53.77  -3.02 Blackpool,England
+[HUY]   53.57  -0.35 Humberside,England
+[BWF]   54.12  -3.25 Barrow Island,England
+[LBA]   53.85  -1.65 Leeds,England
+[EGNO]  53.73  -2.87 Warton,U.K.
+[CEG]   53.17  -2.97 Hawarden,England
+[IOM]   54.08  -4.62 Isle Of Man,England
+[NCL]   55.03  -1.68 Newcastle,England
+[MME]   54.50  -1.42 Teesside,England
+[EMA]   52.82  -1.32 East Midlands,England
+[EGOD]  52.80  -4.12 Llanbedr,England
+[EGOE]  52.87  -2.53 Ternhill,U.K.
+[EGOQ]  53.25  -4.37 Mona,U.K.
+[EGOS]  52.78  -2.67 Shawbury,U.K.
+[EGOV]  53.23  -4.53 Valley,U.K.
+[EGOW]  53.57  -3.05 Woodvale,U.K.
+[EGOY]  54.85  -4.93 West Freugh,U.K.
+[KOI]   58.95  -2.90 Kirkwall,Scotland
+[LSI]   59.87  -1.28 Sumburgh,U.K.
+[WIC]   58.45  -3.08 Wick,U.K.
+[ABZ]   57.20  -2.20 Aberdeen,U.K
+[INV]   57.53  -4.05 Inverness,U.K
+[GLA]   55.87  -4.42 Glasgow,U.K
+[EDI]   55.95  -3.37 Edinburgh,U.K
+[ILY]   55.67  -6.25 Islay,U.K
+[PIK]   55.50  -4.58 Prestwick,U.K
+[BEB]   57.47  -7.35 Benbecula,U.K
+[SDZ]   60.42  -1.28 Scatsta,U.K.
+[DND]   56.45  -3.02 Dundee,U.K
+[SYY]   58.20  -6.32 Stornoway,U.K.
+[TRE]   56.48  -6.87 Tiree,U.K.
+[ADX]   56.37  -2.87 Leuchars,U.K
+[LMO]   57.70  -3.33 Lossiemouth,U.K
+[EGRR]  51.38  -0.78 Bracknell,England
+[CBG]   52.20   0.17 Cambridge,England
+[EGSF]  52.47  -0.25 Peterborough,England
+[NWI]   52.67   1.27 Norwich,England
+[STN]   51.88   0.23 London,England
+[EGSX]  51.72   0.15 North Weald,U.K.
+[EGSY]  53.38  -1.38 Fowlmere,England
+[EGTC]  52.07  -0.62 Cranfield,England
+[EGTD]  51.12  -0.53 Dunsfold,England
+[EXT]   50.73  -3.40 Exeter,England
+[FZO]   51.52  -2.58 Bristol,England
+[HTF]   51.77   0.25 Hatfield,England
+[OXF]   51.83  -1.32 Oxford,England
+[EGUB]  51.60  -1.08 Benson,England
+[EGUL]  52.40   0.55 Lakenheath,England
+[MHZ]   52.35   0.48 Mildenhall,England
+[EGUW]  52.12   0.95 Wattisham,U.K.
+[EGUY]  52.35  -0.10 Wyton,U.K.
+[FFD]   51.67  -1.78 Fairford,England
+[BZZ]   51.73  -1.58 Brize Norton,England
+[ODH]   51.23  -0.93 Odiham,U.K.
+[EGWC]  52.63  -2.30 Cosford,England
+[NHT]   51.55  -0.42 Northolt,U.K.
+[QCY]   53.08  -0.15 Coningsby,England
+[EGXD]  54.13  -1.42 Dishforth,England
+[EGXE]  54.28  -1.53 Leeming,England
+[EGXG]  53.83  -1.18 Church Fenton,England
+[BEQ]   52.33   0.77 Honington,England
+[EGXJ]  52.73  -0.63 Cottesmore,England
+[EGXP]  53.30  -0.55 Scampton,U.K.
+[EGXT]  52.60  -0.47 Wittering,U.K.
+[EGXU]  54.03  -1.25 Linton-On-Ouse,England
+[WTN]   53.15  -0.52 Waddington,U.K.
+[EGXZ]  54.20  -1.37 Topcliffe,U.K.
+[CLF]   52.75   1.35 Coltishall,England
+[EGYD]  53.02  -0.47 Cranwell,England
+[EGYE]  52.95  -0.55 Barkston Heath,England
+[KNF]   52.63   0.55 Marham,U.K.
+[MPN]  -51.82 -58.43 Mount Pleasant,Falkland Islands
+[AMS]   52.30   4.75 Amsterdam,Netherlands
+[EHBD]  51.25   5.60 Weert,Netherlands
+[MST]   50.90   5.77 Maastricht,Netherlands
+[EHDL]  52.05   5.87 Deelen,Netherlands
+[EHDR]  53.12   6.12 Drachten,Netherlands
+[EIN]   51.45   5.37 Eindhoven,Netherlands
+[GRQ]   53.12   6.57 Groningen,Netherlands
+[EHGR]  51.57   4.92 Gilze-Rijen,Netherlands
+[DHR]   52.92   4.77 De Kooy,Netherlands
+[EHLE]  52.45   5.52 Lelystad,Netherlands
+[LWR]   53.22   5.75 Leeuwarden,Netherlands
+[RTM]   51.95   4.43 Rotterdam,Netherlands
+[UTC]   52.12   5.27 Soesterberg,Netherlands
+[ENS]   52.27   6.87 Enschede,Netherlands
+[LID]   52.17   4.42 Valkenburg,Netherlands
+[WOE]   51.43   4.33 Woensdrecht,Netherlands
+[ORK]   51.83  -8.48 Cork,Ireland
+[GWY]   53.30  -8.93 Galway,Ireland
+[EIDL]  55.03  -8.33 Donegal,Ireland
+[DUB]   53.42  -6.27 Dublin,Ireland
+[NOC]   53.90  -8.82 Connaught,Ireland
+[KIR]   52.17  -9.52 Kerry,Ireland
+[EIME]  53.30  -6.43 Casement,Ireland
+[SNN]   52.70  -8.92 Shannon,Ireland
+[SXL]   54.27  -8.58 Sligo,Ireland
+[WAT]   52.18  -7.08 Waterford,Ireland
+[AAR]   56.30  10.62 Aarhus,Denmark
+[BLL]   55.73   9.15 Billund,Denmark
+[CPH]   55.62  12.65 Copenhagen,Denmark
+[EBJ]   55.52   8.55 Esbjerg,Denmark
+[EKGH]  55.93  12.37 Gronholt,Denmark
+[EKHO]  56.38   8.43 Lindtorp,Denmark
+[KRP]   56.28   9.12 Karup,Denmark
+[EKLS]  57.27  11.00 Laeso,Denmark
+[EKMB]  54.68  11.43 Maribo,Denmark
+[ODE]   55.47  10.32 Odense,Denmark
+[EKPB]  54.87   9.27 Krusa-Padborg,Denmark
+[RKE]   55.58  12.12 Copenhagen,Denmark
+[RNN]   55.05  14.75 Ronne,Denmark
+[SGD]   54.95   9.78 Soenderborg,Denmark
+[EKSN]  57.50  10.22 Sindal,Denmark
+[SKS]   55.22   9.25 Skrydstrup,Denmark
+[EKSV]  56.55   9.17 Skive,Denmark
+[TED]   57.07   8.70 Thisted,Denmark
+[EKVA]  55.68   9.18 Vandel,Denmark
+[EKVD]  55.43   9.32 Kolding,Denmark
+[FAE]   62.05  -7.27 Vagar,Faroe Isl.
+[EKVH]  56.83   9.45 Vesthimmerland,Denmark
+[STA]   55.98   8.35 Stauning,Denmark
+[EKVL]  55.77  12.33 Vaerlose,Denmark
+[AAL]   57.08   9.83 Aalborg,Denmark
+[LUX]   49.62   6.20 Luxemburg,Luxemburg
+[AES]   62.55   6.10 Alesund,Norway
+[ANX]   69.28  16.13 Andoya,Norway
+[ALF]   69.97  23.35 Alta,Norway
+[ENBL]  61.38   5.75 Forde,Norway
+[ENBM]  60.63   6.50 Bomoen,Norway
+[BNN]   65.45  12.20 Bronnoysund,Norway
+[BOO]   67.27  14.35 Bodoe,Norway
+[BGO]   60.28   5.22 Bergen,Norway
+[BJF]   70.60  29.68 Batsfjord,Norway
+[KRS]   58.20   8.08 Kristiansand,Norway
+[ENDI]  60.42   8.50 Dagli,Norway
+[BDU]   69.05  18.53 Bardufoss,Norway
+[EVE]   68.48  16.67 Evenes,Norway
+[FBU]   59.88  10.62 Oslo,Norway
+[VDB]   61.00   9.28 Fagernes,Norway
+[FRO]   61.58   5.02 Floro,Norway
+[OSL]   60.18  11.10 Oslo,Norway
+[HMR]   60.82  11.07 Hamar,Norway
+[HAU]   59.33   5.20 Haugesund,Norway
+[HAA]   70.48  22.13 Hasvik,Norway
+[KSU]   63.10   7.82 Kristiansund,Norway
+[ENKJ]  59.97  11.03 Kjeller,Norway
+[KKN]   69.72  29.88 Kirkenes,Norway
+[FAN]   58.10   6.62 Lista,Norway
+[MOL]   62.73   7.27 Molde,Norway
+[MJF]   65.78  13.20 Mosjoen,Norway
+[LKL]   70.07  24.97 Banak,Norway
+[ENNO]  59.55   9.20 Notodden,Norway
+[OLA]   63.68   9.60 Orland,Norway
+[RRS]   62.57  11.33 Roros,Norway
+[ENRY]  59.37  10.78 Rygge,Norway
+[LYR]   78.23  15.45 Svalbard,Norway
+[SOG]   61.15   7.13 Sogndal,Norway
+[SKE]   59.18   9.57 Skien,Norway
+[SRP]   59.78   5.33 Stord,Norway
+[SOJ]   69.78  20.95 Sorkjosen,Norway
+[ENSS]  70.35  31.03 Svartnes,Norway
+[SSJ]   65.95  12.47 Sandnessjoen,Norway
+[TOS]   69.68  18.92 Tromso,Norway
+[TRF]   59.18  10.25 Torp,Norway
+[TRD]   63.45  10.93 Trondheim,Norway
+[SVG]   58.87   5.63 Stavanger,Norway
+[GDN]   54.37  18.45 Gdansk,Poland
+[KRK]   50.07  19.78 Krakow,Poland
+[EPKM]  50.23  19.03 Katowice,Poland
+[EPKO]  54.03  16.25 Koszalin,Poland
+[KTW]   50.47  19.07 Katowice,Poland
+[EPLL]  51.72  19.38 Lodz,Poland
+[EPML]  50.32  21.45 Mielec,Poland
+[POZ]   52.42  16.82 Poznan,Poland
+[RZE]   50.10  22.02 Rzeszow,Poland
+[SZZ]   53.58  14.90 Szczechin,Poland
+[EPSD]  53.38  14.63 Szczechin,Poland
+[OSP]   54.47  17.10 Slupsk,Poland
+[EPSN]  53.78  15.82 Shapaja,Peru
+[WAW]   52.15  20.97 Warsaw,Poland
+[WRO]   51.10  16.88 Wroclaw,Poland
+[IEG]   52.13  15.78 Zielona Gora,Poland
+[ESCF]  58.40  15.52 Linkoeping,Sweden
+[ESCK]  58.60  16.10 Norrkoeping,Sweden
+[ESCM]  59.88  17.58 Uppsala,Sweden
+[ESCN]  59.17  17.90 Stockholm,Sweden
+[AGH]   56.28  12.83 Angelholm,Sweden
+[RNB]   56.27  15.25 Ronneby,Sweden
+[ESFH]  58.40  13.25 Hasslosa,Sweden
+[ESFI]  56.18  14.12 Knislinge,Sweden
+[ESFM]  58.58  14.10 Moholm,Sweden
+[ESFQ]  56.83  15.45 Kosta,Sweden
+[ESFR]  58.48  13.05 Rada,Sweden
+[ESFY]  56.78  13.60 Byholma,Sweden
+[GOT]   57.65  12.27 Gothenborg,Sweden
+[JKG]   57.75  14.07 Joenkoeping,Sweden
+[ESGK]  58.17  13.58 Falkoping,Sweden
+[LDK]   58.45  13.17 Lidkoping,Sweden
+[GSE]   57.77  11.87 Gothenborg,Sweden
+[KVB]   58.45  13.97 Skovde,Sweden
+[THN]   58.32  12.33 Trollhattan,Sweden
+[ESIA]  58.50  14.50 Karlsborg,Sweden
+[ESIB]  58.42  12.70 Satenas,Sweden
+[ESKA]  60.12  18.10 Gimo,Sweden
+[ESKB]  59.42  17.88 Stockholm,Sweden
+[KSK]   59.33  14.48 Karlskoga,Sweden
+[MXX]   60.95  14.50 Mora,Sweden
+[NYO]   58.78  16.90 Stockholm,Sweden
+[ESKS]  59.30  17.10 Strangnas,Sweden
+[ESKV]  59.67  12.63 Arvika,Sweden
+[ESKX]  58.78  16.57 Bjorkvik,Sweden
+[ESMA]  56.60  15.60 Emmaboda,Sweden
+[ESMG]  56.95  13.92 Ljungby,Sweden
+[KID]   55.92  14.08 Kristianstad,Sweden
+[JLD]   55.93  12.85 Landskrona,Sweden
+[OSK]   57.35  16.48 Oskarshamn,Sweden
+[ESMP]  57.25  13.58 Anderstorp,Sweden
+[KLR]   56.68  16.28 Kalkmar,Sweden
+[MMX]   55.52  13.37 Malmoe,Sweden
+[HAD]   56.68  12.82 Halmstad,Sweden
+[ESMV]  57.28  14.13 Hagshult,Sweden
+[VXO]   56.92  14.72 Vaxjo,Sweden
+[ESNA]  63.73  15.45 Hallviken,Sweden
+[ESNC]  62.40  13.73 Hede,Sweden
+[EVG]   62.03  14.42 Sveg,Sweden
+[ESNF]  61.88  15.70 Farila,Sweden
+[GEV]   67.12  20.80 Gallivare,Sweden
+[HUV]   61.77  17.07 Hudiksvall,Sweden
+[ESNI]  63.63  17.93 Kubbe,Sweden
+[ESNJ]  66.48  20.13 Jokkmokk,Sweden
+[KRF]   63.03  17.77 Kramfors,Sweden
+[LYC]   64.53  18.70 Lycksele,Sweden
+[ESNM]  63.12  14.80 Optand,Sweden
+[SDL]   62.52  17.43 Sundsvall,Sweden
+[OER]   63.40  18.98 Ornskoldsvik,Sweden
+[ESNP]  65.38  21.25 Pitea,Sweden
+[KRN]   67.82  20.33 Kiruna,Sweden
+[ESNR]  61.18  14.70 Orsa,Sweden
+[SFT]   64.62  21.07 Skelleftea,Sweden
+[ESNT]  62.47  17.00 Sattna,Sweden
+[UME]   63.78  20.27 Umea,Sweden
+[VHM]   64.57  16.83 Vilhelmina,Sweden
+[AJR]   65.58  19.27 Arvidsjaur,Sweden
+[ORB]   59.22  15.03 Orebro,Sweden
+[ESOH]  60.02  13.57 Hagfors,Sweden
+[VST]   59.58  16.63 Vasteras,Sweden
+[LLA]   65.53  22.12 Lulea,Sweden
+[OSD]   63.18  14.50 Ostersund,Sweden
+[ESPE]  65.87  20.13 Vidsel,Sweden
+[ESPJ]  65.83  21.47 Heden,Sweden
+[ESQO]  59.38  15.92 Arboga,Sweden
+[ARN]   59.65  17.92 Stockholm,Sweden
+[BMA]   59.35  17.93 Stockholm,Sweden
+[BLE]   60.42  15.50 Borlange,Sweden
+[HLF]   57.52  15.82 Hultsfred,Sweden
+[GVX]   60.58  16.95 Gavle,Sweden
+[LPI]   58.40  15.67 Linkoeping,Sweden
+[NRK]   58.58  16.25 Norrkoeping,Sweden
+[ESST]  60.15  12.98 Torsby,Sweden
+[ESSU]  59.35  16.70 Eskilstuna,Sweden
+[VBY]   57.65  18.33 Visby,Sweden
+[ESUA]  64.57  19.30 Amsele,Sweden
+[ESUD]  64.95  17.68 Mohed,Sweden
+[ESUE]  61.87  12.68 Idre,Sweden
+[ESUF]  65.10  20.75 Fallfors,Sweden
+[ESUK]  67.75  20.25 Kalixfors,Sweden
+[ESUT]  65.80  15.07 Hemavan,Sweden
+[SPM]   49.97   6.68 Spangdahlem,Germany
+[RMS]   49.43   7.60 Ramstein,Germany
+[ETEJ]  49.92  10.90 Bamberg,Germany
+[ETEK]  49.65   7.30 Baumholder,Germany
+[GHF]   49.63   9.95 Giebelstadt,Germany
+[ETHB]  52.27   9.07 Brueckeburg,Germany
+[ZCN]   52.58  10.02 Celle,Germany
+[ETHE]  52.28   7.38 Rheine-Brentlange,Germany
+[ETHF]  51.10   9.28 Fritzlar,Germany
+[ETHI]  53.98   9.57 Itzehoe,Germany
+[ETHL]  48.22   9.90 Laupheim,Germany
+[ETHM]  50.35   7.30 Mendig,Germany
+[ETHN]  49.38   9.95 Niederstetten,Germany
+[ETHR]  49.22  11.10 Roth,Germany
+[ETHS]  52.92  10.18 Fassberg,Germany
+[ETHT]  51.77  14.28 Cottbus,Germany
+[ETIC]  49.68  11.93 Grafenwoehr,Germany
+[ZNF]   50.17   8.95 Hanau,Germany
+[QHD]   49.38   8.65 Heidelberg,Germany
+[ETIH]  49.22  11.83 Hohenfels,Germany
+[ETIN]  49.73  10.20 Kitzingen,Germany
+[ETME]  54.62   9.33 Eggebeck,Germany
+[ETMN]  53.77   8.65 Nordholz,Germany
+[ETND]  52.58   8.33 Diepholz,Germany
+[GKE]   50.95   6.03 Geilenkirchen,Germany
+[ETNH]  54.30   9.53 Hohn,Germany
+[ETNJ]  53.53   7.88 Jever,Germany
+[RLG]   53.92  12.27 Laage,Germany
+[ETNN]  50.82   6.65 Noervenich,Germany
+[ETNP]  52.33   7.53 Hopsten,Germany
+[ETNR]  51.65  14.63 Preschen,Germany
+[ETNS]  54.45   9.50 Schleswig,Germany
+[ETNT]  53.53   7.67 Wittmundhafen,Germany
+[ETNU]  53.60  13.30 Neubrandenburg,Germany
+[ETNW]  52.45   9.42 Wunstorf,Germany
+[ETOI]  49.63  11.77 Vilseck,Germany
+[ETOR]  49.55   8.45 Coleman,Germany
+[ETOU]  50.03   8.32 Wiesbaden,Germany
+[ETSA]  48.07  10.90 Landsberg,Germany
+[ETSB]  50.17   7.05 Buechel,Germany
+[ETSE]  48.32  11.93 Erding,Germany
+[FEL]   48.20  11.27 Fuerstenfeldbruck,Germany
+[ETSH]  51.77  13.17 Holzdorf,Germany
+[ETSI]  48.70  11.53 Ingolstadt,Germany
+[ETSL]  48.18  10.85 Lechfeld,Germany
+[ETSM]  47.98  10.23 Memmingen,Germany
+[ETSN]  48.70  11.20 Neuburg,Germany
+[LRC]   51.60   6.13 Laarbruch,Germany
+[GUT]   51.92   8.30 Guetersloh,Germany
+[BGN]   51.18   6.12 Brueggen,Germany
+[ALJ]  -28.57  16.53 Alexander Bay,South Africa
+[AGZ]  -29.27  18.80 Aggeneys,South Africa
+[FAAP] -25.93  29.80 Arnot Power Station,South Africa
+[FABB] -26.23  28.30 Brakpan,South Africa
+[VIY]  -32.88  27.27 Bisho,South Africa
+[BFN]  -29.08  26.30 Bloemfontein,South Africa
+[FABM] -28.23  28.33 Bethlehem,South Africa
+[FABO] -27.37  26.62 Bothaville,South Africa
+[FACR] -26.37  27.35 Carletonville,South Africa
+[CPT]  -33.95  18.60 Cape Town,South Africa
+[FACV] -31.50  19.72 Calvinia,South Africa
+[FADA] -30.63  23.92 De Aar,South Africa
+[FADB] -24.80  26.82 Dwaalboom,South Africa
+[FADD] -28.17  30.22 Dundee,South Africa
+[DUR]  -29.97  30.95 Durban,South Africa
+[ELS]  -33.03  27.82 East London,South Africa
+[FAEO] -26.48  29.97 Ermelo,South Africa
+[ELL]  -23.72  27.68 Ellisras,South Africa
+[FAFB] -28.82  27.90 Ficksburg,South Africa
+[GCJ]  -25.98  28.13 Johannesburg,South Africa
+[GRJ]  -34.00  22.37 George,South Africa
+[FAGI] -23.28  30.63 Giyani,South Africa
+[HCS]  -26.23  28.15 Johannesburg,South Africa
+[FAGT] -33.28  26.48 Grahamstown,South Africa
+[FAGY] -29.12  30.58 Greytown,South Africa
+[FAHA] -28.07  26.85 Harmony,South Africa
+[FAHE] -25.97  29.62 Pullenshope,South Africa
+[GHC]  -26.50  28.38 Heidelberg,South Africa
+[FAHO] -27.27  27.98 Heibron,South Africa
+[FAHR] -28.23  29.10 Harrismith,South Africa
+[HDS]  -24.37  31.03 Hoedspruit,South Africa
+[FAHV] -30.55  25.52 Hendrik Verwoerddam,South Africa
+[JNB]  -26.13  28.23 Johannesburg,South Africa
+[FAKD] -26.87  26.72 Klerksdorp,South Africa
+[FAKG] -26.08  29.45 Komati Power Station,South Africa
+[FAKL] -26.25  29.18 Kriel,South Africa
+[KIM]  -28.80  24.75 Kimberley,South Africa
+[FAKP] -25.43  31.92 Komatipoort,South Africa
+[FAKR] -26.07  27.72 Krugersdorp,South Africa
+[FAKS] -27.65  27.30 Kroonstad,South Africa
+[FAKU] -27.45  23.40 Kuruman,South Africa
+[KLZ]  -29.68  17.08 Kleinsee,South Africa
+[HLA]  -25.93  27.92 Johannesburg,South Africa
+[FALB] -29.17  27.45 Ladybrand,South Africa
+[FALI] -26.17  26.18 Lichtenburg,South Africa
+[LCD]  -23.15  29.68 Louis Trichardt,South Africa
+[FALW] -32.97  18.15 Langebaanweg,South Africa
+[LAY]  -28.57  29.73 Ladysmith,South Africa
+[FAMB] -25.68  29.43 Middelburg,South Africa
+[MGH]  -30.85  30.33 Margate,South Africa
+[FAMI] -24.98  29.27 Marble Hall,South Africa
+[FAMJ] -27.07  29.77 Majuba Power Station,South Africa
+[MFK]  -25.75  25.60 Mafikeng,South Africa
+[MBO]  -25.78  25.53 Mmabatho,Bophuthatswana
+[FAMN] -25.47  31.55 Malalane,South Africa
+[MEZ]  -22.35  29.98 Messina,South Africa
+[FAMU] -27.62  32.03 Mkuze,South Africa
+[NCS]  -27.77  29.97 Newcastle,South Africa
+[NLP]  -25.50  30.90 Nelspruit,South Africa
+[FANY] -24.68  28.43 Nylstroom,South Africa
+[FAOB] -34.55  20.25 Overberg,South Africa
+[DUH]  -33.60  22.18 Oudtshoorn,South Africa
+[FAPB] -23.83  29.45 Pietersburg,South Africa
+[PLZ]  -33.98  25.62 Port Elizabeth,South Africa
+[FAPG] -34.08  23.32 Plettenberg Bay,South Africa
+[PHW]  -23.93  31.15 Phalaborwa,South Africa
+[PTG]  -23.92  29.48 Pietersburg,South Africa
+[FAPJ] -31.60  29.52 Port Saint Johns,South Africa
+[PZB]  -29.63  30.38 Pietermaritzburg,South Africa
+[NTY]  -25.33  27.17 Pilanesberg,South Africa
+[FAPP] -24.22  28.98 Potgietersrus,South Africa
+[FAPQ] -25.83  23.53 Pomfret,South Africa
+[FAPS] -26.67  27.07 Potchefstroom,South Africa
+[FAPY] -26.88  27.50 Parys,South Africa
+[UTW]  -31.92  26.87 Queenstown,South Africa
+[RCB]  -28.73  32.08 Richard'S Bay,South Africa
+[FARG] -25.63  27.27 Rustenburg,South Africa
+[FARS] -33.80  19.90 Robertson,South Africa
+[SBU]  -29.68  17.93 Springbok,South Africa
+[FASC] -26.52  29.17 Secunda,South Africa
+[FASD] -32.95  17.97 Saldanha,South Africa
+[FASI] -26.23  28.38 Springs,South Africa
+[FASK] -25.80  28.15 Swartkop,South Africa
+[SIS]  -27.63  22.98 Sishen,South Africa
+[FASU] -25.95  29.20 Sace,South Africa
+[SZK]  -24.95  31.58 Skukuza,South Africa
+[FATF] -28.25  22.98 Tommy'S Field,South Africa
+[THY]  -23.07  30.38 Thohoyandou,South Africa
+[TCU]  -29.32  26.82 Thaba Nchu,Bophuthatswana
+[FATP] -29.02  26.15 Bloemfontein,South Africa
+[FATT] -26.77  29.33 Tutuka,South Africa
+[LTA]  -23.82  30.32 Tzaneen,South Africa
+[ULD]  -28.32  31.40 Ulundi,South Africa
+[UTN]  -28.40  21.25 Upington,South Africa
+[UTT]  -31.53  28.67 Umtata,South Africa
+[VRU]  -26.97  24.72 Vryburg,South Africa
+[VIR]  -29.77  31.05 Durban,South Africa
+[FAVP] -26.68  27.77 Vanderbijlpark,South Africa
+[FAVR] -31.63  18.53 Vredendal,South Africa
+[FAVV] -26.55  27.95 Vereeniging,South Africa
+[VYD]  -27.78  30.78 Vryheid,South Africa
+[PRY]  -25.65  28.22 Pretoria,South Africa
+[FAWI] -25.82  29.18 Witbank,South Africa
+[FAWK] -25.82  28.22 Waterkloof,South Africa
+[WEL]  -27.98  26.67 Welkom,South Africa
+[FAWS] -27.83  26.33 Wesselsbrunn,South Africa
+[FAYP] -33.90  18.48 Ysterplaat,South Africa
+[FAZR] -25.58  26.03 Zeerust,South Africa
+[FRW]  -21.15  27.47 Francistown,Botswana
+[JWA]  -24.60  24.68 Jwaneng,Botswana
+[BBK]  -17.82  25.15 Kasane,Botswana
+[MUB]  -19.97  23.42 Maun,Botswana
+[ORP]  -21.25  25.32 Orapa,Botswana
+[GBE]  -24.55  25.92 Gaberone,Botswana
+[PKW]  -22.05  27.82 Selebi-Phikwe,Botswana
+[BZV]   -4.25  15.25 Brazzaville,Congo
+[ION]    1.58  18.03 Impfondo,Congo
+[MKJ]   -0.02  15.57 Makoua,Congo
+[FTX]   -0.52  15.95 Owando,Congo
+[OUE]    1.60  16.03 Ouesso,Congo
+[KMK]   -3.48  12.62 Makabana,Congo
+[DIS]   -4.20  12.65 Loudima,Congo
+[PNR]   -4.80  11.88 Pointe-Noire,Congo
+[MTS]  -26.52  31.30 Manzini,Swaziland
+[BGF]    4.38  18.52 Bangui,Central African Rep.
+[BGU]    4.78  22.77 Bangassou,Central African Rep.
+[IRO]   10.23  22.72 Birao,Central African Rep.
+[BBY]    5.83  20.63 Bambari,Central African Rep.
+[NDL]    8.42  20.63 N'Dele,Central African Rep.
+[BOP]    5.95  15.63 Bouar,Central African Rep.
+[BIV]    6.52  21.98 Bria,Central African Rep.
+[BBT]    4.22  15.78 Berberati,Central African Rep.
+[AIG]   45.15 -89.10 Yalinga,Central African Rep.
+[BSG]    1.90   9.80 Bata,Equatorial Guinea
+[SSG]    3.75   8.70 Malabo,Equatorial Guinea
+[FHAW]  -7.97 -14.38 Wide Awake,Acores
+[MRU]  -20.42  57.68 Plaisance,Mauritius
+[RRG]  -19.75  63.35 Rodriguez Island,Mauritius
+[FJDG]  -7.30  72.40 Diego Garcia Island,Diego Garcia Island
+[TKC]    4.08   9.35 Tiko,Cameroon
+[DLA]    4.00   9.72 Douala,Cameroon
+[OUR]    4.47  14.35 Batouri,Cameroon
+[MVR]   10.45  14.25 Maroua,Cameroon
+[FOM]    5.63  10.75 Foumban,Cameroon
+[NGE]    7.35  13.55 N'Gaoundere,Cameroon
+[GOU]    9.33  13.37 Garoua,Cameroon
+[BFX]    5.53  10.35 Bafoussam,Cameroon
+[BPC]    6.03  10.12 Bamenda,Cameroon
+[YAO]    3.83  11.52 Yaounde,Cameroon
+[FLKE] -12.57  27.88 Kasompe,Zambia
+[FLKL] -14.98  22.63 Kalabo,Zambia
+[LVI]  -17.82  25.82 Livingstone,Zambia
+[LUN]  -15.32  28.45 Lusaka,Zambia
+[FLMA] -11.13  28.87 Mansa,Zambia
+[MFU]  -13.25  31.93 Mfuwe,Zambia
+[FLMG] -15.25  23.15 Mongu,Zambia
+[FLML] -12.55  28.28 Mufulira,Zambia
+[NLA]  -12.98  28.65 Ndola,Zambia
+[KIW]  -12.90  28.13 Southdowns,Zambia
+[FLZB] -13.53  23.10 Zambezi,Zambia
+[HAH]  -11.53  43.27 Moroni,Comoros Islands
+[NWA]  -12.28  43.75 Moheli,Comoros Islands
+[YVA]  -11.70  43.23 Moroni,Comoros Islands
+[AJN]  -12.12  44.42 Anjouan,Comoros Islands
+[DZA]  -12.80  45.27 Dzaoudzi,Mayotte Island
+[RUN]  -20.88  55.50 St.-Denis,Reunion Island
+[ZSE]  -21.32  55.42 St.-Pierre,Reunion Island
+[TNR]  -18.78  47.47 Antananarivo,Madagascar
+[ZVA]  -19.55  45.45 Miandrivazo,Madagascar
+[SMS]  -17.08  49.80 Sainte Marie,Madagascar
+[TMM]  -18.10  49.38 Toamasina,Madagascar
+[MOQ]  -20.28  44.32 Morondava,Madagascar
+[DIE]  -12.33  49.28 Antsiranana,Madagascar
+[WMR]  -16.15  49.77 Mananara,Madagascar
+[ZWA]  -14.65  49.62 Andapa,Madagascar
+[AMB]  -13.18  48.98 Ambilobe,Madagascar
+[ANM]  -14.98  50.32 Antalaha,Madagascar
+[HVA]  -14.62  47.75 Analalava,Madagascar
+[MJN]  -15.67  46.35 Mahajanga,Madagascar
+[NOS]  -13.30  48.30 Nosy-Be,Madagascar
+[BPY]  -16.73  44.47 Besalampy,Madagascar
+[WMN]  -15.43  49.68 Maroantsetra,Madagascar
+[SVB]  -14.27  50.17 Sambava,Madagascar
+[VOH]  -13.37  50.00 Vohemar,Madagascar
+[WAI]  -14.88  47.98 Antsohihy,Madagascar
+[FMNZ] -13.48  48.62 Ampampamena,Madagascar
+[FTU]  -25.03  46.95 Tolagnaro,Madagascar
+[WFI]  -21.43  47.10 Fianarantsoa,Madagascar
+[RVA]  -22.80  47.82 Farafangana,Madagascar
+[WVK]  -22.12  48.02 Manakara,Madagascar
+[MNJ]  -21.20  48.35 Mananjary,Madagascar
+[MXM]  -21.75  43.37 Morombe,Madagascar
+[TLE]  -23.38  43.72 Toliara,Madagascar
+[SSY]   -6.27  14.23 M'Banza-Congo,Angola
+[BUG]  -12.60  13.40 Benguela,Angola
+[CAB]   -5.58  12.18 Cabinda,Angola
+[PGI]   -7.35  20.80 Chitato,Angola
+[FNCX]  -8.37  18.92 Camaxilo,Angola
+[CAV]  -11.88  22.90 Cazombo,Angola
+[NGV]  -17.03  15.68 N'Giva,Angola
+[NOV]  -12.80  15.75 Huambo,Angola
+[SVP]  -12.40  16.93 Kuito,Angola
+[FNLB] -12.37  13.53 Lobito,Angola
+[LAD]   -8.85  13.22 Luanda,Angola
+[MEG]   -9.52  16.30 Malanje,Angola
+[SPP]  -14.65  17.72 Menongue,Angola
+[FNMO] -15.25  12.13 Mocamedes,Angola
+[GXG]   -7.75  15.28 Negage,Angola
+[PBN]  -10.72  13.75 Porto Amboim,Angola
+[VHC]   -9.68  20.42 Saurimo,Angola
+[SZA]   -6.13  12.37 Soyo,Angola
+[FNTO]  -7.13  14.23 Toto,Angola
+[LUO]  -11.77  19.88 Luena,Angola
+[UGO]   -7.60  15.02 Uige,Angola
+[XGN]  -16.75  14.95 Xangongo,Angola
+[OYE]    1.53  11.57 Oyem,Gabon
+[OKN]   -0.65  13.67 Okondja,Gabon
+[LBQ]   -0.70  10.23 Lambarene,Gabon
+[BMM]    2.07  11.48 Bitam,Gabon
+[MFF]   -1.53  13.27 Moanda,Gabon
+[POG]   -0.70   8.75 Port Gentil,Gabon
+[OMB]   -1.57   9.25 Omboue Hospial,Gabon
+[MKU]    0.57  12.88 Makokou,Gabon
+[LBV]    0.45   9.40 Libreville,Gabon
+[MZC]    0.77  11.55 Mitzic,Gabon
+[MVB]   -1.65  13.43 Franceville,Gabon
+[LTL]   -0.82  12.73 Lastourville,Gabon
+[TCH]   -2.88  10.92 Tchibanga,Gabon
+[PCP]    1.65   7.40 Principe,Sao Tome & Principe
+[TMS]    0.37   6.70 Sao Tome,Sao Tome & Principe
+[BEW]  -19.78  34.90 Beira,Mozambique
+[FXO]  -14.82  36.52 Cuamba,Mozambique
+[FQCH] -19.15  33.42 Chimoio,Mozambique
+[FQES] -15.73  32.75 Estima,Mozambique
+[INH]  -23.87  35.40 Inhambane,Mozambique
+[VXC]  -13.27  35.25 Lichinga,Mozambique
+[FQLU] -15.02  40.67 Lumbo,Mozambique
+[MPM]  -25.92  32.57 Maputo,Mozambique
+[FQMD] -11.67  39.55 Mueda,Mozambique
+[MZB]  -11.35  40.35 Mocimboa Da Praia,Mozambique
+[FQMR] -13.22  37.55 Marrupa,Mozambique
+[MNC]  -14.48  40.70 Nacala,Mozambique
+[APL]  -15.10  39.27 Nampula,Mozambique
+[POL]  -12.98  40.52 Pemba,Mozambique
+[UEL]  -17.85  36.87 Quelimane,Mozambique
+[FQSG] -15.60  32.77 Songo,Mozambique
+[TET]  -16.10  33.63 Tete,Mozambique
+[FQUG] -14.70  34.35 Ulongwe,Mozambique
+[VNX]  -22.02  35.30 Vilankulu,Mozambique
+[FSAL]  -7.00  52.72 Alphonse,Seychelles
+[DES]   -5.68  53.65 Desroches,Seychelles
+[FSFA] -10.10  51.17 Farquhar,Seychelles
+[SEZ]   -4.67  55.52 Mahe,Seychelles
+[PRI]   -4.32  55.68 Praslin,Seychelles
+[FSSC]  -7.15  56.25 Coetivy,Seychelles
+[SRH]    9.15  18.37 Sarh,Chad
+[AEH]   13.83  20.83 Abeche,Chad
+[MQQ]    8.62  16.07 Moundou,Chad
+[NDJ]   12.13  15.03 N'Djamena,Chad
+[PLF]    9.37  14.92 Pala,Chad
+[FYT]   17.92  19.10 Faya-Largeau,Chad
+[BUQ]  -20.02  28.62 Bulawayo,Zimbabwe
+[FVCP] -17.75  30.92 Harare,Zimbabwe
+[BFO]  -21.00  31.57 Chiredzi,Zimbabwe
+[VFA]  -18.08  25.83 Victoria Falls,Zimbabwe
+[UTA]  -18.97  32.45 Mutare,Zimbabwe
+[HRE]  -17.92  31.08 Harare,Zimbabwe
+[KAB]  -16.52  28.88 Kariba,Zimbabwe
+[FVMT] -17.42  32.18 Mutoko,Zimbabwe
+[FVMU] -18.98  32.62 Mutare,Zimbabwe
+[MVZ]  -20.05  30.85 Masvingo,Zimbabwe
+[FVSH] -20.28  30.08 Zvishavane,Zimbabwe
+[GWE]  -19.43  29.85 Gwert,Zimbabwe
+[WKM]  -18.62  27.02 Hwange National Park,Zimbabwe
+[FVZC] -19.02  29.72 Zisco,Zimbabwe
+[BLZ]  -15.67  34.97 Blantyre,Malawi
+[KGJ]   -9.95  33.88 Karonga,Malawi
+[FWKG] -13.00  33.47 Kasungu,Malawi
+[FWMG]  30.83 -85.17 Mangochi,Malawi
+[ZZU]  -11.43  34.00 Mzuzu,Malawi
+[MSU]  -29.45  27.55 Maseru,Lesotho
+[FXMU] -29.30  27.50 Maseru,Lesotho
+[FIH]   -4.38  15.43 Kinshasa,Zaire
+[NLO]   -4.32  15.32 Kinshasa,Zaire
+[MNB]   -5.92  12.35 Muanda,Zaire
+[FZAI]  -5.92  12.43 Kitona Base,Zaire
+[MAT]   -5.78  13.43 Matadi,Zaire
+[FDU]   -3.30  17.37 Bandoundu,Zaire
+[KKW]   -5.03  18.78 Kikwit,Zaire
+[MDK]    0.02  18.28 Mbandaka,Zaire
+[BDT]    4.25  20.97 Gbadolite,Zaire
+[GMA]    3.23  19.77 Gemena,Zaire
+[FZFP]   4.15  21.65 Kotakoli,Zaire
+[LIQ]    2.17  21.48 Lisala,Zaire
+[FKI]    0.52  25.15 Kisangani,Zaire
+[IRP]    2.82  27.58 Isiro,Zaire
+[BUX]    1.55  30.22 Bunia,Zaire
+[FZKJ]   2.82  24.78 Buta Zega,Zaire
+[BKY]   -2.30  28.80 Bukavu/Kavumu,Zaire
+[GOM]   -1.67  29.23 Goma,Zaire
+[KND]   -2.92  25.90 Kindu,Zaire
+[FBM]  -11.58  27.52 Lubumashi,Zaire
+[KWZ]  -10.75  25.50 Kolwezi,Zaire
+[FMI]   -5.87  29.25 Kalemie,Zaire
+[KMN]   -8.63  25.25 Kamina Base,Zaire
+[FZTL]  -9.47  25.75 Luena,Zaire
+[KGA]   -5.90  22.47 Kananga,Zaire
+[MJM]   -6.12  23.57 Mbuji-Mayi,Zaire
+[BKO]   12.53  -7.93 Bamako,Mali
+[KYS]   14.42 -11.43 Kayes,Mali
+[MZI]   14.50  -4.07 Mopti,Mali
+[NIX]   15.23  -9.57 Nioro,Mali
+[TOM]   16.72  -3.00 Tombouctou,Mali
+[GATS]  20.23   0.97 Tessalit,Mali
+[BJL]   13.33 -16.65 Banjul,Gambia
+[FUE]   28.45 -13.85 Fuerteventura,Canary Islands
+[VDE]   27.80 -17.88 Hierro,Canary Islands
+[SPC]   28.62 -17.75 Santa Cruz De La Palma,Spain
+[LPA]   27.92 -15.38 Gran Canaria,Canary Islands
+[ACE]   28.93 -13.60 Lanzerote,Canary Islands
+[TFS]   28.03 -16.57 Tenerife,Canary Islands
+[TFN]   28.47 -16.33 Tenerife,Canary Islands
+[MLN]   35.27  -2.95 Melilla,Spanish North Africa
+[HGS]    8.38 -13.12 Hastings,Sierra Leone
+[FNA]    8.60 -13.18 Freetown,Sierra Leone
+[GGCF]  11.28 -15.17 Cufar,Guinea Bissau
+[BXO]   11.88 -15.65 Bissau,Guinea Bissau
+[MLW]    6.28 -10.75 Monrovia,Liberia
+[ROB]    6.23 -10.35 Monrovia,Liberia
+[AGA]   30.37  -9.53 Agadir,Morocco
+[TTA]   28.43 -11.15 Tan Tan,Morocco
+[FEZ]   33.92  -4.97 Fez,Morocco
+[GMFI]  33.50  -5.15 Ifrane,Morocco
+[ERH]   31.93  -4.40 Er-Rachidia,Morocco
+[MEK]   33.87  -5.50 Meknes,Morocco
+[GMFN]  35.15  -2.92 Nador,Morocco
+[OUD]   34.78  -1.92 Oujda,Morocco
+[CAS]   33.55  -7.65 Casablanca,Morocco
+[RBA]   34.05  -6.75 Rabat,Morocco
+[SII]   29.37 -10.17 Sidi Ifini,Morocco
+[GMMI]  31.40  -9.68 Essadouira,Morocco
+[CMN]   33.37  -7.58 Casablanca,Morocco
+[RAK]   31.60  -8.03 Marrakech,Morocco
+[NNA]   34.28  -6.58 Kentira,Morocco
+[OZZ]   30.93  -6.90 Ouarzazate,Morocco
+[AHU]   35.17  -3.83 Al Hociema,Morocco
+[TTU]   35.58  -5.32 Tetouan,Morocco
+[TNG]   35.72  -5.92 Tanger,Morocco
+[ZIG]   12.55 -16.27 Ziguinchor,Senegal
+[KDA]   12.87 -14.95 Kolda,Senegal
+[CSK]   12.40 -16.73 Cap Skiring,Senegal
+[KLC]   14.13 -16.05 Kaolack,Senegal
+[DKR]   14.73 -17.48 Dakar,Senegal
+[XLS]   16.03 -16.45 St. Louis,Senegal
+[BXE]   14.83 -12.47 Bakel,Senegal
+[KGG]   12.57 -12.22 Kedougou,Senegal
+[TUD]   13.73 -13.65 Tambacounda,Senegal
+[IEO]   16.70  -9.63 Aioun El Atrouss,Mauritania
+[TIY]   18.57 -11.42 Tidjikja,Mauritania
+[KFA]   16.58 -11.40 Kiffa,Mauritania
+[EMN]   16.62  -7.30 Nema,Mauritania
+[KED]   16.15 -13.50 Kaedi,Mauritania
+[NKC]   18.08 -15.93 Nouakschott,Mauritania
+[SEY]   15.17 -12.20 Selibabi,Mauritania
+[ATR]   20.50 -13.03 Atar,Mauritania
+[NDB]   20.92 -17.02 Nouadhibou,Mauritania
+[GQPT]  25.23 -11.58 Bir Moghrein,Mauritania
+[FIG]   10.35 -13.57 Fira,Guinea
+[FAA]   10.03 -10.77 Faranah,Guinea
+[LEK]   11.32 -12.28 Labe,Guinea
+[MCA]    8.47  -9.52 Macenta,Guinea
+[NZE]    7.80  -8.70 N'Zerekore,Guinea
+[SID]   16.73 -22.93 Amilcar Cabral,Cape Verde Islands
+[BVC]   16.13 -22.88 Boa Vista,Cape Verde Islands
+[RAI]   14.92 -23.48 Francisco Mendez,Cape Verde Islands
+[MMO]   15.15 -23.20 Maio,Cape Verde Islands
+[SNE]   16.58 -24.28 Sao Nocolau Island,Cape Verde Islands
+[VXE]   16.83 -25.05 Sao Vicente Island,Cape Verde Islands
+[ADD]    8.97  38.80 Addis Ababa,Ethiopia
+[HAAL]   9.00  38.72 Addis Ababa,Ethiopia
+[BJR]   11.60  37.32 Bahar Dar,Ethiopia
+[DIR]    9.62  41.85 Dire Dawa,Ethiopia
+[GMB]    8.12  34.55 Gambella,Ethiopia
+[GDQ]   12.52  37.42 Gondar,Ethiopia
+[HAHM]   8.70  39.00 Debre Zeit,Ethiopia
+[JIM]    7.65  36.80 Jimma,Ethiopia
+[LLI]   11.97  38.97 Lalibella,Ethiopia
+[MQX]   13.47  39.53 Makale,Ethiopia
+[BJM]   -3.32  29.32 Bujumbura,Burundi
+[HCMB]   3.08  43.62 Baidoa,Somalia
+[HGA]    9.52  44.08 Hargeisa,Somalia
+[BBO]   10.38  44.93 Berbera,Somalia
+[KMU]   -0.37  42.45 Kismayu,Somalia
+[MGQ]    2.00  45.30 Mogadishu,Somalia
+[HEAR]  31.07  33.83 El Arish,Egypt
+[HEAT]  27.03  31.00 Asyut,Egypt
+[ALY]   31.18  29.93 Alexandria,Egypt
+[ABS]   22.37  31.60 Abu Simbel,Egypt
+[CAI]   30.12  31.40 Cairo,Egypt
+[HECW]  30.10  30.90 Cairo,Egypt
+[HEEM]  30.07  31.18 Embaba,Egypt
+[HRG]   27.18  33.78 Hurghada,Egypt
+[HEGR]  31.07  34.12 El-Gora,Egypt
+[LXR]   25.67  32.70 Luxor,Egypt
+[MUH]   31.32  27.22 Mersa-Matruh,Egypt
+[PSD]   31.27  32.23 Port Said,Egypt
+[SKV]   28.68  34.05 St. Catherine,Egypt
+[ASW]   23.95  32.82 Aswan,Egypt
+[ELT]   28.20  33.63 El-Tor,Egypt
+[EDL]    0.40  35.23 Eldoret,Kenya
+[GAS]   -0.45  39.63 Garissa,Kenya
+[HKIS]   0.33  37.58 Isiolo,Kenya
+[HKKG]   0.27  34.78 Kakamega,Kenya
+[KIS]   -0.08  34.72 Kisumu,Kenya
+[KTL]    0.97  34.95 Kitale,Kenya
+[HKLK]   4.20  34.33 Lokichoggio,Kenya
+[LOK]    3.12  35.60 Lodwar,Kenya
+[LAU]   -2.25  40.90 Lamu,Kenya
+[LOY]    2.75  36.72 Loyangalani,Kenya
+[NDE]    3.93  41.83 Mandera,Kenya
+[RBT]    2.33  37.98 Marsabit,Kenya
+[HKMK]   0.22  38.17 Meru,Kenya
+[MYD]   -3.22  40.10 Malindi,Kenya
+[MBA]   -4.03  39.58 Mombasa,Kenya
+[OYL]    3.47  39.10 Moyale Lower,Kenya
+[NYE]   -0.37  36.97 Nyeri,Kenya
+[HKNV]  -0.78  36.43 Naivasha,Kenya
+[WIL]   -1.32  36.80 Nairobi,Kenya
+[NYK]   -0.05  37.03 Nanyuki,Kenya
+[HKRE]  -1.27  36.85 Nairobi,Kenya
+[WJR]    1.72  40.08 Wajir,Kenya
+[HLFL]  28.78  22.07 Buattifel,Libya
+[HLGL]  28.63  21.43 Giallo,Libya
+[GHT]   25.13  10.13 Ghat,Libya
+[AKF]   24.17  23.30 Kufra,Libya
+[BEN]   32.08  20.27 Benghazi,Libya
+[HLLQ]  32.78  21.95 El Beida,Libya
+[SEB]   26.98  14.47 Sebha,Libya
+[TIP]   32.65  13.15 Tripoli,Libya
+[HLMB]  30.37  19.57 Marsa Brega,Libya
+[HLNF]  30.50  18.52 Ras Lanouf V 40,Libya
+[HLON]  29.10  15.95 Hon,Libya
+[HLRA]  29.47  17.92 Dahra,Libya
+[LTD]   30.15   9.70 Ghadames,Libya
+[HLZA]  28.58  17.28 Zella 74,Libya
+[GYI]   -1.67  29.25 Gisenyi,Rwanda
+[KGL]   -1.97  30.13 Kigali,Rwanda
+[KME]   -2.45  28.90 Kamembe,Rwanda
+[DOG]   19.15  30.42 Dongola,Sudan
+[HSDZ]  11.78  34.33 Damazin,Sudan
+[ELF]   13.60  25.32 El Fasher,Sudan
+[KSL]   15.38  36.32 Kassala,Sudan
+[UYL]   12.05  24.95 Nyala,Sudan
+[EBD]   13.15  30.22 El Obeid,Sudan
+[JUB]    4.87  31.60 Juba,Sudan
+[MAK]    9.55  31.65 Malakal,Sudan
+[PZU]   19.57  37.20 Port Sudan,Sudan
+[KRT]   15.58  32.55 Khartoum,Sudan
+[WUU]    7.72  27.97 Wau,Sudan
+[ARK]   -3.37  36.63 Arusha,Tanzania
+[DAR]   -6.87  39.20 Dar Es Salaam,Tanzania
+[DOD]   -6.17  35.75 Dodoma,Tanzania
+[IRI]   -7.67  35.75 Iringa,Tanzania
+[JRO]   -3.42  37.07 Kilimanjaro,Tanzania
+[HTLM]  -3.37  35.82 Lake Manyara,Tanzania
+[HTMD]  -3.50  33.62 Mwadui,Tanzania
+[QSI]   -3.35  37.32 Moshi,Tanzania
+[MYW]  -10.33  40.17 Mtwara,Tanzania
+[MWZ]   -2.43  32.92 Mwanza,Tanzania
+[HTNG]  -6.72  38.15 Ngerengere,Tanzania
+[PMA]   -5.25  39.80 Pemba,Tanzania
+[TGT]   -5.08  39.07 Tanga,Tanzania
+[ZNZ]   -6.22  39.22 Zanzibar,Tanzania
+[EBB]    0.03  32.43 Entebbe,Uganda
+[HUGU]   2.80  32.27 Gulu,Uganda
+[SRT]    1.72  33.62 Soroti,Uganda
+[ABI]   32.40 -99.67 Abilene,Usa
+[ACK]   41.25 -70.05 Nantucket,Usa
+[ACT]   31.60 -97.22 Waco,Usa
+[ACY]   39.45 -74.57 Atlantic City,Usa
+[ADM]   34.30 -97.02 Ardmore,Usa
+[ADW]   38.80 -76.87 Camp Springs,Usa
+[AEX]   31.32 -92.53 Alexandria,Usa
+[AGS]   33.37 -81.95 Bush Field,Usa
+[AKR]   41.03 -81.47 Akron,Usa
+[ALB]   42.73 -73.80 Albany,Usa
+[ALI]   27.73 -98.02 Alice,Usa
+[AMA]   35.22 -101.70 Amarillo,Usa
+[ANB]   33.58 -85.85 Anniston,Usa
+[AND]   34.48 -82.70 Andersen,Usa
+[AOO]   40.28 -78.32 Altoona,Usa
+[APG]   39.45 -76.17 Aberdeen,Usa
+[ARA]   30.03 -91.88 Louisiana,Usa
+[ART]   43.98 -76.02 Watertown,Usa
+[ATL]   33.63 -84.42 Atlanta,Usa
+[AUG]   44.32 -69.78 Augusta,Usa
+[AUS]   30.18 -97.67 Austin,Usa
+[BAB]   39.13 -121.43 Marysville,Usa
+[BAD]   32.50 -93.65 Shreveport,Usa
+[BCT]   26.37 -80.10 Boca Raton,Usa
+[BDE]   48.72 -94.60 Baudette,Usa
+[BDL]   41.93 -72.67 Windsor Locks,Usa
+[BDR]   41.15 -73.12 Stratford,Usa
+[BED]   42.47 -71.28 Bedford,Usa
+[BFI]   47.52 -122.30 Seattle,Usa
+[BFL]   35.43 -119.05 Bakersfield,Usa
+[BFM]   30.62 -88.07 Mobile,Usa
+[BGR]   44.80 -68.82 Bangor,Usa
+[BHM]   33.55 -86.75 Birmingham,Usa
+[BIF]   31.83 -106.37 El Paso,Usa
+[BIX]   30.40 -88.92 Biloxi,Usa
+[BKF]   39.70 -104.75 Buckley,Usa
+[BLI]   48.78 -122.53 Bellingham,Usa
+[BLV]   38.53 -89.83 Belleville,Usa
+[BNA]   36.12 -86.67 Nashville,Usa
+[BOI]   43.55 -116.22 Boise,Usa
+[BOS]   42.35 -71.00 Boston,Usa
+[BPT]   29.95 -94.02 Beaumont,Usa
+[BRO]   25.90 -97.42 Brownsville,Usa
+[BTR]   30.52 -91.13 Baton Rouge,Usa
+[BTV]   44.47 -73.15 Burlington,Usa
+[BUF]   42.93 -78.72 Buffalo,Usa
+[BUR]   34.20 -118.35 Burbank,Usa
+[BWI]   39.17 -76.67 Baltimore,Usa
+[BYH]   35.95 -89.93 Blytheville,Usa
+[BYS]   35.27 -116.62 Fort Irwin,Usa
+[CAE]   33.93 -81.12 Colombia,Usa
+[CAR]   46.87 -68.02 Caribou,Usa
+[CBM]   33.63 -88.43 Colombus,Usa
+[CDC]   37.70 -113.08 Cedar City,Usa
+[CDS]   34.43 -100.28 Childress,Usa
+[CEF]   42.18 -72.53 Chicopee Falls,Usa
+[CEW]   30.77 -86.52 Crestview,Usa
+[CFD]   30.70 -96.32 Bryan,Usa
+[CHA]   35.03 -85.20 Chattanooga,Usa
+[CHS]   32.88 -80.03 Charleston,Usa
+[CIC]   39.78 -121.85 Chico,Usa
+[CLE]   41.40 -81.83 Cleveland,Usa
+[CLL]   30.58 -96.35 College Station,Usa
+[CLT]   35.20 -80.93 Charlotte,Usa
+[CMH]   39.98 -82.88 Columbus,Usa
+[CNM]   32.33 -104.25 Carlsbad,Usa
+[CNW]   31.63 -97.07 Waco,Usa
+[COF]   28.23 -80.60 Coco Beach,Usa
+[COS]   38.80 -104.70 Colorado Springs,Usa
+[COT]   28.45 -99.22 Cotulla,Usa
+[COU]   38.82 -92.22 Columbia,Usa
+[CPR]   42.90 -106.45 Casper,Usa
+[CRP]   27.77 -97.50 Corpus Christi,Usa
+[CTB]   48.60 -112.37 Cutbank,Usa
+[CVG]   39.03 -84.65 Cincinnati,Usa
+[CVS]   34.37 -103.32 Clovis,Usa
+[CXL]   32.67 -115.50 Calexico,Usa
+[CXO]   30.35 -95.40 Conroe,Usa
+[CYS]   41.15 -104.80 Cheyenne,Usa
+[DAL]   32.83 -96.85 Dallas,Usa
+[DAY]   39.90 -84.22 Dayton,Usa
+[DCA]   38.85 -77.03 Washington,Usa
+[DEN]   39.85 -104.67 Denver,Usa
+[DET]   42.40 -83.00 Detroit,Usa
+[DFW]   32.88 -97.03 Dallas-Fort Worth,Usa
+[DHN]   31.32 -85.43 Dothan,Usa
+[DHT]   36.02 -102.53 Dalhart,Usa
+[DLF]   29.35 -100.77 Del Rio,Usa
+[DLH]   46.83 -92.18 Duluth,Usa
+[DMA]   32.15 -110.87 Tucson,Usa
+[DOV]   39.12 -75.45 Dover,Usa
+[DPA]   41.90 -88.23 West Chicago,Usa
+[DRI]   30.82 -93.33 Deridder,Usa
+[DRO]   37.15 -107.75 Durango,Usa
+[DRT]   29.37 -100.92 Del Rio,Usa
+[DSM]   41.53 -93.65 Des Moines,Usa
+[DTW]   42.20 -83.35 Detroit,Usa
+[DUG]   31.47 -109.60 Douglas,Usa
+[DYS]   32.42 -99.85 Abilene,Usa
+[ECG]   36.25 -76.17 Elizabeth City,Usa
+[EDW]   34.90 -117.88 Edwards Afb,Usa
+[EFD]   29.60 -95.15 Houston,Usa
+[EGP]   28.70 -100.47 Eagle Pass,Usa
+[EKN]   38.88 -79.85 Elkins,Usa
+[ELD]   33.22 -92.80 El Dorado,Usa
+[ELP]   31.80 -106.37 El Paso,Usa
+[END]   36.33 -97.90 Enid,Usa
+[ENV]   40.72 -114.02 Wendover,Usa
+[ESF]   31.38 -92.28 Alexandria,Usa
+[EWN]   35.07 -77.03 New Bern,Usa
+[EWR]   40.68 -74.17 Newark,Usa
+[EYW]   24.55 -81.75 Key West,Usa
+[FAF]   37.12 -76.60 Fort Eustis,Usa
+[FAT]   36.77 -119.72 Fresno,Usa
+[FCS]   38.67 -104.75 Fort Carson,Usa
+[FFO]   39.82 -84.03 Dayton,Usa
+[FHU]   31.58 -110.33 Fort Huachuca,Usa
+[FLL]   26.07 -80.15 Fort Lauderdale,Usa
+[FLO]   34.18 -79.72 Florence,Usa
+[FLV]   39.37 -94.90 Fort Leavenworth,Usa
+[KFME]  39.08 -76.75 Fort Meade,Usa
+[FMH]   41.65 -70.52 Falmouth,Usa
+[FMN]   36.73 -108.22 Farmington,Usa
+[FMY]   26.58 -81.85 Fort Myers,Usa
+[FOD]   42.55 -94.18 Fort Dodge,Usa
+[FOE]   38.95 -95.65 Topeka,Usa
+[FOK]   40.83 -72.62 West Hampton Beach,Usa
+[FRI]   39.05 -96.75 Fort Riley,Usa
+[FSI]   34.63 -98.40 Fort Sill,Usa
+[FSM]   35.33 -94.37 Fort Smith,Usa
+[FTK]   37.90 -85.97 Fort Knox,Usa
+[FTW]   32.82 -97.35 Fort Worth,Usa
+[FXE]   26.18 -80.17 Fort Lauderdale,Usa
+[FYV]   36.00 -94.17 Fayetteville,Usa
+[GAG]   36.28 -99.77 Gage,Usa
+[GCK]   37.92 -100.72 Garden City,Usa
+[GEG]   47.62 -117.53 Spokane,Usa
+[GFK]   47.93 -97.17 Grand Forks,Usa
+[GGG]   32.38 -94.70 Longview,Usa
+[GLS]   29.25 -94.85 Galveston,Usa
+[GNT]   35.15 -107.90 Grants,Usa
+[GNV]   29.68 -82.27 Gainesville,Usa
+[GRB]   44.48 -88.12 Green Bay,Usa
+[GRF]   47.07 -122.57 Fort Lewis,Usa
+[GRK]   31.07 -97.82 Killeen,Usa
+[GRR]   42.87 -85.52 Grand Rapids,Usa
+[GSB]   35.33 -77.95 Goldsboro,Usa
+[GTB]   44.05 -75.72 Fort Drum,Usa
+[GTF]   47.47 -111.37 Great Falls,Usa
+[GUS]   40.63 -86.15 Peru,Usa
+[GVT]   33.07 -96.05 Greenvile,Usa
+[GVW]   38.83 -94.55 Grandview,Usa
+[GWO]   33.48 -90.08 Greenwood,Usa
+[HBR]   34.98 -99.05 Hobart,Usa
+[HFD]   41.73 -72.65 Hartford,Usa
+[HHR]   33.92 -118.33 Hawthorne,Usa
+[HIB]   47.38 -92.83 Hibbing,Usa
+[HIF]   41.12 -111.97 Ogden,Usa
+[HKY]   35.73 -81.38 Hickory,Usa
+[HLN]   46.60 -111.97 Helena,Usa
+[HLR]   31.13 -97.70 Fort Hood,Usa
+[HMN]   32.85 -106.10 Alamogordo,Usa
+[HOB]   32.68 -103.22 Hobbs,Usa
+[HON]   44.38 -98.22 Huron,Usa
+[HOP]   36.67 -87.48 Hopkinsville,Usa
+[HOU]   29.63 -95.27 Houston,Usa
+[HPN]   41.07 -73.70 White Plains,Usa
+[HRL]   26.22 -97.65 Harlingen,Usa
+[HRO]   36.25 -93.15 Harrison,Usa
+[HRT]   30.42 -86.68 Mary Esther,Usa
+[HST]   25.48 -80.38 Homestead,Usa
+[HTL]   44.35 -84.67 Houghton Lake,Usa
+[HUA]   34.67 -86.68 Redstone,Usa
+[HUF]   39.45 -87.30 Terre Haute,Usa
+[HUL]   46.12 -67.78 Houlton,Usa
+[HVR]   48.53 -109.75 Havre,Usa
+[HWO]   26.00 -80.23 Hollywood,Usa
+[IAB]   37.62 -97.27 Wichita,Usa
+[IAD]   38.93 -77.45 Washington,Usa
+[IAG]   43.10 -78.93 Niagara Falls,Usa
+[IAH]   29.97 -95.33 Houston,Usa
+[ICT]   37.63 -97.42 Wichita,Usa
+[IKK]   41.07 -87.83 Kankakee,Usa
+[ABQ]   35.03 -106.60 Kirtland A.F.B.,Usa
+[ILG]   39.67 -75.60 Wilmington,Usa
+[ILM]   34.27 -77.90 Wilmington,Usa
+[IND]   39.72 -86.28 Indianapolis,Usa
+[INK]   31.77 -103.20 Wink,Usa
+[INL]   48.55 -93.40 International Falls,Usa
+[INS]   36.58 -115.67 Indian Springs,Usa
+[INT]   36.13 -80.22 Winston-Salem,Usa
+[IPL]   32.83 -115.57 Imperial,Usa
+[IPT]   41.23 -76.92 Williamsport,Usa
+[ISN]   48.17 -103.63 Williston,Usa
+[ISP]   40.78 -73.10 Islip,Usa
+[JAN]   32.30 -90.07 Jackson,Usa
+[JAX]   30.48 -81.68 Jacksonville,Usa
+[JBR]   35.82 -90.63 Jonesboro,Usa
+[JFK]   40.63 -73.77 New York,Usa
+[LAN]   42.77 -84.58 Lansing,Usa
+[LAS]   36.07 -115.15 Las Vegas,Usa
+[LAX]   33.93 -118.40 Los Angeles,Usa
+[LBB]   33.65 -101.82 Lubbock,Usa
+[LCH]   30.12 -93.22 Lake Charles,Usa
+[LCK]   39.80 -82.92 Columbus,Usa
+[LFI]   37.07 -76.35 Hampton,Usa
+[LFK]   31.23 -94.75 Lufkin,Usa
+[LFT]   30.20 -91.98 Lafayette,Usa
+[LGA]   40.77 -73.87 New York,Usa
+[LGB]   33.82 -118.15 Long Beach,Usa
+[LHW]   31.88 -81.55 Wright,Usa
+[LIT]   34.72 -92.22 Little Rock,Usa
+[LNA]   26.58 -80.08 West Palm Beach,Usa
+[LNK]   40.85 -96.75 Lincoln,Usa
+[LOU]   38.22 -85.65 Louisville,Usa
+[LRD]   27.53 -99.45 Laredo,Usa
+[LRF]   34.92 -92.13 Jacksonville,Usa
+[LSF]   32.33 -84.98 Fort Benning,Usa
+[LSV]   36.23 -115.03 Las Vegas,Usa
+[LTS]   34.67 -99.27 Altus,Usa
+[LUF]   33.53 -112.37 Phoenix,Usa
+[LUK]   39.10 -84.42 Cincinnati,Usa
+[MAF]   31.93 -102.20 Midland,Usa
+[MCC]   38.67 -121.40 Sacramento,Usa
+[MCF]   27.83 -82.52 Tampa,Usa
+[MCI]   39.28 -94.70 Kansas City,Usa
+[MCN]   32.68 -83.63 Macon,Usa
+[MCO]   28.42 -81.30 Orlando,Usa
+[MDT]   40.18 -76.75 Harrisburg,Usa
+[MDW]   41.78 -87.75 Chicago,Usa
+[MEM]   35.03 -89.97 Memphis,Usa
+[MER]   37.37 -120.57 Merced,Usa
+[MFE]   26.17 -98.23 Mcallen,Usa
+[MGE]   33.90 -84.50 Marietta,Usa
+[MHR]   38.55 -121.28 Sacramento,Usa
+[MIA]   25.78 -80.28 Miami,Usa
+[MIB]   48.40 -101.35 Minot,Usa
+[MIV]   39.37 -75.07 Millville,Usa
+[MKE]   42.93 -87.88 Milwaukee,Usa
+[MKL]   35.58 -88.90 Jackson,Usa
+[MKO]   35.65 -95.35 Muskogee,Usa
+[MLB]   28.10 -80.63 Melbourne,Usa
+[MLC]   34.87 -95.78 Mcalester,Usa
+[MLT]   45.63 -68.68 Millinocket,Usa
+[MLU]   32.50 -92.03 Monroe,Usa
+[MMV]   45.18 -123.13 Mackminnville,Usa
+[MNM]   45.12 -87.63 Macon,Usa
+[MOB]   30.68 -88.23 Mobile,Usa
+[MOD]   37.62 -120.95 Modesto,Usa
+[MOT]   48.25 -101.27 Minot,Usa
+[MPV]   44.20 -72.55 Montpelier,Usa
+[MQT]   46.53 -87.55 Marquette,Usa
+[MSN]   43.13 -89.33 Madison,Usa
+[MSP]   44.87 -93.22 Minneapolis,Usa
+[MSS]   44.93 -74.83 Massena,Usa
+[MSY]   29.98 -90.25 New Orleans,Usa
+[MTC]   42.60 -82.82 Mount Clemens,Usa
+[MUI]   40.43 -76.57 Muir,Usa
+[MUO]   43.03 -115.87 Mountain Home,Usa
+[MWH]   47.20 -119.32 Grant County Airport,Usa
+[MWL]   32.77 -98.05 Mineral Wells,Usa
+[MXF]   32.37 -86.35 Montgomery,Usa
+[MYR]   33.67 -78.92 Myrtle Beach,Usa
+[NBC]   32.47 -80.72 Beaufort,Usa
+[NBG]   29.82 -90.03 New Orleans,Usa
+[NCA]   34.70 -77.43 Jacksonville,Usa
+[NEL]   40.03 -74.35 Lakehurst,Usa
+[NFL]   39.40 -118.70 Fallon,Usa
+[NGU]   36.93 -76.28 Norfolk,Usa
+[NHK]   38.28 -76.40 Patuxent River,Usa
+[NID]   35.68 -117.68 China,Usa
+[NIP]   30.23 -81.67 Jacksonville,Usa
+[NJK]   32.82 -115.67 El Centro,Usa
+[NKT]   34.90 -76.87 Cherry Point,Usa
+[NKX]   32.87 -117.13 Miramar,Usa
+[NLC]   36.32 -119.95 Lemoore,Usa
+[NMM]   32.55 -88.55 Meridian,Usa
+[NOW]   48.13 -123.40 Port Angeles,Usa
+[NPA]   30.35 -87.32 Pensacola,Usa
+[NQA]   35.35 -89.87 Millington,Usa
+[NQI]   27.50 -97.80 Kingsville,Usa
+[NQX]   24.57 -81.68 Key West,Usa
+[NSE]   30.72 -87.02 Milton,Usa
+[NTD]   34.12 -119.12 Point Mugu,Usa
+[NTK]   33.70 -117.82 Tustin,Usa
+[NTU]   36.82 -76.03 Oceana,Usa
+[NUQ]   37.40 -122.03 Mountain View,Usa
+[NUW]   48.35 -122.65 Whidbey Island,Usa
+[NXP]   34.28 -116.15 Twenty Nine Palms,Usa
+[NXX]   40.18 -75.13 Willow Grove,Usa
+[NYG]   38.50 -77.30 Quantico,Usa
+[NZC]   30.22 -81.87 Jacksonville,Usa
+[NZY]   32.68 -117.20 San Diego,Usa
+[OAK]   37.72 -122.22 Oakland,Usa
+[OFF]   41.12 -95.90 Omaha,Usa
+[OGS]   44.67 -75.45 Ogdensburg,Usa
+[OKC]   35.38 -97.60 Oklahoma City,Usa
+[OLS]   31.42 -110.83 Nogales,Usa
+[OMA]   41.30 -95.88 Omaha,Usa
+[ONT]   34.05 -117.60 Ontario,Usa
+[OPF]   25.90 -80.27 Miami,Usa
+[ORD]   41.97 -87.90 Chicago,Usa
+[ORF]   36.88 -76.20 Norfolk,Usa
+[ORL]   28.53 -81.32 Orlando,Usa
+[KOSC]  44.45 -83.38 Oscoda,Usa
+[PAE]   47.90 -122.27 Everett,Usa
+[PAM]   30.07 -85.57 Panama City,Usa
+[PBF]   34.17 -91.93 Pine Bluff,Usa
+[PBG]   44.65 -73.47 Plattsburgh,Usa
+[PBI]   26.67 -80.08 West Palm Beach,Usa
+[PDX]   45.58 -122.58 Portland,Usa
+[PHF]   37.12 -76.48 Newport News,Usa
+[PHL]   39.87 -75.23 Philadelphia,Usa
+[PHN]   42.90 -82.52 Port Huron,Usa
+[PHX]   33.43 -112.00 Phoenix,Usa
+[PIE]   27.90 -82.68 St. Petersburg,Usa
+[PIT]   40.48 -80.22 Pittsburgh (Pennsylva),Usa
+[KPMB]  48.93 -97.23 Pembina,Usa
+[PMD]   34.62 -118.08 Palmdale,Usa
+[PNC]   36.72 -97.08 Ponca City,Usa
+[PNE]   40.07 -75.00 Philadelphia,Usa
+[PNM]   45.55 -93.60 Princeton,Usa
+[PNS]   30.47 -87.18 Pensacola,Usa
+[POB]   35.17 -79.00 Fayetteville,Usa
+[POE]   31.03 -93.18 Fort Polk,Usa
+[PQI]   46.68 -68.03 Presque Isle,Usa
+[PRC]   34.65 -112.42 Prescott,Usa
+[PSP]   33.82 -116.50 Palm Springs,Usa
+[PSX]   28.72 -96.25 Palacios,Usa
+[PUB]   38.28 -104.48 Pueblo Memorial,Usa
+[PVD]   41.72 -71.42 Providence,Usa
+[PWM]   43.63 -70.30 Portland,Usa
+[RAL]   33.95 -117.43 Riverside,Usa
+[RBM]   34.85 -92.30 Robinson,Usa
+[RCA]   44.13 -103.10 Rapid City,Usa
+[RDR]   47.95 -97.40 Red River,Usa
+[RDU]   35.87 -78.78 Raleigh-Durham,Usa
+[RIC]   37.50 -77.32 Richmond,Usa
+[RIU]   38.48 -121.10 Rancho Murieta,Usa
+[RIV]   33.87 -117.25 Riverside,Usa
+[RME]   43.23 -75.40 Rome,Usa
+[RND]   29.52 -98.27 San Antonio,Usa
+[RNO]   39.48 -119.77 Reno,Usa
+[ROC]   43.12 -77.67 Rochester,Usa
+[ROW]   33.30 -104.52 Roswell,Usa
+[RSW]   26.53 -81.75 Fort Myers,Usa
+[SAC]   38.50 -121.48 Sacramento,Usa
+[SAF]   35.62 -106.08 Santa Fe,Usa
+[SAN]   32.73 -117.18 San Diego,Usa
+[SAT]   29.53 -98.47 San Antonio,Usa
+[SAV]   32.12 -81.20 Savannah,Usa
+[KSAW]  46.35 -87.38 Gwinn,Usa
+[SBO]   32.60 -82.37 Santa Barbara,Usa
+[SBY]   38.33 -75.50 Salisbury,Usa
+[SCK]   37.88 -121.23 Stockton,Usa
+[SEA]   47.43 -122.30 Seattle,Usa
+[SEM]   32.33 -86.98 Selma,Usa
+[SFF]   47.67 -117.32 Spokane,Usa
+[SFO]   37.62 -122.37 San Francisco,Usa
+[SFZ]   41.92 -71.48 Smithfield,Usa
+[SHV]   32.43 -93.82 Shreveport,Usa
+[SJC]   37.35 -121.92 San Jose,Usa
+[SJT]   31.35 -100.48 San Angelo,Usa
+[SKA]   47.60 -117.65 Spokane,Usa
+[SKF]   29.38 -98.57 San Antonio,Usa
+[SKY]   41.43 -82.65 Sandusky,Usa
+[SLC]   40.78 -111.97 Salt Lake City,Usa
+[SMF]   38.68 -121.58 Sacramento,Usa
+[SNA]   33.67 -117.87 Santa Ana,Usa
+[SPB]   45.77 -122.85 San Luis,Usa
+[SPG]   27.75 -82.62 St. Petersburg,Usa
+[SPS]   33.98 -98.48 Wichita Falls,Usa
+[SSC]   33.97 -80.47 Sumter,Usa
+[STL]   38.73 -90.35 St. Louis,Usa
+[SUU]   38.25 -121.92 Fairfield,Usa
+[SUX]   42.40 -96.38 Sioux City,Usa
+[SVN]   32.00 -81.13 Hunter Aaf,Usa
+[SWF]   41.50 -74.10 Newburgh,Usa
+[SYR]   43.10 -76.10 Syracuse,Usa
+[SZL]   38.72 -93.53 Knobnoster,Usa
+[TBN]   37.73 -92.13 Fort Leonardwood,Usa
+[TCC]   35.17 -103.60 Tucumcari,Usa
+[TCM]   47.13 -122.47 Tacoma,Usa
+[TCS]   33.23 -107.27 Truth Or Consequences,Usa
+[TEB]   40.83 -74.05 Teterboro,Usa
+[TIK]   35.40 -97.38 Oklahoma City,Usa
+[TLH]   30.38 -84.35 Tallahassee,Usa
+[TMB]   25.63 -80.42 Kendall-Tamiami,Usa
+[TNT]   25.85 -80.88 Miami,Usa
+[KTNX]  37.78 -116.77 Tonopah,Usa
+[TPA]   27.97 -82.52 Tampa,Usa
+[TTN]   40.27 -74.80 Trenton,Usa
+[TUL]   36.18 -95.88 Tulsa,Usa
+[TUS]   32.10 -110.93 Tucson,Usa
+[TXK]   33.45 -93.98 Texarkana,Usa
+[TYR]   32.35 -95.40 Tyler,Usa
+[TYS]   35.80 -83.98 Knoxville,Usa
+[UGN]   42.42 -87.87 Chicago,Usa
+[VAD]   30.97 -83.18 Valdosta,Usa
+[VBG]   34.72 -120.57 Lompoc,Usa
+[VCV]   34.58 -117.37 Victorville,Usa
+[VPS]   30.47 -86.52 Valparaiso,Usa (Florida
+[VRB]   27.65 -80.42 Vero Beach,Usa
+[WAL]   37.93 -75.45 Wallops Island,Usa
+[WRB]   32.63 -83.58 Macon,Usa
+[WRI]   40.00 -74.58 Wrightstown,Usa
+[WSD]   32.33 -106.40 White Sands,Usa
+[WWD]   39.00 -74.90 Wildwood,Usa
+[YIP]   42.23 -83.52 Detroit,Usa
+[YNG]   41.25 -80.67 Youngstown,Usa
+[YUM]   32.65 -114.60 Yuma,Usa
+[ZUN]   35.08 -108.78 Zuni Pueblo,Usa
+[TIA]   41.40  19.72 Tirana,Albania
+[BOJ]   42.57  27.50 Bourgas,Bulgaria
+[GOZ]   43.15  25.70 Gorna Orechovica,Bulgaria
+[PDV]   42.07  24.85 Plovdiv,Bulgaria
+[SOF]   42.68  23.40 Sofia,Bulgaria
+[LBSZ]  42.37  25.65 Stara Zagora,Bulgaria
+[VAR]   43.22  27.82 Varna,Bulgaria
+[LCA]   34.87  33.62 Larnaca,Cyprus
+[PFO]   34.72  32.48 Paphos,Cyprus
+[AKT]   34.58  32.98 Akrotiri,Cyprus
+[DBV]   42.55  18.27 Dubrovnik,Croatia
+[LDOC]  45.53  18.63 Cepin,Croatia
+[OSI]   45.45  18.80 Osijek,Croatia
+[PUY]   44.88  13.92 Pula,Croatia
+[LDRG]  45.37  14.50 Grobnik,Croatia
+[RJK]   45.22  14.57 Rijeka,Croatia
+[SPU]   43.53  16.28 Split,Croatia
+[LDVA]  46.28  16.37 Varazdin,Croatia
+[ZAG]   45.73  16.07 Zagreb,Croatia
+[ZAD]   44.10  15.33 Zadar,Croatia
+[LDZU]  44.55  15.77 Udbina,Croatia
+[LEAB]  38.93  -1.85 Albacete,Spain
+[ALC]   38.27  -0.55 Alicante,Spain
+[LEI]   36.83  -2.37 Almeria,Spain
+[OVD]   43.55  -6.03 Aviles,Spain
+[ODB]   37.83  -4.83 Cordoba,Spain
+[BIO]   43.30  -2.90 Bilbao,Spain
+[LEBG]  42.35  -3.62 Burgos,Spain
+[BCN]   41.28   2.07 Barcelona,Spain
+[BJZ]   38.88  -6.82 Badajoz,Spain
+[LCG]   43.30  -8.37 La Coruna,Spain
+[GRX]   37.12  -3.63 Granada,Spain
+[GRO]   41.90   2.75 Gerona,Spain
+[GRX]   37.18  -3.77 Granada,Spain
+[LEGT]  40.28  -3.72 Madrid,Spain
+[IBZ]   38.87   1.37 Ibiza,Spain
+[XRY]   36.73  -6.05 Jerez,Spain
+[MJV]   37.77  -0.80 Murcia,Spain
+[LELN]  42.58  -5.65 Leon,Spain
+[MAD]   40.47  -3.55 Madrid,Spain
+[AGP]   36.67  -4.48 Malaga,Spain
+[MAH]   39.85   4.22 Menorca,Spain
+[LEMM]  40.42  -3.50 Madrid,Spain
+[OZP]   37.17  -5.60 Sevilla,Spain
+[LEOC]  39.93  -3.50 Ocana,Spain
+[PMI]   39.55   2.73 Palma De Mallorca,Spain
+[PNA]   42.77  -1.63 Pamplona,Spain
+[LERI]  37.95  -1.22 Murcia,Spain
+[REU]   41.13   1.17 Reus,Spain
+[LERT]  36.63  -6.33 Rota,Spain
+[SLM]   40.95  -5.50 Salamanca,Spain
+[LESB]  39.58   2.70 Son Bonet,Spain
+[LESJ]  39.55   2.73 Palma De Mallorca,Spain
+[LESL]  39.85   4.25 San Luis,Spain
+[EAS]   43.35  -1.78 San Sebastian,Spain
+[SCQ]   42.88  -8.40 Santiago,Spain
+[LEU]   42.33   1.40 Seo De Urgel,Spain
+[TOJ]   40.48  -3.45 Madrid,Spain
+[VLC]   39.48  -0.47 Valencia,Spain
+[VLL]   41.70  -4.85 Valladolid,Spain
+[LEVS]  40.37  -3.78 Madrid,Spain
+[VIT]   42.87  -2.72 Vitoria,Spain
+[VGO]   42.22  -8.62 Vigo,Spain
+[SDR]   43.42  -3.82 Santander,Spain
+[ZAZ]   41.65  -1.03 Zaragoza,Spain
+[SVQ]   37.42  -5.88 Sevilla,Spain
+[CQF]   50.95   1.95 Calais,France
+[LFAG]  49.87   3.02 Peronne,France
+[LFAI]  48.58   3.00 Nangis,France
+[LFAO]  48.53  -0.38 Bagnole-De-L'Orne,France
+[LFAQ]  49.97   2.68 Albert,France
+[LTQ]   50.50   1.62 Le Tourquet,France
+[LFAV]  50.32   3.45 Valenciennes,France
+[LFAY]  49.87   2.38 Amiens,France
+[AGF]   44.17   0.58 Agen,France
+[LFBC]  44.53  -1.12 Cazaux,France
+[BOD]   44.82  -0.70 Bordeaux,France
+[EGC]   44.82   0.52 Bergerac,France
+[LFBF]  43.53   1.37 Toulouse,France
+[CNG]   45.65  -0.32 Cognac,France
+[PIS]   46.58   0.30 Poitiers,France
+[MCU]   46.22   2.35 Montlucon-Gueret,France
+[LIG]   45.85   1.17 Limoges,France
+[LFBM]  43.90  -0.50 Mont-De-Marsan,France
+[NIT]   46.30  -0.40 Niort,France
+[TLS]   43.62   1.35 Toulouse,France
+[PUF]   43.37  -0.42 Pau,France
+[LRH]   43.43   1.25 La Rochelle,France
+[ANG]   45.72   0.22 Angouleme,France
+[BVE]   45.15   1.47 Brive,France
+[PGX]   45.18   0.80 Perigueux,France
+[BIQ]   43.47  -1.52 Biarritz-Bayonne,France
+[LFCC]  44.35   1.47 Cahors,France
+[LFCG]  43.00   1.10 St.-Girons,France
+[XAC]   44.58  -1.10 Arcachon,France
+[LBI]   43.90   2.10 Albi,France
+[DCM]   43.55   2.28 Castres,France
+[LFCL]  43.58   1.48 Toulouse,France
+[LFCM]  43.98   3.17 Millau,France
+[RDZ]   44.40   2.47 Rodez,France
+[LFCU]  45.53   2.42 Ussel,France
+[LFCW]  44.38   0.75 Villeneuve-Sur-Lot,France
+[RYN]   45.62  -0.97 Royan,France
+[LFCZ]  44.13  -1.17 Mimizan,France
+[LFDA]  43.70  -0.23 Aire-Sur-L'Adour,France
+[LFDB]  44.02   1.37 Montauban,France
+[LFDH]  43.68   0.60 Auch,France
+[LFDI]  44.97  -0.13 Libourne,France
+[LFDJ]  43.08   1.68 Pamiers,France
+[LFDM]  44.48   0.20 Marmande,France
+[RCO]   45.88  -0.97 Rochefort,France
+[LFEC]  48.45  -5.05 Ouessant,France
+[LFED]  48.05  -2.92 Pontivy,France
+[LFES]  48.05  -3.65 Guiscriff-Scaer,France
+[LFEY]  46.72  -2.38 Ile D'Yeu,France
+[LFFI]  47.40  -1.17 Ancenis,France
+[LFFN]  48.42   4.47 Brienne-Le Chateau,France
+[CMR]   48.10   7.35 Colmar,France
+[LFGF]  47.00   4.88 Beaune,France
+[DLE]   47.03   5.42 Dole,France
+[LFGK]  47.98   3.38 Joigny,France
+[LFGW]  49.12   5.47 Verdun,France
+[OBS]   44.53   4.37 Aubenas-Vals-Lanas,France
+[LPY]   45.07   3.75 Le Puy,France
+[LFHQ]  45.07   2.98 St.-Flour,France
+[XBK]   46.20   5.28 Bourg,France
+[XVF]   45.90   4.63 Vilefrance,France
+[XMU]   46.53   3.42 Moulins,France
+[LFIG]  44.17   2.50 Cassagnes-Beghones,France
+[LFIO]  43.57   1.47 Toulouse,France
+[ETZ]   48.97   6.25 Metz,France
+[BIA]   42.55   9.48 Bastia,Corse Isl.
+[CLY]   42.52   8.78 Calvi,Corse Isl.
+[FSC]   41.50   9.08 Figari,Corse Isl.
+[AJA]   41.92   8.80 Ajaccio,Corse Isl.
+[LFKO]  41.65   8.88 Propriano,France
+[SOZ]   41.92   9.40 Solenzara,Corse Isl.
+[LFKT]  42.28   9.18 Corte,France
+[AUF]   47.85   3.48 Auxerre,France
+[CMF]   45.63   5.87 Chambery,France
+[CFE]   45.78   3.17 Clermont Ferrand,France
+[BOU]   47.05   2.37 Bourges,France
+[LFLE]  45.55   5.97 Chambery,France
+[XCD]   46.82   4.82 Chalon,France
+[QNJ]   46.18   6.27 Annemasse,France
+[LYS]   45.72   5.08 Lyon,France
+[QNX]   46.28   4.78 Macon,France
+[LFLN]  46.40   4.00 St.-Yan,France
+[RNE]   46.05   4.00 Roanne,France
+[NCY]   45.92   6.08 Annecy,France
+[GNB]   45.35   5.32 Grenoble,France
+[MCU]   46.35   2.57 Montlucon,France
+[VAF]   44.92   4.97 Valence,France
+[VHY]   46.17   3.40 Vichy,France
+[AUR]   44.88   2.42 Aurillac,France
+[CHR]   46.85   1.72 Chateauroux,France
+[LYN]   45.72   4.93 Lyon,France
+[QXB]   43.50   5.37 Aix-Les-Milles,France
+[LFMC]  43.38   6.38 Le Luc,France
+[CEQ]   43.53   6.95 Cannes,France
+[EBU]   45.53   4.28 St.-Etienne,France
+[LFMI]  43.52   4.92 Istres,France
+[CCF]   43.20   2.30 Carcassonne,France
+[MRS]   43.43   5.20 Marseille,France
+[NCE]   43.65   7.22 Nice,France
+[LFMO]  44.13   4.87 Orange,France
+[PGF]   42.73   2.87 Perpignan,France
+[CTT]   43.25   5.78 Le Castellet,France
+[LFMS]  44.07   4.13 Ales,France
+[MPL]   43.57   3.95 Montpellier,France
+[BZR]   43.32   3.35 Beziers,France
+[AVN]   43.90   4.90 Avignon,France
+[LFMY]  43.60   5.10 Salon,France
+[LFMZ]  43.17   2.73 Lezignan-Corbieres,France
+[MEN]   44.50   3.52 Mende,France
+[LFNH]  44.02   5.07 Carpentras,France
+[LFOA]  47.05   2.62 Avord,France
+[BVA]   49.45   2.10 Beauvais,France
+[LFOC]  48.05   1.37 Chateaudun,France
+[LFOD]  47.25  -0.10 Saumur,France
+[LFOE]  49.02   1.22 Evreux,France
+[LEH]   49.53   0.08 Le Havre,France
+[LFOI]  50.13   1.82 Abbeville,France
+[ORE]   47.98   1.75 Orleans,France
+[LFOK]  48.77   4.18 Chalons,France
+[URO]   49.38   1.17 Rouen,France
+[TUF]   47.42   0.72 Tours,France
+[CET]   47.07  -0.87 Cholet,France
+[LVA]   48.02  -0.73 Laval,France
+[LFOZ]  47.88   2.15 Orleans,France
+[LBG]   48.97   2.43 Paris,France
+[CSF]   49.25   2.52 Creil,France
+[CDG]   49.00   2.55 Paris,France
+[LFPK]  48.83   3.00 Coulommiers,France
+[LFPM]  48.60   2.67 Melun,France
+[TNF]   48.75   2.10 Toussous-Le-Noble,France
+[ORY]   48.72   2.35 Paris,France
+[POX]   49.08   2.03 Pontoise,France
+[LFPV]  48.77   2.20 Villacoublay,France
+[LFPY]  48.58   2.32 Bretigny-Sur-Orge,France
+[LFQA]  49.20   4.15 Reims,France
+[QYR]   48.32   4.02 Troyes,France
+[LFQC]  48.58   6.53 Luneville,France
+[LFQE]  49.22   5.67 Etain,France
+[LFQF]  46.95   4.25 Autun,France
+[NVS]   47.00   3.10 Nevers,France
+[LFQI]  50.22   3.15 Cambrai,France
+[LFQJ]  50.30   4.02 Maubeuge,France
+[LFQM]  47.20   6.07 Besancon-La-Veze,France
+[LFQP]  48.75   7.20 Phalsbourg,France
+[LIL]   50.55   3.08 Lille,France
+[LFQT]  50.62   2.63 Merville,France
+[LFQV]  49.78   4.63 Charleville,France
+[LFQW]  47.63   6.20 Vesoul-Frotey,France
+[LFRA]  47.48  -0.57 Angers,France
+[BES]   48.43  -4.42 Brest,France
+[CER]   49.65  -1.47 Cherbourg,France
+[DNR]   48.58  -2.07 Dinard,France
+[LFRE]  47.28  -2.33 La Baule,France
+[LFRF]  48.87  -1.55 Granville,France
+[DOL]   49.35   0.15 Deauville,France
+[LRT]   47.75  -3.43 Lorient,France
+[EDM]   46.70  -1.37 La Roche-Sur-Yon,France
+[LFRJ]  48.52  -4.15 Landivisiau,France
+[CFR]   49.17  -0.45 Caen,France
+[LFRL]  48.27  -4.43 Lanvedoc,France
+[LME]   47.93   0.20 Le Mans,France
+[RNS]   48.07  -1.73 Rennes,France
+[LAI]   48.75  -3.47 Lannion,France
+[UIP]   47.97  -4.17 Quimper,France
+[NTE]   47.15  -1.60 Nantes,France
+[SBK]   48.53  -2.85 St.-Brieuc Armor,France
+[MXN]   48.60  -3.80 Morlaix,France
+[VNE]   47.72  -2.72 Vannes,France
+[SNR]   47.30  -2.13 St.-Nazaire,France
+[MLH]   47.58   7.52 Mulhouse,France
+[LFSC]  47.92   7.38 Colmar,France
+[DIJ]   47.27   5.08 Dijon,France
+[MZM]   49.07   6.12 Metz,France
+[EPL]   48.32   6.07 Epinal,France
+[LFSH]  48.78   7.80 Haguenau,France
+[LFSI]  48.63   4.88 St.-Dizier,France
+[LFSL]  48.77   5.97 Toul,France
+[LFSM]  47.48   6.78 Montbeliard,France
+[ENC]   48.68   6.22 Nancy,France
+[LFSO]  48.57   5.95 Nancy,France
+[LFSP]  46.90   6.32 Pontarlier,France
+[RHE]   49.30   4.05 Reims,France
+[SXB]   48.53   7.62 Strassbourg,France
+[LFSX]  47.77   6.35 Luxeuil,France
+[LFTF]  43.23   6.12 Cuers,France
+[TLN]   43.08   6.13 Hyeres,France
+[FNI]   43.75   4.40 Nimes,France
+[LFVM]  47.08 -56.37 Miquelon,France
+[FSP]   46.75 -56.17 St.-Pierre,St. Pierre & Miquelon
+[LFXA]  45.98   5.32 Amberieu,France
+[LFXI]  44.05   5.48 Apt,France
+[LFYD]  48.08   5.65 Damblain,France
+[LFYG]  50.13   3.25 Cambrai,France
+[LFYH]  47.33   5.50 Broye-Les-Pesmes,France
+[LFYL]  47.70   6.53 Lure,France
+[LFYT]  49.75   3.20 St.-Simon,France
+[PYR]   37.92  21.28 Andravida,Greece
+[AGQ]   38.60  21.35 Agrinion,Greece
+[AXD]   40.85  25.95 Alexandroupolis,Greece
+[HEW]   37.88  23.72 Athens,Greece
+[LGAX]  40.65  22.48 Alexandria,Greece
+[VOL]   39.22  22.78 Nea Anghialos,Greece
+[LGEL]  38.05  23.55 Elefsis,Greece
+[JKH]   38.33  26.13 Chios,Greece
+[IOA]   39.68  20.82 Ioannina,Greece
+[HER]   35.33  25.17 Heraklion,Greece
+[KSO]   40.43  21.27 Kastoria,Greece
+[KIT]   36.27  23.02 Kithira,Greece
+[EFL]   38.12  20.50 Keffallinia,Greece
+[KLX]   37.07  22.02 Kalamata,Greece
+[LGKM]  40.97  24.33 Kavala,Greece
+[KGS]   36.78  27.08 Kos,Greece
+[AOK]   35.42  27.13 Karpathos,Greece
+[CFU]   39.60  19.90 Kerkyra/Corfu,Greece
+[KSJ]   35.42  26.90 Kasos,Greece
+[KVA]   40.90  24.62 Kavala,Greece
+[KZI]   40.28  21.83 Kozani,Greece
+[LRS]   37.18  26.80 Leros,Greece
+[LXS]   39.92  25.23 Limnos,Greece
+[LRA]   39.65  22.45 Larissa,Greece
+[LGMG]  37.97  23.35 Megara,Greece
+[JMK]   37.43  25.33 Mykonos,Greece
+[LGMR]  38.13  24.00 Marathon,Greece
+[MJT]   39.05  26.58 Mytilini,Greece
+[PVK]   38.92  20.75 Preveza,Greece
+[LGRD]  36.37  28.10 Rhodos,Greece
+[RHO]   36.40  28.08 Rhodos,Greece
+[GPA]   38.15  21.42 Patras,Greece
+[CHQ]   35.52  24.13 Chania,Greece
+[JSI]   39.17  23.50 Skiathos,Greece
+[SMI]   37.68  26.90 Samos,Greece
+[LGSO]  37.42  24.95 Syros,Greece
+[LGSP]  36.97  22.52 Sparti,Greece
+[JTR]   36.40  25.47 Santorini,Greece
+[JSH]   35.20  26.08 Sitia,Greece
+[LGSV]  39.47  22.77 Stefanovikion,Greece
+[SKU]   38.97  24.48 Skiros,Greece
+[LGTG]  38.33  23.55 Tanagra,Greece
+[LGTL]  35.18  25.32 Kasteli,Greece
+[LGTP]  37.52  22.40 Tripolis,Greece
+[SKG]   40.52  22.97 Thessaloniki,Greece
+[LGTT]  38.10  23.78 Dekelia,Greece
+[ZTH]   37.75  20.87 Zakynthos,Greece
+[BUD]   47.43  19.25 Budapest,Hungary
+[DEB]   47.48  21.60 Debrecen,Hungary
+[LHGD]  47.57  19.33 Godollo,Hungary
+[LHKE]  46.92  19.73 Kecskemet,Hungary
+[LHKV]  46.38  17.72 Kaposvar,Hungary
+[LHNY]  47.98  21.68 Nyirregyhaza,Hungary
+[LHOY]  46.30  18.77 Ocseny,Hungary
+[LHPA]  47.35  17.50 Papa,Hungary
+[LHSA]  47.07  17.97 Azentkilyszabadja,Hungary
+[LHSK]  46.85  18.08 Siofok,Hungary
+[LHSM]  46.68  17.15 Sarmellek,Hungary
+[LHSN]  47.12  20.23 Szolnok,Hungary
+[LHTA]  46.38  17.92 Taszar,Hungary
+[LHTL]  47.33  18.97 Tokol,Hungary
+[LIBA]  41.53  15.70 Amendola,Italy
+[CRV]   38.98  17.07 Crotone,Italy
+[BRI]   41.13  16.75 Bari,Italy
+[FOG]   41.42  15.53 Foggia,Italy
+[TAR]   40.50  17.40 Grottaglie,Italy
+[LCC]   40.23  18.12 Lecce,Italy
+[PSR]   42.42  14.17 Pescara,Italy
+[BDS]   40.65  17.93 Brindisi,Italy
+[LIBV]  40.77  16.93 Gioia Del Colle,Italy
+[SUF]   38.90  16.23 Lamezia,Italy
+[CTA]   37.47  15.05 Catania,Italy
+[LMP]   35.48  12.62 Lampedusa,Italy
+[PNL]   36.80  11.97 Pantelleria,Italy
+[PMO]   38.17  13.08 Palermo,Italy
+[PMO]   38.10  13.30 Palermo,Italy
+[REG]   38.07  15.65 Reggio Calabria,Italy
+[TPS]   37.90  12.48 Trapani,Italy
+[NSY]   37.40  14.92 Sigonella,Italy
+[AHO]   40.62   8.28 Alghero,Italy
+[DCI]   39.35   8.97 Decimomannu,Italy
+[CAG]   39.25   9.05 Cagliari,Italy
+[OLB]   40.88   9.52 Olbia,Italy
+[TTB]   39.92   9.67 Tortoli,Italy
+[LIIB]  40.42  12.33 Rome,Italy
+[LIMA]  45.08   7.60 Turin,Italy
+[LIMB]  45.53   9.20 Milano,Italy
+[MXP]   45.62   8.72 Milano,Italy
+[BGY]   45.67   9.70 Bergamo,Italy
+[TRN]   45.20   7.63 Torino,Italy
+[ALL]   44.05   8.12 Albenga,Italy
+[GOA]   44.40   8.83 Genoa,Italy
+[LIN]   45.43   9.27 Milan,Italy
+[LIMN]  45.52   8.67 Cameri,Italy
+[PMF]   44.82  10.28 Parma,Italy
+[QPZ]   44.90   9.72 Piacenza,Italy
+[LIMW]  45.73   7.37 Aosta,Italy
+[CUF]   44.53   7.62 Levaldigi,Italy
+[AVB]   46.02  12.58 Aviano,Italy
+[BZO]   46.45  11.32 Bolzano,Italy
+[LIPC]  44.22  12.30 Cervia,Italy
+[BLQ]   44.53  11.28 Bologna,Italy
+[TSF]   45.63  12.18 Treviso,Italy
+[LIPI]  45.97  13.05 Rivolto,Italy
+[FRL]   44.18  12.07 Forli,Italy
+[LIPL]  45.42  10.27 Ghedi,Italy
+[LIPN]  45.47  10.92 Verona,Italy
+[VBS]   45.42  10.32 Montichiari,Italy
+[TRS]   45.82  13.45 Ronchi De Legionari,Italy
+[RMI]   44.02  12.60 Rimini,Italy
+[LIPS]  45.68  12.08 Treviso,Italy
+[VIC]   45.57  11.52 Vicenza,Italy
+[QPA]   45.38  11.83 Padova,Italy
+[VRN]   45.38  10.88 Villafranca,Italy
+[VCE]   45.50  12.35 Venice,Italy
+[SAY]   43.25  11.25 Siena,Italy
+[CIA]   41.78  12.58 Rome,Italy
+[LIRE]  41.65  12.43 Pratica Di Mare,Italy
+[FCO]   41.80  12.25 Rome,Italy
+[LIRG]  41.98  12.73 Guidonia,Italy
+[LIRI]  40.62  14.90 Salerno,Italy
+[EBA]   42.75  10.23 Marina Di Campo,Italy
+[QLT]   41.53  12.90 Latina,Italy
+[LIRM]  41.05  14.07 Grazzanise,Italy
+[NAP]   40.88  14.28 Naples,Italy
+[PSA]   43.68  10.38 Pisa,Italy
+[FLR]   43.80  11.20 Firenze,Italy
+[GRS]   42.75  11.07 Grosseto,Italy
+[LIRU]  41.95  12.48 Rome,Italy
+[LIRV]  42.42  12.05 Viterbo,Italy
+[PEG]   43.08  12.50 Perugia,Italy
+[LJCE]  45.88  15.52 Cerklje,Slovenia
+[LJU]   46.22  14.45 Ljubliana,Slovenia
+[MBX]   46.47  15.68 Maribor,Slovenia
+[POW]   45.47  13.60 Portoroz,Slovenia
+[LJSG]  46.47  15.12 Slovenj Gradec,Slovenia
+[LKCS]  48.93  14.42 Ceske Budejovice,Czech Republic
+[LKCT]  49.68  15.67 Chotebor,Czech Republic
+[LKCV]  49.93  15.37 Caslav,Czech Republic
+[LKHK]  50.25  15.83 Hradec Kralove,Czech Republic
+[LKKB]  50.12  14.53 Praha,Czech Republic
+[LKKU]  49.02  17.43 Kunovice,Czech Republic
+[KLV]   50.20  12.90 Karlovy Vary,Czech Republic
+[LKLN]  49.67  13.27 Line,Czech Republic
+[LKMH]  50.53  15.00 Mnichovo Hradiste,Czech Republic
+[OSR]   49.68  18.10 Ostrava,Czech Republic
+[LKNA]  49.15  16.12 Namest,Czech Republic
+[PED]   50.00  15.73 Pardubice,Czech Republic
+[LKPM]  49.72  14.08 Pribram,Czech Republic
+[PRV]   49.42  17.40 Prerov,Czech Republic
+[PRG]   50.10  14.25 Prague,Czech Republic
+[LKSO]  49.23  14.70 Sobeslav,Czech Republic
+[BRQ]   49.15  16.68 Turany,Czech Republic
+[LKVO]  50.20  14.38 Vodochody,Czech Republic
+[TLV]   32.00  34.87 Tel-Aviv,Israel
+[BEV]   31.28  34.72 Beer-Sheba,Israel
+[LLEK]  31.83  34.82 Tel-Nof,Israel
+[LLES]  32.43  35.00 Eyn-Shemer,Israel
+[ETH]   29.55  34.95 Elat,Israel
+[LLEY]  30.62  35.20 Eyn-Yahav,Israel
+[HFA]   32.80  35.03 Haifa,Israel
+[LLHS]  31.75  34.72 Haztor,Israel
+[RPN]   32.97  35.57 Rosh Pina,Israel
+[JRS]   31.87  35.22 Jerusalem,Israel
+[LLLL]  31.22  35.18 Tel-Aviv Fir/Cta/Uta,Israel
+[LLMG]  32.58  35.22 Megido Airstrip,Israel
+[LLMZ]  31.32  35.38 Metzada,Israel
+[LLNV]  31.20  35.00 Nevatim,Israel
+[VDA]   29.93  34.93 Ovda,Israel
+[LLRD]  32.65  35.17 Ramat David,Israel
+[LLRM]  30.77  34.67 Ramon,Israel
+[SDV]   32.10  34.77 Tel-Aviv,Israel
+[MLA]   35.85  14.47 Malta,Malta
+[LMMM]  35.92  14.42 Malta Acc,Malta
+[LOAN]  47.83  16.25 Wiener Neustadt Ost,Austria
+[LOLW]  48.17  14.03 Wels,Austria
+[GRZ]   47.00  15.43 Graz,Austria
+[INN]   47.25  11.33 Innsbruck,Austria
+[KLU]   46.65  14.33 Klagenfurt,Austria
+[LNZ]   48.23  14.18 Linz,Austria
+[LOWM]  48.00  16.50 Vienna,Austria
+[SZG]   47.78  13.00 Salzburg,Austria
+[VIE]   48.10  16.57 Vienna,Austria
+[LOXG]  46.98  15.43 Graz,Austria
+[LOXK]  46.63  14.33 Klagenfurt,Austria
+[LOXL]  48.22  14.18 Linz,Austria
+[LOXT]  48.32  16.10 Langenlebarn,Austria
+[LOXZ]  47.20  14.73 Zeltweg,Austria
+[LPAR]  38.87  -9.02 Alverca,Acores
+[SMA]   36.97 -25.17 Santa Maria (Island),Acores
+[BGC]   41.87  -6.70 Braganca,Acores
+[LPBJ]  38.07  -7.92 Beja (Madeira),Acores
+[LPBR]  41.58  -8.43 Braga,Acores
+[LPCO]  40.15  -8.47 Coimba,Acores
+[LPCS]  38.72  -9.35 Cascais,Acores
+[LPCV]  40.25  -7.47 Covilha,Acores
+[LPEV]  38.53  -7.88 Evora,Acores
+[FLW]   39.45 -31.12 Flores (Flores Isl.),Acores
+[FAO]   37.00  -7.95 Faro,Acores
+[GRW]   39.08 -28.02 Graciosa Island,Acores
+[HOR]   38.52 -28.70 Horta,Acores
+[LPIN]  40.97  -8.63 Espinho,Portugal
+[TER]   38.75 -27.08 Lajes (Terceira Island),Acores
+[LPMG]  38.72  -9.15 Lisbon,Portugal
+[LPMR]  39.82  -8.88 Monte Real,Acores
+[LPMT]  38.70  -9.03 Montijo,Acores
+[LPOV]  40.90  -8.63 Ovar,Portugal
+[PDL]   37.73 -25.68 Ponta Delgada,Acores
+[PIX]   38.55 -28.43 Pico,Acores
+[LPPM]  37.13  -8.58 Portimao,Acores
+[OPO]   41.23  -8.67 Porto,Acores
+[PXO]   33.07 -16.33 Porto Santo,Madeira
+[LIS]   38.77  -9.13 Lisbon,Portugal
+[SJZ]   38.65 -28.17 Sao Jorge Island,Acores
+[LPST]  38.82  -9.33 Sintra,Acores
+[LPTN]  39.47  -8.35 Tancos,Acores
+[VRL]   41.27  -7.72 Vila Real,Acores
+[LPVZ]  40.72  -7.88 Viseu,Acores
+[LQBK]  44.93  17.28 Banja Luka,Bosnia-Hercegovina
+[OMO]   43.27  17.83 Mostar,Bosnia-Hercegovina
+[SJJ]   43.82  18.32 Sarajevo,Bosnia-Hercegovina
+[ARW]   46.17  21.25 Arad,Romania
+[BCM]   46.52  26.90 Bacau,Romania
+[BAY]   47.65  23.47 Baia Mare,Romania
+[BBU]   44.50  26.10 Bucharest,Romania
+[CND]   44.35  28.48 Constanta,Romania
+[CLJ]   46.78  23.68 Cluj-Napoca,Romania
+[CSB]   45.42  22.25 Caransebes,Romania
+[CRA]   44.32  23.88 Craiova,Romania
+[IAS]   47.17  27.62 Iasi,Romania
+[OMR]   47.02  21.90 Oradea,Romania
+[OTP]   44.57  26.10 Bucharest,Romania
+[SBZ]   45.78  24.08 Sibiu,Romania
+[SUJ]   47.70  22.88 Satu Mare,Romania
+[SCV]   47.68  26.35 Suceava,Romania
+[TCE]   45.05  28.70 Tulcea,Romania
+[TGM]   46.47  24.40 Tirgu Mures,Romania
+[TSR]   45.80  21.33 Timisoara,Romania
+[LSAZ]  46.60   7.67 Zurich Area,Switzerland
+[LSGC]  47.08   6.78 Les Eplatures,Switzerland
+[GVA]   46.23   6.10 Geneva,Switzerland
+[LSGK]  46.48   7.25 Saanen,Switzerland
+[SIR]   46.22   7.32 Sion,Switzerland
+[LSMA]  46.93   8.28 Alpnach,Switzerland
+[LSMC]  46.50   8.28 Ulrichen,Switzerland
+[LSMD]  47.38   8.63 Dubendorf,Switzerland
+[LSME]  47.08   8.30 Emmen,Switzerland
+[LSMF]  47.07   9.05 Mollis,Switzerland
+[LSMI]  46.67   7.87 Interlaken,Switzerland
+[LSMJ]  46.30   7.70 Turtmann,Switzerland
+[LSMM]  46.73   8.10 Meiringen,Switzerland
+[LSMN]  46.30   7.82 Raron,Switzerland
+[LSMP]  46.83   6.90 Payerne,Switzerland
+[LSMU]  46.97   8.38 Buochs,Switzerland
+[LSSW]  47.38   8.57 Zurich,Switzerland
+[LUG]   46.00   8.90 Lugano,Switzerland
+[BRN]   46.90   7.48 Bern,Switzerland
+[LSZG]  47.17   7.42 Grenchen,Switzerland
+[ZRH]   47.45   8.53 Zurich,Switzerland
+[ACH]   47.48   9.55 Altenrhein,Switzerland
+[SMV]   46.52   9.87 Samedan,Switzerland
+[LTAA]  40.00  32.00 Ankara Acc/Fir/Fic,Turkey
+[LTAB]  39.93  32.73 Ankara,Turkey
+[ESB]   40.12  32.98 Ankara,Turkey
+[ANK]   39.93  32.68 Ankara,Turkey
+[LTAE]  40.07  32.55 Ankara,Turkey
+[ADA]   36.97  35.27 Adana,Turkey
+[ADA]   37.00  35.42 Adana,Turkey
+[AFY]   38.72  30.60 Afyon,Turkey
+[AYT]   36.90  30.78 Antalya,Turkey
+[GZT]   36.93  37.47 Gaziantep,Turkey
+[LTAK]  36.57  36.15 Iskenderun,Turkey
+[LTAL]  41.30  33.78 Kastamonu,Turkey
+[KYA]   37.97  32.55 Konya,Turkey
+[MZH]   40.82  35.52 Merzifon,Turkey
+[SSX]   41.27  36.30 Samsun,Turkey
+[VAS]   39.80  36.90 Sivas,Turkey
+[LTAS]  41.50  32.08 Zonguldak,Turkey
+[MLX]   38.43  38.08 Malatya,Turkey
+[ASR]   38.77  35.48 Kayseri,Turkey
+[LTAV]  39.45  31.35 Sivrihisar,Turkey
+[LTAW]  40.30  36.37 Tokat,Turkey
+[LTAX]  41.25  31.40 Eregli,Turkey
+[DNZ]   37.78  29.70 Denizli,Turkey
+[LTAZ]  38.77  34.53 Nevsehir,Turkey
+[IST]   40.97  28.82 Istanbul,Turkey
+[LTBD]  37.80  27.88 Aydin,Turkey
+[BTZ]   40.22  29.00 Bursa,Turkey
+[BZI]   39.62  27.92 Balikesir,Turkey
+[BDM]   40.32  27.97 Bandirma,Turkey
+[LTBH]  40.13  26.42 Canakkale,Turkey
+[ESK]   39.78  30.57 Eskisehir,Turkey
+[ADB]   38.28  27.15 Izmir,Turkey
+[LTBK]  38.32  27.15 Izmir,Turkey
+[IGL]   38.50  27.00 Izmir,Turkey
+[LTBM]  37.78  30.57 Isparta,Turkey
+[LTBN]  39.42  30.00 Kutahya,Turkey
+[LTBO]  38.67  29.47 Usak,Turkey
+[LTBP]  40.68  29.37 Yalova,Turkey
+[LTBQ]  40.73  30.07 Topel,Turkey
+[LTBR]  40.25  29.55 Yenisehir,Turkey
+[DLM]   36.70  28.78 Dalaman,Turkey
+[LTBT]  38.80  27.83 Akhisar,Turkey
+[LTBU]  41.13  27.92 Corlu,Turkey
+[LTBX]  40.98  29.20 Istanbul,Turkey
+[LTBY]  39.80  30.52 Eskissehir,Turkey
+[EZS]   38.60  39.28 Elazig,Turkey
+[DIY]   37.88  40.20 Diyabakir,Turkey
+[ERC]   39.70  39.52 Erzincan,Turkey
+[ERZ]   39.95  41.17 Erzurum,Turkey
+[LTCF]  40.55  43.10 Kars,Turkey
+[TZX]   40.98  39.78 Trabzon,Turkey
+[LTCH]  37.08  38.83 Sanliurfa,Turkey
+[VAN]   38.47  43.32 Van,Turkey
+[BAL]   37.92  41.10 Batman,Turkey
+[LTCK]  38.75  41.65 Mus,Turkey
+[LTCL]  37.97  41.83 Siirt,Turkey
+[LTCM]  42.02  35.07 Niniop,Turkey
+[LTFA]  38.52  26.97 Izmir,Turkey
+[LTFB]  37.95  27.32 Izmir,Turkey
+[LUBL]  47.83  27.77 Saltsy,Moldova
+[KIV]   46.92  28.92 Kichinau Fir/Acc/Com,Moldova
+[OHD]   41.17  20.73 Ohrid,Former Macedonia
+[SKP]   41.95  21.62 Skopje,Former Macedonia
+[GIB]   36.15  -5.33 Gibraltar,Gibraltar
+[BEG]   44.82  20.30 Beograd,Yugoslavia
+[TGD]   42.35  19.25 Podgorica,Yugoslavia
+[PRN]   42.57  21.03 Pristina,Yugoslavia
+[TIV]   42.40  18.72 Tivat,Yugoslavia
+[LYVR]  45.13  21.30 Vrsac,Yugoslavia
+[BTS]   48.17  17.20 Bratislava,Slovakia
+[KSC]   48.65  21.23 Kosice,Slovakia
+[LZMC]  48.40  17.12 Malacky,Slovakia
+[PZY]   48.62  17.82 Piestany,Slovakia
+[SLD]   48.63  19.13 Sliac,Slovakia
+[LZTN]  48.85  17.98 Trencin,Slovakia
+[TAT]   49.07  20.23 Poprad,Slovakia
+[LZZI]  49.22  18.60 Zilina,Slovakia
+[NCA]   21.92 -71.93 North Caicos,Turks & Caicos I.
+[PLS]   21.77 -72.25 Providenciales,Turks & Caicos I.
+[XSC]   21.50 -71.52 South Caicos,Turks & Caicos I.
+[MDAB]  19.18 -69.42 Samana,Dominican Republic
+[BRX]   18.25 -71.12 Barahona,Dominican Republic
+[MDCR]  17.92 -71.63 Cabo Rojo,Dominican Republic
+[MDCZ]  18.90 -70.72 Constanza,Dominican Republic
+[HEX]   18.47 -69.97 Santo Domingo,Dominican Republic
+[LRM]   18.45 -68.90 La Romana,Dominican Republic
+[PUJ]   18.57 -68.35 Punta Cana,Dominican Republic
+[POP]   19.75 -70.57 Puerto Plata,Dominican Republic
+[SDQ]   18.42 -69.67 Santo Domingo,Dominican Republic
+[MDSI]  18.50 -69.75 San Isidoro,Dominican Republic
+[STI]   19.40 -70.60 Santiago,Dominican Republic
+[MGBN]  15.47 -88.83 Bananera,Guatemala
+[CBV]   15.47 -90.40 Coban,Guatemala
+[GUA]   14.57 -90.52 Guatemala City,Guatemala
+[MGPB]  15.72 -88.58 Puerto Barrios,Guatemala
+[MGPP]  16.32 -89.42 Poptun,Guatemala
+[MGQZ]  14.85 -91.50 Quezaltenango,Guatemala
+[MGRT]  14.52 -91.68 Retalhuleu,Argentina
+[MGSJ]  13.93 -90.83 San Jose,Guatemala
+[MHIC]  17.40 -83.92 Islas Del Cisne,Honduras
+[LCE]   15.73 -86.85 La Ceiba,Honduras
+[SAP]   15.45 -87.92 San Pedro Sula,Honduras
+[GJA]   16.43 -85.90 Guanaja,Honduras
+[PEU]   15.25 -83.77 Puerto Lempira,Honduras
+[RTB]   16.32 -86.52 Roatan,Honduras
+[TEA]   15.77 -87.47 Tela,Honduras
+[TGU]   14.05 -87.22 Tegucigalpa,Honduras
+[MHTJ]  15.92 -85.93 Trujillo,Honduras
+[OCJ]   18.40 -76.97 Ocho Rios,Jamaica
+[KIN]   17.93 -76.78 Kingston,Jamaica
+[MBJ]   18.50 -77.90 Montego Bay,Jamaica
+[POT]   18.18 -76.53 Port Antonio,Jamaica
+[KTP]   17.98 -76.82 Kingston,Jamaica
+[ACA]   16.75 -99.75 Acapulco,Mexico
+[NTR]   25.85 -100.23 Monterrey,Mexico
+[AGU]   21.70 -102.32 Aguascalientes,Mexico
+[HUX]   15.77 -96.25 Bahias Dehuatulco,Mexico
+[CVJ]   18.83 -99.25 Cuernavaca,Mexico
+[MMCC]  29.32 -100.97 Ciudad Acuna,Brazil
+[CME]   18.65 -91.78 Ciudad Del Carmen,Mexico
+[MMCG]  30.38 -107.87 Nuevo Casas Grandes,Mexico
+[MMCH]  17.57 -99.50 Chilpancingo,Mexico
+[CUL]   24.75 -107.47 Culiacan,Mexico
+[CTM]   18.50 -88.32 Chetumal,Mexico
+[CEN]   27.38 -109.82 Ciudad Obregon,Mexico
+[CPE]   19.82 -90.50 Campeche,Mexico
+[CJS]   31.63 -106.42 Ciudad Juarez,Mexico
+[CUU]   28.70 -105.95 Chihuahua,Mexico
+[CVM]   23.70 -98.95 Ciudad Victoria,Mexico
+[MMCY]  20.53 -100.88 Celaya,Mexico
+[CZM]   20.52 -86.92 Cozumel,Mexico
+[MMC]   22.73 -99.02 Ciudad Mante,Mexico
+[DGO]   24.12 -104.52 Durango,Mexico
+[TPQ]   21.42 -104.83 Tepic,Mexico
+[ESE]   31.78 -116.60 Ensenada,Mexico
+[GDL]   20.52 -103.30 Guadalajara,Mexico
+[GYM]   27.97 -110.92 Guaymas,Mexico
+[TCN]   18.48 -97.42 Tehuacan,Mexico
+[HMO]   29.08 -111.03 Hermosillo,Mexico
+[CLQ]   19.27 -103.57 Colima,Mexico
+[ISJ]   21.23 -86.73 Isla Mujeres,Mexico
+[SLW]   25.53 -100.92 Saltillo,Mexico
+[MMIT]  16.43 -95.08 Iztepec,Mexico
+[MMJA]  19.47 -96.78 Jalapa,Mexico
+[LZC]   18.00 -102.22 Lazard Cardenas,Mexico
+[LMM]   25.68 -109.07 Los Mochis,Mexico
+[BJX]   20.98 -101.47 Del Bajio,Mexico
+[LAP]   24.07 -110.35 La Paz,Mexico
+[LTO]   25.98 -111.33 Loreto,Mexico
+[MAM]   25.77 -97.52 Matamoros,Mexico
+[MID]   20.93 -89.65 Merida,Mexico
+[MXL]   32.62 -115.23 Mexicali,Mexico
+[MLM]   19.83 -101.02 Morelia,Mexico
+[MTT]   18.10 -94.57 Minatitlan,Mexico
+[LOV]   26.95 -101.47 Monclova,Mexico
+[MEX]   19.43 -99.07 Mexico City,Mexico
+[MTY]   25.77 -100.10 Monterrey,Mexico
+[MZT]   23.15 -106.25 Mazatlan,Mexico
+[NOG]   31.22 -110.97 Nogales,Mexico
+[NLD]   27.43 -99.57 Nuevo Laredo,Mexico
+[OAX]   16.98 -96.72 Oaxaca,Mexico
+[PAZ]   20.60 -97.45 Poza Rico,Mexico
+[PBC]   19.15 -98.37 Puebla,Mexico
+[PCA]   20.07 -98.77 Pachuca,Mexico
+[PPE]   31.35 -113.52 Punta Penasco,Mexico
+[PDS]   28.62 -100.53 Piedras Negras,Mexico
+[UPN]   19.38 -102.03 Uruapan,Mexico
+[PVR]   20.67 -105.25 Puerto Vallarta,Mexico
+[PXM]   15.87 -97.08 Puerto Escondido,Mexico
+[QRO]   20.62 -100.37 Queretaro,Mexico
+[REX]   26.00 -98.22 Reynosa,Mexico
+[SJD]   23.15 -109.72 San Jose Del Cabo,Mexico
+[MMSF]  30.92 -114.80 San Filipe,Mexico
+[SLP]   22.25 -100.92 San Luis Potosi,Mexico
+[TXA]   19.53 -98.17 Tlaxcala,Mexico
+[TRC]   25.57 -103.40 Torreon,Mexico
+[TGZ]   16.77 -93.33 Tuxtla Gutierrez,Mexico
+[TIJ]   32.53 -116.97 Tijuana,Mexico
+[TAM]   22.28 -97.85 Tampico,Mexico
+[TSL]   22.03 -98.80 Tamuin,Mexico
+[TLC]   19.33 -99.55 Toluca,Mexico
+[TAP]   14.78 -92.37 Tapachula,Mexico
+[MMTX]  19.58 -103.37 Tuxpan,Mexico
+[CUN]   21.03 -86.87 Cancun,Mexico
+[VSA]   17.98 -92.82 Villahermosa,Mexico
+[VER]   19.13 -96.18 Vera Cruz,Mexico
+[ZCL]   22.88 -102.68 Zacatecas,Mexico
+[ZIH]   17.60 -101.45 Zihuatanejo,Mexico
+[ZMM]   20.03 -102.27 Zamora,Mexico
+[ZLO]   19.13 -104.55 Manzanillo,Mexico
+[MMZP]  20.75 -103.45 Zapopan,Mexico
+[BEF]   11.98 -83.77 Bluefields,Nicaragua
+[MNBR]  12.18 -86.35 Los Brasiles,Nicaragua
+[MNLN]  12.42 -86.90 Leon,Nicaragua
+[MGA]   12.13 -86.17 Managua,Nicaragua
+[PUZ]   14.03 -83.38 Puerto Cabezas,Nicaragua
+[BOC]    9.33 -82.25 Bocas Del Toro,Panama
+[CHX]    9.45 -82.52 Changuinola,Panama
+[DAV]    8.38 -82.43 David,Panama
+[HOW]    8.90 -79.58 Howard,Panama
+[MPJE]   7.52 -78.15 Jaque,Panama
+[MPLP]   8.40 -78.13 La Palma,Panama
+[PAC]    8.97 -79.55 Panama,Panama
+[MPSA]   8.08 -80.93 Santiago,Panama
+[PTY]    9.07 -79.38 Panama City,Panama
+[MRBA]   9.17 -83.32 Buenos Aires,Costa Rica
+[MRBC]  10.77 -83.58 Barra Del Colorado,Costa Rica
+[OTR]    8.60 -82.97 Coto 47,Costa Rica
+[MRCV]  10.35 -85.85 Cabo Velas,Costa Rica
+[MREC]  10.20 -83.47 El Carmen,Costa Rica
+[MRFI]   8.90 -83.50 Finca 10,Costa Rica
+[MRFS]   8.65 -83.05 Finca 63,Costa Rica
+[GLF]    8.65 -83.17 Golfito,Costa Rica
+[MRGP]  10.22 -83.78 Guapiles,Costa Rica
+[LIR]   10.58 -85.53 Liberia,Costa Rica
+[MRLC]  11.03 -84.70 Los Chiles,Costa Rica
+[LIO]    9.95 -83.02 Limon,Costa Rica
+[NOB]    9.97 -85.65 Nosara Beach,Costa Rica
+[SJO]    9.98 -84.20 San Jose,Costa Rica
+[MRPD]   9.72 -82.97 Pandora,Costa Rica
+[PMZ]    8.95 -83.47 Palmar Sur,Costa Rica
+[MRPV]   9.95 -84.13 San Jose,Costa Rica
+[XQP]    9.43 -84.12 Quepos,Costa Rica
+[MRSG]  10.28 -83.70 Santa Clara,Costa Rica
+[MRSV]   8.82 -82.95 San Vito De Jaba,Costa Rica
+[SAL]   13.43 -89.05 San Salvador,El Salvador
+[MSSS]  13.70 -89.12 San Salvador,El Salvador
+[CAP]   19.72 -72.18 Cap Haitien,Haiti
+[PAP]   18.57 -72.28 Port-Au-Prince,Haiti
+[BCA]   20.35 -74.50 Baracoa Playa,Cuba
+[BYM]   20.38 -76.62 Bayamo,Cuba
+[AVI]   22.02 -78.78 Ciego De Avila,Cuba
+[MUCB]  22.50 -79.47 Caibarien,Cuba
+[MUCC]  22.45 -78.32 Cunagua,Cuba
+[CFG]   22.15 -80.40 Cienfuegos,Cuba
+[CYO]   21.60 -81.53 Cayo,Cuba
+[CMW]   21.42 -77.83 Camaguey,Cuba
+[SCU]   19.97 -75.83 Santiago De Cuba,Cuba
+[MUFL]  21.48 -78.20 Florida,Cuba
+[MUGM]  19.90 -75.20 Guantanamo,Cuba
+[GAO]   20.08 -75.15 Guantanamo,Cuba
+[HAV]   22.98 -82.40 Havana,Cuba
+[HOG]   20.78 -76.30 Holguin,Cuba
+[LCL]   22.33 -83.63 La Coloma,Cuba
+[MUMG]  22.97 -82.27 Managua,Cuba
+[MUML]  23.00 -82.77 Mariel,Cuba
+[MOA]   20.65 -74.92 Moa,Cuba
+[MZO]   20.28 -77.08 Manzanillo,Cuba
+[MUNC]  20.68 -75.52 Nicaro,Cuba
+[GER]   21.83 -82.78 Nueva Gerona,Cuba
+[MUPB]  23.02 -82.57 Baracoa Playa,Cuba
+[MUPR]  22.42 -83.67 Pinar Del Rio Norte,Cuba
+[MUSA]  22.87 -82.50 San Antonio De Banos,Cuba
+[SNU]   22.48 -79.93 Santa Clara,Cuba
+[MUSJ]  22.08 -84.15 San Julian,Cuba
+[MUSL]  21.50 -77.02 Santa Lucia,Cuba
+[MUSN]  21.63 -82.95 Siguanea,Cuba
+[MUSS]  21.97 -79.43 Sancti Spiritus,Cuba
+[MUTD]  21.78 -79.98 Trinidad,Cuba
+[VRA]   23.03 -81.43 Varadero,Cuba
+[VTU]   20.98 -76.93 Las Tunas,Cuba
+[CYB]   19.68 -79.87 Cayman Barac,Cayman Islands
+[GCM]   19.28 -81.35 Georgetown,Cayman Islands
+[MYAB]  24.28 -77.68 Clarence Bain,Bahamas
+[ASD]   24.68 -77.78 Andros Town,Bahamas
+[MYAK]  24.15 -77.58 Congo Town,Bahamas
+[MHH]   26.50 -77.08 Marsh Harbor,Bahamas
+[SAQ]   25.05 -78.03 San Andros,Bahamas
+[AXP]   22.43 -73.97 Spring Point,Bahamas
+[MYAS]  26.00 -77.38 Sandy Point,Bahamas
+[TCB]   26.73 -77.38 Treasure Cay,Bahamas
+[CCZ]   25.42 -77.87 Chub Cay,Bahamas
+[MYBG]  25.73 -77.83 Bullocks Harbour,Bahamas
+[BIM]   25.68 -79.25 Alice Town,Bahamas
+[MYCA]  24.62 -75.67 Arthur'S Town,Bahamas
+[MYCB]  24.30 -75.45 New Bight,Bahamas
+[MYCI]  22.73 -74.17 Colonel Hill,Bahamas
+[GGT]   23.55 -75.87 Great Exuma,Bahamas
+[ELH]   25.47 -76.67 North Eleuthera,Bahamas
+[GHB]   25.28 -76.32 Governor'S Harbor,Bahamas
+[MYEN]  24.58 -76.82 Norman'S Cay,Bahamas
+[RSD]   24.88 -76.17 Rock Sound,Bahamas
+[MYES]  24.17 -76.43 Staniel Cay,Bahamas
+[FPO]   26.55 -78.68 Freeport,Bahamas
+[WTD]   26.68 -78.97 West End,Bahamas
+[IGA]   20.97 -73.67 Matthew Town,Bahamas
+[LGI]   23.17 -75.08 Dead Man'S Cay,Bahamas
+[SML]   23.57 -75.27 Stella Maris,Bahamas
+[MYG]   22.37 -73.00 Mayaguana,Bahamas
+[NAS]   25.03 -77.45 Nassau,Bahamas
+[MYRD]  22.17 -75.72 Duncan Town,Bahamas
+[ZSA]   24.05 -74.52 Cockburn Town,Bahamas
+[BZE]   17.53 -88.30 Belize City,Belize
+[AIT]  -18.82 -159.77 Aitutaki,Cook Islands
+[RAR]  -21.20 -159.80 Avarua,Cook Islands
+[NAN]  -17.75 177.43 Nandi,Fiji
+[SUV]  -18.03 178.55 Nausori,Fiji
+[LMG]  -16.47 179.33 Lambasa,Fiji
+[TBU]  -21.23 -175.15 Tongatapu,Tonga
+[HPA]  -19.77 -174.33 Ha'Apai,Tonga
+[VAV]  -18.58 -173.95 Vava'U,Tonga
+[FUN]   -8.52 179.22 Funafuti,Tuvalu Island
+[TRW]    1.37 173.13 Tarawa,Kiribati
+[TBF]   -1.22 174.77 Tabiteuea North,Kiribati
+[HUE]  -19.07 -169.92 Alofi,New Zealand
+[WLS]  -13.23 -176.18 Wallis,Wallis & Futuna
+[APW]  -13.82 -172.00 Faleolo,Samoa
+[PPG]  -14.32 -170.70 Pago Pago,Samoa
+[RUR]  -22.43 -151.35 Rurutu,French Polynesia
+[TUB]  -23.35 -149.52 Tubuai,French Polynesia
+[AAA]  -17.35 -145.50 Anaa,French Polynesia
+[NTGB] -15.82 -140.88 Fangatau,French Polynesia
+[TIH]  -15.12 -148.22 Tikehau,French Polynesia
+[REA]  -18.45 -136.43 Reao,French Polynesia
+[FAV]  -16.05 -145.65 Fakarava,French Polynesia
+[XMH]  -14.43 -146.07 Manihi,French Polynesia
+[GMR]  -23.07 -134.88 Totegegie,French Polynesia
+[KKR]  -15.65 -146.88 Kaukura Atoll,Tuamotu Islands
+[MKP]  -16.58 -143.65 Makemo,French Polynesia
+[NAU]  -14.17 -141.27 Napuka Island,French Polynesia
+[PKP]  -14.80 -138.80 Puka Puka,French Polynesia
+[TKP]  -14.70 -145.25 Takapoto,French Polynesia
+[AXR]  -15.23 -146.60 Arutua,Tuamotu Islands
+[MVT]  -14.87 -148.72 Mataiva,French Polynesia
+[NTGY] -20.78 -138.57 Tureia,French Polynesia
+[TKX]  -14.45 -145.02 Takaroa,French Polynesia
+[NHV]   -8.78 -140.22 Nuku Hiva,French Polynesia
+[NTMN]  -9.77 -139.00 Hiva-Oa,French Polynesia
+[BOB]  -16.43 -151.75 Bora Bora,French Polynesia
+[RGI]  -14.95 -147.65 Rangiroa,French Polynesia
+[HUH]  -16.68 -151.02 Huahine Island,French Polynesia
+[MOZ]  -17.48 -149.75 Moorea,French Polynesia
+[HOI]  -18.07 -140.93 Hao Island,Tuamotu Islands
+[MAU]  -16.42 -152.23 Maupiti,French Polynesia
+[RFP]  -16.72 -151.45 Raiatea Island,French Polynesia
+[NTTX] -21.80 -138.78 Mururoa,French Polynesia
+[NVSS] -15.50 167.22 Santo,Vanuatu
+[VLI]  -17.68 168.32 Port-Vila,Vanuatu
+[KNQ]  -21.05 164.83 Kone,New Caledonia
+[KOC]  -20.53 164.25 Koumac,New Caledonia
+[LIF]  -20.77 167.23 Lifou,New Caledonia
+[GEA]  -22.25 166.47 Noumea,New Caledonia
+[MEE]  -21.47 168.03 Mare,New Caledonia
+[TOU]  -20.78 165.25 Touho,New Caledonia
+[UVE]  -20.63 166.57 Ouvea,New Caledonia
+[NOU]  -22.00 166.20 Noumea,New Caledonia
+[AKL]  -37.00 174.78 Auckland,New Zealand
+[TUO]  -38.73 176.08 Taupo,New Zealand
+[NZAR] -37.02 174.97 Ardmore,New Zealand
+[CHC]  -43.48 172.52 Christchurch,New Zealand
+[CHT]  -43.80 -176.45 Chatham Island,New Zealand
+[DUD]  -45.92 170.18 Dunedin,New Zealand
+[GIS]  -38.65 177.97 Gisborne,New Zealand
+[MON]  -43.90 170.12 Glentanner,New Zealand
+[HKK]  -42.70 170.98 Hokitika,New Zealand
+[HLZ]  -37.85 175.32 Hamilton,New Zealand
+[NZHS] -39.63 176.77 Hastings,New Zealand
+[KKE]  -35.25 173.90 Kerikeri,New Zealand
+[KAT]  -35.07 173.28 Kaitaia,New Zealand
+[ALR]  -45.20 169.37 Alexandra,New Zealand
+[GTN]  -43.75 170.13 Mount Cook,New Zealand
+[TEU]  -45.52 167.65 Manapouri,New Zealand
+[MRO]  -40.97 175.63 Masterton,New Zealand
+[NPL]  -39.00 174.17 New Plymouth,New Zealand
+[NSN]  -41.28 173.22 Nelson,New Zealand
+[IVC]  -46.40 168.30 Invercargill,New Zealand
+[NZOH] -40.20 175.38 Ohakea,New Zealand
+[OAM]  -44.97 171.07 Oamaru,New Zealand
+[PMR]  -40.32 175.62 Palmerston North,New Zealand
+[PPQ]  -40.90 174.98 Paraparaumu,New Zealand
+[ZQN]  -45.02 168.73 Queenstown International,New Zealand
+[ROT]  -38.10 176.32 Rotorua,New Zealand
+[NZRU] -39.43 175.65 Waiouru,New Zealand
+[TRG]  -37.67 176.18 Tauranga,New Zealand
+[TIU]  -44.30 171.22 Timaru,New Zealand
+[NZUK] -44.23 170.12 Pukaki,New Zealand
+[BHE]  -41.52 173.87 Woodbourne,New Zealand
+[NZWD] -77.88 166.65 Weydon,New Zealand
+[WKA]  -44.72 169.23 Wanaka,New Zealand
+[NZWG] -43.55 172.55 Wigram,New Zealand
+[WHK]  -37.92 176.90 Whakatane,New Zealand
+[WLG]  -41.32 174.80 Wellington,New Zealand
+[NZWO] -39.00 177.40 Wairoa,New Zealand
+[NZWP] -36.78 174.62 Whenuapai,New Zealand
+[WRE]  -35.77 174.35 Whangarei,New Zealand
+[WSZ]  -41.73 171.57 Westport,New Zealand
+[WAG]  -39.95 175.02 Wanganui,New Zealand
+[HEA]   34.20  62.22 Herat,Afghanistan
+[JAA]   34.38  70.48 Jalalabad,Afghanistan
+[KBL]   34.55  69.20 Kabul,Afghanistan
+[KDH]   31.50  65.83 Kandahar,Afghanistan
+[MMZ]   35.93  64.75 Maimama,Afghanistan
+[MZR]   36.70  67.20 Mazar-I-Sharif,Afghanistan
+[OASD]  33.38  62.25 Shindand,Afghanistan
+[OASG]  36.75  65.90 Sheberghan,Afghanistan
+[OATQ]  36.77  69.52 Taluqan,Afghanistan
+[UND]   36.65  68.90 Kunduz,Afghanistan
+[BAH]   26.27  50.63 Bahrain,Bahrain
+[OBBS]  25.92  50.58 Bahrain,Bahrain
+[AHB]   18.23  42.65 Abha,Saudi Arabia
+[LEA]   25.28  49.48 Al-Ahsa,Saudi Arabia
+[ABT]   20.28  41.63 El-Baha,Saudi Arabia
+[BHH]   19.98  42.62 Bisha,Saudi Arabia
+[OEBQ]  25.90  49.58 Abqaiq,Saudi Arabia
+[DMM]   26.47  49.78 Dammam,Saudi Arabia
+[DHA]   26.25  50.15 Dhahran,Saudi Arabia
+[GIZ]   16.90  42.58 Gizan,Saudi Arabia
+[ELQ]   26.30  43.77 Gassim,Saudi Arabia
+[URY]   31.40  37.27 Guriat,Saudi Arabia
+[HAS]   27.43  41.68 Hail,Saudi Arabia
+[OEJB]  27.03  49.40 Jubail,Saudi Arabia
+[OEJF]  21.33  39.17 Jeddah,Saudi Arabia
+[JED]   21.67  39.15 Jeddah,Saudi Arabia
+[HBT]   27.90  45.52 King Khalid Mil.City,Saudi Arabia
+[MED]   24.55  39.70 Madinah,Saudi Arabia
+[EAM]   17.60  44.42 Nejran,Saudi Arabia
+[AQI]   28.33  46.12 Hafr Al-Batin,Saudi Arabia
+[OEPC]  25.17  47.48 Petroline 3,Saudi Arabia
+[OEPF]  24.70  44.95 Petroline 6,Saudi Arabia
+[OEPJ]  24.10  41.03 Petroline 10,Saudi Arabia
+[OERB]  22.70  39.07 Rabigh,Saudi Arabia
+[RAH]   29.62  43.48 Rafha,Saudi Arabia
+[RUH]   24.95  46.68 Riyadh,Saudi Arabia
+[OERM]  28.07  48.60 Rash Mishab,Saudi Arabia
+[RAE]   30.90  41.13 Arar,Saudi Arabia
+[OERT]  26.72  50.02 Ras Tanura,Saudi Arabia
+[SHW]   17.47  47.12 Sharurah,Saudi Arabia
+[AJO]   29.78  40.10 Al-Jouf,Saudi Arabia
+[SLF]   20.45  45.62 Sulayel,Saudi Arabia
+[TUU]   28.35  36.62 Tabuk,Saudi Arabia
+[TIF]   21.48  40.53 Taif,Saudi Arabia
+[OETH]  25.20  46.63 Thumamah,Saudi Arabia
+[OETN]  27.87  48.77 Ras Tanajib,Saudi Arabia
+[TUI]   31.68  38.72 Turaif,Saudi Arabia
+[OEWD]  20.50  45.18 Wadi-Al-Dawasir,Saudi Arabia
+[EJH]   26.18  36.47 Wejh,Saudi Arabia
+[YNB]   24.13  38.05 Yenbo,Saudi Arabia
+[ABD]   30.35  48.22 Abadan,Iran
+[OIAD]  32.43  48.38 Dezful,Iran
+[OIAG]  30.73  49.67 Aghajari,Iran
+[OIAH]  30.33  50.82 Gachsaran,Iran
+[QMJ]   32.00  49.27 Masjed Soleiman,Iran
+[OIAJ]  30.83  49.53 Omidyeh,Iran
+[MRX]   30.55  49.15 Bandar Mahshahr,Iran
+[AWZ]   31.33  48.75 Ahwaz,Iran
+[OIBA]  25.87  55.02 Abumusa I.,Iran
+[BUZ]   28.93  50.83 Bushehr,Iran
+[OIBH]  27.20  54.32 Bastak,Iran
+[OIBI]  27.48  52.62 Golbandi,Iran
+[KIH]   26.52  53.97 Kish Island,Iran
+[BDH]   26.52  54.82 Bandar Lengeh,Iran
+[OIBQ]  29.25  50.32 Khark Island,Iran
+[OIBS]  25.90  54.53 Siri Island,Iran
+[OIBV]  26.80  53.35 Lavan Island,Iran
+[KSH]   34.33  47.15 Bakhtaran,Iran
+[OICD]  32.93  47.48 Abdanan,Iran
+[OICI]  33.58  46.40 Ilam,Iran
+[OICK]  33.43  48.28 Khorram Abad,Iran
+[SDG]   35.23  47.00 Sanandaj,Iran
+[OIFE]  32.92  51.55 Daran,Iran
+[OIFH]  32.57  51.68 Esfahan,Iran
+[OIFM]  32.75  51.85 Esfahan,Iran
+[OIFP]  32.62  51.68 Sepah,Iran
+[RAS]   37.32  49.60 Rasht,Iran
+[OIHH]  34.87  48.55 Hamadan,Iran
+[OIHR]  34.13  49.83 Arak,Iran
+[OIID]  35.70  51.47 Teheran,Iran
+[OIIG]  35.63  51.37 Teheran,Iran
+[THR]   35.68  51.30 Teheran,Iran
+[OIIK]  36.23  50.03 Ghazvin,Iran
+[OIIS]  35.58  53.48 Semnan,Iran
+[BND]   27.22  56.37 Bandar Abbas,Iran
+[OIKJ]  28.72  57.67 Jiroft,Iran
+[KER]   30.25  56.95 Kerman,Iran
+[OIKM]  29.08  58.45 Bam,Iran
+[OIKP]  27.15  56.17 Bandar Abbas,Iran
+[OIKQ]  26.75  55.90 Gheshm I.,Iran
+[OIKR]  30.28  56.05 Rafsanjan,Iran
+[OIKY]  29.55  55.67 Sirjan,Iran
+[XBJ]   32.88  59.27 Birjand,Iran
+[OIMC]  36.50  61.05 Sarakhs,Iran
+[OIMJ]  36.42  55.10 Emam Shahr,Iran
+[OIMN]  37.48  57.30 Bojnord,Iran
+[OIMT]  33.67  56.88 Tabas,Iran
+[OIMX]  37.62  56.17 Shahr Abad,Iran
+[OINE]  37.37  55.45 Kalaleh,Iran
+[OING]  36.90  54.40 Gorgan,Iran
+[OINM]  34.17  51.32 Mahmood Abad,Iran
+[OINN]  36.65  51.45 Noshahr,Iran
+[RZR]   36.90  50.67 Ramsar,Iran
+[OINZ]  36.63  53.18 Dasht-E-Naz,Iran
+[OISD]  28.72  54.43 Darab,Iran
+[OISF]  28.88  53.72 Fasa,Iran
+[OISJ]  28.58  53.57 Jahrom,Iran
+[OISL]  27.67  54.37 Lar,Iran
+[OISO]  29.75  52.68 Zarghan,Iran
+[OISR]  27.37  53.18 Lamerd,Iran
+[SYZ]   29.53  52.58 Shiraz,Iran
+[OITL]  38.32  48.42 Ardabil,Iran
+[OITM]  37.33  46.12 Maragheh,Iran
+[OITP]  39.60  47.87 Parsabad,Iran
+[TBZ]   38.12  46.23 Tabriz,Iran
+[OITZ]  36.77  48.35 Zanjan,Iran
+[AZD]   31.90  54.27 Yazd,Iran
+[OIZB]  31.08  61.53 Zabol,Iran
+[ZBR]   25.43  60.37 Chah Bahar,Iran
+[ZAH]   29.47  60.90 Zahedan,Iran
+[OIZI]  27.23  60.72 Iran Shahr,Iran
+[OIZJ]  25.65  57.78 Jask,Iran
+[AMM]   31.72  35.98 Amman,Jordan
+[ADJ]   31.97  35.98 Amman,Jordan
+[AQJ]   29.60  35.02 Aqaba,Jordan
+[OJJR]  31.85  35.22 Jerusalem,Jordan
+[OMF]   32.35  36.25 Mafraq,Jordan
+[KWI]   29.22  47.97 Kuwait,Kuwait
+[BEY]   33.80  35.48 Beirut,Lebanon
+[OLKA]  34.58  36.00 Kleiat,Lebanon
+[AUH]   24.42  54.65 Abu Dhabi,United Arab Emirates
+[AZI]   24.42  54.45 Abu Dhabi,United Arab Emirates
+[OMAH]  24.07  52.45 Al Hamra,United Arab Emirates
+[OMAJ]  24.18  52.60 Jebel Dhana,United Arab Emirates
+[OMAL]  24.25  55.60 Al Ain,United Arab Emirates
+[OMAM]  24.23  54.53 Abu Dhabi,United Arab Emirates
+[OMAR]  24.77  52.55 Arzana,United Arab Emirates
+[OMAS]  25.13  52.87 Das Island,United Arab Emirates
+[OMAZ]  24.85  53.07 Zirku,United Arab Emirates
+[DXB]   25.25  55.35 Dubai,United Arab Emirates
+[FJR]   25.10  56.32 Fujeirah,United Arab Emirates
+[RKT]   25.60  55.93 Ras Al Khaimah,United Arab Emirates
+[SHJ]   25.32  55.52 Sharjah,United Arab Emirates
+[KHS]   26.17  56.23 Khasab,Oman
+[MSH]   20.67  58.88 Masirah,Oman
+[MCT]   23.58  58.28 Muscat,Oman
+[SLL]   17.03  54.08 Salalah,Oman
+[OOSQ]  23.07  57.65 Saiq,Oman
+[TTH]   17.65  54.02 Thumrait,Oman
+[OPBN]  32.97  70.52 Bannu,Pakistan
+[OPBW]  29.33  71.70 Bahawalpure,Pakistan
+[OPCH]  35.88  71.80 Chitral,Pakistan
+[OPDB]  28.87  64.40 Dalbandin,Pakistan
+[OPDG]  29.95  70.48 Dera Ghazi Khan,Pakistan
+[OPDI]  31.90  70.88 Dera Ismail Khan,Pakistan
+[LYP]   31.35  72.98 Faisalabad,Pakistan
+[GWD]   25.22  62.32 Gwadar,Pakistan
+[GIL]   35.92  74.33 Gilgit,Pakistan
+[OPJA]  28.28  68.43 Jacobsbad,Pakistan
+[OPJI]  25.07  61.80 Jiwani,Pakistan
+[KHI]   24.90  67.15 Karachi,Pakistan
+[HDD]   25.32  68.35 Hyderabad,Pakistan
+[OPKH]  27.78  66.63 Khuzdhar,Pakistan
+[OPKN]  28.58  65.42 Kharan,Pakistan
+[LHE]   31.52  74.40 Lahore,Pakistan
+[OPLH]  31.48  74.33 Lahore,Pakistan
+[OPMA]  33.05  73.63 Mangla,Pakistan
+[MFG]   34.33  73.50 Muzaffarabad,Pakistan
+[OPMI]  32.55  71.57 Mianwali,Pakistan
+[MJD]   27.33  68.13 Moenjodaro,Pakistan
+[OPMK]  25.67  69.07 Mir Pur Khas,Pakistan
+[OPMN]  33.00  70.05 Miranshah,Pakistan
+[OPMR]  24.88  66.93 Karachi,Pakistan
+[MUX]   30.20  71.42 Multan,Pakistan
+[WNS]   26.22  68.38 Nawabshah,Pakistan
+[OPNK]  29.53  66.02 Naushki,Pakistan
+[OPOK]  30.73  73.35 Okara,Pakistan
+[ORW]   25.27  64.58 Ormara,Pakistan
+[OPPC]  33.90  70.07 Parachinar,Pakistan
+[PJG]   26.95  64.12 Panjgur,Pakistan
+[PSI]   25.28  63.32 Pasni,Pakistan
+[PEW]   33.98  71.50 Peshawar,Pakistan
+[OPQS]  33.55  73.02 Qasim,Pakistan
+[UET]   30.25  66.93 Quetta,Pakistan
+[RYK]   28.38  70.27 Rahim Yar Khan,Pakistan
+[ISB]   33.60  73.08 Islamabad,Pakistan
+[OPRQ]  30.75  72.27 Shorekote,Pakistan
+[OPRS]  34.07  71.97 Risalpur,Pakistan
+[RAZ]   33.83  73.78 Rawala Kot,Pakistan
+[OPSD]  35.33  75.53 Skardu,Pakistan
+[SKZ]   27.72  68.78 Sukkur,Pakistan
+[OPSR]  32.03  72.65 Sargodha,Pakistan
+[SDT]   34.80  72.35 Saidu Sharif,Pakistan
+[SUL]   28.63  69.17 Sui,Pakistan
+[OPSW]  31.88  72.30 Sahiwal,Pakistan
+[OPTA]  33.98  72.60 Terbela,Pakistan
+[BDN]   24.83  68.83 Talhar,Pakistan
+[TRB]   25.98  63.02 Turbo,Colombia
+[OPWN]  32.30  69.57 Wana,Pakistan
+[PZH]   31.35  69.45 Zhob,Pakistan
+[SDA]   33.25  44.23 Baghdad,Iraq
+[BSR]   30.53  47.65 Basrah,Iraq
+[ALP]   36.17  37.22 Aleppo,Syria
+[DAM]   33.40  36.50 Damascus,Syria
+[DEZ]   35.28  40.17 Deire Zor,Syria
+[OSKL]  37.02  41.18 Kamishli,Syria
+[LTK]   35.40  35.93 Latakia,Syria
+[PMS]   34.55  38.32 Palmyra,Syria
+[DOH]   25.25  51.55 Doha,Qatar
+[PAQ]   61.58 -149.08 Palmer,Usa
+[BTI]   70.13 -143.57 Barter Island,Usa
+[BET]   60.77 -161.83 Bethel,Usa
+[BIG]   63.98 -145.72 Delta Junction,Usa
+[PABM]  59.35 -155.25 Big Mountain,Usa
+[BRW]   71.28 -156.75 Barrow,Usa
+[BTT]   66.90 -151.52 Bettles,Usa
+[CDB]   55.20 -162.72 Cold Bay,Usa
+[PACL]  64.30 -149.12 Clear Mews,Usa
+[CDV]   60.48 -145.47 Cordova,Usa
+[PACZ]  61.77 -166.03 Cape Romanzof,Usa
+[ADK]   51.87 -176.63 Adak Island,Usa
+[DLG]   59.03 -158.50 Dillingham,Usa
+[ADQ]   57.75 -152.48 Kodiak,Usa
+[DUT]   53.90 -166.53 Unalaska,Usa
+[EDF]   61.25 -149.80 Anchorage,Usa
+[EHM]   58.63 -162.05 Cape Newenham,Usa
+[EIL]   64.65 -147.10 Fairbanks,Usa
+[ENA]   60.57 -151.23 Kenai,Usa
+[FAI]   64.80 -147.85 Fairbanks,Usa
+[FBK]   64.83 -147.60 Fort Wainwright,Usa
+[PAFR]  61.25 -149.65 Fort Richardson,Usa
+[GAL]   64.73 -156.93 Galena,Usa
+[GKN]   62.15 -145.45 Gulkana,Usa
+[SGY]   59.45 -135.30 Skagway,Usa
+[HOM]   59.63 -151.47 Homer,Usa
+[ILI]   59.75 -154.90 Iliamna,Usa
+[UTO]   65.98 -153.70 Indian Mountains,Usa
+[JNU]   58.35 -134.57 Juneau,Usa
+[AKN]   58.67 -156.63 King Salmon,Usa
+[KTN]   55.35 -131.70 Ketchikan,Usa
+[LUR]   68.87 -166.10 Cape Lisburne,Usa
+[MCG]   62.95 -155.60 Mcgrath,Usa
+[PAMD]  59.43 -146.30 Middleton Island,Usa
+[MRI]   61.20 -149.83 Anchorage,Usa
+[ANC]   61.17 -149.98 Anchorage,Usa
+[ANN]   55.03 -131.57 Annette Island,Usa
+[OME]   64.50 -165.43 Nome,Usa
+[ORT]   62.95 -141.92 Northway,Usa
+[OTZ]   66.88 -162.58 Kotzebue,Usa
+[PAPB]  56.57 -169.65 Point Barrow,Usa
+[PML]   59.00 -161.82 Port Moller,Usa
+[SCC]   70.18 -148.45 Deadhorse,Usa
+[SIT]   57.03 -135.35 Sitka,Usa
+[SNP]   57.17 -170.22 St. Paul Island,Usa
+[SVW]   61.08 -155.57 Sparrevohn,Usa
+[SYA]   52.70 174.10 Shemya,Usa
+[TAL]   65.17 -152.10 Tanana,Usa
+[TNC]   65.55 -167.92 Tin City,Usa
+[TKA]   62.32 -150.08 Talkeetna,Usa
+[TLJ]   62.88 -155.97 Tatalina,Usa
+[UNK]   63.88 -160.78 Unalakleet,Usa
+[VDZ]   61.13 -146.23 Valdez,Usa
+[AIN]   70.60 -159.85 Fort Wainwright,Usa
+[YAK]   59.50 -139.65 Yakutat,Usa
+[FYU]   66.57 -145.25 Fort Yukon,Usa
+[ROP]   14.17 145.23 Rota,Mariana Islands
+[SPN]   15.12 145.72 Saipan,Mariana Islands
+[PGTW]  13.50 144.83 Typhoon Warning Ctr,Mariana Islands
+[UAM]   13.58 144.92 Andersen,Mariana Islands
+[GUM]   13.48 144.78 Agana,Mariana Islands
+[TNI]   14.98 145.62 West Tinian,Mariana Islands
+[BKH]   22.02 -159.78 Barking Sands,Usa  Kauai Isl.
+[HDH]   21.57 -158.20 Dillingham,Usa  Oahu Isl.
+[PHHI]  21.48 -158.03 Wheeler Afb.,Usa  Oahu Isl.
+[HNM]   20.78 -156.00 Hana,Usa  Maui Isl.
+[JHM]   20.95 -156.67 Lahania-Kapalua,Usa  Maui Isl.
+[KOA]   19.73 -156.03 Kona,Usa  Hawaii Isl.
+[LIH]   21.97 -159.33 Lihue,Usa  Kauai Isl.
+[MKK]   21.15 -157.08 Molokai,Usa  Molokai Isl.
+[MUE]   20.00 -155.67 Kamuela,Usa  Hawaii Isl.
+[NGF]   21.43 -157.77 Kaneohe Bay,Usa  Oahu Isl.
+[HNL]   21.30 -157.92 Honolulu,Usa  Oahu Isl.
+[LNY]   20.78 -156.95 Lanai,Usa  Lanai Isl.
+[OGG]   20.88 -156.42 Kahului,Usa  Maui Isl.
+[BSF]   19.75 -155.55 Bradshaw Field,Usa  Hawaii Isl.
+[ITO]   19.72 -155.03 Hilo,Usa  Hawaii Isl.
+[UPP]   20.25 -155.85 Opolu,Usa
+[JON]   16.72 -169.53 Johnston Island,Johnston Atoll
+[1Z8]   11.33 162.32 Eniwetok Island,Marshall Islands
+[MAJ]    7.05 171.27 Majuro,Marshall Islands
+[PKRO]   9.38 167.47 Kwajalein,Marshall Islands
+[KWA]    8.72 167.72 Kwajalein,Marshall Islands
+[CXI]    1.98 -157.33 Kiritimati,Kiribati
+[MDY]   28.20 -177.37 Midway,Midway Island
+[OLI]   70.48 -149.87 Oliktok Point,Usa
+[PIZ]   69.72 -163.00 Point Lay,Usa
+[TKK]    7.45 151.83 Chuuk,Micronesia
+[PNI]    6.98 158.20 Pohnpei,Micronesia
+[ROR]    7.37 134.53 Babelthuap,Palau Island
+[KSA]    5.35 162.95 Kosrae,Micronesia
+[YAP]    9.48 138.07 Yap,Micronesia
+[KNH]   24.42 118.35 Chinmen,Taiwan
+[PIF]   22.67 120.45 Pingtung,Taiwan
+[RCDI]  24.85 121.23 Longtang,Taiwan
+[TTT]   22.75 121.08 Fengnin,Taiwan
+[GNI]   22.67 121.45 Green Island,Taiwan
+[RCGM]  25.05 121.23 Taoyuan,Taiwan
+[KHH]   22.57 120.35 Kaohsiung,Taiwan
+[CYI]   23.45 120.38 Chiayi,Taiwan
+[TXG]   24.18 120.65 Chung,Taiwan
+[KYD]   22.02 121.52 Lanyu,Taiwan
+[RCMQ]  24.25 120.62 Chingchuakang,Taiwan
+[MZW]   26.22 120.00 Matsu,Taiwan
+[TNN]   22.95 120.20 Tainan,Taiwan
+[RCPO]  24.82 120.93 Hsinchu,Taiwan
+[MZG]   23.57 119.62 Makung,Taiwan
+[RCQS]  22.78 121.17 Taitung,Taiwan
+[RCRA]  22.70 120.27 Tsoying,Taiwan
+[RCSQ]  22.70 120.47 Pingtung,Taiwan
+[TSA]   25.07 121.55 Taipei,Taiwan
+[TPE]   25.07 121.22 Taipei,Taiwan
+[WOT]   23.37 119.48 Wang An,Taiwan
+[HUN]   24.02 121.62 Hualien,Taiwan
+[NRT]   35.75 140.38 Tokyo,Japan
+[MMJ]   36.17 137.92 Matsumoto,Japan
+[RJAH]  36.17 140.40 Hyakuri,Japan
+[RJAM]  24.28 153.97 Minami Tori Shima,Japan
+[IWO]   24.78 141.32 Iwojima,Japan
+[SHM]   33.65 135.35 Nanki-Shirahama,Japan
+[RJBK]  34.58 133.92 Kohnan,Japan
+[OBO]   42.73 143.22 Obihiro,Japan
+[CTS]   42.77 141.68 Sapporo,Japan
+[HKD]   41.77 140.82 Hakodate,Japan
+[SPK]   42.78 141.65 Chitose,Japan
+[MMB]   43.87 144.15 Memanbetsu,Japan
+[SHB]   43.57 144.95 Nakashibetsu,Japan
+[SPK]   43.10 141.37 Sapporo,Japan
+[RJCT]  42.88 143.15 Tokachi,Japan
+[WKJ]   45.40 141.80 Wakkanai,Japan
+[IKI]   33.73 129.78 Iki,Japan
+[UBJ]   33.92 131.27 Yamaguchi,Japan
+[TSJ]   34.28 129.32 Tsushima,Japan
+[MBE]   44.30 143.40 Monbetsu,Japan
+[AKJ]   43.67 142.43 Asahikawa,Japan
+[RIS]   45.23 141.18 Rishiri Island,Japan
+[RJFA]  33.87 130.65 Ashiya,Japan
+[KUM]   30.38 130.65 Yakushima,Japan
+[FUJ]   32.65 128.82 Fukue,Japan
+[FUK]   33.58 130.45 Fukuoka,Japan
+[TNE]   30.53 130.95 Tanegashima,Japan
+[KOJ]   31.80 130.72 Kagoshima,Japan
+[KMI]   31.87 131.43 Miyazaki,Japan
+[RJFN]  32.08 131.45 Nyutabaru,Japan
+[OIT]   33.47 131.73 Oita,Japan
+[KKJ]   33.83 130.93 Kitakyushu,Japan
+[KMJ]   32.83 130.85 Kumamoto,Japan
+[NGS]   32.92 129.92 Nagasaki,Japan
+[RJFY]  31.37 130.83 Kanoya,Japan
+[RJFZ]  33.68 131.03 Tsuiki,Japan
+[ASJ]   28.42 129.70 Amami,Japan
+[RJKB]  27.42 128.70 Okierabu,Japan
+[TKN]   27.83 128.87 Tokunoshima,Japan
+[RJNF]  36.13 136.22 Fukui,Japan
+[RJNG]  35.38 136.87 Gifu,Japan
+[RJNH]  34.75 137.70 Hamamatsu,Japan
+[KMQ]   36.38 136.40 Kanazawa,Japan
+[NGO]   35.25 136.92 Nagoya,Japan
+[OKI]   36.17 133.32 Oki Island,Japan
+[TOY]   36.63 137.18 Toyama,Japan
+[RJNY]  34.80 138.28 Yaizu,Japan
+[HIJ]   34.43 132.92 Hiroshima,Japan
+[OKJ]   34.75 133.85 Okayama,Japan
+[IZO]   35.40 132.88 Izumo,Japan
+[RJOF]  34.03 131.53 Hofu,Japan
+[YGJ]   35.48 133.23 Miho,Japan
+[RJOI]  34.13 132.23 Iwakuni,Japan
+[KCZ]   33.53 133.67 Kochi,Japan
+[MYJ]   33.82 132.68 Matsuyama,Japan
+[ITM]   34.78 135.43 Osaka,Japan
+[TTJ]   35.52 134.15 Tottori,Japan
+[TKS]   34.12 134.60 Tokushima,Japan
+[TAK]   34.20 134.00 Takamatsu,Japan
+[RJOY]  34.58 135.60 Osaka,Japan
+[RJOZ]  34.03 131.05 Ozuki,Japan
+[AOJ]   40.73 140.68 Aomori,Japan
+[GAJ]   38.40 140.37 Yamagata,Japan
+[RJSH]  40.55 141.45 Hachinoe,Japan
+[HNA]   39.42 141.13 Hanamaki,Japan
+[AXT]   39.60 140.22 Akita,Japan
+[MSJ]   40.70 141.37 Misawa,Japan
+[SDJ]   38.13 140.92 Sendai,Japan
+[RJST]  38.40 141.22 Matsushima,Japan
+[RJSY]  38.80 139.78 Shonai,Japan
+[RJTA]  35.45 139.45 Atsugi,Japan
+[RJTE]  34.98 139.82 Tateyama,Japan
+[RJTF]  35.67 139.52 Tokyo,Japan
+[HAC]   33.10 139.78 Hachijojima,Japan
+[RJTJ]  35.83 139.40 Iruma,Japan
+[RJTK]  35.38 139.90 Kisarazu,Japan
+[RJTL]  35.78 140.00 Shimofusa,Japan
+[OIM]   34.78 139.35 Oshima,Japan
+[MMY]   34.07 139.55 Miyake Jima,Japan
+[RJTR]  35.50 139.38 Zama,Japan
+[HND]   35.55 139.77 Tokyo,Japan
+[OKO]   35.73 139.33 Yokota,Japan
+[KWJ]   35.12 126.80 Kwangju,Korea
+[KUB]   35.90 126.60 Kunsan,Korea
+[RKJM]  34.75 126.37 Mokpo,Korea
+[RKJU]  35.87 127.12 Jhunju,Korea
+[RSU]   34.83 127.60 Yeosu,Korea
+[RKNC]  37.88 127.72 Chunchon,Korea
+[SHO]   38.13 128.60 Sokch'O,Korea
+[KAG]   37.75 128.93 Kangnung,Korea
+[RKNW]  37.43 127.95 Wonju,Korea
+[RKNY]  38.05 128.67 Yangku,Korea
+[CJU]   33.50 126.48 Cheju,Korea
+[RKPE]  35.13 128.68 Chinhae,Korea
+[PUS]   35.17 128.93 Kimhae,Korea
+[RKPP]  35.17 129.12 Busan,Korea
+[RKPS]  35.08 128.07 Sachon,Korea
+[USN]   35.58 129.35 Ulsan,Korea
+[RKSG]  36.95 127.03 Pyongtaek,Korea
+[SSN]   37.43 127.10 Seoul East,Korea
+[OSN]   37.08 127.02 Osan,Korea
+[GMP]   37.55 126.78 Seoul,Korea
+[RKSW]  37.23 127.00 Suwon,Korea
+[KPO]   35.98 129.42 Pohang,Korea
+[RKTJ]  35.85 129.20 Kyungju,Korea
+[TAE]   35.88 128.65 Taegu,Korea
+[RKTU]  36.70 127.48 Chongju,Korea
+[YEC]   36.62 128.35 Yechon,Korea
+[OKA]   26.18 127.63 Naha,Japan
+[RODE]  26.72 127.75 Iejima,Japan
+[DNA]   26.35 127.77 Kadena,Japan
+[ISG]   24.33 124.18 Ishigaki,Japan
+[UEO]   26.35 126.70 Kumejima,Japan
+[MMD]   25.83 131.25 Minami Daito,Japan
+[MMY]   24.77 125.28 Miyako,Japan
+[KTD]   25.93 131.32 Kitadaito,Japan
+[SHI]   24.82 125.13 Shimojishima,Japan
+[RNJ]   27.03 128.40 Yoron,Japan
+[ROTM]  26.27 127.75 Futema,Japan
+[OGN]   24.47 122.97 Yonaguni Jima,Japan
+[MNL]   14.50 121.02 Manila,Philippines
+[RPMB]   6.10 125.23 Cubi Nas,Philippines
+[CEB]    7.15 124.20 Cebu,Philippines
+[CGY]    8.40 124.60 Ladag,Philippines
+[MNL]    7.62 124.05 Manila,Philippines
+[LGP]    7.82 123.45 Legazpi,Philippines
+[RPMR]   6.05 125.08 Romblon,Philippines
+[RPMS]   9.75 125.47 Sangley Point,Philippines
+[ZAM]    6.92 122.05 Zamboanga,Philippines
+[BAG]   16.37 120.62 Baguio,Philippines
+[RPUD]  14.12 122.97 Daet,Philippines
+[RPUF]  14.98 120.48 Floridablanca,Philippines
+[RPUG]  16.03 120.23 Lingayen,Philippines
+[RPUH]  12.35 121.03 San Jose,Philippines
+[RPUI]  15.32 119.97 Iba,Philippines
+[RPUL]  13.95 121.12 Lipa,Philippines
+[RPUM]  13.20 120.60 Mamburao,Philippines
+[RPUN]  13.58 123.27 Naga,Philippines
+[RPUO]  20.45 121.97 Basco,Philippines
+[RPUP]  14.28 122.63 Jose Panganiban,Philippines
+[RPUQ]  17.55 120.35 Vigan,Philippines
+[RPUS]  16.58 120.30 San Fernando,Philippines
+[RPUT]  17.63 121.72 Tuguegarao,Philippines
+[RPUV]  13.57 124.20 Virac,Philippines
+[RPUW]  13.35 121.82 Marinduque,Philippines
+[RPUY]  16.92 121.75 Cauayan,Philippines
+[RPUZ]  16.62 121.25 Bagabag,Philippines
+[TAC]   11.22 125.02 Tacloban,Philippines
+[BCD]   10.63 122.92 Bacolod,Philippines
+[RPVC]  12.07 124.53 Calbayog,Philippines
+[DGT]    9.33 123.30 Dumaguete,Philippines
+[RPVF]  12.50 124.63 Catarman,Philippines
+[RPVG]  11.03 125.73 Guiuan,Philippines
+[ILO]   10.70 122.53 Iloilo,Philippines
+[KLO]   11.67 122.37 Kalibo,Philippines
+[NOP]   10.30 123.97 Masbate,Philippines
+[RPVO]  11.05 124.55 Ormoc,Philippines
+[PPS]    9.73 118.75 Puerto Princesa,Philippines
+[RPVR]  11.58 122.75 Roxas,Philippines
+[SJI]   10.75 121.92 San Jose,Philippines
+[COC]  -31.28 -57.98 Concordia,Argentina
+[GHU]  -33.00 -58.60 Gualeguaychu,Argentina
+[SAAI] -35.33 -57.28 Punta Indio,Argentina
+[SAAJ] -34.53 -60.92 Junin,Argentina
+[PRA]  -31.78 -60.47 Parana,Argentina
+[ROS]  -32.90 -60.78 Rosario,Argentina
+[SFN]  -31.70 -60.80 Santa Fe,Argentina
+[AEP]  -34.55 -58.40 Buenos Aires,Argentina
+[SACC] -31.00 -64.52 La Cumbre,Argentina
+[COR]  -31.32 -64.20 Cordoba,Argentina
+[SACT] -30.33 -66.28 Gobernador Gordillo,Argentina
+[SADD] -34.50 -58.60 Buenos Aires,Argentina
+[SADF] -34.45 -58.58 San Fernando,Argentina
+[SADJ] -34.55 -58.78 Jose C. Paz,Argentina
+[LPG]  -34.97 -57.88 La Plata,Argentina
+[SADM] -34.67 -58.63 Moron,Argentina
+[SADP] -34.60 -58.60 El Palomar,Argentina
+[SADS] -34.72 -58.58 San Justo,Argentina
+[SAHC] -37.43 -70.22 Chosmadal,Argentina
+[SAHR] -39.00 -67.62 Fuerte Gral Roca,Argentina
+[MDZ]  -32.82 -68.78 Mendoza,Argentina
+[LGS]  -35.48 -69.57 Malargue,Argentina
+[SAMQ] -32.85 -68.87 Mendoza,Argentina
+[AFA]  -34.58 -68.40 San Rafael,Argentina
+[CTC]  -28.58 -65.75 Catamarca,Argentina
+[SDE]  -27.75 -64.30 Santiago Del Estero,Argentina
+[SANI] -28.03 -67.57 Tinogasta,Argentina
+[IRJ]  -29.37 -66.78 La Rioja,Argentina
+[SANO] -29.22 -67.43 Chilecito,Argentina
+[TUC]  -26.83 -65.10 Tucuman,Argentina
+[UAQ]  -31.57 -68.42 San Julian,Argentina
+[RCU]  -33.08 -64.25 Rio Cuarto,Argentina
+[VDR]  -31.93 -65.13 Villa Dolores,Argentina
+[SAOL] -34.13 -63.35 Laboulaye,Argentina
+[SAOM] -32.68 -62.15 Marcos Juarez,Argentina
+[SAOR] -33.72 -65.38 Villa Reynolds,Argentina
+[LUQ]  -33.27 -66.35 San Luis,Argentina
+[CNQ]  -27.43 -58.75 Corrientes,Argentina
+[RES]  -27.43 -59.05 Resistencia,Argentina
+[FMA]  -26.20 -58.22 Formosa,Argentina
+[IGR]  -25.73 -54.47 Iguazu Falls,Argentina
+[AOL]  -29.68 -57.15 Paso De Los Libres,Argentina
+[SARM] -30.27 -57.63 Monte Caseros,Argentina
+[PSS]  -27.38 -55.97 Posadas,Argentina
+[SARS] -26.75 -60.48 Presidencia R.S.Pena,Argentina
+[SLA]  -24.85 -65.48 Salta,Argentina
+[JUJ]  -24.38 -65.08 Jujuy,Argentina
+[ORA]  -23.15 -64.32 Oran,Argentina
+[SASQ] -22.15 -65.57 La Quiaca,Argentina
+[SAST] -22.62 -63.78 Tartagal,Argentina
+[SATG] -29.10 -59.22 Goya,Argentina
+[SATK] -24.72 -60.53 Las Lomitas,Argentina
+[SATM] -29.22 -58.08 Mercedes,Argentina
+[SATO] -27.52 -55.12 Obera,Argentina
+[SATR] -29.20 -59.68 Reconquista,Argentina
+[SATU] -29.77 -57.97 Curuzu Cuatia,Argentina
+[EHL]  -41.93 -71.52 El Bolson,Argentina
+[CRD]  -45.78 -67.45 Comodoro Rivadavia,Argentina
+[EMX]  -42.02 -71.17 El Maiten,Argentina
+[EQS]  -42.90 -71.13 Esquel,Argentina
+[SAVH] -46.53 -68.95 Las Heras,Argentina
+[REL]  -43.20 -65.27 Trelew,Argentina
+[VDM]  -40.87 -63.00 Viedma,Argentina
+[PMY]  -42.75 -65.10 Puerto Madryn,Argentina
+[ING]  -50.33 -72.23 Lago Argentino,Argentina
+[SAWB] -64.23 -56.62 Marambio Base,Antarctica
+[PUD]  -47.73 -65.90 Puerto Deseado,Argentina
+[RGA]  -53.77 -67.73 Rio Grande,Argentina
+[RGL]  -51.60 -69.30 Rio Gallegos,Argentina
+[USH]  -54.83 -68.28 Ushuaia,Argentina
+[ULA]  -49.30 -67.80 San Julian,Argentina
+[JSM]  -44.03 -70.45 Jose De San Martin,Argentina
+[RYO]  -51.60 -72.22 Rio Turbio,Argentina
+[RZA]  -50.00 -68.57 Santa Cruz,Argentina
+[BHI]  -38.72 -62.17 Bahia Blanca,Argentina
+[SAZC] -37.43 -61.88 Colonel Suarez,Argentina
+[SAZD] -36.32 -57.72 Dolores,Argentina
+[SAZF] -36.88 -60.20 Olavarria,Argentina
+[SAZG] -35.68 -63.75 General Pico,Argentina
+[SAZH] -38.38 -60.32 Tres Arroyos,Argentina
+[SAZI] -36.18 -61.07 Bolivar,Argentina
+[SAZL] -36.53 -56.72 Santa Teresita,Argentina
+[MDQ]  -37.93 -57.57 Mar Del Plata,Argentina
+[NQN]  -38.93 -68.15 Neuquen,Argentina
+[SAZO] -38.48 -58.80 Necochea,Argentina
+[SAZP] -35.83 -61.85 Pehuajo,Argentina
+[RSA]  -36.58 -64.27 Santa Rosa,Argentina
+[BRC]  -41.15 -71.15 San Carlos De Bariloch,Argentina
+[TDL]  -37.23 -59.22 Tandil,Argentina
+[VLG]  -37.23 -57.02 Villa Gesell,Argentina
+[SAZW] -38.93 -69.25 Cutralco,Argentina
+[CPC]  -40.07 -71.13 San Martin Des Andes,Argentina
+[CDJ]   -8.33 -49.30 Conceicao Do Araguaia,Brazil
+[SBAF] -22.87 -43.38 Rio De Janeiro,Brazil
+[SBAM]   2.07 -50.85 Amapa,Brazil
+[AQA]  -21.80 -48.12 Araracuara,Brazil
+[AJU]  -10.98 -37.07 Aracaju,Brazil
+[SBAS] -22.63 -50.45 Assis,Brazil
+[AFL]   -9.85 -56.10 Alta Floresta,Brazil
+[ARU]  -21.13 -50.42 Aracatuba,Brazil
+[SBAV] -22.52 -52.97 Teodoro Sampaio,Brazil
+[BEL]   -1.37 -48.47 Belem,Brazil
+[BGX]  -31.38 -54.10 Bage,Brazil
+[PLU]  -19.85 -43.95 Belo Horizonte,Brazil
+[BFH]  -25.40 -49.22 Curitiba,Brazil
+[SBBQ] -21.27 -43.75 Barbacena,Brazil
+[BSB]  -15.85 -47.90 Brasilia,Brazil
+[BAU]  -22.33 -49.05 Bauru,Brazil
+[BVB]    2.83 -60.68 Boa Vista,Brazil
+[SBBW] -15.85 -52.38 Barra Do Garcas,Brazil
+[CAC]  -25.00 -53.50 Cascavel,Brazil
+[SBCC]  -9.33 -54.95 Itaituba,Brazil
+[CNF]  -19.63 -43.97 Belo Horizonte,Brazil
+[CGR]  -20.47 -54.67 Campo Grande,Brazil
+[XAP]  -27.13 -52.65 Chapeco,Brazil
+[CLN]   -7.32 -47.45 Carolina,Brazil
+[SBCM] -28.72 -49.42 Criciuma,Brazil
+[SBCO] -29.93 -51.13 Porto Alegre,Brazil
+[CAW]  -21.68 -41.30 Campos,Brazil
+[CMG]  -19.00 -57.67 Corumba,Brazil
+[CWB]  -25.52 -49.17 Curitiba,Brazil
+[CRQ]  -17.65 -39.25 Caravelas,Brazil
+[CXJ]  -29.18 -51.18 Caxias Do Sul,Brazil
+[CGB]  -15.65 -56.12 Cuiaba,Brazil
+[CZS]   -7.60 -72.77 Cruiziro Do Sul,Brazil
+[PPB]  -22.17 -51.42 President Prudente,Brazil
+[MAO]   -3.03 -60.03 Manaus,Brazil
+[SBEK]  -6.22 -57.77 Jacare-Acanga,Brazil
+[SBES] -22.80 -42.08 Sao Pedro Da Aldeia,Brazil
+[FRC]  -20.58 -47.37 Franca,Brazil
+[IGU]  -25.58 -54.48 Foz Do Iguacu,Brazil
+[FLN]  -27.67 -48.53 Florianopolis,Brazil
+[FEN]   -3.85 -32.42 Fernando Do Noronha,Brazil
+[SBFT] -20.27 -49.18 Fronteira,Brazil
+[SBFU] -20.70 -46.33 Alpinopolis,Brazil
+[FOR]   -3.77 -38.52 Fortaleza,Brazil
+[GIG]  -22.80 -43.23 Rio De Janeiro,Brazil
+[SBGM] -10.78 -65.28 Guajara-Mirim,Brazil
+[GYN]  -16.62 -49.22 Goiania,Brazil
+[GRU]  -23.42 -46.47 Sao Paulo,Brazil
+[SBGS] -25.18 -50.13 Ponta Grossa,Brazil
+[SBGW] -22.78 -45.20 Guaratingueta,Brazil
+[ATM]   -3.25 -52.25 Altamira,Brazil
+[SBIC]  -3.12 -58.47 Itaituba,Brazil
+[SBIH]  -4.23 -56.00 Itaituba,Brazil
+[IOS]  -14.80 -39.02 Ilheus,Brazil
+[IPN]  -19.47 -42.48 Ipatinga,Brazil
+[SBIT] -18.43 -49.20 Itumbiara,Brazil
+[IMP]   -5.52 -47.45 Imperatriz,Brazil
+[SBJC]  -1.40 -48.45 Belem,Brazil
+[JDF]  -21.78 -43.38 Juiz De Fora,Brazil
+[JPA]   -7.27 -35.88 Joao Pessoa,Brazil
+[JOI]  -26.22 -48.78 Joinville,Brazil
+[VCP]  -23.00 -47.13 Campinas,Brazil
+[SBLJ] -27.77 -50.27 Lajes,Brazil
+[LIP]  -21.65 -49.72 Lins,Brazil
+[LDB]  -23.33 -51.12 Londrina,Brazil
+[LAZ]  -13.25 -43.40 Bom Jesus Da Lapa,Brazil
+[SBLS] -19.65 -43.88 Lagoa Santa,Brazil
+[MAB]   -5.37 -49.13 Maraba,Brazil
+[SBMD]  -0.88 -52.60 Almeirim,Brazil
+[MGF]  -23.43 -51.90 Maringa,Brazil
+[MOC]  -16.70 -43.82 Montes Claros,Brazil
+[SBML] -22.18 -49.92 Marilia,Brazil
+[SBMN]  -3.13 -59.98 Manaus,Brazil
+[MCZ]   -9.50 -35.78 Maceio,Brazil
+[MCP]    0.05 -51.07 Macapa,Brazil
+[SBMS]  -5.20 -37.35 Mocord,Brazil
+[SBMT] -23.50 -46.63 Sao Paulo,Brazil
+[SBMY]  -5.80 -61.27 Manicore,Brazil
+[NVT]  -26.87 -48.65 Navegantes,Brazil
+[GEL]  -28.27 -54.17 Santo Angelo,Brazil
+[NAT]   -5.90 -35.23 Natal,Brazil
+[SBOI]   3.85 -51.78 Oioiapoque,Brazil
+[POA]  -29.98 -51.17 Porto Alegre,Brazil
+[SBPB]  -2.88 -41.72 Parnaiba,Brazil
+[POO]  -21.83 -46.57 Pocos De Caldas,Brazil
+[PFB]  -28.23 -52.32 Passo Fundo,Brazil
+[PET]  -31.72 -52.32 Pelotas,Brazil
+[PNZ]   -9.35 -40.55 Petrolina,Brazil
+[PNB]  -10.72 -48.38 Porto Nacional,Brazil
+[PMG]  -22.53 -55.70 Ponta Pora,Brazil
+[PVH]   -8.70 -63.90 Porto Velho,Brazil
+[SBQV] -14.85 -40.85 Vitoria Da Conquista,Brazil
+[RBR]   -9.87 -67.88 Rio Branco,Brazil
+[REC]   -8.12 -34.92 Recife,Brazil
+[RIG]  -32.07 -52.15 Rio Grande,Brazil
+[SDU]  -22.90 -43.15 Rio De Janeiro,Brazil
+[RAO]  -21.13 -47.77 Ribeirao Preto,Brazil
+[STU]  -22.92 -43.72 Rio De Janeiro,Brazil
+[SJK]  -23.22 -45.85 Sao Jose Dos Campos,Brazil
+[SLZ]   -2.58 -44.23 Sao Luis,Brazil
+[STM]  -29.70 -53.68 Santarem,Brazil
+[CGH]  -23.62 -46.65 Sao Paulo,Brazil
+[SJP]  -20.80 -49.40 Sao Jose Do Rio Preto,Brazil
+[SSZ]  -23.92 -46.28 Santos,Brazil
+[SSA]  -12.90 -38.32 Salvador,Brazil
+[SBTB]  -1.48 -56.38 Oriximina,Brazil
+[THE]   -5.05 -42.82 Teresina,Brazil
+[TFF]   -3.37 -64.72 Tefe,Brazil
+[SBTK]  -8.15 -70.77 Tarauaca,Brazil
+[SBTL] -24.32 -50.65 Telemaco Borba,Brazil
+[SBTS]   2.22 -55.93 Obidos Tirios,Brazil
+[TBT]   -4.25 -69.93 Tabatinga,Brazil
+[TUR]   -3.78 -49.72 Tucurui,Brazil
+[SBUA]  -0.13 -66.98 Sao Gabriel,Brazil
+[PAV]   -9.40 -38.25 Paulo Alfonso,Brazil
+[URG]  -29.77 -57.03 Uruguaiana,Brazil
+[UDI]  -18.87 -48.22 Uberlandia,Brazil
+[SBUP] -20.77 -51.55 Castilho,Brazil
+[UBA]  -19.75 -47.95 Uberaba,Brazil
+[VAG]  -21.58 -45.47 Varginha,Brazil
+[BVH]  -12.68 -60.08 Vilhena,Brazil
+[VIX]  -20.25 -40.28 Vitoria,Brazil
+[SBYA]   0.60 -69.18 Iauarete,Brazil
+[QPS]  -21.98 -47.33 Piracununga,Brazil
+[ZUD]  -41.90 -73.78 Ancud,Chile
+[WAP]  -43.60 -71.80 Alto Palena,Chile
+[ARI]  -18.33 -70.33 Arica,Chile
+[BBA]  -45.90 -71.68 Balmaceda,Chile
+[SCBQ] -33.55 -70.68 Santiago,Chile
+[CCH]  -46.57 -71.68 Chile Chico,Chile
+[CJC]  -22.48 -68.90 Calama,Chile
+[SCCH] -36.57 -72.02 Chillan,Chile
+[PUQ]  -53.00 -70.85 Punta Arenas,Chile
+[GXQ]  -45.58 -72.10 Coyhaique,Chile
+[IQQ]  -20.53 -70.17 Iquique,Chile
+[SCL]  -33.38 -70.78 Santiago,Chile
+[ANF]  -23.43 -70.43 Antofagasta,Chile
+[SCFM] -53.25 -70.32 Porvenir,Chile
+[LSQ]  -37.40 -72.42 Los Angeles,Chile
+[SCGZ] -54.92 -67.62 Puerto Williams,Chile
+[CPO]  -27.28 -70.40 Copiapo,Chile
+[SCIC] -34.97 -71.22 Curico,Chile
+[CCP]  -36.77 -73.05 Concepcion,Chile
+[IPC]  -27.15 -109.42 Easter Island,Chile
+[ZOS]  -40.60 -73.05 Osorno,Chile
+[SCLL] -28.58 -70.75 Vallenar,Chile
+[SCRG] -34.17 -70.77 Rancagua,Chile
+[SCRM] -62.18 -58.98 Isla Rey Jorge,Antarctica
+[LSC]  -29.90 -71.18 La Serena,Chile
+[SCSN] -33.65 -71.60 Santo Domingo,Chile
+[SCST] -42.48 -73.77 Castro,Chile
+[SCTB] -33.45 -70.53 Santiago,Chile
+[ZCO]  -38.77 -72.63 Temuco,Chile
+[PMC]  -41.43 -73.08 Puerto Montt,Chile
+[ULC]  -33.48 -70.68 Santiago,Chile
+[WCH]  -42.92 -72.68 Chaiten,Chile
+[ZAL]  -39.63 -73.08 Valdivia,Chile
+[ATF]   -1.20 -78.57 Ambato,Ecuador
+[SECM]  -1.70 -79.37 Clementia,Ecuador
+[OCC]   -0.45 -76.98 Coca,Ecuador
+[CUE]   -2.88 -78.98 Cuenca,Ecuador
+[GPS]   -0.45 -90.25 Galapagos,Galapagos I. (Ecuador
+[GYE]   -2.15 -79.88 Guayaquil,Ecuador
+[SEGZ]  -3.42 -78.57 Gualaquiza,Ecuador
+[SEIB]   0.33 -78.13 Ibarra,Ecuador
+[LGQ]    0.08 -76.87 Lago Agrio,Ecuador
+[SELJ]  -1.70 -79.55 La Julia,Ecuador
+[SELM]  -1.50 -79.47 Loma Larga,Ecuador
+[SELT]  -0.90 -78.60 Latacunga,Ecuador
+[SEMA]  -4.37 -79.93 Macara,Ecuador
+[XMS]   -2.28 -78.12 Macas,Ecuador
+[MCH]   -3.27 -79.95 Machala,Ecuador
+[SEMO]  -2.07 -76.97 Montalvo,Ecuador
+[MEC]   -0.93 -80.67 Manta,Ecuador
+[SEMX]  -2.85 -79.80 Maragrosa,Ecuador
+[SEMY]  -1.73 -79.62 Martinica,Ecuador
+[SEPD]   0.07 -80.05 Pedernales,Ecuador
+[PVO]   -1.03 -80.47 Portoviejo,Ecuador
+[UIO]   -0.13 -78.48 Quito,Ecuador
+[SERB]  -1.65 -78.65 Riobamba,Ecuador
+[SERO]  -3.43 -79.97 Santa Rosa,Ecuador
+[SNC]   -2.20 -80.98 Salinas,Ecuador
+[SESD]  -0.23 -79.20 Santo Domingo,Ecuador
+[SEST]  -0.90 -89.60 San Cristobal,Ecuador
+[SETA]  -2.25 -79.68 Taura,Ecuador
+[SETE]  -0.98 -77.82 Tena,Ecuador
+[TPC]   -0.12 -76.33 Tarapoa,Ecuador
+[TUA]    0.80 -77.70 Tulcan,Ecuador
+[SFAL] -51.68 -57.77 Stanley,Falkland Islands
+[ASU]  -25.23 -57.52 Asuncion,Paraguay
+[SGAY] -27.37 -56.85 Ayolas,Paraguay
+[SGCO] -23.43 -57.42 Conception,Paraguay
+[SGFI] -22.35 -60.05 Filadelfia,Paraguay
+[SGIB] -25.40 -54.62 Itaipu,Paraguay
+[SGME] -22.03 -60.62 Mariscal Estigarribia,Paraguay
+[SGPI] -26.87 -58.32 Pilar,Paraguay
+[AXM]    4.45 -75.75 Armenia,Colombia
+[PUU]    0.50 -76.50 Puerto Asis,Colombia
+[SKBC]   9.03 -73.97 El Banco,Colombia
+[BGA]    7.12 -73.18 Bucaramanga,Colombia
+[BOG]    4.70 -74.13 Bogota,Colombia
+[BAQ]   10.88 -74.77 Barranquilla,Colombia
+[BSC]    6.20 -77.38 Bahia Solano,Colombia
+[BUN]    3.82 -76.98 Buenaventura,Colombia
+[CUC]    7.92 -72.50 Cucuta,Colombia
+[COG]    5.07 -76.67 Condoto,Colombia
+[CTG]   10.43 -75.50 Cartagena,Colombia
+[CLO]    3.53 -76.37 Cali,Colombia
+[TCO]    1.80 -78.73 Tumaco,Colombia
+[CZU]    9.32 -75.28 Corozal,Colombia
+[EJA]    7.02 -73.80 Barrancabermeja,Colombia
+[FLA]    1.58 -75.55 Florencia,Colombia
+[SKGI]   4.27 -74.78 Girardot,Colombia
+[SKGO]   4.75 -75.95 Cartago,Colombia
+[GPI]    2.57 -77.88 Guapi,Colombia
+[SKGY]   4.80 -74.05 Guaymaral,Colombia
+[IBE]    4.42 -75.12 Ibague,Colombia
+[IPI]    0.85 -77.67 Ipiales,Colombia
+[SKLC]   7.80 -76.70 Carepa,Colombia
+[SKLM]  11.22 -72.48 La Mina,Colombia
+[LET]   -4.18 -69.93 Leticia,Colombia
+[EOH]    6.22 -75.58 Medellin,Colombia
+[MGN]    9.28 -74.83 Magangue,Colombia
+[MTR]    8.82 -75.82 Monteria,Colombia
+[MVP]    1.25 -70.23 Mitu,Colombia
+[MZL]    5.02 -75.45 Manizales,Colombia
+[NVA]    2.95 -75.28 Neiva,Colombia
+[OCV]    8.30 -73.35 Ocana,Colombia
+[OTU]    7.00 -74.70 Otu,Colombia
+[SKPB]  12.22 -71.98 Puerto Bolivar,Colombia
+[PCR]    6.18 -67.48 Puerto Carreno,Colombia
+[PEI]    4.80 -75.73 Pereira,Colombia
+[SKPI]   1.85 -76.08 Pitalito,Colombia
+[PPN]    2.45 -76.60 Popayan,Colombia
+[PSO]    1.38 -77.28 Pasto,Colombia
+[PVA]   13.35 -81.35 Providencia,Colombia
+[SKQU]   5.20 -74.88 Mariquita,Colombia
+[MDE]    6.15 -75.42 Rio Negro,Colombia
+[RCH]   11.52 -72.92 Rio Hacha,Colombia
+[RVE]    6.95 -71.85 Saravena,Colombia
+[SJE]    2.57 -72.63 San Jose Del Guaviare,Colombia
+[SMR]   11.12 -74.22 Santa Marta,Colombia
+[ADZ]   12.58 -81.70 San Andres Island,Colombia
+[SVI]    2.15 -74.75 San Vincente De Caguan,Colombia
+[TDA]    5.42 -71.65 Trinidad,Colombia
+[TME]    6.45 -71.75 Tame,Colombia
+[TRB]    8.07 -76.73 Turbo,Colombia
+[AUC]    7.07 -70.73 Arauca,Colombia
+[UIB]    5.68 -76.63 Quibdo,Colombia
+[ULQ]    4.08 -76.23 Tulua,Colombia
+[VUP]   10.43 -73.23 Valledupar,Colombia
+[VVC]    4.17 -73.60 Villavicencio,Colombia
+[SKYP]   5.32 -72.38 El-Yopal,Colombia
+[APB]  -14.73 -68.40 Apolo,Bolivia
+[SLAS] -15.72 -63.08 Ascension De Guarayos,Bolivia
+[BJO]  -22.77 -64.30 Bermejo,Bolivia
+[CAM]  -20.00 -63.52 Camiri,Bolivia
+[CBB]  -17.42 -66.17 Cochabamba,Bolivia
+[SLCH] -16.98 -65.13 Chapacura,Bolivia
+[SLCN] -17.58 -69.43 Charana,Bolivia
+[CIJ]  -11.03 -68.77 Cobija,Bolivia
+[CEP]  -16.13 -62.02 Conception,Bolivia
+[GYA]  -10.82 -65.33 Guayaramerin,Bolivia
+[SJB]  -13.05 -64.65 San Joaquin,Bolivia
+[LPB]  -16.50 -68.18 La Paz,Bolivia
+[MGD]  -13.25 -64.05 Magdalena,Bolivia
+[SLOR] -17.95 -67.07 Oruro,Bolivia
+[POI]  -19.53 -65.72 Potosi,Bolivia
+[PSZ]  -18.97 -57.82 Puerto Suarez,Bolivia
+[SLRA] -13.25 -64.60 San Ramon,Bolivia
+[SLRB] -18.32 -59.75 Robore,Bolivia
+[RIB]  -11.00 -66.07 Riberalta,Bolivia
+[RBQ]  -14.42 -67.50 Rurrenabaque,Bolivia
+[SLRY] -14.30 -67.35 Reyes,Bolivia
+[SLSA] -13.75 -65.43 Santa Ana,Bolivia
+[SRJ]  -14.85 -66.73 San Borja,Bolivia
+[SLSI] -16.38 -60.95 San Ignacio De Velasco,Bolivia
+[SLSM] -14.95 -65.63 San Ignacio De Moxos,Bolivia
+[SRE]  -19.00 -65.28 Sucre,Bolivia
+[SLTI] -16.33 -58.40 San Mathias,Bolivia
+[TJA]  -21.55 -64.70 Tarija,Bolivia
+[TDD]  -14.82 -64.92 Trinidad,Bolivia
+[VVI]  -17.63 -63.13 Santa Cruz,Bolivia
+[PBM]    5.45 -55.18 Zandery,Surinam
+[ORG]    5.80 -55.18 Paramaribo,Surinam
+[CAY]    4.82 -52.35 Cayenne,French Guyana
+[SOOG]   3.88 -51.80 St.-Georges Oyapock,French Guyana
+[SPAC]  -4.60 -77.93 Ciro Alegria,Peru
+[SPAS]  -2.78 -76.45 Andoas,Peru
+[SPAY] -10.72 -73.75 Atalaya,Peru
+[SPBB]  -6.02 -76.98 Moyobamba,Peru
+[SPBC]  -3.92 -70.50 Caballococha,Peru
+[SPBR] -11.40 -69.48 Iberia,Peru
+[PCL]   -8.37 -74.57 Pucallpa,Peru
+[CHM]   -9.15 -78.52 Chimbote,Peru
+[SPEP]  -9.77 -70.70 Puerto Esperanza,Peru
+[SPEQ] -17.17 -70.92 Moquegua,Peru
+[TGI]   -9.28 -76.00 Tingo Maria,Peru
+[CIX]   -6.78 -79.82 Chiclayo,Peru
+[AYP]  -13.15 -74.20 Ayacucho,Peru
+[ANS]  -13.70 -73.35 Andahuaylas,Peru
+[ATA]   -9.33 -77.58 Anta,Peru
+[LIM]  -12.02 -77.10 Lima,Peru
+[JJI]   -7.17 -76.72 Juanjui,Peru
+[SPJJ] -11.77 -75.47 Jauja,Peru
+[JUL]  -15.47 -70.15 Juliaca,Peru
+[SPJN] -15.35 -75.13 San Juan,Peru
+[SPJR]  -7.13 -78.48 Cajamarca,Peru
+[SPLO] -17.68 -71.33 Ilo,Peru
+[SPLP] -12.15 -76.98 Las Palmas,Peru
+[TBP]   -3.55 -80.37 Tumbes,Peru
+[YMS]   -5.88 -76.12 Yurimaguas,Peru
+[SPNC]  -9.87 -76.20 Huanuco,Peru
+[SPOL] -11.92 -77.05 Collique,Peru
+[CHH]   -6.20 -77.85 Chachapoyas,Peru
+[IQT]   -3.78 -73.30 Iquitos,Peru
+[AQP]  -16.33 -71.57 Arequipa,Peru
+[SPRM] -11.12 -75.35 San Ramon,Peru
+[TRU]   -8.08 -79.10 Trujillo,Peru
+[PIO]  -13.73 -76.22 Pisco,Peru
+[TPP]   -6.50 -76.37 Tarapoto,Peru
+[TCQ]  -18.05 -70.27 Tacna,Peru
+[SPTP]  -4.53 -81.22 Talara,Peru
+[PEM]  -12.60 -69.22 Puerto Maldonado,Peru
+[PIU]   -5.20 -80.60 Piura,Peru
+[TYL]   -4.57 -81.25 Talara,Peru
+[SPZA] -14.85 -74.95 Nazca,Peru
+[CUZ]  -13.53 -71.93 Cuzco,Peru
+[MVD]  -34.78 -56.25 Montevideo,Uruguay
+[ATI]  -30.40 -56.50 Artigas,Uruguay
+[CYR]  -34.45 -57.77 Colonia,Uruguay
+[SUDU] -33.35 -56.48 Durazno,Uruguay
+[SULS] -34.85 -55.08 Maldonado,Uruguay
+[MLZ]  -32.33 -54.22 Melo,Uruguay
+[MVD]  -34.83 -56.02 Montevideo,Uruguay
+[PDP]  -34.90 -54.92 Punta Del Este,Uruguay
+[PDU]  -32.35 -58.05 Paysandu,Uruguay
+[RVY]  -30.97 -55.47 Rivera,Uruguay
+[STY]  -31.43 -57.98 Salto,Uruguay
+[TAW]  -31.73 -55.92 Tacuarembo,Uruguay
+[AGV]    9.55 -69.23 Acarigua,Venezuela
+[AAO]    9.42 -64.47 Anaco,Venezuela
+[SVAT]   4.05 -67.70 San Fernando Deatabapo,Venezuela
+[BLA]   10.10 -64.68 Barcelona,Venezuela
+[BNS]    8.62 -70.22 Barinas,Venezuela
+[SVBL]  10.18 -67.55 Maracaibo,Venezuela
+[BRM]   10.03 -69.35 Barquisimeto,Venezuela
+[SVBS]  10.23 -67.63 Maracay,Venezuela
+[CBL]    8.12 -63.53 Ciudad Bolivar,Venezuela
+[SVCD]   7.62 -66.15 Caicara De Orinoco,Venezuela
+[SVCJ]   9.63 -68.57 San Carlos,Venezuela
+[SVCL]   8.92 -67.42 Calabozo,Venezuela
+[CAJ]    6.22 -62.85 Canaima,Venezuela
+[SVCO]  10.17 -70.05 Carora,Venezuela
+[CUP]   10.65 -63.25 Carupano,Venezuela
+[CZE]   11.40 -69.67 Coro,Venezuela
+[SVCS]  10.28 -66.80 Caracas,Venezuela
+[CUM]   10.45 -64.12 Cumana,Venezuela
+[SVCZ]   9.37 -66.92 Carrizal,Venezuela
+[SVED]   6.70 -61.63 El Dorado,Venezuela
+[SVEZ]   7.05 -69.48 Elorza,Venezuela
+[SVGD]   7.20 -70.75 Guasdualito,Venezuela
+[GUI]   10.57 -62.30 Guiria,Venezuela
+[GUQ]    9.02 -69.75 Guanare,Venezuela
+[SVHG]  10.45 -66.08 Higuerote,Venezuela
+[SVIE]  10.78 -63.97 Isla De Coche,Venezuela
+[LSP]   11.77 -70.15 Paraguana,Venezuela
+[SVJM]   9.90 -67.37 San Juan De Los Morros,Venezuela
+[LFR]    8.23 -72.27 La Fria,Venezuela
+[SVLO]  11.80 -66.17 La Orchila,Venezuela
+[MAR]   10.55 -71.72 Maracaibo,Venezuela
+[MRD]    8.57 -71.15 Merida,Venezuela
+[PMV]   10.90 -63.95 Porlamar,Venezuela
+[CCS]   10.60 -66.98 Caracas,Venezuela
+[MUN]    9.73 -63.15 Maturin,Venezuela
+[PYH]    5.62 -67.60 Puerto Ayacucho,Venezuela
+[PBL]   10.47 -68.07 Puerto Cabello,Venezuela
+[SVPM]   7.80 -72.20 San Cristobal,Venezuela
+[PZO]    8.28 -62.75 Guayana,Venezuela
+[SVPT]   7.57 -70.17 Palmarito,Venezuela
+[SVZ]    7.85 -72.43 San Antonio,Venezuela
+[SVSB]   7.80 -71.15 Santa Barbara,Venezuela
+[STD]    7.55 -72.03 Santo Domingo,Venezuela
+[SFH]   10.27 -68.75 San Felipe,Venezuela
+[SFD]    7.87 -67.43 San Fernando De Apure,Venezuela
+[SOM]    8.93 -64.15 San Tome,Venezuela
+[STB]    8.97 -71.93 Santa Barbara,Venezuela
+[TUV]    9.08 -62.08 Tucupita,Venezuela
+[SVTM]   7.23 -61.52 Tumeremo,Venezuela
+[VLN]   10.15 -67.92 Valencia,Venezuela
+[SVVG]   8.62 -71.67 Merida,Venezuela
+[VLV]    9.33 -70.58 Valera,Venezuela
+[VDP]    9.22 -65.98 Valle De La Pascua,Venezuela
+[KAR]    5.85 -60.60 Kamarang,Guyana
+[SYLD]   5.95 -58.27 Linden,Guyana
+[LTM]    3.37 -59.78 Lethem,Guyana
+[ANU]   17.13 -61.78 Antigua,Leeward Islands
+[BGI]   13.07 -59.48 Bridgetown,Barbados
+[DCF]   15.33 -61.38 Canefield,Dominica
+[DOM]   15.53 -61.30 Dominica,Dominica
+[FDF]   14.58 -61.00 Fort-De-France,Antilles
+[SFG]   18.08 -63.03 St. Martin,Antilles
+[SBH]   17.90 -62.85 St.-Barthelemy,Antilles
+[TFFM]  15.87 -61.27 Grand-Bourg,Antilles
+[PTP]   16.25 -61.52 Pointe-A-Pitre,Antilles
+[GND]   12.00 -61.78 Point Salines,Grenada
+[STT]   18.33 -64.97 St. Thomas,Virgin Isl.
+[STX]   17.70 -64.78 St. Criox Island,Virgin Isl.
+[BQN]   18.48 -67.12 Aguadilla,Puerto Rico
+[FAJ]   18.30 -65.65 Fajardo,Puerto Rico
+[SIG]   18.45 -66.08 San Juan,Puerto Rico
+[MAZ]   18.25 -67.13 Mayaguez,Puerto Rico
+[NRR]   18.23 -65.63 Roosevelt Roads,Puerto Rico
+[PSE]   18.00 -66.55 Ponce,Puerto Rico
+[SJU]   18.43 -66.00 San Juan,Puerto Rico
+[SKB]   17.30 -62.72 Basse Terre,St. Kitts & Nevis
+[TKPN]  17.20 -62.58 Charlestown,St. Kitts & Nevis
+[SLU]   14.02 -60.98 Castries,St. Lucia Island
+[UVF]   13.72 -60.95 Hewandorra,St. Lucia Island
+[AUA]   12.50 -70.00 Oranjestad,Aruba
+[BON]   12.12 -68.27 Kralendijk,Antilles
+[CUR]   12.18 -68.95 Willemstad,Antilles
+[EUX]   17.48 -62.97 Oranjestad,Antilles
+[SXM]   18.03 -63.10 Philipsburg,Antilles
+[AXA]   18.20 -63.05 The Valley,Anguilla Isl.
+[MNI]   33.58 -80.20 Plymouth,Montserrat Island
+[TAB]   11.13 -60.82 Scarborough,Trinidad & Tobago
+[POS]   10.58 -61.33 Port-Of-Spain,Trinidad & Tobago
+[EIS]   18.43 -64.53 Roadtown/Beef Island,Virgin Isl.
+[TVSB]  12.98 -61.25 Bequia,St.Vincent/Grenadines
+[CIW]   12.68 -61.33 Canouan Island,St.Vincent/Grenadines
+[MQS]   12.88 -61.17 Mustique,St.Vincent/Grenadines
+[SVD]   13.13 -61.20 Kingstown,St.Vincent/Grenadines
+[ALA]   43.35  77.03 Alma-Ata,Kazakhstan
+[UAAH]  46.88  75.00 Balkhash,Russia
+[TSE]   51.02  71.47 Tselinograd,Russia
+[FRU]   43.05  74.47 Bishkek,Russia
+[OSS]   40.60  72.78 Osh,Russia
+[CIT]   42.35  69.47 Chimkent,Russia
+[DZH]   47.70  67.73 Dzhezkazgan,Russia
+[URA]   51.15  51.53 Uralsk,Russia
+[PLX]   50.35  80.23 Semiplatinsk,Russia
+[UATE]  43.85  51.08 Shevchenko,Russia
+[AKX]   50.23  57.20 Aktyubinsk,Russia
+[KTQ]   53.20  63.55 Kustanay,Russia
+[BAK]   40.47  50.03 Baku,Russia
+[ADH]   34.80 -96.67 Aldan,Russia
+[YKS]   62.08 129.77 Yakutsk,Russia
+[UERP]  66.42 112.05 Polyarny,Russia
+[EVN]   40.13  44.38 Yerevan,Russia
+[TBS]   41.67  44.95 Tbilisi,Georgia
+[SUI]   42.85  41.12 Sukhumi,Georgia
+[BQS]   50.42 127.40 Blagoveschensk,Russia
+[KHV]   48.52 135.18 Khabarovsk,Russia
+[UHMA]  64.73 177.73 Anadyr,Russia
+[PVS]   64.37 -173.23 Provideniya Bay,Russia
+[GDX]   59.90 150.72 Magadan,Russia
+[UHMP]  67.50 171.00 Pevek,Russia
+[PKC]   53.15 158.45 Petropavlovsk,Russia
+[UHSH]  53.50 142.88 Okha,Russia
+[UUS]   46.88 142.72 Yuzhno-Sakhalinsk,Russia
+[VVO]   43.38 132.15 Vladivostok,Russia
+[HTA]   52.02 113.30 Chita,Russia
+[BTK]   56.37 101.68 Bratsk,Russia
+[IKT]   52.27 104.38 Irkutsk,Russia
+[UUD]   51.80 107.43 Ulan-Ude,Russia
+[KBP]   50.33  30.88 Kiev,Russia
+[DOK]   48.07  37.73 Donetsk,Russia
+[DNK]   48.35  35.10 Dnepropetrovsk,Russia
+[SIP]   45.03  33.97 Simferopol,Russia
+[UKHH]  49.35  26.93 Kharkov,Russia
+[IEV]   50.40  30.45 Kiev,Russia
+[LWO]   49.80  23.95 Lvov,Russia
+[UKLN]  48.25  25.97 Chernovtsk,Russia
+[ODS]   46.42  30.67 Odessa,Russia
+[LED]   59.80  30.25 St. Petersburg,Russia
+[MMK]   68.77  32.75 Murmansk,Russia
+[GME]   52.52  31.02 Gomel,Russia
+[VTB]   55.17  30.13 Vitebsk,Russia
+[KGD]   54.88  20.58 Kaliningrad,Russia
+[MHP]   53.85  27.53 Minsk,Russia
+[MSQ]   53.87  28.02 Minsk 2,Russia
+[ABA]   53.73  91.38 Abakan,Russia
+[BAX]   53.35  83.53 Barnaul,Russia
+[KEJ]   55.27  86.10 Kemorovo,Russia
+[OMS]   54.97  73.30 Omsk,Russia
+[KRR]   45.03  39.17 Krasnodar,Russia
+[MCX]   42.82  47.65 Makhachkala,Russia
+[MRV]   44.22  43.07 Mineralnye Vody,Russia
+[STW]   45.10  42.10 Stavropol,Russia
+[ROV]   47.25  39.82 Rostov,Russia
+[AER]   43.43  39.93 Sochi,Russia
+[ASF]   46.28  48.00 Astrakhan,Russia
+[VOG]   48.77  44.33 Volgograd,Russia
+[CEK]   55.30  61.50 Chelyabinsk,Russia
+[MQF]   53.38  58.75 Magnetiogorsk,Russia
+[USDD]  66.58  66.60 Salekhard,Russia
+[NJC]   60.95  76.47 Nizhnevartovsk,Russia
+[PEE]   57.92  56.02 Perm,Russia
+[SGC]   61.25  73.50 Surgut,Russia
+[SVX]   56.73  60.80 Sverdlovsk,Russia
+[TOX]   37.12 -92.08 Tobolsk,Russia
+[KRO]   55.47  65.40 Kurgan,Russia
+[ASB]   37.98  58.35 Ashkhabad,Russia
+[KRW]   40.03  52.98 Krasnovodsk,Russia
+[UTAV]  39.08  63.60 Chardzhou,Russia
+[DYU]   38.53  68.82 Dushanbe,Russia
+[NCU]   42.48  59.62 Nukus,Russia
+[BHK]   39.77  64.47 Bukhara,Russia
+[SKD]   39.70  66.98 Samarkand,Russia
+[UTST]  37.28  67.30 Termez,Russia
+[TAS]   41.25  69.27 Tashkent,Uzbekistan
+[BZK]   53.20  34.17 Bryansk,Russia
+[SVO]   55.97  37.40 Moscow,Russia
+[KLD]   56.82  35.75 Tver,Russia
+[VOZ]   51.80  39.22 Voronezh,Russia
+[VKO]   55.58  37.25 Moscow,Russia
+[SCW]   61.63  50.83 Syktyvkar,Russia
+[KZN]   55.60  49.27 Kazan,Russia
+[REN]   51.78  55.45 Orenburg,Russia
+[PEZ]   28.95 -98.52 Penza,Russia
+[UFA]   54.55  55.87 Ufa,Russia
+[KBY]   53.50  50.15 Samara,Russia
+[AMD]   23.07  72.62 Ahmedabad,India
+[AKD]   20.68  77.05 Akola,India
+[IXU]   19.85  75.38 Aurangabad,India
+[BOM]   19.08  72.87 Bombay,India
+[PAB]   21.98  82.10 Bilaspur,India
+[BHJ]   23.28  69.67 Bhuj,India
+[IXG]   15.85  74.62 Belgaum,India
+[BDQ]   22.33  73.22 Baroda,India
+[BHO]   23.28  77.33 Bhopal,India
+[BHU]   21.75  72.18 Bhaunagar,India
+[NMB]   20.43  72.83 Daman,India
+[VADS]  24.27  72.20 Deesa,India
+[GOI]   15.37  73.82 Goa,India
+[IDR]   22.72  75.80 Indore,India
+[JLR]   23.17  80.05 Jabalpur,India
+[VAJJ]  19.08  72.83 Bombay,India
+[JGA]   22.45  70.00 Jamnagar,India
+[IXY]   23.10  70.10 Kandla,India
+[HJR]   24.82  79.92 Khajuraho,India
+[KLH]   16.65  74.28 Kolhapur,India
+[IXK]   21.32  70.27 Keshod,India
+[NAG]   21.08  79.03 Nagpur,India
+[ISK]   19.95  73.80 Nasik Road,India
+[PNQ]   18.57  73.92 Pune,India
+[PBD]   21.63  69.65 Porbandar,India
+[RAJ]   22.30  70.77 Rajkot,India
+[RPR]   21.17  81.73 Raipur,India
+[SSE]   17.62  75.93 Sholapur,India
+[STV]   21.10  72.73 Surat,India
+[UDR]   24.62  73.90 Udaipur,India
+[CMB]    7.17  79.88 Colombo,Sri Lanka
+[VCCA]   8.30  80.42 Anuradhapura,Sri Lanka
+[VCCB]   7.70  81.67 Batticaloa,Sri Lanka
+[RML]    6.82  79.88 Colombo,Sri Lanka
+[GOY]    7.33  81.62 Galoya,Sri Lanka
+[JAF]    9.78  80.07 Jaffna,Sri Lanka
+[TRR]    8.53  81.17 Trinciomalee,Sri Lanka
+[VCCW]   6.25  81.23 Wirawila,Sri Lanka
+[VDBG]  13.08 103.22 Battambang,Cambodia
+[VDKH]  12.25 104.55 Kompong Chnang,Cambodia
+[PNH]   11.53 104.83 Phnom-Penh,Cambodia
+[REP]   13.40 103.80 Siem-Reap,Cambodia
+[VDST]  13.52 106.00 Stung Treng,Cambodia
+[VEAN]  28.17  94.80 Along,India
+[IXA]   23.88  91.23 Agartala,India
+[AJL]   23.73  92.80 Aizwal,India
+[IXB]   26.67  88.32 Baghdogra,India
+[RGH]   25.25  88.78 Balurghat,India
+[VEBK]  23.63  86.13 Bokaro,India
+[BBI]   20.23  85.82 Bhubaneswar,India
+[CCU]   22.65  88.43 Calcutta,India
+[COH]   26.32  89.47 Cooch-Behar,India
+[DBO]   23.83  86.42 Dhanbad,India
+[VEDZ]  27.98  94.22 Deparizo,India
+[YOP]   26.73  83.43 Gorakhpur,India
+[VEGT]  26.10  91.58 Gauhati,India
+[GAY]   24.73  84.93 Gaya,India
+[VEHK]  21.57  84.00 Hirakud,India
+[IMF]   24.75  93.88 Imphal,India
+[VEJH]  21.90  84.05 Jharsuguda,India
+[VEJP]  18.87  82.55 Jeypore,India
+[IXW]   22.80  86.17 Jamshedpur,India
+[JRH]   26.72  94.17 Jorhat,India
+[VEKM]  24.13  91.80 Kamalpur,India
+[IXH]   24.30  92.00 Kailashahar,India
+[IXS]   24.90  92.97 Silchar,India
+[IXI]   27.28  94.08 Lilabari,India
+[MOH]   27.48  95.02 Mohanbari,India
+[VEMZ]  26.12  85.30 Mazuffarpur,India
+[VENP]  20.87  82.52 Nawapara,India
+[IXT]   28.05  95.33 Pasighat,India
+[VEPH]  23.47  87.42 Panagarh,India
+[PAT]   25.58  85.08 Patina,India
+[VEPU]  25.75  87.40 Purnea,India
+[IXR]   23.30  85.32 Ranchi,India
+[RRK]   22.25  84.80 Rourkela,India
+[VEUK]  20.08  83.18 Utkela,India
+[VEZO]  27.58  93.82 Zero,India
+[CXB]   21.45  91.95 Cox'S Bazar,Bangladesh
+[CGP]   22.23  91.80 Chittagong,Bangladesh
+[IRD]   24.15  89.03 Ishurdi,Bangladesh
+[JSR]   23.18  89.15 Jessore,Bangladesh
+[RJH]   24.43  88.60 Rajshahi,Bangladesh
+[SPD]   25.75  88.90 Saidpur,Bangladesh
+[ZYL]   24.95  91.87 Sylhet Osmani,Bangladesh
+[VGTJ]  23.77  90.37 Dhaka,Bangladesh
+[DAC]   23.83  90.38 Dhaka,Bangladesh
+[HKG]   22.30 113.90 Hong Kong,Hong Kong
+[VHSK]  22.43 114.07 Sek Kong,Hong Kong
+[AGR]   27.15  77.95 Agra,India
+[IXD]   25.43  81.73 Allahabad,India
+[ATQ]   31.70  74.78 Amritsar,India
+[VIBK]  28.07  73.20 Bikaner,India
+[VIBL]  26.98  80.88 Bakshi Ka Talab,India
+[VNS]   25.45  82.85 Varanasi,India
+[KUU]   31.87  77.18 Kulu,India
+[VIBT]  30.27  74.75 Bhatinda,India
+[VIBW]  28.83  76.17 Bhiwani,India
+[VIBY]  28.42  79.43 Bareilly,India
+[IXC]   30.67  76.78 Chandigarh,India
+[VICX]  26.40  80.40 Kanpur,India
+[VIDD]  28.58  77.20 Delhi,India
+[DED]   30.18  78.17 Dehra Dun,India
+[DEL]   28.55  77.10 Delhi,India
+[VIGN]  24.65  77.33 Guna,India
+[GWL]   26.28  78.22 Gwalior,India
+[VIHR]  29.17  75.75 Hissar,India
+[VIJN]  25.48  78.55 Jhansi,India
+[JOH]   26.25  73.03 Jodhpur,India
+[JAI]   26.82  75.80 Jaipur,India
+[JSA]   26.88  70.85 Jaisalmer,India
+[IXJ]   32.68  74.83 Jammu,India
+[KNU]   26.43  80.35 Kanpur,India
+[KTU]   25.15  75.83 Kota,India
+[LUH]   30.85  75.95 Ludhiaha,India
+[IXL]   34.13  77.53 Leh,India
+[LKO]   26.75  80.88 Lucknow,India
+[IXP]   32.23  75.63 Pathankot,India
+[VIPL]  30.30  76.35 Patiala,India
+[PGH]   29.02  79.47 Nainital,India
+[VIRB]  26.25  81.37 Raibarelli,India
+[VISM]  31.07  77.05 Shimla,India
+[VISP]  29.98  77.42 Saharanpur,India
+[SXR]   33.98  74.77 Srinagar,India
+[VLHS]  20.25 100.43 Bane Houei Say,Laos
+[LPQ]   19.88 102.15 Luang Prabang,Laos
+[PKZ]   15.12 105.77 Pakse,Laos
+[VLPV]  19.45 103.22 Phong Savanh,Laos
+[ZVK]   16.55 104.75 Savannakhet,Laos
+[VTE]   17.98 102.55 Vientiane,Laos
+[MFM]   22.13 113.58 Macau,Macau
+[BWA]   27.50  83.40 Bhairawa,Nepal
+[VNCG]  26.57  88.07 Chandragarhi,Nepal
+[VNJP]  26.70  85.92 Janakpur,Nepal
+[KTM]   27.68  85.35 Kathmandu,Nepal
+[VNNG]  28.10  81.67 Nepalgunj,Nepal
+[PKR]   28.20  83.97 Pokhara,Nepal
+[SIF]   27.15  84.97 Simara,Nepal
+[BIR]   26.48  87.25 Biratnagar,Nepal
+[AGX]   10.82  72.17 Agatti Island,India
+[BLR]   12.93  77.67 Bangalore,India
+[VOBR]  17.90  77.48 Bidar,India
+[VGA]   16.52  80.78 Vijayawada,India
+[CJB]   11.02  77.03 Coimbatore,India
+[CCJ]   11.13  75.95 Calicut,India
+[CDP]   14.50  78.77 Cuddapah,India
+[VOCX]   9.15  92.82 Carnicobar,India
+[VODG]  17.62  78.40 Dundigul,India
+[HYD]   17.45  78.45 Hyderabad,India
+[IXM]    9.83  78.08 Madurai,India
+[IXE]   12.95  74.88 Mangalore,India
+[MAA]   12.98  80.17 Madras,India
+[VONS]  16.53  79.32 Nagarjunsagar,India
+[IXZ]   11.63  92.72 Port Blair,India
+[RJA]   17.10  81.82 Rajahmundry,India
+[VOSM]  11.77  78.05 Salem,India
+[VOTJ]  10.72  79.10 Tanjore,India
+[TIR]   13.62  79.53 Tirupeti,India
+[TRZ]   10.75  78.70 Tiruchchirappalli,India
+[TRV]    8.47  76.92 Trivandrum,India
+[VOTX]  12.90  80.12 Tambaram,India
+[VOWA]  17.92  79.58 Warangal,India
+[PBH]   27.40  89.42 Paro,Bhutan
+[MLE]    4.18  73.52 Male,Maldives
+[BKK]   13.90 100.60 Bangkok,Thailand
+[VTBK]  14.10  99.92 Nakhon Pathom,Thailand
+[VTBL]  14.87 100.65 Lop Buri,Thailand
+[UTP]   12.67 101.00 Rayong,Thailand
+[VTBW]  13.77 102.30 Prachin Buri,Thailand
+[VTCB]  19.48 100.28 Chiang Rai,Thailand
+[LPT]   18.27  99.50 Lampang,Thailand
+[PRH]   18.12 100.15 Phrae,Thailand
+[HHQ]   12.63  99.95 Prachuap Khiri Khan,Thailand
+[VTPI]  15.27 100.28 Nakhon Sawan,Thailand
+[VTPL]  16.82 101.25 Phetchabun,Thailand
+[VTPM]  16.68  98.53 Tak,Thailand
+[VTPN]  15.67 100.13 Nakhon Sawan,Thailand
+[PHS]   16.77 100.27 Phitsanulok,Thailand
+[VTPU]  17.67 100.23 Uttaradit,Thailand
+[VTPY]  17.23  99.05 Tak,Thailand
+[NAW]    6.52 101.73 Narathiwat,Thailand
+[VTSG]   8.08  98.98 Krbi,Thailand
+[VTSH]   7.18 100.60 Songkhla,Thailand
+[PAN]    6.78 101.15 Pattani,Thailand
+[VTSM]   9.53 100.05 Surat Thani,Thailand
+[NST]    8.47  99.95 Nakhon Si Thammarat,Thailand
+[HKT]    8.10  98.32 Phuket,Thailand
+[VTSR]   9.77  98.58 Ranong,Thailand
+[HDY]    6.92 100.38 Songkhla,Thailand
+[TST]    7.50  99.60 Trang,Thailand
+[VTSY]   6.52 101.23 Ya La,Thailand
+[UTH]   17.38 102.78 Udon Thani,Thailand
+[SNO]   17.18 104.12 Sakon Nakhon,Thailand
+[VTUJ]  14.87 103.48 Surin,Thailand
+[LOE]   17.43 101.72 Loei,Thailand
+[NAK]   14.93 102.07 Nakhon Ratchasima,Thailand
+[KOP]   17.40 104.77 Nakhon Phanom,Thailand
+[VTUW]  17.38 104.63 Nakhon Phanom,Thailand
+[DAD]   16.03 108.18 Danang,Viet Nam
+[HAN]   21.22 105.80 Hanoi,Viet Nam
+[NHA]   12.22 109.20 Nhatrang,Viet Nam
+[SGN]   10.82 106.65 Ho Chi Minh City,Viet Nam
+[VYBG]  21.17  94.92 Bagan,Myanmar
+[VYBM]  24.27  97.23 Banmaw,Myanmar
+[VYCI]  14.13  93.37 Coco Island,Myanmar
+[VYDW]  14.08  98.20 Dawei,Myanmar
+[HEH]   20.73  96.78 Heho,Myanmar
+[KET]   21.30  99.63 Kengtung,Myanmar
+[VYKL]  23.18  94.05 Kalay,Myanmar
+[KYP]   19.42  93.53 Kyaukpyu,Myanmar
+[VYKT]  10.03  98.53 Kawthoung,Myanmar
+[VYLK]  19.68  97.20 Loikaw,Myanmar
+[LSH]   22.97  97.75 Lashio,Myanmar
+[VYLY]  20.93  94.82 Lanywa,Myanmar
+[MDL]   21.70  95.97 Mandalay,Myanmar
+[MGZ]   12.43  98.62 Myeik,Myanmar
+[MYT]   25.37  97.35 Myitkyina,Myanmar
+[VYMM]  16.43  97.65 Mawlamyine,Myanmar
+[VYMO]  23.08  96.63 Momeik,Myanmar
+[MOG]   20.52  99.25 Mong Hsat,Myanmar
+[VYNP]  25.35  97.28 Nampong,Myanmar
+[VYNS]  20.88  97.73 Namsang,Myanmar
+[VYPA]  16.88  97.67 Hpa-An,Myanmar
+[VYPN]  16.80  94.77 Pathein,Myanmar
+[PBU]   27.32  97.42 Putao,Myanmar
+[VYPY]  18.82  95.25 Pyay,Myanmar
+[VYST]  20.93  95.90 Shante,Myanmar
+[AKY]   20.12  92.87 Sittwe,Myanmar
+[SNW]   18.45  94.28 Thandwe,Myanmar
+[THL]   20.48  99.93 Tachilek,Myanmar
+[VYTO]  19.02  96.40 Taungoo,Myanmar
+[RGN]   16.90  96.12 Yangon,Myanmar
+[UPG]   -5.05 119.55 Ujung Pandang,Indonesia
+[WAAL]  -4.32 122.47 Ponggaluku,Indonesia
+[WAAM]  -2.55 120.32 Masamba,Indonesia
+[WAAS]  -2.52 121.35 Soroako,Indonesia
+[WAAT]  -3.03 119.82 Makale,Indonesia
+[KDI]   -4.07 122.42 Kendari,Indonesia
+[BIK]   -1.18 136.10 Biak,Indonesia
+[NBX]   -3.37 135.48 Nabire,Indonesia
+[TIM]   -4.52 136.88 Timika,Indonesia
+[DJJ]   -2.57 140.50 Jayapura,Indonesia
+[WMX]   -4.08 138.95 Wamena,Indonesia
+[MKQ]   -8.52 140.42 Merauke,Indonesia
+[GTO]    0.63 122.85 Gorontalo,Indonesia
+[WAMH]   3.67 125.52 Tahuna,Indonesia
+[PLW]   -0.92 119.90 Palu,Indonesia
+[MDC]    1.53 124.92 Manado,Indonesia
+[PSJ]   -1.42 120.65 Poso,Indonesia
+[TTE]    0.82 127.37 Ternate,Indonesia
+[LUW]   -1.03 122.77 Luwuk,Indonesia
+[WAPL]  -5.65 132.72 Langgur,Indonesia
+[AMQ]   -3.70 128.08 Ambon,Indonesia
+[KNG]   -3.63 133.68 Kaimana,Indonesia
+[MKW]   -0.87 134.05 Manokwari,Indonesia
+[SOQ]   -0.92 131.12 Sorong,Indonesia
+[BTU]    3.17 113.03 Bintulu,Malaysia
+[KCH]    1.48 110.33 Kuching,Malaysia
+[MUR]    4.17 114.32 Marudi,Malaysia
+[MYY]    4.32 113.98 Miri,Malaysia
+[SBW]    2.25 111.97 Sibu,Malaysia
+[LDU]    5.02 118.32 Lahad Datu,Malaysia
+[BKI]    5.93 116.05 Kota Kinabalu,Malaysia
+[LBU]    5.30 115.25 Labuan,Malaysia
+[TWU]    4.30 118.12 Tawau,Malaysia
+[BWN]    4.93 114.92 Brunei,Brunei
+[SBG]    5.87  95.33 Sabang,Indonesia
+[WIAM]  -7.33 108.23 Tasikmalaya,Indonesia
+[WIAR]  -7.60 111.43 Madiun,Indonesia
+[MLG]   -7.92 112.70 Malang,Indonesia
+[PKU]    0.45 101.43 Pekanbaru,Indonesia
+[DUM]    1.60 101.43 Dumai,Indonesia
+[WIIA]  -6.28 106.57 Tangerang,Indonesia
+[BDO]   -6.90 107.57 Bandung,Indonesia
+[CBN]   -6.75 108.53 Cirebon,Indonesia
+[HLP]   -6.25 106.88 Jakarta,Indonesia
+[CGK]   -6.12 106.65 Jakarta,Indonesia
+[JOG]   -7.78 110.42 Yogyakarta,Indonesia
+[CXP]   -7.63 109.03 Cilacap,Indonesia
+[PCB]   -6.33 106.75 Jakarta,Indonesia
+[SRG]   -6.97 110.37 Semarang,Indonesia
+[WIIT]  -5.23 105.17 Tanjung Karang,Indonesia
+[BTH]    1.12 104.12 Batam,Indonesia
+[TJQ]   -2.73 107.75 Tanjung Pandan,Indonesia
+[PGK]   -2.15 106.13 Pangkal Pinang,Indonesia
+[TNJ]    0.92 104.52 Tanjung Pinang,Indonesia
+[SIQ]   -0.47 104.57 Singkep,Indonesia
+[GNS]    1.15  97.70 Gunung Sitoli,Indonesia
+[WIME]   1.38  99.42 Padang Sidempuan,Indonesia
+[PDG]   -0.87 100.35 Padang,Indonesia
+[MES]    3.55  98.67 Medan,Indonesia
+[WIMS]   1.55  98.88 Sibolga,Indonesia
+[WIOG]  -0.33 111.73 Nangapinoh,Indonesia
+[KTG]   -1.80 109.95 Ketapang,Indonesia
+[WION]   3.90 108.38 Natuna,Indonesia
+[PNK]   -0.15 109.40 Pontianak,Indonesia
+[WIOP]   0.83 112.93 Putusibau,Indonesia
+[SQC]    0.05 111.47 Sintang,Indonesia
+[DJB]   -1.63 103.63 Jambi,Indonesia
+[BKS]   -3.85 102.33 Bengkulu,Indonesia
+[PLM]   -2.88 104.70 Palembang,Indonesia
+[WIPQ]  -3.28 103.87 Pendoro,Indonesia
+[RGT]   -0.35 102.33 Rengat,Indonesia
+[WIPU]  -2.53 101.08 Muko Muko,Indonesia
+[WITL]   5.07  97.25 Lhok Sukon,Indonesia
+[WITM]   5.22  96.95 Whok Seumawe,Indonesia
+[BTJ]    5.52  95.42 Banda Aceh,Indonesia
+[WMAP]   2.03 103.30 Kluang,Malaysia
+[WMBT]   2.82 104.15 Pulau Pioman,Malaysia
+[AOR]    6.18 100.40 Alor Setar,Malaysia
+[WMKB]   5.45 100.38 Butterworth,Malaysia
+[KBR]    6.15 102.28 Kota Bahru,Malaysia
+[KUA]    3.77 103.20 Kuantan,Malaysia
+[KTE]    4.53 103.42 Kerteh,Malaysia
+[WMKF]   3.10 101.70 Simpang,Malaysia
+[IPH]    4.57 101.08 Ipoh,Malaysia
+[JHB]    1.63 103.67 Johor Bahru,Malaysia
+[KUL]    2.73 101.70 Kuala Lumpur,Malaysia
+[LGK]    6.32  99.72 Pulau,Malaysia
+[MKZ]    2.25 102.25 Malacca,Malaysia
+[TGG]    5.37 103.10 Kuala Terengganu,Malaysia
+[PEN]    5.28 100.27 Penang,Malaysia
+[WPDB]  -9.30 125.28 Suai,East Timor
+[WPEC]  -8.48 126.38 Baucau,West Timor
+[BDJ]   -3.43 114.75 Banjarmasin,Indonesia
+[WRBC]  -3.40 115.98 Batu Licin,Indonesia
+[PKN]   -2.70 111.67 Pangkalan Bun,Indonesia
+[PKY]   -2.22 113.93 Palangkaraya,Indonesia
+[WRBS]  -2.50 112.97 Sampit,Indonesia
+[MOF]   -8.63 122.23 Maumere,Indonesia
+[ENE]   -8.83 121.65 Ende,Indonesia
+[RTG]   -8.58 120.47 Ruteng,Indonesia
+[KOE]  -10.17 123.67 Kupang,Indonesia
+[LBJ]   -8.48 119.88 Labuhan Bajo,Indonesia
+[WRLK]   2.15 117.42 Tanjung Redep,Indonesia
+[BPN]   -1.27 116.88 Balikpapan,Indonesia
+[TRK]    3.32 117.55 Taraken,Indonesia
+[SRI]   -0.48 117.15 Samarinda,Indonesia
+[WRLT]  -0.08 117.43 Tanjung Santan,Indonesia
+[AMI]   -8.55 116.08 Mataram,Indonesia
+[BMU]   -8.53 118.68 Bima,Indonesia
+[DPS]   -8.73 115.17 Denpasar,Indonesia
+[SWG]   -8.48 117.40 Sumbawa,Indonesia
+[WRRT]  -9.40 119.23 Waikabubak,Indonesia
+[WGP]   -9.67 120.30 Waingapu,Indonesia
+[SUB]   -7.37 112.78 Surabaya,Indonesia
+[SOC]   -7.50 110.75 Solo City,Indonesia
+[WSAG]   1.42 103.80 Sembawang,Singapore
+[QPG]    1.35 103.90 Paya Lebar,Singapore
+[WSAT]   1.38 103.70 Tengah,Singapore
+[XSP]    1.42 103.87 Singapore,Singapore
+[SIN]    1.35 103.98 Singapore,Singapore
+[YBAF] -27.57 153.00 Brisbane,Australia
+[ABM]  -10.95 142.45 Amberley,Australia
+[ASP]  -23.80 133.90 Alice Springs,Australia
+[BNE]  -27.38 153.12 Brisbane,Australia
+[OOL]  -28.15 153.50 Coolangatta,Australia
+[CNS]  -16.88 145.75 Cairns,Australia
+[CTL]  -26.40 146.25 Charlieville,Australia
+[ISA]  -20.65 139.48 Mount Isa,Australia
+[MCY]  -26.60 153.08 Maroochydore,Australia
+[MKY]  -21.17 149.17 Mackay,Australia
+[YBOK] -27.40 151.73 Oakey,Australia
+[PPP]  -20.48 148.55 Prosserpine,Australia
+[ROK]  -23.37 150.47 Rockhampton,Australia
+[TSV]  -19.25 146.75 Townsville,Australia
+[WEI]  -12.67 141.92 Weipa,Australia
+[AVV]  -38.03 144.47 Avalon,Australia
+[ABX]  -36.07 146.95 Albury,Australia
+[MEB]  -37.72 144.90 Melbourne,Australia
+[YMES] -38.08 147.13 East Sale,Australia
+[HBA]  -42.83 147.50 Hobart,Australia
+[LST]  -41.53 147.20 Launceston,Australia
+[MBW]  -37.97 145.10 Melbourne,Australia
+[MEL]  -37.67 144.83 Melbourne,Australia
+[YMPC] -37.92 144.75 Point Cook,Australia
+[ADL]  -34.93 138.52 Adelaide,Australia
+[YPAG] -32.50 137.72 Argyle,Australia
+[YPED] -34.70 138.62 Edinburgh,Australia
+[JAD]  -32.08 115.87 Perth,Australia
+[KTA]  -20.70 116.77 Karratha,Australia
+[KGI]  -30.78 121.45 Kalgoorlie,Australia
+[KNX]  -15.77 128.70 Kununurra,Australia
+[LEA]  -22.23 114.08 Learmonth,Australia
+[PHE]  -20.37 118.62 Port Hedland,Australia
+[YPPF] -34.78 138.62 Adelaide,Australia
+[PER]  -31.93 115.97 Perth,Australia
+[UMR]  -31.13 136.82 Woomera,Australia
+[YPXM] -10.45 105.68 Christmas Island,Christmas Island
+[BWU]  -33.92 150.98 Sydney,Australia
+[CBR]  -35.30 149.18 Canberra,Australia
+[CFS]  -30.32 153.10 Coff'S Harbour,Australia
+[CDU]  -34.03 150.68 Camden,Australia
+[DBO]  -32.22 148.57 Dubbo,Australia
+[NLK]  -29.03 167.93 Norfolk Island,Australia
+[RCM]  -33.60 150.77 Richmond,Australia
+[SYD]  -33.93 151.17 Sydney,Australia
+[TMW]  -31.08 150.83 Tamworth,Australia
+[WGA]  -35.15 147.45 Wagga Wagga,Australia
+[PEK]   40.07 116.58 Beijing,China
+[ZBHH]  40.85 111.82 Huhhot,China
+[HLD]   49.20 119.82 Hailar,China
+[ZBSJ]  38.27 114.68 Shijiazhuang,China
+[TSN]   39.12 117.33 Tianjin,China
+[TYN]   37.73 112.62 Taiyuan,China
+[CAN]   23.18 113.25 Guangzhou,China
+[CSX]   28.18 113.22 Changcha,China
+[KWL]   25.22 110.03 Guilin,China
+[NNG]   22.60 108.17 Nanning,China
+[SWA]   23.40 116.68 Shantou,China
+[SZX]   22.63 113.80 Shenzhen,China
+[CGO]   34.52 113.83 Zhengzhou,China
+[WUH]   30.78 114.20 Wuhan,China
+[ZHYC]  30.55 111.47 Tichang,China
+[FNJ]   39.03 125.78 Pyongyang,Korea
+[ZGC]   36.52 103.62 Lanzhou,China
+[XIY]   34.43 108.75 Xi'An,China
+[ULN]   47.83 106.75 Ulan Bator,Mongolia
+[ZPJH]  21.97 100.75 Jinghonggasa,China
+[KMG]   24.98 102.73 Kunming,China
+[XMN]   24.53 118.12 Xiamen,China
+[KHN]   28.60 115.92 Nanchang,China
+[FOC]   25.93 119.65 Fuzhou,China
+[HGH]   30.22 120.42 Hangzhou,China
+[NGB]   29.82 121.45 Ninbo,China
+[NKG]   31.73 118.85 Nanjing,China
+[HFE]   31.77 117.28 Hefei,China
+[TAO]   36.25 120.37 Qingdao,China
+[SHA]   31.18 121.33 Shanghai,China
+[YNT]   37.40 121.37 Yantai,China
+[CKG]   29.72 106.63 Chongqing,China
+[CTU]   30.57 103.93 Chengdu,China
+[XIC]   27.98 102.18 Xichang,China
+[KHG]   39.53  76.02 Kashi,China
+[HTN]   37.03  79.85 Hotan,China
+[URC]   43.90  87.47 Urumqi,China
+[HRB]   45.62 126.25 Harbin,China
+[ZYJM]  46.83 130.45 Jiamusi,China
+[ZYMD]  44.52 129.57 Mudanjiang,China
+[DLC]   38.95 121.53 Dalian,China
+[ZYYJ]  42.87 129.43 Yanji,China
+
 
 EOF
 
