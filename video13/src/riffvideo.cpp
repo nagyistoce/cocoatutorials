@@ -745,6 +745,7 @@ void RiffVideo::readMetadata()
 
     m_decodeMetaData = true;
     decodeBlock();
+
 } // RiffVideo::readMetadata
 
 void RiffVideo::decodeBlock()
@@ -770,6 +771,11 @@ void RiffVideo::tagDecoder()
     DataBuf chkMainId((const long)5);
     chkMainId.pData_[4] = '\0';
     io_->read(chkMainId.pData_, 4);
+
+    if(io_->eof())
+    {
+        return;
+    }
 
     if (equalsRiffTag(chkMainId, "LIST"))
     {
@@ -807,8 +813,15 @@ void RiffVideo::tagDecoder()
 
             unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
 
-            const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD"};
-            const char allHeaderFlags[][5]={"INFO","NCDT","ODML"};
+            const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD",
+
+                                               //Primitive chunks associated with INFO-->
+
+                                               "GENR","DIRC","IART","ICNM","IEDT","IENG","ILNG",
+                                               "IMUS","INAM","IPRO","ISRC","ISTR","LANG","LOCA",
+                                               "TAPE","YEAR","IPRD","IKEy","ICOP","ICNT"};
+
+            const char allHeaderFlags[][5]={"NCDT","ODML","MOVI"};
 
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
             {
@@ -823,19 +836,18 @@ void RiffVideo::tagDecoder()
             {
                 tmpHeaderChunk->m_headerLocation = io_->tell() - 16;
                 tmpHeaderChunk->m_headerSize = listsize ;
+                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
                 position = RiffVideo::TraversingChunk;
             }
             //to handle AVI file formats
             if(!m_decodeMetaData && equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
             {
                 io_->seek(size,BasicIo::cur);
-                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
             }
 
             else if(!m_decodeMetaData && equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
             {
                 io_->seek((listsize - 12),BasicIo::cur);
-                m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
             }
 
             else if(equalsRiffTag(chkId, "JUNK"))
@@ -896,7 +908,7 @@ void RiffVideo::tagDecoder()
             //only way to exit from readMetadata()
             else if(equalsRiffTag(chkHeader, "MOVI") || equalsRiffTag(chkMainId, "DATA"))
             {
-                return;
+                io_->seek(listsize-12,BasicIo::cur);
             }
             //Add read functionality for custom chunk headers or user created tags here with more (else if) before else.
 
@@ -1355,72 +1367,84 @@ void RiffVideo::infoTagsHandler()
     const long bufMinSize = 4;
     DataBuf buf(bufMinSize + 1);
     buf.pData_[4] = '\0';
+    const long cur_pos = io_->tell();
     io_->read(buf.pData_, 4);
+    long size = Exiv2::getULong(buf.pData_, littleEndian);
+    io_->seek(4,BasicIo::cur);
 
-    long infoSize, size = Exiv2::getULong(buf.pData_, littleEndian);
-    long size_external = size;
+    long dataLenght = size - 12;
     const TagVocabulary* tv;
 
+    long infoSize;
     if(!m_modifyMetadata)
     {
-        uint64_t cur_pos = io_->tell();
-        io_->read(buf.pData_, 4); size -= 4;
-
-        while(size > 3)
+        while(dataLenght > 0)
         {
-            io_->read(buf.pData_, 4); size -= 4;
-            if(!Exiv2::getULong(buf.pData_, littleEndian))
-                break;
-            tv = find(infoTags , Exiv2::toString( buf.pData_));
-            io_->read(buf.pData_, 4); size -= 4;
+            io_->read(buf.pData_, 4);
+            tv = find(infoTags , Exiv2::toString(buf.pData_));
+            io_->read(buf.pData_, 4);
             infoSize = Exiv2::getULong(buf.pData_, littleEndian);
-
-            if(infoSize >= 0)
+            dataLenght -= infoSize;
+            if(tv && infoSize >  4)
             {
-                DataBuf tmpBuf(infoSize +1);
-                tmpBuf.pData_[infoSize] = '\0';
-                size -= infoSize;
-                io_->read(tmpBuf.pData_, infoSize);
-                if(tv)
-                {
-                    xmpData_[exvGettext(tv->label_)] = tmpBuf.pData_;
-                }
+                DataBuf tmpBuf((unsigned long)infoSize);
+                io_->read(tmpBuf.pData_,infoSize);
+                xmpData_[exvGettext(tv->label_)] = tmpBuf.pData_;
             }
         }
-        io_->seek(cur_pos + size_external, BasicIo::beg);
+        io_->seek(cur_pos + size, BasicIo::beg);
     }
     else
     {
-        io_->read(buf.pData_, 4); size -= 4;
-        while(size > 3)
+        //First write the tags which already exist in a file
+        while(dataLenght > 0)
         {
-            io_->read(buf.pData_, 4); size -= 4;
-            if(!Exiv2::getULong(buf.pData_, littleEndian))
-                break;
+            io_->read(buf.pData_, 4);
             tv = find(infoTags , Exiv2::toString( buf.pData_));
-            io_->read(buf.pData_, 4); size -= 4;
+            io_->seek(-4,BasicIo::cur);
+            byte rawnewflag[] = {'I','C','O','P'};
+            io_->write(rawnewflag,4);
+            io_->read(buf.pData_, 4);
             infoSize = Exiv2::getULong(buf.pData_, littleEndian);
-
-            if(infoSize >= 0)
+            dataLenght -= infoSize;
+            if(tv)
             {
-                DataBuf tmpBuf(infoSize +1);
-                tmpBuf.pData_[infoSize] = '\0';
-                size -= infoSize;
-
-                if(tv)
+                if(xmpData_[exvGettext(tv->label_)].count() >0)
                 {
-                    if(xmpData_[exvGettext(tv->label_)].count() >0)
+                    byte rawInfoData[infoSize];
+                    const std::string infoData = xmpData_[exvGettext(tv->label_)].toString();
+                    for(int i=0; i<infoSize ;i++)
                     {
-                        byte rawInfoData[infoSize];
-                        const std::string infoData = xmpData_[exvGettext(tv->label_)].toString();
-                        for(int i=0; i<infoSize ;i++)
-                        {
-                            rawInfoData[i] = infoData[i];
-                        }
-                        io_->write(rawInfoData,infoSize);
+                        rawInfoData[i] = infoData[i];
                     }
+                    io_->write(rawInfoData,infoSize);
                 }
             }
+        }
+
+        //Secondly write tags which are supported by Digikam,
+        //Note that create new LIST chunk is created if tag did not exist before
+        //Currently these new LIST's are added to the end of the file
+        if((xmpData_["Xmp.video.Comment"].count() > 0) &&
+                ((findChunkPositions("CMNT")).size() == 0))
+        {
+            io_->seek(4,BasicIo::beg);
+            io_->read(buf.pData_,4);
+            io_->seek(-4,BasicIo::cur);
+            const long originalSize = Exiv2::getULong(buf.pData_, littleEndian);
+            long newSize = originalSize + 100 ;
+            byte rawNewSize[4];
+            memcpy(rawNewSize,&newSize,4);
+//            io_->write(rawNewSize,4);
+            io_->seek(originalSize,BasicIo::beg);
+//            io_->write();
+            byte rawComment[80] = {};
+            const std::string commentData = xmpData_["Xmp.video.Comment"].toString();
+            for(int i=0; i< std::min((long)80,xmpData_["Xmp.video.Comment"].count()) ; i++)
+            {
+                rawComment[i] = (byte)commentData[i];
+            }
+//            io_->write(rawComment,80);
         }
     }
 } // RiffVideo::infoTagsHandler
@@ -2300,6 +2324,47 @@ Image::AutoPtr newRiffInstance(BasicIo::AutoPtr io, bool /*create*/)
         image.reset();
     }
     return image;
+}
+
+bool RiffVideo::copyRestOfTheFile(DataBuf oldSavedData)
+{
+    DataBuf swapDataArray[2];
+    swapDataArray[0].alloc(oldSavedData.size_);
+    memcpy(oldSavedData.pData_,swapDataArray[0].pData_,oldSavedData.size_);
+    bool skipOnce = true;
+    long readSize = oldSavedData.size_;
+    bool hasData = true;
+    while(hasData)
+    {
+        if(io_->size()-io_->tell() < 100 && (!skipOnce))
+        {
+            readSize = io_->size()-io_->tell();
+            hasData = false;
+        }
+        else
+        {
+            readSize = 100;
+            skipOnce = false;
+        }
+        //A = B; Copy data before overwriting
+        swapDataArray[1].alloc(readSize);
+        io_->read(swapDataArray[1].pData_,readSize);
+
+        //B = C; OverWrite the data
+        io_->seek(((-1)*readSize),BasicIo::cur);
+        io_->write(swapDataArray[0].pData_,
+                swapDataArray[0].size_);
+
+        //C = A; Get the stored data back to buffer
+        swapDataArray[0].alloc(readSize);
+        memcpy(swapDataArray[0].pData_,
+                swapDataArray[1].pData_,readSize);
+    }
+    io_->seek(((-1)*readSize),BasicIo::cur);
+    io_->write(swapDataArray[0].pData_,
+            readSize);
+
+    return true;
 }
 
 bool isRiffType(BasicIo& iIo, bool advance)

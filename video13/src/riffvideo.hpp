@@ -253,6 +253,8 @@ protected:
          */
     void fillDuration(double frame_rate, long frame_count);
 
+    bool copyRestOfTheFile(DataBuf oldSavedData);
+
 private:
     //! @name NOT Implemented
     //@{
