@@ -79,31 +79,8 @@ public:
 
     public:
         byte m_headerId[5];
-        vector<PrimitiveChunk*> m_primitiveChunks;
         unsigned long m_headerLocation;
         unsigned long m_headerSize;
-    };
-
-    class ListChunk
-    {
-    public:
-        ListChunk(){}
-        ~ListChunk(){}
-
-    public:
-        unsigned long m_listSize;
-        unsigned long m_listLocation;
-    };
-
-    class OtherChunk
-    {
-    public:
-        OtherChunk(){}
-        ~OtherChunk(){}
-
-    public:
-        unsigned long m_otherSize;
-        unsigned long m_otherLocation;
     };
 
     class RiffMetaSkeleton
@@ -113,9 +90,8 @@ public:
         ~RiffMetaSkeleton(){}
 
     public:
-        vector<ListChunk*> m_lists;
         vector<HeaderChunk*> m_headerChunks;
-        vector<OtherChunk*> m_others;
+        vector<PrimitiveChunk*> m_primitiveChunks;
     };
 
     enum IoPosition
@@ -273,6 +249,7 @@ private:
     EXV_DLLLOCAL void doWriteMetadata();
     std::vector<long> findChunkPositions(const char *chunkId);
     std::vector<long> findHeaderPositions(const char* headerId);
+    bool writeNewChunk(std::string chunkData,std::string chunkId);
 
 private:
     //! Variable to check the end of metadata traversing.

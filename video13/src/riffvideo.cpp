@@ -556,16 +556,13 @@ std::vector<long> RiffVideo::findChunkPositions(const char* chunkId)
     chkId.pData_[4] = '\0';
 
     std::vector<long> positions;
-    for (int i=0;i<m_riffFileSkeleton.m_headerChunks.size();i++)
+    for (int i=0;i<m_riffFileSkeleton.m_primitiveChunks.size();i++)
     {
-        for (int j=0;j<m_riffFileSkeleton.m_headerChunks[i]->m_primitiveChunks.size();j++)
+        io_->seek(m_riffFileSkeleton.m_primitiveChunks[i]->m_chunkLocation,BasicIo::beg);
+        io_->read(chkId.pData_,4);
+        if(equalsRiffTag(chkId,chunkId))
         {
-            io_->seek(m_riffFileSkeleton.m_headerChunks[i]->m_primitiveChunks[j]->m_chunkLocation,BasicIo::beg);
-            io_->read(chkId.pData_,4);
-            if(equalsRiffTag(chkId,chunkId))
-            {
-                positions.push_back((long)io_->tell());
-            }
+            positions.push_back((long)io_->tell());
         }
     }
     return positions;
@@ -585,7 +582,6 @@ std::vector<long> RiffVideo::findHeaderPositions(const char* headerId)
         {
             positions.push_back((long)io_->tell() - 8);
         }
-
     }
     return positions;
 }
@@ -633,7 +629,7 @@ void RiffVideo::doWriteMetadata()
 
     m_decodeMetaData = false;
     m_modifyMetadata = true;
-    tagDecoder();
+
     //write metadata in order
 
     //find and move to avih position
@@ -789,12 +785,6 @@ void RiffVideo::tagDecoder()
         unsigned long listsize = Exiv2::getULong(listSize.pData_, littleEndian);
         io_->read(chkHeader.pData_, 4);
 
-        ListChunk *tmpList = new ListChunk();
-        tmpList->m_listLocation = io_->tell() - 8;
-        tmpList->m_listSize = listsize;
-
-        m_riffFileSkeleton.m_lists.push_back(tmpList);
-
         HeaderChunk *tmpHeaderChunk = new HeaderChunk();
         memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
 
@@ -821,7 +811,7 @@ void RiffVideo::tagDecoder()
                                                "IMUS","INAM","IPRO","ISRC","ISTR","LANG","LOCA",
                                                "TAPE","YEAR","IPRD","IKEy","ICOP","ICNT"};
 
-            const char allHeaderFlags[][5]={"NCDT","ODML","MOVI"};
+            const char allHeaderFlags[][5]={"NCDT","ODML","MOVI","INFO"};
 
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
             {
@@ -829,7 +819,7 @@ void RiffVideo::tagDecoder()
                 memcpy((byte*)tmpPremitiveChunk->m_chunkId,(const byte*)chkId.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 8;
                 tmpPremitiveChunk->m_chunkSize = size;
-                tmpHeaderChunk->m_primitiveChunks.push_back(tmpPremitiveChunk);
+                m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
             }
 
             if(equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5)))
@@ -946,10 +936,11 @@ void RiffVideo::tagDecoder()
         unsigned long size = Exiv2::getULong(junkSize.pData_, littleEndian);
         if(!m_decodeMetaData)
         {
-            ListChunk *tmpList = new ListChunk();
-            tmpList->m_listLocation = io_->tell() - 8;
-            tmpList->m_listSize = size;
-            m_riffFileSkeleton.m_lists.push_back(tmpList);
+            HeaderChunk *tmpHeaderChunk = new HeaderChunk();
+            tmpHeaderChunk->m_headerLocation = io_->tell() - 8;
+            tmpHeaderChunk->m_headerSize = size;
+            m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
+            io_->seek(size,BasicIo::cur);
         }
         else
         {
@@ -965,10 +956,10 @@ void RiffVideo::tagDecoder()
         if(!m_decodeMetaData)
         {
             HeaderChunk *tmpHeaderChunk = new HeaderChunk();
-            tmpHeaderChunk->m_headerLocation = io_->tell() - 12;
+            tmpHeaderChunk->m_headerLocation = io_->tell() - 8;
             tmpHeaderChunk->m_headerSize = size;
-            memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkMainId.pData_,5);
             m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
+            io_->seek(size,BasicIo::cur);
         }
         else
         {
@@ -1428,23 +1419,9 @@ void RiffVideo::infoTagsHandler()
         if((xmpData_["Xmp.video.Comment"].count() > 0) &&
                 ((findChunkPositions("CMNT")).size() == 0))
         {
-            io_->seek(4,BasicIo::beg);
-            io_->read(buf.pData_,4);
-            io_->seek(-4,BasicIo::cur);
-            const long originalSize = Exiv2::getULong(buf.pData_, littleEndian);
-            long newSize = originalSize + 100 ;
-            byte rawNewSize[4];
-            memcpy(rawNewSize,&newSize,4);
-//            io_->write(rawNewSize,4);
-            io_->seek(originalSize,BasicIo::beg);
-//            io_->write();
-            byte rawComment[80] = {};
             const std::string commentData = xmpData_["Xmp.video.Comment"].toString();
-            for(int i=0; i< std::min((long)80,xmpData_["Xmp.video.Comment"].count()) ; i++)
-            {
-                rawComment[i] = (byte)commentData[i];
-            }
-//            io_->write(rawComment,80);
+            const std::string commentFlag = "CMNT";
+            writeNewChunk(commentData,commentFlag);
         }
     }
 } // RiffVideo::infoTagsHandler
@@ -2364,6 +2341,47 @@ bool RiffVideo::copyRestOfTheFile(DataBuf oldSavedData)
     io_->write(swapDataArray[0].pData_,
             readSize);
 
+    return true;
+}
+
+bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
+{
+    DataBuf buf((unsigned long)5);
+    buf.pData_[4] = '\0';
+    io_->seek(4,BasicIo::beg);
+    io_->read(buf.pData_,4);
+    io_->seek(-4,BasicIo::cur);
+    const long originalSize = Exiv2::getULong(buf.pData_, littleEndian);
+    long newRiffSize = originalSize + 100 ;
+
+    byte rawNewRiffSize[4];
+    memcpy(rawNewRiffSize,&newRiffSize,4);
+    io_->write(rawNewRiffSize,4);
+    io_->seek(originalSize,BasicIo::beg);
+
+    byte rawListFlag[4] = {'L','I','S','T'};
+    byte rawListSize[4];
+    byte rawInfoFlag[4] = {'I','N','F','O'};
+    byte rawChunkId[4] = {(byte)chunkId[0],(byte)chunkId[1],
+                          (byte)chunkId[2],(byte)chunkId[3]};
+    byte rawChunkSize[4];
+    byte rawChunkData[80] = {};
+    for(int i=0; i<min((int)chunkData.size(),(int)80); i++)
+    {
+        rawChunkData[i] = (byte)chunkData[i];
+    }
+
+    long listSize = 92;
+    long chunkSize = 80;
+    memcpy(rawListSize,&listSize,4);
+    memcpy(rawChunkSize,&chunkSize,4);
+
+    io_->write(rawListFlag,4);
+    io_->write(rawListSize,4);
+    io_->write(rawInfoFlag,4);
+    io_->write(rawChunkId,4);
+    io_->write(rawChunkSize,4);
+    io_->write(rawChunkData,80);
     return true;
 }
 
