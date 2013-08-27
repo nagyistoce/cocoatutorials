@@ -2,7 +2,8 @@
 
 syntaxError() {
 	echo "usage: $0 [{--help|-?}|{--set|-s} n|{--verbose|-v}]+"
-	echo "set: day | month | year | from | to | lAtitude | lOngtitude | zone | city | [s|daylight]"
+	echo "set: day | month | year | from | to | lAt | lOng | zone | city | [s|daylight]"
+	echo data from http://www.earthtools.org
 	exit 1
 }
 
@@ -77,7 +78,7 @@ if [ "$c" != "" ]; then
 		fi
 	fi
 	
-	if [ $count -eq 0 ]; then
+	if [ "$count" -eq "0" ]; then
 		echo "*** city $c not found ***"
 		exit 1
 	elif [ "$count" -ne "1" ]; then
@@ -87,7 +88,7 @@ if [ "$c" != "" ]; then
 	else
 		curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" > $tmp
 		z=$(grep offset "$tmp" | cut -d">" -f2 | cut -d"<" -f 1)
-		echo ${x[@]} "$z"
+		echo -n ${x[@]} "$z"
 		# don't use offset from the web service.  Set z=99
 		z=99 
 	fi
@@ -144,7 +145,7 @@ for m in $(seq $m1 $m2); do
 		esac
 	fi
 	for d in $(seq $f $t) ; do
-		if [ $(( c+=1 )) == 1 ]; then echo 'Date      -sunrise- -sunset-' ;fi
+		if [ $(( c+=1 )) == 1 ]; then echo $'\nDate      -sunrise- -sunset-' ;fi
 		curl --silent http://www.earthtools.org/sun/$a/$o/$d/$m/$z/$x > $tmp
 		if [ $? != 0 ]; then
 			echo '*** unable to use curl - are you on the internet? ***'
@@ -706,7 +707,7 @@ ID     LAT    LON     Location
 [FAB]   51.27  -0.77 Farnborough,England
 [EGLJ]  51.67  -1.07 Chalsgrove,England
 [BBS]   51.32  -0.83 Blackbushe,England
-[LHR]   51.47  -0.45 London,Engalnd
+[LHR]   51.47  -0.45 London,England
 [SEN]   51.57   0.68 Southend,England
 [LYX]   50.95   0.93 Lydd,U.K.
 [MSE]   51.33   1.33 Manston,England
