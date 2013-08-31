@@ -898,13 +898,6 @@ void QuickTimeVideo::doWriteMetadata()
 
     m_decodeMetadata = false;
     m_modifyMetadata = true;
-    continueTraversing_ = true;
-
-    while (continueTraversing_)
-    {
-        decodeBlock();
-    }
-    /*commented atom types need to be revised again*/
 
     std::vector< pair<unsigned long,unsigned long> > ftypPositions = findAtomPositions("ftyp");
     for(int i=0; i<ftypPositions.size(); i++)
@@ -921,8 +914,8 @@ void QuickTimeVideo::doWriteMetadata()
     }
 
     std::vector< pair<unsigned long,unsigned long> > trakPositions = findAtomPositions("trak");
-
     std::vector< pair<unsigned long,unsigned long> > tkhdPositions = findAtomPositions("tkhd");
+
     for(int i=0; i<tkhdPositions.size(); i++)
     {
         io_->seek(trakPositions[i].first,BasicIo::beg);
@@ -1035,7 +1028,8 @@ void QuickTimeVideo::decodeBlock()
     std::memset(buf.pData_, 0x0, buf.size_);
 
     io_->read(buf.pData_, 4);
-    if(io_->eof()) {
+    if(io_->eof())
+    {
         continueTraversing_ = false;
         return;
     }
@@ -1051,18 +1045,18 @@ void QuickTimeVideo::decodeBlock()
 
 void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
 {
-    const char allAtomFlags[][5]={"ftyp","mvhd","tkhd","mdhd","hdlr","vmhd","udta","dref","stsd","stts","pnot",
+    const char allAtomFlags[][5]={"ftyp","mvhd","trak","tkhd","mdhd","hdlr","vmhd","udta","dref","stsd","stts","pnot",
                                   "tapt","keys","url ","urn ","dcom","smhd"};
-    if((!m_decodeMetadata) && (equalsQTimeTag(buf,allAtomFlags,(int)(sizeof(allAtomFlags)/5))))
+    if(equalsQTimeTag(buf,allAtomFlags,(int)(sizeof(allAtomFlags)/5)))
     {
         QuickAtom *tmpAtom = new QuickAtom();
         tmpAtom->m_AtomLocation = io_->tell();
         tmpAtom->m_AtomSize = size;
         memcpy((byte *)tmpAtom->m_AtomId,(const byte*)buf.pData_,5);
         m_QuickSkeleton.push_back(tmpAtom);
-        io_->seek(size,BasicIo::cur);
     }
-    else if (ignoreList(buf))
+
+    if (ignoreList(buf))
         discard(size);
 
     else if (dataIgnoreList(buf))
@@ -1072,14 +1066,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, unsigned long size)
         fileTypeDecoder(size);
 
     else if (equalsQTimeTag(buf, "trak"))
-    {
-        QuickAtom *tmpAtom = new QuickAtom();
-        tmpAtom->m_AtomLocation = io_->tell();
-        tmpAtom->m_AtomSize = size;
-        memcpy((byte *)tmpAtom->m_AtomId,(const byte*)buf.pData_,5);
-        m_QuickSkeleton.push_back(tmpAtom);
         setMediaStream();
-    }
 
     else if (equalsQTimeTag(buf, "mvhd"))
         movieHeaderDecoder(size);
@@ -1463,7 +1450,7 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                     memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(0),2);
                     rawCleanApertureWidth[0] = rawCleanApertureWidthTmp[0];
                     rawCleanApertureWidth[1] = rawCleanApertureWidthTmp[1];
-                    memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(0),2);
+                    memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(1),2);
                     rawCleanApertureWidth[2] = rawCleanApertureWidthTmp[0];
                     rawCleanApertureWidth[3] = rawCleanApertureWidthTmp[1];
                     io_->write(rawCleanApertureWidth,4);
@@ -1481,7 +1468,7 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                     memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(0),2);
                     rawCleanApertureHeight[0] = rawCleanApertureHeightTmp[0];
                     rawCleanApertureHeight[1] = rawCleanApertureHeightTmp[1];
-                    memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(0),2);
+                    memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(1),2);
                     rawCleanApertureHeight[2] = rawCleanApertureHeightTmp[0];
                     rawCleanApertureHeight[3] = rawCleanApertureHeightTmp[1];
                     io_->write(rawCleanApertureHeight,4);
@@ -1503,7 +1490,7 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                     memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(0),2);
                     rawProductionApertureWidth[0] = rawProductionApertureWidthTmp[0];
                     rawProductionApertureWidth[1] = rawProductionApertureWidthTmp[1];
-                    memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(0),2);
+                    memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(1),2);
                     rawProductionApertureWidth[2] = rawProductionApertureWidthTmp[0];
                     rawProductionApertureWidth[3] = rawProductionApertureWidthTmp[1];
                     io_->write(rawProductionApertureWidth,4);
@@ -1521,7 +1508,7 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                     memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(0),2);
                     rawProductionApertureHeight[0] = rawProductionApertureHeightTmp[0];
                     rawProductionApertureHeight[1] = rawProductionApertureHeightTmp[1];
-                    memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(0),2);
+                    memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(1),2);
                     rawProductionApertureHeight[2] = rawProductionApertureHeightTmp[0];
                     rawProductionApertureHeight[3] = rawProductionApertureHeightTmp[1];
                     io_->write(rawProductionApertureHeight,4);
@@ -1542,7 +1529,7 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                     memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(0),2);
                     rawEncodedPixelsWidth[0] = rawEncodedPixelsWidthTmp[0];
                     rawEncodedPixelsWidth[1] = rawEncodedPixelsWidthTmp[1];
-                    memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(0),2);
+                    memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(1),2);
                     rawEncodedPixelsWidth[2] = rawEncodedPixelsWidthTmp[0];
                     rawEncodedPixelsWidth[3] = rawEncodedPixelsWidthTmp[1];
                     io_->write(rawEncodedPixelsWidth,4);
@@ -1560,7 +1547,7 @@ void QuickTimeVideo::trackApertureTagDecoder(unsigned long size)
                     memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(0),2);
                     rawEncodedPixelsHeight[0] = rawEncodedPixelsHeightTmp[0];
                     rawEncodedPixelsHeight[1] = rawEncodedPixelsHeightTmp[1];
-                    memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(0),2);
+                    memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(1),2);
                     rawEncodedPixelsHeight[2] = rawEncodedPixelsHeightTmp[0];
                     rawEncodedPixelsHeight[3] = rawEncodedPixelsHeightTmp[1];
                     io_->write(rawEncodedPixelsHeight,4);
@@ -1612,131 +1599,146 @@ void QuickTimeVideo::CameraTagsDecoder(unsigned long size_external)
         }
         else
         {
-            RevTagDetails revTagDetails[(sizeof(graphicsModetags)/sizeof(graphicsModetags[0]))];
-            reverseTagDetails(graphicsModetags,revTagDetails,((sizeof(graphicsModetags)/sizeof(graphicsModetags[0]))));
+            if(equalsQTimeTag(buf, "NIKO"))
+            {
+                io_->seek(cur_pos, BasicIo::beg);
+                RevTagDetails revTagDetails[(sizeof(whiteBalance)/sizeof(whiteBalance[0]))];
+                reverseTagDetails(whiteBalance,revTagDetails,((sizeof(whiteBalance)/sizeof(whiteBalance[0]))));
 
-            if(xmpData_["Xmp.video.Make"].count() >0)
-            {
-                byte rawMake[24];
-                const std::string make = xmpData_["Xmp.video.Make"].toString();
-                for(int j=0; j<24; j++)
+                if(xmpData_["Xmp.video.Make"].count() >0)
                 {
-                    rawMake[j] = make[j];
+                    byte rawMake[24];
+                    const std::string make = xmpData_["Xmp.video.Make"].toString();
+                    for(int j=0; j<24; j++)
+                    {
+                        rawMake[j] = make[j];
+                    }
+                    io_->write(rawMake,24);
                 }
-                io_->write(rawMake,24);
-            }
-            else
-            {
-                io_->seek(24,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.Model"].count() >0)
-            {
-                byte rawModel[14];
-                const std::string model = xmpData_["Xmp.video.Model"].toString();
-                for(int j=0; j<14; j++)
+                else
                 {
-                    rawModel[j] = model[j];
+                    io_->seek(24,BasicIo::cur);
                 }
-                io_->write(rawModel,14);
-            }
-            else
-            {
-                io_->seek(14,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.ExposureTime"].count() >0)
-            {
-                byte rawExposureTime[4];
-                const std::vector<long> d_exposureTime = getLongFromString(xmpData_["Xmp.video.ExposureTime"].toString(),'/');
-                const long tmpValue = (d_exposureTime.at(1)*10);
-                memcpy(rawExposureTime,&tmpValue,4);
-                io_->write(rawExposureTime,4);
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.FNumber"].count() >0)
-            {
-                byte rawFNumber[4];
-                const long fNumber =(long)((double)xmpData_["Xmp.video.FNumber"].toLong()*(double)getULong(buf2.pData_, littleEndian));
-                memcpy(rawFNumber,&fNumber,4);
-                io_->write(rawFNumber,4);
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.ExposureCompensation"].count() >0)
-            {
-                byte rawExposureCompensation[4];
-                const long exposureCompensation =(long)((double)xmpData_["Xmp.video.ExposureCompensation"].toLong()
-                                                        *(double)getULong(buf2.pData_, littleEndian));
-                memcpy(rawExposureCompensation,&exposureCompensation,4);
-                io_->write(rawExposureCompensation,4);
-                io_->seek(10,BasicIo::cur);
-            }
-            else
-            {
-                io_->seek(14,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
-            {
-                byte rawWhiteBalance[4];
-                const std::string whiteBalance = xmpData_["Xmp.video.WhiteBalance"].toString();
-                char *whiteBalanceData = (char *)malloc(xmpData_["Xmp.video.WhiteBalance"].size());
-                for(int j=0; j<4; j++)
+                if(xmpData_["Xmp.video.Model"].count() >0)
                 {
-                    whiteBalanceData[j] = whiteBalance[j];
+                    byte rawModel[14];
+                    const std::string model = xmpData_["Xmp.video.Model"].toString();
+                    for(int j=0; j<14; j++)
+                    {
+                        rawModel[j] = model[j];
+                    }
+                    io_->write(rawModel,14);
                 }
-                rtd = find(revTagDetails,whiteBalanceData);
-                if(rtd)
+                else
                 {
-                    const long sWhiteBalance = (long)rtd->val_;
-                    memcpy(rawWhiteBalance,&sWhiteBalance,4);
-                    io_->write(rawWhiteBalance,4);
+                    io_->seek(14,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.ExposureTime"].count() >0)
+                {
+                    byte rawExposureTime[4];
+                    const std::vector<long> d_exposureTime = getLongFromString(xmpData_["Xmp.video.ExposureTime"].toString(),'/');
+                    const long tmpValue = (d_exposureTime.at(1)*10);
+                    memcpy(rawExposureTime,&tmpValue,4);
+                    io_->write(rawExposureTime,4);
                 }
                 else
                 {
                     io_->seek(4,BasicIo::cur);
                 }
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.FocalLength"].count() >0)
-            {
-                byte rawFocalLength[4];
-                const long focalLength =(long)((double)xmpData_["Xmp.video.FocalLength"].toLong()
-                                               *(double)getULong(buf2.pData_, littleEndian));
-                memcpy(rawFocalLength,&focalLength,4);
-                io_->write(rawFocalLength,4);
-                io_->seek(95,BasicIo::cur);
-            }
-            else
-            {
-                io_->seek(99,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.Software"].count() >0)
-            {
-                byte rawSoftware[48];
-                const std::string software = xmpData_["Xmp.video.Software"].toString();
-                for(int j=0; j<48; j++)
+                if(xmpData_["Xmp.video.FNumber"].count() >0)
                 {
-                    rawSoftware[j] = software[j];
+                    io_->seek(4,BasicIo::cur);
+                    io_->read(buf2.pData_,4);
+                    io_->seek(-8,BasicIo::cur);
+                    byte rawFNumber[4];
+                    const long fNumber =(long)((double)xmpData_["Xmp.video.FNumber"].toLong()
+                            *(double)getULong(buf2.pData_, littleEndian));
+                    memcpy(rawFNumber,&fNumber,4);
+                    io_->write(rawFNumber,4);
+                    io_->seek(4,BasicIo::cur);
                 }
-                io_->write(rawSoftware,48);
-            }
-            else
-            {
-                io_->seek(48,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.ISO"].count() >0)
-            {
-                byte rawISO[4];
-                const long ISO = xmpData_["Xmp.video.ISO"].toLong();
-                memcpy(rawISO,&ISO,4);
-                io_->write(rawISO,4);
+                else
+                {
+                    io_->seek(8,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.ExposureCompensation"].count() >0)
+                {
+                    io_->seek(4,BasicIo::cur);
+                    io_->read(buf2.pData_,4);
+                    io_->seek(-8,BasicIo::cur);
+                    byte rawExposureCompensation[4];
+                    const long exposureCompensation =(long)((double)xmpData_["Xmp.video.ExposureCompensation"].toLong()
+                            *(double)getULong(buf2.pData_, littleEndian));
+                    memcpy(rawExposureCompensation,&exposureCompensation,4);
+                    io_->write(rawExposureCompensation,4);
+                    io_->seek(14,BasicIo::cur);
+                }
+                else
+                {
+                    io_->seek(18,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
+                {
+                    byte rawWhiteBalance[4];
+                    const std::string whiteBalance = xmpData_["Xmp.video.WhiteBalance"].toString();
+                    char *whiteBalanceData = (char *)malloc(xmpData_["Xmp.video.WhiteBalance"].size());
+                    for(int j=0; j<4; j++)
+                    {
+                        whiteBalanceData[j] = whiteBalance[j];
+                    }
+                    rtd = find(revTagDetails,whiteBalanceData);
+                    if(rtd)
+                    {
+                        const long sWhiteBalance = (long)rtd->val_;
+                        memcpy(rawWhiteBalance,&sWhiteBalance,4);
+                        io_->write(rawWhiteBalance,4);
+                    }
+                    else
+                    {
+                        io_->seek(4,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.FocalLength"].count() >0)
+                {
+                    io_->seek(4,BasicIo::cur);
+                    io_->read(buf2.pData_,4);
+                    io_->seek(-8,BasicIo::cur);
+                    byte rawFocalLength[4];
+                    const long focalLength =(long)((double)xmpData_["Xmp.video.FocalLength"].toLong()
+                            *(double)getULong(buf2.pData_, littleEndian));
+                    memcpy(rawFocalLength,&focalLength,4);
+                    io_->write(rawFocalLength,4);
+                    io_->seek(99,BasicIo::cur);
+                }
+                else
+                {
+                    io_->seek(103,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.Software"].count() >0)
+                {
+                    byte rawSoftware[48];
+                    const std::string software = xmpData_["Xmp.video.Software"].toString();
+                    for(int j=0; j<48; j++)
+                    {
+                        rawSoftware[j] = software[j];
+                    }
+                    io_->write(rawSoftware,48);
+                }
+                else
+                {
+                    io_->seek(48,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.ISO"].count() >0)
+                {
+                    byte rawISO[4];
+                    const long ISO = xmpData_["Xmp.video.ISO"].toLong();
+                    memcpy(rawISO,&ISO,4);
+                    io_->write(rawISO,4);
+                }
             }
         }
         io_->seek(cur_pos + size_external, BasicIo::beg);
@@ -1757,7 +1759,6 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
     {
         while((size_internal/4 != 0) && (size_internal > 0))
         {
-
             buf.pData_[4] = '\0' ;
             io_->read(buf.pData_, 4);
             size = Exiv2::getULong(buf.pData_, bigEndian);
@@ -1806,8 +1807,7 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
 
             else if(tv)
             {
-                io_->read(buf.pData_, 4);
-                io_->read(buf.pData_, size-12);
+                io_->read(buf.pData_, size-8);
                 xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
             }
 
@@ -1854,7 +1854,7 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
                 {
                     byte rawTagData[size-8];
                     const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
-                    for(int j=0; j <(size-8); j++)
+                    for(int j=0; j <min((long)(size-8),xmpData_[exvGettext(tv->label_)].size()); j++)
                     {
                         rawTagData[j] = tagData[j];
                     }
@@ -1873,16 +1873,15 @@ void QuickTimeVideo::userDataDecoder(unsigned long size_external)
 
             else if(tv)
             {
-                io_->seek(4,BasicIo::cur);
                 if(xmpData_[exvGettext(tv->label_)].count() >0)
                 {
-                    byte rawtagData[size-12];
+                    byte rawtagData[size-8];
                     const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
-                    for(int j=0; j<(size-12); j++)
+                    for(int j=0; j<min((long)(size-8),xmpData_[exvGettext(tv->label_)].size()); j++)
                     {
                         rawtagData[j] = tagData[j];
                     }
-                    io_->write(rawtagData,(size-12));
+                    io_->write(rawtagData,(size-8));
                 }
                 else
                 {
@@ -2077,7 +2076,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 io_->read(buf.pData_, 4);
                 io_->read(buf2.pData_, 4);
                 if(td)
-                    xmpData_[exvGettext(td->label_)] = Exiv2::toString((double)Exiv2::getULong( buf.pData_, bigEndian) / (double)Exiv2::getULong( buf2.pData_, bigEndian));
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString((double)Exiv2::getULong( buf.pData_, bigEndian)
+                                                                       / (double)Exiv2::getULong( buf2.pData_, bigEndian));
 
                 // Sanity check with an "unreasonably" large number
                 if (dataLength > 200 || dataLength < 8)
@@ -2098,7 +2098,8 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
                 io_->read(buf.pData_, 2);
                 io_->read(buf2.pData_, 2);
                 if(td)
-                    xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian) ) + " " + Exiv2::toString(Exiv2::getUShort( buf2.pData_, bigEndian));
+                    xmpData_[exvGettext(td->label_)] = Exiv2::toString(Exiv2::getUShort( buf.pData_, bigEndian) )
+                            + " " + Exiv2::toString(Exiv2::getUShort( buf2.pData_, bigEndian));
 
                 // Sanity check with an "unreasonably" large number
                 if (dataLength > 200 || dataLength < 4)
@@ -2117,433 +2118,458 @@ void QuickTimeVideo::NikonTagsDecoder(unsigned long size_external)
     }
     else
     {
-        io_->read(buf.pData_, 4);
-        TagID = Exiv2::getULong(buf.pData_, bigEndian);
-        td = find(NikonNCTGTags, TagID);
+        RevTagDetails revNikonNCTGTags[(sizeof(NikonNCTGTags)/sizeof(NikonNCTGTags[0]))];
+        reverseTagDetails(NikonNCTGTags,revNikonNCTGTags,((sizeof(NikonNCTGTags)/sizeof(NikonNCTGTags[0]))));
 
-        io_->read(buf.pData_, 2);
-        dataType = Exiv2::getUShort(buf.pData_, bigEndian);
-
-        std::memset(buf.pData_, 0x0, buf.size_);
-        io_->read(buf.pData_, 2);
-
-        if(TagID == 0x2000023)
+        for(int i = 0 ; i < 100 ; i++)
         {
-            uint64_t local_pos = io_->tell();
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
+            io_->read(buf.pData_, 4);
+            TagID = Exiv2::getULong(buf.pData_, bigEndian);
+            td = find(NikonNCTGTags, TagID);
 
-            if(xmpData_["Xmp.video.PictureControlVersion"].count() >0)
-            {
-                byte rawPictureControlVersion[4];
-                const std::string pictureControlVersion = xmpData_["Xmp.video.PictureControlVersion"].toString();
-                for(int j=0; j<4; j++)
-                {
-                    rawPictureControlVersion[j] = pictureControlVersion[j];
-                }
-                io_->write(rawPictureControlVersion,4);
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.PictureControlName"].count() >0)
-            {
-                byte rawPictureControlName[20];
-                const std::string pictureControlName = xmpData_["Xmp.video.PictureControlName"].toString();
-                for(int j=0; j<20; j++)
-                {
-                    rawPictureControlName[j] = pictureControlName[j];
-                }
-                io_->write(rawPictureControlName,20);
-            }
-            else
-            {
-                io_->seek(20,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.PictureControlBase"].count() >0)
-            {
-                byte rawPictureControlBase[20];
-                const std::string pictureControlBase = xmpData_["Xmp.video.PictureControlBase"].toString();
-                for(int j=0; j<20; j++)
-                {
-                    rawPictureControlBase[j] = pictureControlBase[j];
-                }
-                io_->write(rawPictureControlBase,20);
-            }
-            else
-            {
-                io_->seek(20,BasicIo::cur);
-            }
-            io_->seek(4,BasicIo::cur);   std::memset(buf.pData_, 0x0, buf.size_);
+            io_->read(buf.pData_, 2);
+            dataType = Exiv2::getUShort(buf.pData_, bigEndian);
 
-            if(xmpData_["Xmp.video.PictureControlAdjust"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(PictureControlAdjust)/sizeof(PictureControlAdjust[0]))];
-                reverseTagDetails(PictureControlAdjust,revTagDetails,((sizeof(PictureControlAdjust)/sizeof(PictureControlAdjust[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.PictureControlAdjust"].size());
-                const std::string m_strData = xmpData_["Xmp.video.PictureControlAdjust"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.PictureControlAdjust"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails,m_tagData);
-                if(rtd2)
-                {
-                    byte rawPictureControlAdjust = (byte)rtd2->val_;
-                    io_->write(&rawPictureControlAdjust,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.PictureControlQuickAdjust"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
-                reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.PictureControlQuickAdjust"].size());
-                const std::string m_strData = xmpData_["Xmp.video.PictureControlQuickAdjust"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.PictureControlQuickAdjust"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawPictureControlQuickAdjust = (byte)rtd2->val_;
-                    io_->write(&rawPictureControlQuickAdjust,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.Sharpness"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
-                reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Sharpness"].size());
-                const std::string m_strData = xmpData_["Xmp.video.Sharpness"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.Sharpness"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawSharpness = (byte)rtd2->val_;
-                    io_->write(&rawSharpness,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.Contrast"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
-                reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Contrast"].size());
-                const std::string m_strData = xmpData_["Xmp.video.Contrast"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.Contrast"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawContrast = (byte)rtd2->val_;
-                    io_->write(&rawContrast,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.Brightness"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
-                reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Brightness"].size());
-                const std::string m_strData = xmpData_["Xmp.video.Brightness"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.Brightness"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawBrightness = (byte)rtd2->val_;
-                    io_->write(&rawBrightness,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.Saturation"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(Saturation)/sizeof(Saturation[0]))];
-                reverseTagDetails(Saturation,revTagDetails,((sizeof(Saturation)/sizeof(Saturation[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Saturation"].size());
-                const std::string m_strData = xmpData_["Xmp.video.Saturation"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.Saturation"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawSaturation = (byte)rtd2->val_;
-                    io_->write(&rawSaturation,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.HueAdjustment"].count() >0)
-            {
-                byte rawHueAdjustment = (byte)xmpData_["Xmp.video.HueAdjustment"].toString()[0];
-                io_->write(&rawHueAdjustment,1);
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.FilterEffect"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(FilterEffect)/sizeof(FilterEffect[0]))];
-                reverseTagDetails(FilterEffect,revTagDetails,((sizeof(FilterEffect)/sizeof(FilterEffect[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.FilterEffect"].size());
-                const std::string m_strData = xmpData_["Xmp.video.FilterEffect"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.FilterEffect"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawFilterEffect = (byte)rtd2->val_;
-                    io_->write(&rawFilterEffect,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.ToningEffect"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(ToningEffect)/sizeof(ToningEffect[0]))];
-                reverseTagDetails(ToningEffect,revTagDetails,((sizeof(ToningEffect)/sizeof(ToningEffect[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.ToningEffect"].size());
-                const std::string m_strData = xmpData_["Xmp.video.ToningEffect"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.ToningEffect"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawToningEffect = (byte)rtd2->val_;
-                    io_->write(&rawToningEffect,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            else
-            {
-                io_->seek(1,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.ToningSaturation"].count() >0)
-            {
-                byte rawToningSaturation = (byte)xmpData_["Xmp.video.ToningSaturation"].toString()[0];
-                io_->write(&rawToningSaturation,1);
-            }
-            io_->seek(local_pos + dataLength, BasicIo::beg);
-        }
-
-        else if(TagID == 0x2000024)
-        {
-            uint64_t local_pos = io_->tell();
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
             std::memset(buf.pData_, 0x0, buf.size_);
+            io_->read(buf.pData_, 2);
 
-            if(xmpData_["Xmp.video.TimeZone"].count() >0)
+            if(TagID == 0x2000023)
             {
-                byte rawTimeZone[2];
-                ushort timeZone = (short)xmpData_["Xmp.video.TimeZone"].toLong();
-                memcpy(rawTimeZone,&timeZone,2);
-                io_->write(rawTimeZone,2);
-            }
-            else
-            {
-                io_->seek(2,BasicIo::cur);
-            }
-            if(xmpData_["Xmp.video.DayLightSavings"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(YesNo)/sizeof(YesNo[0]))];
-                reverseTagDetails(YesNo,revTagDetails,((sizeof(YesNo)/sizeof(YesNo[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.DayLightSavings"].size());
-                const std::string m_strData = xmpData_["Xmp.video.DayLightSavings"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.DayLightSavings"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawDayLightSavings = (byte)rtd2->val_;
-                    io_->write(&rawDayLightSavings,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            if(xmpData_["Xmp.video.DateDisplayFormat"].count() >0)
-            {
-                RevTagDetails revTagDetails[(sizeof(DateDisplayFormat)/sizeof(DateDisplayFormat[0]))];
-                reverseTagDetails(DateDisplayFormat,revTagDetails,((sizeof(DateDisplayFormat)/sizeof(DateDisplayFormat[0]))));
-                char * m_tagData = (char *)malloc(xmpData_["Xmp.video.DateDisplayFormat"].size());
-                const std::string m_strData = xmpData_["Xmp.video.DateDisplayFormat"].toString();
-                for(int j=0; j<xmpData_["Xmp.video.DateDisplayFormat"].size(); j++)
-                {
-                    m_tagData[j] = m_strData[j];
-                }
-                rtd2 = find(revTagDetails, m_tagData );
-                if(rtd2)
-                {
-                    byte rawDateDisplayFormat = (byte)rtd2->val_;
-                    io_->write(&rawDateDisplayFormat,1);
-                }
-                else
-                {
-                    io_->seek(1,BasicIo::cur);
-                }
-            }
-            io_->seek(local_pos + dataLength, BasicIo::beg);
-        }
+                uint64_t local_pos = io_->tell();
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
 
-        else if(dataType == 2 || dataType == 7)
-        {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
-            std::memset(buf.pData_, 0x0, buf.size_);
-
-            // Sanity check with an "unreasonably" large number
-            if (dataLength > 200) {
-#ifndef SUPPRESS_WARNINGS
-                EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be larger than 200."
-                          << " Entries considered invalid. Not Processed.\n";
-#endif
-                io_->seek(io_->tell() + dataLength, BasicIo::beg);
-            }
-            else
-            {
-                if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (xmpData_[exvGettext(td->label_)].size() >= dataLength))
+                if(xmpData_["Xmp.video.PictureControlVersion"].count() >0)
                 {
-                    byte rawTagData[dataLength];
-                    const std::string m_strData = xmpData_[exvGettext(td->label_)].toString();
-                    for(int j=0; j<dataLength; j++)
+                    byte rawPictureControlVersion[4];
+                    const std::string pictureControlVersion = xmpData_["Xmp.video.PictureControlVersion"].toString();
+                    for(int j=0; j<4; j++)
                     {
-                        rawTagData[j] = m_strData[j];
+                        rawPictureControlVersion[j] = pictureControlVersion[j];
                     }
-                    io_->write(rawTagData,dataLength);
+                    io_->write(rawPictureControlVersion,4);
+                }
+                else
+                {
+                    io_->seek(4,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.PictureControlName"].count() >0)
+                {
+                    byte rawPictureControlName[20];
+                    const std::string pictureControlName = xmpData_["Xmp.video.PictureControlName"].toString();
+                    for(int j=0; j<min(20,(int)pictureControlName.size()); j++)
+                    {
+                        rawPictureControlName[j] = pictureControlName[j];
+                    }
+                    io_->write(rawPictureControlName,20);
+                }
+                else
+                {
+                    io_->seek(20,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.PictureControlBase"].count() >0)
+                {
+                    byte rawPictureControlBase[20];
+                    const std::string pictureControlBase = xmpData_["Xmp.video.PictureControlBase"].toString();
+                    for(int j=0; j<min(20,(int)pictureControlBase.size()); j++)
+                    {
+                        rawPictureControlBase[j] = pictureControlBase[j];
+                    }
+                    io_->write(rawPictureControlBase,20);
+                }
+                else
+                {
+                    io_->seek(20,BasicIo::cur);
+                }
+
+                io_->seek(4,BasicIo::cur);   std::memset(buf.pData_, 0x0, buf.size_);
+
+                if(xmpData_["Xmp.video.PictureControlAdjust"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(PictureControlAdjust)/sizeof(PictureControlAdjust[0]))];
+                    reverseTagDetails(PictureControlAdjust,revTagDetails,((sizeof(PictureControlAdjust)/sizeof(PictureControlAdjust[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.PictureControlAdjust"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.PictureControlAdjust"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.PictureControlAdjust"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails,m_tagData);
+                    if(rtd2)
+                    {
+                        byte rawPictureControlAdjust = (byte)rtd2->val_;
+                        io_->write(&rawPictureControlAdjust,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.PictureControlQuickAdjust"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
+                    reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.PictureControlQuickAdjust"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.PictureControlQuickAdjust"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.PictureControlQuickAdjust"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawPictureControlQuickAdjust = (byte)rtd2->val_;
+                        io_->write(&rawPictureControlQuickAdjust,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.Sharpness"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
+                    reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Sharpness"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.Sharpness"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.Sharpness"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawSharpness = (byte)rtd2->val_;
+                        io_->write(&rawSharpness,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.Contrast"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
+                    reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Contrast"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.Contrast"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.Contrast"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawContrast = (byte)rtd2->val_;
+                        io_->write(&rawContrast,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.Brightness"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
+                    reverseTagDetails(NormalSoftHard,revTagDetails,((sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Brightness"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.Brightness"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.Brightness"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawBrightness = (byte)rtd2->val_;
+                        io_->write(&rawBrightness,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.Saturation"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(Saturation)/sizeof(Saturation[0]))];
+                    reverseTagDetails(Saturation,revTagDetails,((sizeof(Saturation)/sizeof(Saturation[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.Saturation"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.Saturation"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.Saturation"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawSaturation = (byte)rtd2->val_;
+                        io_->write(&rawSaturation,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.HueAdjustment"].count() >0)
+                {
+                    byte rawHueAdjustment = (byte)xmpData_["Xmp.video.HueAdjustment"].toString()[0];
+                    io_->write(&rawHueAdjustment,1);
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.FilterEffect"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(FilterEffect)/sizeof(FilterEffect[0]))];
+                    reverseTagDetails(FilterEffect,revTagDetails,((sizeof(FilterEffect)/sizeof(FilterEffect[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.FilterEffect"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.FilterEffect"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.FilterEffect"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawFilterEffect = (byte)rtd2->val_;
+                        io_->write(&rawFilterEffect,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.ToningEffect"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(ToningEffect)/sizeof(ToningEffect[0]))];
+                    reverseTagDetails(ToningEffect,revTagDetails,((sizeof(ToningEffect)/sizeof(ToningEffect[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.ToningEffect"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.ToningEffect"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.ToningEffect"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawToningEffect = (byte)rtd2->val_;
+                        io_->write(&rawToningEffect,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                else
+                {
+                    io_->seek(1,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.ToningSaturation"].count() >0)
+                {
+                    byte rawToningSaturation = (byte)xmpData_["Xmp.video.ToningSaturation"].toString()[0];
+                    io_->write(&rawToningSaturation,1);
+                }
+                io_->seek(local_pos + dataLength, BasicIo::beg);
+            }
+
+            else if(TagID == 0x2000024)
+            {
+                uint64_t local_pos = io_->tell();
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
+                std::memset(buf.pData_, 0x0, buf.size_);
+
+                if(xmpData_["Xmp.video.TimeZone"].count() >0)
+                {
+                    byte rawTimeZone[2];
+                    ushort timeZone = (short)xmpData_["Xmp.video.TimeZone"].toLong();
+                    memcpy(rawTimeZone,&timeZone,2);
+                    io_->write(rawTimeZone,2);
+                }
+                else
+                {
+                    io_->seek(2,BasicIo::cur);
+                }
+                if(xmpData_["Xmp.video.DayLightSavings"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(YesNo)/sizeof(YesNo[0]))];
+                    reverseTagDetails(YesNo,revTagDetails,((sizeof(YesNo)/sizeof(YesNo[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.DayLightSavings"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.DayLightSavings"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.DayLightSavings"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawDayLightSavings = (byte)rtd2->val_;
+                        io_->write(&rawDayLightSavings,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                if(xmpData_["Xmp.video.DateDisplayFormat"].count() >0)
+                {
+                    RevTagDetails revTagDetails[(sizeof(DateDisplayFormat)/sizeof(DateDisplayFormat[0]))];
+                    reverseTagDetails(DateDisplayFormat,revTagDetails,((sizeof(DateDisplayFormat)/sizeof(DateDisplayFormat[0]))));
+                    char * m_tagData = (char *)malloc(xmpData_["Xmp.video.DateDisplayFormat"].size());
+                    const std::string m_strData = xmpData_["Xmp.video.DateDisplayFormat"].toString();
+                    for(int j=0; j<xmpData_["Xmp.video.DateDisplayFormat"].size(); j++)
+                    {
+                        m_tagData[j] = m_strData[j];
+                    }
+                    rtd2 = find(revTagDetails, m_tagData );
+                    if(rtd2)
+                    {
+                        byte rawDateDisplayFormat = (byte)rtd2->val_;
+                        io_->write(&rawDateDisplayFormat,1);
+                    }
+                    else
+                    {
+                        io_->seek(1,BasicIo::cur);
+                    }
+                }
+                io_->seek(local_pos + dataLength, BasicIo::beg);
+            }
+
+            else if(dataType == 2 || dataType == 7)
+            {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
+                std::memset(buf.pData_, 0x0, buf.size_);
+
+                // Sanity check with an "unreasonably" large number
+                if (dataLength > 200)
+                {
+#ifndef SUPPRESS_WARNINGS
+                    EXV_ERROR << "Xmp.video Nikon Tags, dataLength was found to be larger than 200."
+                              << " Entries considered invalid. Not Processed.\n";
+#endif
+                    io_->seek(io_->tell() + dataLength, BasicIo::beg);
+                }
+                else
+                {
+                    if(td && (xmpData_[exvGettext(td->label_)].count() >0))
+                    {
+                        byte rawTagData[dataLength];
+                        const std::string m_strData = xmpData_[exvGettext(td->label_)].toString();
+                        for(int j=0; j<min(dataLength,(ushort)m_strData.size()); j++)
+                        {
+                            rawTagData[j] = m_strData[j];
+                        }
+                        io_->write(rawTagData,dataLength);
+                    }
+                    else
+                    {
+                        io_->seek(dataLength,BasicIo::cur);
+                    }
+                }
+            }
+            else if(dataType == 4)
+            {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
+                if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
+                {
+                    byte rawTagData[4];
+                    const long tagData = xmpData_[exvGettext(td->label_)].toLong();
+                    memcpy(rawTagData,&tagData,4);
+                    io_->write(rawTagData,4);
+                    io_->seek((dataLength-4),BasicIo::cur);
                 }
                 else
                 {
                     io_->seek(dataLength,BasicIo::cur);
                 }
             }
+            else if(dataType == 3)
+            {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 2);
+                if(td &&(xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
+                {
+                    byte rawTagData[2];
+                    const ushort tagData = (ushort)xmpData_[exvGettext(td->label_)].toLong();
+                    memcpy(rawTagData,&tagData,2);
+                    io_->write(rawTagData,2);
+                    io_->seek((dataLength-2),BasicIo::cur);
+                }
+                else
+                {
+                    io_->seek(dataLength,BasicIo::cur);
+                }
+            }
+            else if(dataType == 5)
+            {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 8;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 4);
+                io_->read(buf2.pData_, 4);
+                if(td && (xmpData_[exvGettext(td->label_)].count() >0) &&(dataLength < 200))
+                {
+                    io_->seek(-8,BasicIo::cur);
+                    byte rawTagData[4];
+                    const long tagData = (long)((double)xmpData_[exvGettext(td->label_)].toLong()*
+                            (double)Exiv2::getULong( buf2.pData_, bigEndian));
+                    memcpy(rawTagData,&tagData,4);
+                    io_->write(rawTagData,4);
+                    io_->seek((dataLength-4),BasicIo::cur);
+                }
+                else
+                {
+                    io_->seek(dataLength,BasicIo::cur);
+                }
+            }
+            else if(dataType == 8)
+            {
+                dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
+                std::memset(buf.pData_, 0x0, buf.size_);
+                if(td && (xmpData_[exvGettext(td->label_)].count() >0) &&(dataLength < 200))
+                {
+                    vector<ushort> dataEight = getNumberFromString(xmpData_[exvGettext(td->label_)].toString(),' ');
+                    byte rawFirstBytePair[2];
+                    byte rawSecondBytePair[2];
+                    memcpy(rawFirstBytePair,&dataEight[0],2);
+                    memcpy(rawSecondBytePair,&dataEight[1],2);
+                    io_->write(rawFirstBytePair,2);
+                    io_->write(rawSecondBytePair,2);
+                    io_->seek(dataLength - 4,BasicIo::cur);
+                }
+                else
+                {
+                    io_->seek(dataLength - 4,BasicIo::cur);
+                }
+            }
         }
-        else if(dataType == 4)
-        {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
-            if(td && (xmpData_[exvGettext(td->label_)].count() >0))
-            {
-                byte rawTagData[4];
-                const long tagData = xmpData_[exvGettext(td->label_)].toLong();
-                memcpy(rawTagData,&tagData,4);
-                io_->write(rawTagData,4);
-                io_->seek((dataLength-4),BasicIo::cur);
-            }
-            else
-            {
-                io_->seek(dataLength,BasicIo::cur);
-            }
-        }
-        else if(dataType == 3)  {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
-            std::memset(buf.pData_, 0x0, buf.size_);
-            io_->read(buf.pData_, 2);
-            if(td &&(xmpData_[exvGettext(td->label_)].count() >0))
-            {
-                byte rawTagData[2];
-                const ushort tagData = (ushort)xmpData_[exvGettext(td->label_)].toLong();
-                memcpy(rawTagData,&tagData,2);
-                io_->write(rawTagData,2);
-                io_->seek((dataLength-2),BasicIo::cur);
-            }
-            else
-            {
-                io_->seek(dataLength,BasicIo::cur);
-            }
-        }
-        else if(dataType == 5)
-        {
-            dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 8;
-            std::memset(buf.pData_, 0x0, buf.size_);
-            io_->read(buf.pData_, 4);
-            io_->read(buf2.pData_, 4);
-            if(td && (xmpData_[exvGettext(td->label_)].count() >0))
-            {
-                io_->seek(-8,BasicIo::cur);
-                byte rawTagData[4];
-                const long tagData = (long)((double)xmpData_[exvGettext(td->label_)].toLong()*
-                                            (double)Exiv2::getULong( buf2.pData_, bigEndian));
-                memcpy(rawTagData,&tagData,4);
-                io_->write(rawTagData,4);
-                io_->seek((dataLength-4),BasicIo::cur);
-            }
-            else
-            {
-                io_->seek(dataLength,BasicIo::cur);
-            }
-        }
-        else if(dataType == 8)
-        {//TODO : writesupport for datatype8
-        }
-
         io_->seek(cur_pos + size_external, BasicIo::beg);
     }
 } // QuickTimeVideo::NikonTagsDecoder
@@ -2670,6 +2696,9 @@ void QuickTimeVideo::audioDescDecoder()
         TagVocabulary revTagVocabulary[(sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))];
         reverseTagVocabulary(qTimeFileType,revTagVocabulary,((sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))));
 
+        TagVocabulary revVendorIDTags[(sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))];
+        reverseTagVocabulary(vendorIDTags,revVendorIDTags,((sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))));
+
         for (int i = 0; size/4 != 0 ; size -= 4, i++)
         {
             switch(i)
@@ -2678,10 +2707,10 @@ void QuickTimeVideo::audioDescDecoder()
                 if(xmpData_["Xmp.audio.Compressor"].count() > 0)
                 {
                     byte rawCompressor[4];
-                    td = find(qTimeFileType,xmpData_["Xmp.audio.Compressor"].toString());
+                    td = find(revTagVocabulary,xmpData_["Xmp.audio.Compressor"].toString());
                     if(td)
                     {
-                        const char* compressor = td->voc_;
+                        const char* compressor = td->label_;
                         for(int j=0; j<4; j++)
                         {
                             rawCompressor[j] = compressor[j];
@@ -2702,10 +2731,10 @@ void QuickTimeVideo::audioDescDecoder()
                 if(xmpData_["Xmp.audio.VendorID"].count() >0)
                 {
                     byte rawVendorID[4];
-                    td = find(qTimeFileType,xmpData_["Xmp.audio.VendorID"].toString());
+                    td = find(revVendorIDTags,xmpData_["Xmp.audio.VendorID"].toString());
                     if(td)
                     {
-                        const char* vendorID = td->voc_;
+                        const char* vendorID = td->label_;
                         for(int j=0; j<4; j++)
                         {
                             rawVendorID[j] = vendorID[j];
@@ -2749,13 +2778,11 @@ void QuickTimeVideo::audioDescDecoder()
             case AudioSampleRate:
                 if(xmpData_["Xmp.audio.SampleRate"].count() >0)
                 {
-                    byte rawSampleRate[4];
-                    byte tmpRawData[2];
-                    xmpData_["Xmp.audio.SampleRate"].toLong();
-                    ushort sampleRateBase = (ushort) (xmpData_["Xmp.audio.SampleRate"].toLong()/512);
-                    memcpy(tmpRawData,&sampleRateBase,2);
-                    rawSampleRate[0] = tmpRawData[0] ; rawSampleRate[1] = tmpRawData[1];
-                    io_->seek(4,BasicIo::cur);//TODO calculations and logic
+                    DataBuf rawSampleRate(5);
+                    rawSampleRate.pData_[4] = '\0';
+                    const int64_t sampleRate = (int64_t)xmpData_["Xmp.audio.SampleRate"].toLong();
+                    rawSampleRate = returnBuf(sampleRate,4);
+                    io_->write(rawSampleRate.pData_,4);
                 }
                 else
                 {
@@ -2828,6 +2855,9 @@ void QuickTimeVideo::imageDescDecoder()
         TagVocabulary revTagVocabulary[(sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))];
         reverseTagVocabulary(qTimeFileType,revTagVocabulary,((sizeof(qTimeFileType)/sizeof(qTimeFileType[0]))));
 
+        TagVocabulary revVendorIDTags[(sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))];
+        reverseTagVocabulary(vendorIDTags,revVendorIDTags,((sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))));
+
         for (int i = 0; size/4 != 0 ; size -= 4, i++)
         {
             switch(i)
@@ -2839,7 +2869,7 @@ void QuickTimeVideo::imageDescDecoder()
                     if(td)
                     {
                         byte rawCodec[4];
-                        const char *codecName = td->voc_;
+                        const char *codecName = td->label_;
                         for(int j=0; j<4 ;j++)
                         {
                             rawCodec[j] = codecName[j];
@@ -2859,11 +2889,11 @@ void QuickTimeVideo::imageDescDecoder()
             case VendorID:
                 if(xmpData_["Xmp.video.VendorID"].count() >0)
                 {
-                    td = find(revTagVocabulary, xmpData_["Xmp.video.VendorID"].toString());
+                    td = find(revVendorIDTags, xmpData_["Xmp.video.VendorID"].toString());
                     if(td)
                     {
                         byte rawVendorID[4];
-                        const char *vendorID = td->voc_;
+                        const char *vendorID = td->label_;
                         for(int j=0; j<4 ;j++)
                         {
                             rawVendorID[j] = vendorID[j];
@@ -2893,7 +2923,7 @@ void QuickTimeVideo::imageDescDecoder()
                 if(xmpData_["Xmp.video.SourceImageHeight"].count() >0)
                 {
                     DataBuf imageHeight = returnBuf(((int64_t)(xmpData_["Xmp.video.SourceImageWidth"].toLong() -
-                                                               xmpData_["Xmp.video.SourceImageHeight"].toLong()/65536)*65536));
+                                                     xmpData_["Xmp.video.SourceImageHeight"].toLong()/65536)*65536));
                     io_->write(imageHeight.pData_,2);
                 }
                 else
@@ -2908,11 +2938,11 @@ void QuickTimeVideo::imageDescDecoder()
                     tmpBuf.pData_[3] ='\0';
                     DataBuf imageWidth = returnBuf((int64_t)xmpData_["Xmp.video.XResolution"].toLong());
                     tmpBuf = returnBuf((uint64_t)(xmpData_["Xmp.video.XResolution"].toLong() -
-                                                  xmpData_["Xmp.video.XResolution"].toLong()/65536));
+                                       xmpData_["Xmp.video.XResolution"].toLong()/65536));
                     imageWidth.pData_[2] = tmpBuf.pData_[2];
                     tmpBuf = returnBuf((uint64_t)(xmpData_["Xmp.video.XResolution"].toLong() -
-                                                  xmpData_["Xmp.video.XResolution"].toLong()/65536 -
-                                                  xmpData_["Xmp.video.XResolution"].toLong()/ 16777216));
+                                       xmpData_["Xmp.video.XResolution"].toLong()/65536 -
+                            xmpData_["Xmp.video.XResolution"].toLong()/ 16777216));
                     imageWidth.pData_[3] = tmpBuf.pData_[3];
                     io_->write(imageWidth.pData_,4);
                 }
@@ -2928,11 +2958,11 @@ void QuickTimeVideo::imageDescDecoder()
                     tmpBuf.pData_[3] ='\0';
                     DataBuf imageHeight = returnBuf((int64_t)xmpData_["Xmp.video.YResolution"].toLong());
                     tmpBuf = returnBuf((uint64_t)(xmpData_["Xmp.video.YResolution"].toLong() -
-                                                  xmpData_["Xmp.video.YResolution"].toLong()/65536));
+                                       xmpData_["Xmp.video.YResolution"].toLong()/65536));
                     imageHeight.pData_[2] = tmpBuf.pData_[2];
                     tmpBuf = returnBuf((uint64_t)(xmpData_["Xmp.video.YResolution"].toLong() -
-                                                  xmpData_["Xmp.video.YResolution"].toLong()/65536 -
-                                                  xmpData_["Xmp.video.YResolution"].toLong()/ 16777216));
+                                       xmpData_["Xmp.video.YResolution"].toLong()/65536 -
+                            xmpData_["Xmp.video.YResolution"].toLong()/ 16777216));
                     imageHeight.pData_[3] = tmpBuf.pData_[3];
                     io_->write(imageHeight.pData_,4);
                     io_->seek(3,BasicIo::cur);
@@ -2948,7 +2978,7 @@ void QuickTimeVideo::imageDescDecoder()
                 {
                     byte rawCompressor[32];
                     const std::string compressor = xmpData_["Xmp.video.Compressor"].toString();
-                    for(int j=0;j<32; j++)
+                    for(int j=0;j<min(32,(int)compressor.size()); j++)
                     {
                         rawCompressor[j] = (byte)compressor[j];
                     }
@@ -2972,7 +3002,7 @@ void QuickTimeVideo::imageDescDecoder()
 
 void QuickTimeVideo::multipleEntriesDecoder()
 {
-    DataBuf buf(4+1);
+    DataBuf buf(5);
     io_->read(buf.pData_, 4);
     io_->read(buf.pData_, 4);
     uint64_t noOfEntries;
@@ -3133,6 +3163,12 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
         TagVocabulary revTagVocabulary[(sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))];
         reverseTagVocabulary(handlerClassTags,revTagVocabulary,((sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))));
 
+        TagVocabulary revVendorIDTags[(sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))];
+        reverseTagVocabulary(vendorIDTags,revVendorIDTags,((sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))));
+
+        TagVocabulary revHandlerType[(sizeof(handlerTypeTags)/sizeof(handlerTypeTags[0]))];
+        reverseTagVocabulary(handlerTypeTags,revHandlerType,((sizeof(handlerTypeTags)/sizeof(handlerTypeTags[0]))));
+
         for (int i = 0; i < 5 ; i++)
         {
             switch(i)
@@ -3199,7 +3235,7 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     if(xmpData_["Xmp.video.HandlerType"].count() >0)
                     {
                         byte rawHandlerType[4];
-                        tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerType"].toString());
+                        tv = find(revHandlerType, xmpData_["Xmp.video.HandlerType"].toString());
                         if(tv)
                         {
                             const std::string handlerType = tv->label_;
@@ -3255,7 +3291,7 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     if(xmpData_["Xmp.video.HandlerVendorID"].count() >0)
                     {
                         byte rawHandlerVendorID[4];
-                        tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerVendorID"].toString());
+                        tv = find(revVendorIDTags, xmpData_["Xmp.video.HandlerVendorID"].toString());
                         if(tv)
                         {
                             const std::string handlerVendorID = tv->label_;
@@ -3317,6 +3353,7 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
 void QuickTimeVideo::fileTypeDecoder(unsigned long size)
 {
     DataBuf buf(5);
+    const long cur_pos = io_->tell();
     std::memset(buf.pData_, 0x0, buf.size_);
     buf.pData_[4] = '\0';
     Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpSeq);
@@ -3362,7 +3399,7 @@ void QuickTimeVideo::fileTypeDecoder(unsigned long size)
                 {
                     byte rawMajorBrand[4];
                     td = find(revTagVocabulary, xmpData_["Xmp.video.MajorBrand"].toString());
-                    const char *majorBrandVoc = td->voc_;
+                    const char *majorBrandVoc = td->label_;
                     for(int j=0; j<4 ;j++)
                     {
                         rawMajorBrand[j] = majorBrandVoc[i];
@@ -3392,9 +3429,9 @@ void QuickTimeVideo::fileTypeDecoder(unsigned long size)
                 {
                     byte rawCompatibleBrand[4];
                     td = find(revTagVocabulary, xmpData_["Xmp.video.CompatibleBrands"].toString());
-                    const char *compatibleBrandVoc = td->voc_;
                     if(td)
                     {
+                        const char *compatibleBrandVoc = td->label_;
                         for(int j=0; j<4 ;j++)
                         {
                             rawCompatibleBrand[i]  = compatibleBrandVoc[i];
