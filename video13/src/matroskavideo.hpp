@@ -128,6 +128,14 @@ namespace Exiv2 {
         //! Assignment operator
         MatroskaVideo& operator=(const MatroskaVideo& rhs);
         //@}
+        /*!
+              @brief Provides the main implementation of writeMetadata() by
+                    writing all buffered metadata to the provided BasicIo.
+              @param oIo BasicIo instance to write to (a temporary location).
+
+              @return 4 if opening or writing to the associated BasicIo fails
+             */
+        EXV_DLLLOCAL void doWriteMetadata();
 
     private:
         //! Variable to check the end of metadata traversing.

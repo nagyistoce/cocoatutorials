@@ -493,6 +493,11 @@ namespace Exiv2 {
     {
     }
 
+    void MatroskaVideo::doWriteMetadata()
+    {
+
+    }
+
     void MatroskaVideo::readMetadata()
     {
         if (io_->open() != 0) throw Error(9, io_->path(), strError());

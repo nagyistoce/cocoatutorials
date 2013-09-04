@@ -205,6 +205,7 @@ namespace Exiv2 {
                  modified.
          */
         DataBuf(DataBuf& rhs);
+        DataBuf(const DataBuf& rhs);
         //! Destructor, deletes the allocated buffer
         ~DataBuf() { delete[] pData_; }
         //@}

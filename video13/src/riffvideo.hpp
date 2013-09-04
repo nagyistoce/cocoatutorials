@@ -249,6 +249,7 @@ private:
     EXV_DLLLOCAL void doWriteMetadata();
     std::vector<long> findChunkPositions(const char *chunkId);
     std::vector<long> findHeaderPositions(const char* headerId);
+    bool writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData);
     bool writeNewChunk(std::string chunkData,std::string chunkId);
 
 private:

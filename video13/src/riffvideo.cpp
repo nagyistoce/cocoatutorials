@@ -1392,9 +1392,6 @@ void RiffVideo::infoTagsHandler()
         {
             io_->read(buf.pData_, 4);
             tv = find(infoTags , Exiv2::toString( buf.pData_));
-            io_->seek(-4,BasicIo::cur);
-            byte rawnewflag[] = {'I','C','O','P'};
-            io_->write(rawnewflag,4);
             io_->read(buf.pData_, 4);
             infoSize = Exiv2::getULong(buf.pData_, littleEndian);
             dataLenght -= infoSize;
@@ -1421,8 +1418,12 @@ void RiffVideo::infoTagsHandler()
         {
             const std::string commentData = xmpData_["Xmp.video.Comment"].toString();
             const std::string commentFlag = "CMNT";
-            writeNewChunk(commentData,commentFlag);
+            std::vector<std::pair<std::string,std::string> > writethis;
+            writethis.push_back(make_pair(commentData,commentFlag));
+            io_->seek(cur_pos, BasicIo::beg);
+            writeNewSubChunks(writethis);
         }
+        io_->seek(cur_pos + size, BasicIo::beg);
     }
 } // RiffVideo::infoTagsHandler
 
@@ -1450,7 +1451,6 @@ void RiffVideo::junkHandler(long size)
         //! Pentax Metadata and Tags
         if(equalsRiffTag(buf, "PENT"))
         {
-
             io_->seek(cur_pos + 18, BasicIo::beg);
             io_->read(buf.pData_, 26);
             xmpData_["Xmp.video.Make"] = buf.pData_;
@@ -2310,17 +2310,19 @@ bool RiffVideo::copyRestOfTheFile(DataBuf oldSavedData)
     memcpy(oldSavedData.pData_,swapDataArray[0].pData_,oldSavedData.size_);
     bool skipOnce = true;
     long readSize = oldSavedData.size_;
-    bool hasData = true;
+    bool hasData = false;
+    if(readSize > 0)
+        hasData = true;
     while(hasData)
     {
-        if(io_->size()-io_->tell() < 100 && (!skipOnce))
+        if(io_->size()-io_->tell() < 1024 && (!skipOnce))
         {
             readSize = io_->size()-io_->tell();
             hasData = false;
         }
         else
         {
-            readSize = 100;
+            readSize = 1024;
             skipOnce = false;
         }
         //A = B; Copy data before overwriting
@@ -2382,6 +2384,85 @@ bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
     io_->write(rawChunkId,4);
     io_->write(rawChunkSize,4);
     io_->write(rawChunkData,80);
+    return true;
+}
+
+bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData)
+{
+    long addSize = 0;
+    for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
+         it != chunkData.end(); it++)
+    {
+        std::pair<std::string,std::string> unitChunk = (*it);
+        addSize += (long)unitChunk.first.size();
+    }
+    const long cur_pos = io_->tell();
+    DataBuf buf((unsigned long)5);
+    buf.pData_[4] = '\0';
+    io_->seek(4,BasicIo::beg);
+    io_->read(buf.pData_,4);
+    io_->seek(-4,BasicIo::cur);
+    const long originalSize = Exiv2::getULong(buf.pData_, littleEndian);
+    long newRiffSize = originalSize + addSize ;
+    byte rawNewRiffSize[4];
+    memcpy(rawNewRiffSize,&newRiffSize,4);
+    io_->write(rawNewRiffSize,4);
+
+    io_->seek(cur_pos,BasicIo::beg);
+    io_->read(buf.pData_,4);
+    io_->seek(-4,BasicIo::cur);
+    const long originalListSize = Exiv2::getULong(buf.pData_, littleEndian);
+    long newListSize = originalListSize + addSize ;
+    byte rawNewListSize[4];
+    memcpy(rawNewListSize,&newListSize,4);
+    io_->write(rawNewListSize,4);
+
+    io_->seek(4,BasicIo::cur);
+    std::vector<DataBuf> previousData;
+    for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
+         it != chunkData.end(); it++)
+    {
+        std::pair<std::string,std::string> unitChunk = (*it);
+        std::string chunkId = unitChunk.second;
+        std::string tmpChunkData = unitChunk.first;
+        const long chunkSize = (long) (tmpChunkData.size());
+
+        DataBuf copiedData((long)(chunkSize+8));
+        io_->read(copiedData.pData_,(chunkSize+8));
+        io_->seek(((-1)*chunkSize+8),BasicIo::cur);
+        previousData.push_back(copiedData);
+
+        byte rawChunkId[4] = {(byte)chunkId[0],(byte)chunkId[1],
+                              (byte)chunkId[2],(byte)chunkId[3]};
+        byte rawChunkSize[4];
+        memcpy(rawChunkSize,&chunkSize,4);
+        byte rawChunkData[(long)chunkSize];
+
+        for(int i=0; i<(int)chunkSize; i++)
+        {
+            rawChunkData[i] = (byte)tmpChunkData[i];
+        }
+
+        io_->write(rawChunkId,4);
+        io_->write(rawChunkSize,4);
+        io_->write(rawChunkData,chunkSize);
+    }
+    long accessIndex = 0;
+    long  netNewMetadataSize = 0;
+    for (int i=0; i<previousData.size(); i++)
+    {
+        netNewMetadataSize += previousData[i].size_;
+    }
+    DataBuf metadataPacket((unsigned long)netNewMetadataSize);
+    for (int i=0; i<(int)previousData.size(); i++)
+    {
+        for(long assignIndex=0; assignIndex<previousData[i].size_; assignIndex++)
+        {
+            metadataPacket.pData_[accessIndex] = previousData[i].pData_[assignIndex];
+            accessIndex++;
+        }
+    }
+    copyRestOfTheFile(metadataPacket);
     return true;
 }
 

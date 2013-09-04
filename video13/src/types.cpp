@@ -131,6 +131,14 @@ namespace Exiv2 {
         rhs.release();
     }
 
+    DataBuf::DataBuf(const DataBuf& rhs)
+        : pData_(rhs.pData_), size_(rhs.size_)
+    {
+        pData_ = new byte[rhs.size_];
+        size_ = rhs.size_;
+        std::copy(rhs.pData_,rhs.pData_+rhs.size_,pData_);
+    }
+
     DataBuf::DataBuf(const byte* pData, long size)
         : pData_(0), size_(0)
     {
