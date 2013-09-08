@@ -803,14 +803,8 @@ void RiffVideo::tagDecoder()
 
             unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
 
-            const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ","STRH","STRF","STRN","STRD",
-
-                                               //Primitive chunks associated with INFO-->
-
-                                               "GENR","DIRC","IART","ICNM","IEDT","IENG","ILNG",
-                                               "IMUS","INAM","IPRO","ISRC","ISTR","LANG","LOCA",
-                                               "TAPE","YEAR","IPRD","IKEy","ICOP","ICNT"};
-
+            const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ",
+                                               "STRH","STRF","STRN","STRD"};
             const char allHeaderFlags[][5]={"NCDT","ODML","MOVI","INFO"};
 
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
@@ -1363,15 +1357,25 @@ void RiffVideo::infoTagsHandler()
     long size = Exiv2::getULong(buf.pData_, littleEndian);
     io_->seek(4,BasicIo::cur);
 
-    long dataLenght = size - 12;
+    long dataLenght = size;
     const TagVocabulary* tv;
 
     long infoSize;
     if(!m_modifyMetadata)
     {
-        while(dataLenght > 0)
+        const char allPrimitiveFlags[][5]={"GENR","DIRC","IART","ICNM","IEDT","IENG","ILNG",
+                                           "IMUS","INAM","IPRO","ISRC","ISTR","LANG","LOCA",
+                                           "TAPE","YEAR","IPRD","IKEY","ICOP","ICNT","CMNT"};
+        while(dataLenght > 12)
         {
             io_->read(buf.pData_, 4);
+            if(equalsRiffTag(buf,allPrimitiveFlags,(int)(sizeof(allPrimitiveFlags)/5)))
+            {
+                PrimitiveChunk *tmpPremitiveChunk = new PrimitiveChunk();
+                memcpy((byte*)tmpPremitiveChunk->m_chunkId,(const byte*)buf.pData_,5);
+                tmpPremitiveChunk->m_chunkLocation = io_->tell() - 4;
+                m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
+            }
             tv = find(infoTags , Exiv2::toString(buf.pData_));
             io_->read(buf.pData_, 4);
             infoSize = Exiv2::getULong(buf.pData_, littleEndian);
@@ -1401,11 +1405,11 @@ void RiffVideo::infoTagsHandler()
                 {
                     byte rawInfoData[infoSize];
                     const std::string infoData = xmpData_[exvGettext(tv->label_)].toString();
-                    for(int i=0; i<infoSize ;i++)
+                    for(int i=0; i<min(infoSize,(long)infoData.size()) ;i++)
                     {
                         rawInfoData[i] = infoData[i];
                     }
-                    io_->write(rawInfoData,infoSize);
+                    io_->write(rawInfoData,min(infoSize,(long)infoData.size()));
                 }
             }
         }
@@ -1413,13 +1417,149 @@ void RiffVideo::infoTagsHandler()
         //Secondly write tags which are supported by Digikam,
         //Note that create new LIST chunk is created if tag did not exist before
         //Currently these new LIST's are added to the end of the file
+        std::vector<std::pair<std::string,std::string> > writethis;
         if((xmpData_["Xmp.video.Comment"].count() > 0) &&
                 ((findChunkPositions("CMNT")).size() == 0))
         {
             const std::string commentData = xmpData_["Xmp.video.Comment"].toString();
             const std::string commentFlag = "CMNT";
-            std::vector<std::pair<std::string,std::string> > writethis;
             writethis.push_back(make_pair(commentData,commentFlag));
+        }
+        if((xmpData_["Xmp.video.Genre"].count() > 0) &&
+                ((findChunkPositions("GENR")).size() == 0))
+        {
+            const std::string genreData = xmpData_["Xmp.video.Genre"].toString();
+            const std::string genreFlag = "GENR";
+            writethis.push_back(make_pair(genreData,genreFlag));
+        }
+        if((xmpData_["Xmp.video.Artist"].count() > 0) &&
+                ((findChunkPositions("IART")).size() == 0))
+        {
+            const std::string artistData = xmpData_["Xmp.video.Artist"].toString();
+            const std::string artistFlag = "IART";
+            writethis.push_back(make_pair(artistData,artistFlag));
+        }
+        if((xmpData_["Xmp.video.Cinematographer"].count() > 0) &&
+                ((findChunkPositions("ICNM")).size() == 0))
+        {
+            const std::string cinematographerData = xmpData_["Xmp.video.Cinematographer"].toString();
+            const std::string cinematographerFlag = "ICNM";
+            writethis.push_back(make_pair(cinematographerData,cinematographerFlag));
+        }
+        if((xmpData_["Xmp.video.EditedBy"].count() > 0) &&
+                ((findChunkPositions("IEDT")).size() == 0))
+        {
+            const std::string editedByData = xmpData_["Xmp.video.EditedBy"].toString();
+            const std::string editedByFlag = "IEDT";
+            writethis.push_back(make_pair(editedByData,editedByFlag));
+        }
+        if((xmpData_["Xmp.video.Engineer"].count() > 0) &&
+                ((findChunkPositions("IENG")).size() == 0))
+        {
+            const std::string engineerData = xmpData_["Xmp.video.Engineer"].toString();
+            const std::string engineerFlag = "IENG";
+            writethis.push_back(make_pair(engineerData,engineerFlag));
+        }
+        if((xmpData_["Xmp.video.Language"].count() > 0) &&
+                ((findChunkPositions("ILNG")).size() == 0))
+        {
+            const std::string languageData = xmpData_["Xmp.video.Language"].toString();
+            const std::string languageFlag = "ILNG";
+            writethis.push_back(make_pair(languageData,languageFlag));
+        }
+        if((xmpData_["Xmp.video.MusicBy"].count() > 0) &&
+                ((findChunkPositions("IMUS")).size() == 0))
+        {
+            const std::string musicByData = xmpData_["Xmp.video.MusicBy"].toString();
+            const std::string musicByFlag = "IMUS";
+            writethis.push_back(make_pair(musicByData,musicByFlag));
+        }
+        if((xmpData_["Xmp.video.Title"].count() > 0) &&
+                ((findChunkPositions("INAM")).size() == 0))
+        {
+            const std::string titleData = xmpData_["Xmp.video.Title"].toString();
+            const std::string titleFlag = "INAM";
+            writethis.push_back(make_pair(titleData,titleFlag));
+        }
+        if((xmpData_["Xmp.video.ProducedBy"].count() > 0) &&
+                ((findChunkPositions("IPRO")).size() == 0))
+        {
+            const std::string producedByData = xmpData_["Xmp.video.ProducedBy"].toString();
+            const std::string producedByFlag = "IPRO";
+            writethis.push_back(make_pair(producedByData,producedByFlag));
+        }
+        if((xmpData_["Xmp.video.Source"].count() > 0) &&
+                ((findChunkPositions("ISRC")).size() == 0))
+        {
+            const std::string sourceData = xmpData_["Xmp.video.Source"].toString();
+            const std::string sourceFlag = "ISRC";
+            writethis.push_back(make_pair(sourceData,sourceFlag));
+        }
+        if((xmpData_["Xmp.video.Starring"].count() > 0) &&
+                ((findChunkPositions("ISTR")).size() == 0))
+        {
+            const std::string starringData = xmpData_["Xmp.video.Starring"].toString();
+            const std::string starringFlag = "ISTR";
+            writethis.push_back(make_pair(starringData,starringFlag));
+        }
+        if((xmpData_["Xmp.video.Language"].count() > 0) &&
+                ((findChunkPositions("LANG")).size() == 0))
+        {
+            const std::string languageData = xmpData_["Xmp.video.Language"].toString();
+            const std::string languageFlag = "LANG";
+            writethis.push_back(make_pair(languageData,languageFlag));
+        }
+        if((xmpData_["Xmp.video.LocationInfo"].count() > 0) &&
+                ((findChunkPositions("LOCA")).size() == 0))
+        {
+            const std::string locationInfoData = xmpData_["Xmp.video.LocationInfo"].toString();
+            const std::string locationInfoFlag = "LOCA";
+            writethis.push_back(make_pair(locationInfoData,locationInfoFlag));
+        }
+        if((xmpData_["Xmp.video.TapeName"].count() > 0) &&
+                ((findChunkPositions("TAPE")).size() == 0))
+        {
+            const std::string tapeNameData = xmpData_["Xmp.video.TapeName"].toString();
+            const std::string tapeNameFlag = "TAPE";
+            writethis.push_back(make_pair(tapeNameData,tapeNameFlag));
+        }
+        if((xmpData_["Xmp.video.Year"].count() > 0) &&
+                ((findChunkPositions("YEAR")).size() == 0))
+        {
+            const std::string yearData = xmpData_["Xmp.video.Year"].toString();
+            const std::string yearFlag = "YEAR";
+            writethis.push_back(make_pair(yearData,yearFlag));
+        }
+        if((xmpData_["Xmp.video.Product"].count() > 0) &&
+                ((findChunkPositions("IPRD")).size() == 0))
+        {
+            const std::string productData = xmpData_["Xmp.video.Product"].toString();
+            const std::string productFlag = "IPRD";
+            writethis.push_back(make_pair(productData,productFlag));
+        }
+        if((xmpData_["Xmp.video.PerformerKeywords"].count() > 0) &&
+                ((findChunkPositions("IKEY")).size() == 0))
+        {
+            const std::string performerKeywordsData = xmpData_["Xmp.video.PerformerKeywords"].toString();
+            const std::string performerKeywordsFlag = "IKEY";
+            writethis.push_back(make_pair(performerKeywordsData,performerKeywordsFlag));
+        }
+        if((xmpData_["Xmp.video.Copyright"].count() > 0) &&
+                ((findChunkPositions("ICOP")).size() == 0))
+        {
+            const std::string copyrightData = xmpData_["Xmp.video.Copyright"].toString();
+            const std::string copyrightFlag = "ICOP";
+            writethis.push_back(make_pair(copyrightData,copyrightFlag));
+        }
+        if((xmpData_["Xmp.video.Country"].count() > 0) &&
+                ((findChunkPositions("ICNT")).size() == 0))
+        {
+            const std::string countryData = xmpData_["Xmp.video.Country"].toString();
+            const std::string countryFlag = "ICNT";
+            writethis.push_back(make_pair(countryData,countryFlag));
+        }
+        if(writethis.size() > 0)
+        {
             io_->seek(cur_pos, BasicIo::beg);
             writeNewSubChunks(writethis);
         }
@@ -2305,44 +2445,35 @@ Image::AutoPtr newRiffInstance(BasicIo::AutoPtr io, bool /*create*/)
 
 bool RiffVideo::copyRestOfTheFile(DataBuf oldSavedData)
 {
-    DataBuf swapDataArray[2];
-    swapDataArray[0].alloc(oldSavedData.size_);
-    memcpy(oldSavedData.pData_,swapDataArray[0].pData_,oldSavedData.size_);
-    bool skipOnce = true;
-    long readSize = oldSavedData.size_;
-    bool hasData = false;
-    if(readSize > 0)
-        hasData = true;
+
+    long writeSize = oldSavedData.size_;
+    long readSize = writeSize;
+    DataBuf readBuf((long)max(readSize,(long)1024));
+    DataBuf writeBuf((long)max(readSize,(long)1024));
+
+    memcpy(writeBuf.pData_,oldSavedData.pData_,readSize);
+    bool lastStream = false,hasData = true;
+
     while(hasData)
     {
-        if(io_->size()-io_->tell() < 1024 && (!skipOnce))
+        if((io_->size() - io_->tell()) < 1024)
         {
-            readSize = io_->size()-io_->tell();
             hasData = false;
+            lastStream = true;
+            readSize = (io_->size() - io_->tell());
         }
-        else
+
+        io_->read(readBuf.pData_,readSize);
+        io_->seek(-readSize,BasicIo::cur);
+        io_->write(writeBuf.pData_,writeSize);
+
+        memcpy(writeBuf.pData_,readBuf.pData_,readSize);
+        writeSize = readSize;
+        if(lastStream)
         {
-            readSize = 1024;
-            skipOnce = false;
+            io_->write(writeBuf.pData_,readSize);
         }
-        //A = B; Copy data before overwriting
-        swapDataArray[1].alloc(readSize);
-        io_->read(swapDataArray[1].pData_,readSize);
-
-        //B = C; OverWrite the data
-        io_->seek(((-1)*readSize),BasicIo::cur);
-        io_->write(swapDataArray[0].pData_,
-                swapDataArray[0].size_);
-
-        //C = A; Get the stored data back to buffer
-        swapDataArray[0].alloc(readSize);
-        memcpy(swapDataArray[0].pData_,
-                swapDataArray[1].pData_,readSize);
     }
-    io_->seek(((-1)*readSize),BasicIo::cur);
-    io_->write(swapDataArray[0].pData_,
-            readSize);
-
     return true;
 }
 
@@ -2389,12 +2520,15 @@ bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
 
 bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData)
 {
+    //    return true;
     long addSize = 0;
     for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
          it != chunkData.end(); it++)
     {
         std::pair<std::string,std::string> unitChunk = (*it);
-        addSize += (long)unitChunk.first.size();
+        addSize += (long)unitChunk.first.size() + (long)8;
+        if((long)unitChunk.first.size()%2 != 0)
+            addSize += 1;
     }
     const long cur_pos = io_->tell();
     DataBuf buf((unsigned long)5);
@@ -2417,7 +2551,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
     memcpy(rawNewListSize,&newListSize,4);
     io_->write(rawNewListSize,4);
 
-    io_->seek(4,BasicIo::cur);
+    io_->read(buf.pData_,4);
     std::vector<DataBuf> previousData;
     for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
          it != chunkData.end(); it++)
@@ -2425,13 +2559,15 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         std::pair<std::string,std::string> unitChunk = (*it);
         std::string chunkId = unitChunk.second;
         std::string tmpChunkData = unitChunk.first;
-        const long chunkSize = (long) (tmpChunkData.size());
+        long chunkSize = (long) (tmpChunkData.size());
+        if(chunkSize%2 != 0)
+            chunkSize += 1;
 
         DataBuf copiedData((long)(chunkSize+8));
-        io_->read(copiedData.pData_,(chunkSize+8));
-        io_->seek(((-1)*chunkSize+8),BasicIo::cur);
-        previousData.push_back(copiedData);
 
+        io_->read(copiedData.pData_,(chunkSize+8));
+        io_->seek(((-1)*(chunkSize+8)),BasicIo::cur);
+        previousData.push_back(copiedData);
         byte rawChunkId[4] = {(byte)chunkId[0],(byte)chunkId[1],
                               (byte)chunkId[2],(byte)chunkId[3]};
         byte rawChunkSize[4];
