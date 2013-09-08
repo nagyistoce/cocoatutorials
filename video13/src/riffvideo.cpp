@@ -1409,14 +1409,20 @@ void RiffVideo::infoTagsHandler()
                     {
                         rawInfoData[i] = infoData[i];
                     }
-                    io_->write(rawInfoData,min(infoSize,(long)infoData.size()));
+                    if(infoSize > (long)infoData.size())
+                    {
+                        for(int i=infoData.size();i< infoSize ; i++)
+                        {
+                            rawInfoData[i] = (byte)0;
+                        }
+                    }
+                    io_->write(rawInfoData,infoSize);
                 }
             }
         }
 
         //Secondly write tags which are supported by Digikam,
         //Note that create new LIST chunk is created if tag did not exist before
-        //Currently these new LIST's are added to the end of the file
         std::vector<std::pair<std::string,std::string> > writethis;
         if((xmpData_["Xmp.video.Comment"].count() > 0) &&
                 ((findChunkPositions("CMNT")).size() == 0))
