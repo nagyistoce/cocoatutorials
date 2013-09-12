@@ -936,7 +936,7 @@ void QuickTimeVideo::doWriteMetadata()
     std::vector< pair<unsigned long,unsigned long> > hdlrPositions = findAtomPositions("hdlr");
     for(int i=0; i<hdlrPositions.size(); i++)
     {
-        io_->seek(trakPositions[i].first,BasicIo::beg);
+        io_->seek(trakPositions[i].first-4,BasicIo::beg);
         setMediaStream();
         io_->seek(hdlrPositions[i].first,BasicIo::beg);
         handlerDecoder(hdlrPositions[i].second);
@@ -3160,6 +3160,8 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
     }
     else
     {
+        std::cout << xmpData_["Xmp.video.HandlerClass"].toString() << "......"<<
+               Video << " " << currentStream_ <<" "<< Audio << std::endl;
         TagVocabulary revTagVocabulary[(sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))];
         reverseTagVocabulary(handlerClassTags,revTagVocabulary,((sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))));
 
@@ -3180,6 +3182,7 @@ void QuickTimeVideo::handlerDecoder(unsigned long size)
                     {
                         byte rawHandlerClass[4];
                         tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString());
+                        std::cout << xmpData_["Xmp.video.HandlerClass"].toString() << std::endl;
                         if(tv)
                         {
                             const std::string handlerClass = tv->label_;

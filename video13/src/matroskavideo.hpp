@@ -142,6 +142,8 @@ namespace Exiv2 {
         bool continueTraversing_;
         //! Variable to store height and width of a video frame.
         uint64_t height_, width_;
+        //! Variable to decide whether to modify the metada
+        bool m_modifyMetadata;
 
     }; // class MatroskaVideo
 
