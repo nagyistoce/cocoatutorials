@@ -475,9 +475,13 @@ namespace Exiv2 {
     byte* returnBuf(int64_t numValue,long size)
     {
         byte retVal[size];
-        for(int i = size-1; i >= 0; i--) {
-            retVal[i] =  (byte)(numValue%256);
-            numValue = (numValue/256);
+        int counti = size-1;
+        while(numValue > 0)
+        {
+        retVal[counti] =  (byte)(numValue%256);
+        counti--;
+            std::cout << (numValue%256) << "*"<< std::endl;
+             numValue = (numValue/256);
         }
         return retVal;
     }
@@ -642,7 +646,11 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
     case 0x14cc: case 0x14dd:
         if(!m_modifyMetadata)
         {
+            std::cout << returnValue(buf, size) << "........." << std::endl;
             xmpData_[mt->label_] = returnValue(buf, size);
+             byte *rawTagData = returnBuf(xmpData_[mt->label_].toLong(),size);
+             std::cout << returnValue(rawTagData, size) << std::endl;
+
         }
         else
         {

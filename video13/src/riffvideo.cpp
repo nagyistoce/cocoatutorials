@@ -550,6 +550,13 @@ std::string RiffVideo::mimeType() const
     return "video/riff";
 }
 
+/*!
+ * \brief RiffVideo::findChunkPositions:
+ *                   Return a list of chunk positions for a given chunk Id
+ * \param chunkId
+ * \return:          if No chunk of chunkId exists,then size of returned
+ *                   vector will be zero
+ */
 std::vector<long> RiffVideo::findChunkPositions(const char* chunkId)
 {
     DataBuf chkId((unsigned long)5);
@@ -568,6 +575,7 @@ std::vector<long> RiffVideo::findChunkPositions(const char* chunkId)
     return positions;
 }
 
+//Same as above but returns only header locations
 std::vector<long> RiffVideo::findHeaderPositions(const char* headerId)
 {
     DataBuf hdrId((unsigned long)5);
@@ -600,6 +608,11 @@ void RiffVideo::writeMetadata()
 
 } // RiffVideo::writeMetadata
 
+/*!
+ * \brief RiffVideo::doWriteMetadata:
+ *                   Search for all the supported ChunkIds in Exiv2 and
+ *                   write the modified data to the file.
+ */
 void RiffVideo::doWriteMetadata()
 {
     //pre-write checks to make sure that we are writing to provided Riff file only
@@ -2449,6 +2462,15 @@ Image::AutoPtr newRiffInstance(BasicIo::AutoPtr io, bool /*create*/)
     return image;
 }
 
+/*!
+ * \brief RiffVideo::copyRestOfTheFile
+ * Move all data to next locations,Currently its blockwise copy,which is inefficient for a
+ * huge video files,and should be changed to inserting technique without moving huge data
+ *like Bundle technology as suggested by Robin.
+ * .
+ * \param oldSavedData
+ * \return
+ */
 bool RiffVideo::copyRestOfTheFile(DataBuf oldSavedData)
 {
 
@@ -2483,6 +2505,13 @@ bool RiffVideo::copyRestOfTheFile(DataBuf oldSavedData)
     return true;
 }
 
+/*!
+ * \brief RiffVideo::writeNewChunk:
+ *                   Used create new LIST with given ChunkID(For future use)
+ * \param chunkData
+ * \param chunkId
+ * \return
+ */
 bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
 {
     DataBuf buf((unsigned long)5);
@@ -2524,6 +2553,18 @@ bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
     return true;
 }
 
+/*!
+ * \brief RiffVideo::writeNewSubChunks
+ *                   precondition:INFO List chunk must exist,atleast with LIST tag,
+ *                   and size field with size one(INFO tag which appear next)
+ *
+ *            |----LIST(Must exist before calling this method)
+ *            |----Size(Must exist, atleast with size 1 if no INFO subchunks exist before)
+ *                     |----INFO (Must exist,exactly with same HeaderChunkId INFO)
+ *
+ * \param chunkData
+ * \return
+ */
 bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData)
 {
     //    return true;

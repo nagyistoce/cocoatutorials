@@ -22,8 +22,9 @@
   @file    quicktimevideo.hpp
   @brief   An Image subclass to support Quick Time video files
   @version $Rev$
-  @author  Abhinav Badola for GSoC 2012
+  @authors  Abhinav Badola for GSoC 2012
            <a href="mailto:mail.abu.to@gmail.com">mail.abu.to@gmail.com</a>
+           Mahesh Hegde for GSoC 2013 <maheshmhegade at gmail dot com>
   @date    28-Jun-12, AB: created
  */
 #ifndef QUICKTIMEVIDEO_HPP
