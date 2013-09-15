@@ -561,9 +561,10 @@ std::vector<long> RiffVideo::findChunkPositions(const char* chunkId)
 {
     DataBuf chkId((unsigned long)5);
     chkId.pData_[4] = '\0';
+    uint64_t i;
 
     std::vector<long> positions;
-    for (int i=0;i<m_riffFileSkeleton.m_primitiveChunks.size();i++)
+    for (i=0;i<m_riffFileSkeleton.m_primitiveChunks.size();i++)
     {
         io_->seek(m_riffFileSkeleton.m_primitiveChunks[i]->m_chunkLocation,BasicIo::beg);
         io_->read(chkId.pData_,4);
@@ -580,9 +581,10 @@ std::vector<long> RiffVideo::findHeaderPositions(const char* headerId)
 {
     DataBuf hdrId((unsigned long)5);
     hdrId.pData_[4] = '\0';
+    uint64_t i;
 
     std::vector<long> positions;
-    for (int i=0;i<m_riffFileSkeleton.m_headerChunks.size();i++)
+    for (i=0;i<m_riffFileSkeleton.m_headerChunks.size();i++)
     {
         io_->seek((m_riffFileSkeleton.m_headerChunks[i]->m_headerLocation + 4),BasicIo::beg);
         io_->read(hdrId.pData_,4);
@@ -646,10 +648,11 @@ void RiffVideo::doWriteMetadata()
     //write metadata in order
 
     //find and move to avih position
-    long dummyLong = 0;
+    int32_t dummyLong = 0;
+    uint64_t i;
 
     std::vector<long> avihChunkPositions = findChunkPositions("AVIH");
-    for (int i=0; i<avihChunkPositions.size(); i++)
+    for (i=0; i<avihChunkPositions.size(); i++)
     {
         io_->seek(avihChunkPositions[i]+4,BasicIo::beg);
         aviHeaderTagsHandler(dummyLong);
@@ -657,7 +660,7 @@ void RiffVideo::doWriteMetadata()
 
     //find and move to strh position
     std::vector<long> strhChunkPositions = findChunkPositions("STRH");
-    for(int i=0; i< strhChunkPositions.size(); i++)
+    for(i=0; i< strhChunkPositions.size(); i++)
     {
         io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
         setStreamType();
@@ -665,7 +668,7 @@ void RiffVideo::doWriteMetadata()
     }
 
     std::vector<long> strfChunkPositions = findChunkPositions("STRF");
-    for(int i=0; i<strfChunkPositions.size(); i++)
+    for(i=0; i<strfChunkPositions.size(); i++)
     {
         io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
         setStreamType();
@@ -674,7 +677,7 @@ void RiffVideo::doWriteMetadata()
     }
 
     std::vector<long> fmtChunkPositions = findChunkPositions("FMT ");
-    for(int i=0; i< fmtChunkPositions.size(); i++)
+    for(i=0; i< fmtChunkPositions.size(); i++)
     {
         streamType_ = Audio;
         io_->seek(fmtChunkPositions[i]+4,BasicIo::beg);
@@ -682,35 +685,35 @@ void RiffVideo::doWriteMetadata()
     }
 
     std::vector<long> strnChunkPositions = findChunkPositions("STRN");
-    for(int i=0;i<strnChunkPositions.size(); i++)
+    for(i=0;i<strnChunkPositions.size(); i++)
     {
         io_->seek(strnChunkPositions[i]+4,BasicIo::beg);
         dateTimeOriginal(dummyLong);
     }
 
     std::vector<long> iditChunkPositions = findHeaderPositions("IDIT");
-    for(int i=0; i<iditChunkPositions.size(); i++)
+    for(i=0; i<iditChunkPositions.size(); i++)
     {
         io_->seek(iditChunkPositions[i]+8,BasicIo::beg);
         dateTimeOriginal(dummyLong);
     }
 
     std::vector<long> odmlHeaderPositions = findHeaderPositions("ODML");
-    for(int i=0;i<odmlHeaderPositions.size(); i++)
+    for(i=0;i<odmlHeaderPositions.size(); i++)
     {
         io_->seek(odmlHeaderPositions[i],BasicIo::beg);
         odmlTagsHandler();
     }
 
     std::vector<long> ncdtHeaderPositions = findHeaderPositions("NCDT");
-    for(int i=0;i<ncdtHeaderPositions.size(); i++)
+    for(i=0;i<ncdtHeaderPositions.size(); i++)
     {
         io_->seek(ncdtHeaderPositions[i],BasicIo::beg);
         nikonTagsHandler();
     }
 
     std::vector<long> infoHeaderPositions = findHeaderPositions("INFO");
-    for(int i=0;i<infoHeaderPositions.size(); i++)
+    for(i=0;i<infoHeaderPositions.size(); i++)
     {
         io_->seek(infoHeaderPositions[i],BasicIo::beg);
         infoTagsHandler();
@@ -795,13 +798,13 @@ void RiffVideo::tagDecoder()
         chkHeader.pData_[4] = '\0';
 
         io_->read(listSize.pData_, 4);
-        unsigned long listsize = Exiv2::getULong(listSize.pData_, littleEndian);
+        uint32_t listsize = Exiv2::getULong(listSize.pData_, littleEndian);
         io_->read(chkHeader.pData_, 4);
 
         HeaderChunk *tmpHeaderChunk = new HeaderChunk();
         memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
 
-        unsigned long listend = io_->tell() + listsize - 4 ;
+        uint32_t listend = io_->tell() + listsize - 4 ;
 
         IoPosition position = PremitiveChunk;
         while( (position == PremitiveChunk) && (io_->tell() < listend) )
@@ -814,7 +817,7 @@ void RiffVideo::tagDecoder()
             io_->read(chkId.pData_, 4);
             io_->read(chkSize.pData_, 4);
 
-            unsigned long size = Exiv2::getULong(chkSize.pData_, littleEndian);
+            uint32_t size = Exiv2::getULong(chkSize.pData_, littleEndian);
 
             const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ",
                                                "STRH","STRF","STRN","STRD"};
@@ -2220,9 +2223,12 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.video.Planes"].count() > 0)
             {
                 byte rawVideoPlanes[2];
-                const ushort videoPlanes= (ushort)xmpData_["Xmp.video.Planes"].toLong();
+                uint16_t videoPlanes = xmpData_["Xmp.video.Planes"].toLong();
+                // why use 2 lines and a memcpy
                 memcpy(rawVideoPlanes,&videoPlanes,2);
                 io_->write(rawVideoPlanes,2);
+                // this is shorter and faster (please review every memcpy in the *video.cpp code)
+                // io_->write(videoPlanes,2);
             }
             else
             {
@@ -2232,7 +2238,7 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.video.PixelDepth"].count() > 0)
             {
                 byte rawVideoPixelDepth[2];
-                const ushort pixelDepth = (ushort)xmpData_["Xmp.video.PixelDepth"].toLong();
+                const uint16_t pixelDepth = xmpData_["Xmp.video.PixelDepth"].toLong();
                 memcpy(rawVideoPixelDepth,&pixelDepth,2);
                 io_->write(rawVideoPixelDepth,2);
             }
@@ -2354,7 +2360,7 @@ void RiffVideo::streamFormatHandler(long size)
                     tmpBuf.pData_[i] = (byte)audioChannealType[i];
                 }
                 byte rawChannelType[2];
-                ushort channelType;
+                uint16_t channelType = 0;
                 if(simpleBytesComparision(tmpBuf,"MONO",sizeChan))
                     channelType = 1;
                 else if(simpleBytesComparision(tmpBuf,"STEREO",sizeChan))
@@ -2376,7 +2382,7 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.audio.SampleRate"].count() > 0)
             {
                 byte rawSampleRate[2];
-                const ushort sampleRate = (ushort)xmpData_["Xmp.audio.SampleRate"].toLong();
+                const uint16_t sampleRate = xmpData_["Xmp.audio.SampleRate"].toLong();
                 memcpy(rawSampleRate,&sampleRate,2);
                 io_->write(rawSampleRate,2);
                 io_->seek(2,BasicIo::cur);
@@ -2388,7 +2394,7 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.audio.SampleType"].count() > 0)
             {
                 byte rawSampleType[2];
-                const ushort sampleType = (ushort)xmpData_["Xmp.audio.SampleType"].toLong();
+                const uint16_t sampleType = xmpData_["Xmp.audio.SampleType"].toLong();
                 memcpy(rawSampleType,&sampleType,2);
                 io_->write(rawSampleType,2);
                 io_->seek(4,BasicIo::cur);
@@ -2400,7 +2406,7 @@ void RiffVideo::streamFormatHandler(long size)
             if(xmpData_["Xmp.audio.BitsPerSample"].count() > 0)
             {
                 byte rawBitsPerSample[2];
-                const ushort bitsPerSample= (ushort)xmpData_["Xmp.audio.BitsPerSample"].toLong();
+                const uint16_t bitsPerSample = xmpData_["Xmp.audio.BitsPerSample"].toLong();
                 memcpy(rawBitsPerSample,&bitsPerSample,2);
                 io_->write(rawBitsPerSample,2);
             }
@@ -2567,8 +2573,8 @@ bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
  */
 bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData)
 {
-    //    return true;
-    long addSize = 0;
+    bool  result = true;
+    long  addSize = 0;
     for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
          it != chunkData.end(); it++)
     {
@@ -2600,13 +2606,16 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
 
     io_->read(buf.pData_,4);
     std::vector<DataBuf> previousData;
+    uint64_t i;
+
     for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
          it != chunkData.end(); it++)
     {
         std::pair<std::string,std::string> unitChunk = (*it);
         std::string chunkId = unitChunk.second;
         std::string tmpChunkData = unitChunk.first;
-        long chunkSize = (long) (tmpChunkData.size());
+        uint64_t chunkSize = tmpChunkData.size();
+        // can't we just say chunkSize += chunkSize % 2 ; // round up to even. 
         if(chunkSize%2 != 0)
             chunkSize += 1;
 
@@ -2621,7 +2630,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         memcpy(rawChunkSize,&chunkSize,4);
         byte rawChunkData[(long)chunkSize];
 
-        for(int i=0; i<(int)chunkSize; i++)
+        for(i=0; i < chunkSize; i++)
         {
             rawChunkData[i] = (byte)tmpChunkData[i];
         }
@@ -2630,23 +2639,23 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         io_->write(rawChunkSize,4);
         io_->write(rawChunkData,chunkSize);
     }
-    long accessIndex = 0;
-    long  netNewMetadataSize = 0;
-    for (int i=0; i<previousData.size(); i++)
+    int32_t accessIndex = 0;
+    int32_t netNewMetadataSize = 0;
+    for (i=0; i < previousData.size(); i++)
     {
         netNewMetadataSize += previousData[i].size_;
     }
     DataBuf metadataPacket((unsigned long)netNewMetadataSize);
-    for (int i=0; i<(int)previousData.size(); i++)
+    for (i=0; i < previousData.size(); i++)
     {
-        for(long assignIndex=0; assignIndex<previousData[i].size_; assignIndex++)
+        for(uint32_t assignIndex=0; assignIndex<previousData[i].size_; assignIndex++)
         {
             metadataPacket.pData_[accessIndex] = previousData[i].pData_[assignIndex];
             accessIndex++;
         }
     }
     copyRestOfTheFile(metadataPacket);
-    return true;
+    return result;
 }
 
 bool isRiffType(BasicIo& iIo, bool advance)

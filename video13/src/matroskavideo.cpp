@@ -513,7 +513,7 @@ namespace Exiv2 {
         byte *retVal;
         retVal = (byte *)malloc(size*sizeof(8));
         for (long i = 0; i < size; i++) {
-            retVal[size-i-1]     = (byte)(((uint)numValue)%(uint)256);
+            retVal[size-i-1]     = (byte)(((uint32_t)numValue)%(uint32_t)256);
             numValue = numValue/256;
         }
         return retVal;
