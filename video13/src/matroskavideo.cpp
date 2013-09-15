@@ -81,7 +81,8 @@ namespace Exiv2 {
       u   --  Tag used directly for storing metadata
       ui  --  Tag used only internally
      */
-    extern const MatroskaTags matroskaTags[] = {
+    extern const MatroskaTags matroskaTags[] =
+    {
         {      0x0000, "ChapterDisplay" },                              //s
         {      0x0003, "TrackType" },                                   //ui
         {      0x0005, "ChapterString" },                               //sd
@@ -282,7 +283,8 @@ namespace Exiv2 {
         {   0xf43b675, "Cluster" },                                     //s
     };
 
-    extern const MatroskaTags matroskaTrackType[] =  {
+    extern const MatroskaTags matroskaTrackType[] =
+    {
         {   0x1,  "Video" },
         {   0x2,  "Audio" },
         {   0x3,  "Complex" },
@@ -292,27 +294,31 @@ namespace Exiv2 {
         {   0x20, "Control" }
     };
 
-    extern const MatroskaTags compressionAlgorithm[] =  {
+    extern const MatroskaTags compressionAlgorithm[] =
+    {
         {   0, "zlib " },
         {   1, "bzlib" },
         {   2, "lzo1x" },
         {   3, "Header Stripping" }
     };
 
-    extern const MatroskaTags audioChannels[] =  {
+    extern const MatroskaTags audioChannels[] =
+    {
         {   1, "Mono" },
         {   2, "Stereo" },
         {   5, "5.1 Surround Sound" },
         {   7, "7.1 Surround Sound" }
     };
 
-    extern const MatroskaTags displayUnit[] =  {
+    extern const MatroskaTags displayUnit[] =
+    {
         {   0x0,  "Pixels" },
         {   0x1,  "cm" },
         {   0x2,  "inches" }
     };
 
-    extern const MatroskaTags encryptionAlgorithm[] =  {
+    extern const MatroskaTags encryptionAlgorithm[] =
+    {
         {   0, "Not Encrypted" },
         {   1, "DES" },
         {   2, "3DES" },
@@ -321,7 +327,8 @@ namespace Exiv2 {
         {   5, "AES" }
     };
 
-    extern const MatroskaTags chapterPhysicalEquivalent[] =  {
+    extern const MatroskaTags chapterPhysicalEquivalent[] =
+    {
         {   10, "Index" },
         {   20, "Track" },
         {   30, "Session" },
@@ -331,102 +338,128 @@ namespace Exiv2 {
         {   70, "Set / Package" },
     };
 
-    extern const MatroskaTags encodingType[] =  {
+    extern const MatroskaTags encodingType[] =
+    {
         {   0, "Compression" },
         {   1, "Encryption" }
     };
 
-    extern const MatroskaTags videoScanType[] =  {
+    extern const MatroskaTags videoScanType[] =
+    {
         {   0, "Progressive" },
         {   1, "Interlaced" }
     };
 
-    extern const MatroskaTags chapterTranslateCodec[] =  {
+    extern const MatroskaTags chapterTranslateCodec[] =
+    {
         {   0, "Matroska Script" },
         {   1, "DVD Menu" }
     };
 
-    extern const MatroskaTags aspectRatioType[] =  {
+    extern const MatroskaTags aspectRatioType[] =
+    {
         {   0, "Free Resizing" },
         {   1, "Keep Aspect Ratio" },
         {   2, "Fixed" }
     };
 
-    extern const MatroskaTags contentSignatureAlgorithm[] =  {
+    extern const MatroskaTags contentSignatureAlgorithm[] =
+    {
         {   0, "Not Signed" },
         {   1, "RSA" }
     };
 
-    extern const MatroskaTags contentSignatureHashAlgorithm[] =  {
+    extern const MatroskaTags contentSignatureHashAlgorithm[] =
+    {
         {   0, "Not Signed" },
         {   1, "SHA1-160" },
         {   2, "MD5" }
     };
 
-    extern const MatroskaTags trackEnable[] =  {
+    extern const MatroskaTags trackEnable[] =
+    {
         {   0x1,  "Xmp.video.Enabled" },
         {   0x2,  "Xmp.audio.Enabled" },
         {   0x11, "Xmp.video.SubTEnabled" }
     };
 
-    extern const MatroskaTags defaultOn[] =  {
+    extern const MatroskaTags defaultOn[] =
+    {
         {   0x1,  "Xmp.video.DefaultOn" },
         {   0x2,  "Xmp.audio.DefaultOn" },
         {   0x11, "Xmp.video.SubTDefaultOn" }
     };
 
-    extern const MatroskaTags trackForced[] =  {
+    extern const MatroskaTags trackForced[] =
+    {
         {   0x1,  "Xmp.video.TrackForced" },
         {   0x2,  "Xmp.audio.TrackForced" },
         {   0x11, "Xmp.video.SubTTrackForced" }
     };
 
-    extern const MatroskaTags trackLacing[] =  {
+    extern const MatroskaTags trackLacing[] =
+    {
         {   0x1,  "Xmp.video.TrackLacing" },
         {   0x2,  "Xmp.audio.TrackLacing" },
         {   0x11, "Xmp.video.SubTTrackLacing" }
     };
 
-    extern const MatroskaTags codecDecodeAll[] =  {
+    extern const MatroskaTags codecDecodeAll[] =
+    {
         {   0x1,  "Xmp.video.CodecDecodeAll" },
         {   0x2,  "Xmp.audio.CodecDecodeAll" },
         {   0x11, "Xmp.video.SubTCodecDecodeAll" }
     };
 
-    extern const MatroskaTags codecDownloadUrl[] =  {
+    extern const MatroskaTags codecDownloadUrl[] =
+    {
         {   0x1,  "Xmp.video.CodecDownloadUrl" },
         {   0x2,  "Xmp.audio.CodecDownloadUrl" },
         {   0x11, "Xmp.video.SubTCodecDownloadUrl" }
     };
 
-    extern const MatroskaTags codecSettings[] =  {
+    extern const MatroskaTags codecSettings[] =
+    {
         {   0x1,  "Xmp.video.CodecSettings" },
         {   0x2,  "Xmp.audio.CodecSettings" },
         {   0x11, "Xmp.video.SubTCodecSettings" }
     };
 
-    extern const MatroskaTags trackCodec[] =  {
+    extern const MatroskaTags trackCodec[] =
+    {
         {   0x1,  "Xmp.video.Codec" },
         {   0x2,  "Xmp.audio.Compressor" },
         {   0x11, "Xmp.video.SubTCodec" }
     };
 
-    extern const MatroskaTags trackLanguage[] =  {
+    extern const MatroskaTags trackLanguage[] =
+    {
         {   0x1,  "Xmp.video.TrackLang" },
         {   0x2,  "Xmp.audio.TrackLang" },
         {   0x11, "Xmp.video.SubTLang" }
     };
 
-    extern const MatroskaTags codecInfo[] =  {
+    extern const MatroskaTags codecInfo[] =
+    {
         {   0x1,  "Xmp.video.CodecInfo" },
         {   0x2,  "Xmp.audio.CodecInfo" },
         {   0x11, "Xmp.video.SubTCodecInfo" }
     };
 
-    extern const MatroskaTags streamRate[] =  {
+    extern const MatroskaTags streamRate[] =
+    {
         {   0x1,  "Xmp.video.FrameRate" },
         {   0x2,  "Xmp.audio.DefaultDuration" }
     };
+
+    void reverseMatroskaTag(const MatroskaTags inputMatroskaTag[],RevMatroskaTags  outputMatroskaTag[] ,int size)
+    {
+        for (int i=0; i<size ;i++)
+        {
+            outputMatroskaTag[i].label_ = inputMatroskaTag[i].label_;
+            outputMatroskaTag[i].val_ = inputMatroskaTag[i].val_;
+        }
+    }
 
     /*!
       @brief Function used to calculate Tags, Tags may comprise of more than
@@ -440,7 +473,8 @@ namespace Exiv2 {
 
         uint64_t b0 = buf[0] & (0xff >> size);
         uint64_t tag = b0 << ((size - 1) * 8);
-        for (long i = 1; i < size; ++i) {
+        for (long i = 1; i < size; ++i)
+        {
             tag |= static_cast<uint64_t>(buf[i]) << ((size - i - 1) * 8);
         }
 
@@ -456,14 +490,16 @@ namespace Exiv2 {
 
         int64_t temp = 0;
 
-        for(int i = size-1; i >= 0; i--) {
+        for(int i = size-1; i >= 0; i--)
+        {
             temp = temp + static_cast<int64_t>(buf[i]*(pow(256.0, (double)size-i-1)));
         }
         // Todo: remove debug output
         //        std::cerr << "size = " << size << ", val = " << temp << std::hex << " (0x" << temp << std::dec << ")";
 
         uint64_t ret = 0;
-        for (long i = 0; i < size; ++i) {
+        for (long i = 0; i < size; ++i)
+        {
             ret |= static_cast<uint64_t>(buf[i]) << ((size - i - 1) * 8);
         }
 
@@ -472,23 +508,22 @@ namespace Exiv2 {
 
         return ret;
     }
-    byte* returnBuf(int64_t numValue,long size)
+    byte* returnBuf(uint64_t numValue,long size)
     {
-        byte retVal[size];
-        int counti = size-1;
-        while(numValue > 0)
-        {
-        retVal[counti] =  (byte)(numValue%256);
-        counti--;
-            std::cout << (numValue%256) << "*"<< std::endl;
-             numValue = (numValue/256);
+        byte *retVal;
+        retVal = (byte *)malloc(size*sizeof(8));
+        for (long i = 0; i < size; i++) {
+            retVal[size-i-1]     = (byte)(((uint)numValue)%(uint)256);
+            numValue = numValue/256;
         }
         return retVal;
+    } // returnBuf
+
     }
+}                                      // namespace Internal, Exiv2
 
-    }}                                      // namespace Internal, Exiv2
-
-namespace Exiv2 {
+namespace Exiv2
+{
 
 using namespace Exiv2::Internal;
 
@@ -528,7 +563,6 @@ void MatroskaVideo::doWriteMetadata()
     }
     m_modifyMetadata = true;
     continueTraversing_ = true;
-    std::cout << "....." << std::endl;
     while (continueTraversing_) decodeBlock();
 }
 
@@ -537,7 +571,8 @@ void MatroskaVideo::readMetadata()
     if (io_->open() != 0) throw Error(9, io_->path(), strError());
 
     // Ensure that this is the correct image type
-    if (!isMkvType(*io_, false)) {
+    if (!isMkvType(*io_, false))
+    {
         if (io_->error() || io_->eof()) throw Error(14);
         throw Error(3, "Matroska");
     }
@@ -559,9 +594,11 @@ void MatroskaVideo::readMetadata()
 void MatroskaVideo::decodeBlock()
 {
     byte buf[8];
+    mtLocation = io_->tell();
     io_->read(buf, 1);
 
-    if(io_->eof()) {
+    if(io_->eof())
+    {
         continueTraversing_ = false;
         return;
     }
@@ -569,9 +606,11 @@ void MatroskaVideo::decodeBlock()
     uint32_t sz = findBlockSize(buf[0]); // 0-8
     if (sz > 0) io_->read(buf + 1, sz - 1);
 
+
     const MatroskaTags* mt = find(matroskaTags, returnTagValue(buf, sz));
 
-    if(mt->val_ == 0xc53bb6b || mt->val_ == 0xf43b675) {
+    if(mt->val_ == 0xc53bb6b || mt->val_ == 0xf43b675)
+    {
         continueTraversing_ = false;
         return;
     }
@@ -590,13 +629,15 @@ void MatroskaVideo::decodeBlock()
     const uint64_t bufMinSize = 200;
 
 #ifndef SUPPRESS_WARNINGS
-    if (!ignore && size > bufMinSize) {
+    if (!ignore && size > bufMinSize)
+    {
         EXV_WARNING << "Size " << size << " of Matroska tag 0x"
                     << std::hex << mt->val_ << std::dec
                     << " is greater than " << bufMinSize << ": ignoring it.\n";
     }
 #endif
-    if (ignore || size > bufMinSize) {
+    if (ignore || size > bufMinSize)
+    {
         io_->seek(size, BasicIo::cur);
         return;
     }
@@ -615,7 +656,12 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
     static long stream = 0, track_count = 0;
     char str[4] = "No";
     const MatroskaTags* internalMt = 0;
+    const RevMatroskaTags* revInternalMt = 0;
 
+    if(m_modifyMetadata)
+    {
+
+    }
     switch (mt->val_) {
 
     case 0x0282: case 0x0d80: case 0x1741: case 0x3ba9: case 0x066e: case 0x0660:
@@ -646,27 +692,24 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
     case 0x14cc: case 0x14dd:
         if(!m_modifyMetadata)
         {
-            std::cout << returnValue(buf, size) << "........." << std::endl;
             xmpData_[mt->label_] = returnValue(buf, size);
-             byte *rawTagData = returnBuf(xmpData_[mt->label_].toLong(),size);
-             std::cout << returnValue(rawTagData, size) << std::endl;
-
         }
         else
         {
             if(xmpData_[mt->label_].count() > 0)
             {
-                byte *rawTagData = returnBuf(xmpData_[mt->label_].toLong(),size);
-//                io_->seek(-size,BasicIo::cur);
-
-//                io_->write(&rawTagData[1],1);
-//                io_->write(&rawTagData[0],1);
+                byte *rawTagData = returnBuf((uint64_t)xmpData_[mt->label_].toFloat(),size);
+                io_->seek(-size,BasicIo::cur);
+                io_->write(rawTagData,size);
+                free(rawTagData);
             }
         }
-        if (mt->val_ == 0x0030 || mt->val_ == 0x14b0) {
+        if (mt->val_ == 0x0030 || mt->val_ == 0x14b0)
+        {
             width_ = returnValue(buf, size);
         }
-        else if (mt->val_ == 0x003a || mt->val_ == 0x14ba) {
+        else if (mt->val_ == 0x003a || mt->val_ == 0x14ba)
+        {
             height_ = returnValue(buf, size);
         }
         break;
@@ -674,7 +717,8 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
     case 0x001a: case 0x001f: case 0x0254: case 0x07e1: case 0x07e5: case 0x07e6:
     case 0x1033: case 0x14b2: case 0x14b3: case 0x23c3: case 0x29bf: case 0x3e8a:
     case 0x3e9a:
-        switch (mt->val_) {
+        switch (mt->val_)
+        {
         case 0x001a: internalMt = find(videoScanType, returnValue(buf, size));                 break;
         case 0x001f: internalMt = find(audioChannels, returnValue(buf, size));                 break;
         case 0x0254: internalMt = find(compressionAlgorithm, returnValue(buf, size));          break;
@@ -689,17 +733,200 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
         case 0x23c3: internalMt = find(chapterPhysicalEquivalent, returnValue(buf, size));     break;
         case 0x29bf: internalMt = find(chapterTranslateCodec, returnValue(buf, size));         break;
         }
-        if (internalMt) xmpData_[mt->label_] = internalMt->label_;
-        break;
+        if(!m_modifyMetadata)
+        {
+            if (internalMt) xmpData_[mt->label_] = internalMt->label_;
+        }
+        else if(internalMt)
+        {
+            if(xmpData_[mt->label_].count() >0)
+            {
+                int structSize = 0;
+                switch (mt->val_)
+                {
+                case 0x001a:
+                    structSize = (int)(sizeof(videoScanType)/sizeof(videoScanType[0]));
+                    RevMatroskaTags revVidScanTag[sizeof(videoScanType)
+                            /sizeof(videoScanType[0])];
+                    reverseMatroskaTag(videoScanType,revVidScanTag,structSize);
+                    revInternalMt = find(revVidScanTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawVidScanFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawVidScanFlag,size);
+                    }
+                    break;
 
+                case 0x001f:
+                    structSize = (int)(sizeof(audioChannels)/sizeof(audioChannels[0]));
+                    RevMatroskaTags revAudChannelsTag[sizeof(audioChannels)
+                            /sizeof(audioChannels[0])];
+                    reverseMatroskaTag(audioChannels,revAudChannelsTag,structSize);
+                    revInternalMt = find(revAudChannelsTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawAudChannelsFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawAudChannelsFlag,size);
+                    }
+                    break;
+
+                case 0x0254:
+                    structSize = (int)(sizeof(compressionAlgorithm)/sizeof(compressionAlgorithm[0]));
+                    RevMatroskaTags revComprAlgoTag[sizeof(compressionAlgorithm)
+                            /sizeof(compressionAlgorithm[0])];
+                    reverseMatroskaTag(compressionAlgorithm,revComprAlgoTag,structSize);
+                    revInternalMt = find(revComprAlgoTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawComprAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawComprAlgoFlag,size);
+                    }
+                    break;
+
+                case 0x07e1:
+                    structSize = (int)(sizeof(encryptionAlgorithm)/sizeof(encryptionAlgorithm[0]));
+                    RevMatroskaTags revEncryAlgo[sizeof(encryptionAlgorithm)
+                            /sizeof(encryptionAlgorithm[0])];
+                    reverseMatroskaTag(encryptionAlgorithm,revEncryAlgo,structSize);
+                    revInternalMt = find(revEncryAlgo,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawEncryAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawEncryAlgoFlag,size);
+                    }
+                    break;
+
+                case 0x1033:
+                    structSize = (int)(sizeof(encodingType)/sizeof(encodingType[0]));
+                    RevMatroskaTags revEncodTypeTag[sizeof(encodingType)
+                            /sizeof(encodingType[0])];
+                    reverseMatroskaTag(encodingType,revEncodTypeTag,structSize);
+                    revInternalMt = find(revEncodTypeTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawEncodTypeFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawEncodTypeFlag,size);
+                    }
+                    break;
+
+                case 0x07e5:
+                    structSize = (int)(sizeof(contentSignatureAlgorithm)
+                                       /sizeof(contentSignatureAlgorithm[0]));
+                    RevMatroskaTags revContSignAlgo[sizeof(contentSignatureAlgorithm)
+                            /sizeof(contentSignatureAlgorithm[0])];
+                    reverseMatroskaTag(contentSignatureAlgorithm,revContSignAlgo,structSize);
+                    revInternalMt = find(revContSignAlgo,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawContSignAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawContSignAlgoFlag,size);
+                    }
+                    break;
+
+                case 0x07e6:
+                    structSize = (int)(sizeof(contentSignatureHashAlgorithm)
+                                       /sizeof(contentSignatureHashAlgorithm[0]));
+                    RevMatroskaTags revContSignHashAlgo[sizeof(contentSignatureHashAlgorithm)
+                            /sizeof(contentSignatureHashAlgorithm[0])];
+                    reverseMatroskaTag(contentSignatureHashAlgorithm,revContSignHashAlgo,structSize);
+                    revInternalMt = find(revContSignHashAlgo,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawContSignHashAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawContSignHashAlgoFlag,size);
+                    }
+                    break;
+
+                case 0x14b2:
+                    structSize = (int)(sizeof(displayUnit)/sizeof(displayUnit[0]));
+                    RevMatroskaTags revDispUnitTag[sizeof(displayUnit)/sizeof(displayUnit[0])];
+                    reverseMatroskaTag(displayUnit,revDispUnitTag,structSize);
+                    revInternalMt = find(revDispUnitTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawDispUnitFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawDispUnitFlag,size);
+                    }
+                    break;
+
+                case 0x14b3:
+                    structSize = (int)(sizeof(aspectRatioType)/sizeof(aspectRatioType[0]));
+                    RevMatroskaTags revAspRatioTag[sizeof(aspectRatioType)
+                            /sizeof(aspectRatioType[0])];
+                    reverseMatroskaTag(aspectRatioType,revAspRatioTag,structSize);
+                    revInternalMt = find(revAspRatioTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawAspRatioFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawAspRatioFlag,size);
+                    }
+                    break;
+
+                case 0x23c3:
+                    structSize = (int)(sizeof(chapterPhysicalEquivalent)
+                                       /sizeof(chapterPhysicalEquivalent[0]));
+                    RevMatroskaTags revChaptPhyEqTag[sizeof(chapterPhysicalEquivalent)
+                            /sizeof(chapterPhysicalEquivalent[0])];
+                    reverseMatroskaTag(chapterPhysicalEquivalent,revChaptPhyEqTag,structSize);
+                    revInternalMt = find(revChaptPhyEqTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawChaptPhyEqFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawChaptPhyEqFlag,size);
+                    }
+                    break;
+
+                case 0x29bf:
+                    structSize = (int)(sizeof(chapterTranslateCodec)
+                                       /sizeof(chapterTranslateCodec[0]));
+                    RevMatroskaTags revChaptTransCodecTag[sizeof(chapterTranslateCodec)
+                            /sizeof(chapterTranslateCodec[0])];
+                    reverseMatroskaTag(chapterTranslateCodec,revChaptTransCodecTag,structSize);
+                    revInternalMt = find(revChaptTransCodecTag,xmpData_[mt->label_].toString());
+                    if(revInternalMt)
+                    {
+                        byte *rawChaptTransCodecFlag = returnBuf(revInternalMt->val_,size);
+                        io_->seek(-size,BasicIo::cur);
+                        io_->write(rawChaptTransCodecFlag,size);
+                    }
+                    break;
+                }
+            }
+        }
+        break;
     case 0x0035: case 0x38b5:
-        xmpData_[mt->label_] = getFloat(buf, bigEndian);
+        if(!m_modifyMetadata)
+        {
+            xmpData_[mt->label_] = getFloat(buf, bigEndian);
+        }
+        else
+        {
+            if(xmpData_[mt->label_].count() > 0)
+            {
+                byte rawFloatValue[size];
+                float floatValue = xmpData_[mt->label_].toFloat();
+                memcpy(rawFloatValue,&floatValue,sizeof(float));
+                //                io_->seek(-size,BasicIo::cur);//Tobe tested
+                //                io_->write(rawFloatValue,size);
+            }
+        }
         break;
 
     case 0x0039: case 0x0008: case 0x15aa: case 0x001c: case 0x002a: case 0x1a9697:
     case 0x0484:
         if (returnValue(buf, size)) strcpy(str, "Yes");
-        switch (mt->val_) {
+        switch (mt->val_)
+        {
         case 0x0039: internalMt = find(trackEnable, stream);     break;
         case 0x0008: internalMt = find(defaultOn, stream);       break;
         case 0x15aa: internalMt = find(trackForced, stream);     break;
@@ -712,7 +939,8 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
         break;
 
     case 0x0006: case 0x2b59c: case 0x58688: case 0x6b240: case 0x1b4040:
-        switch (mt->val_) {
+        switch (mt->val_)
+        {
         case 0x0006: internalMt = find(trackCodec, stream);         break;
         case 0x2b59c: internalMt = find(trackLanguage, stream);     break;
         case 0x58688: internalMt = find(codecInfo, stream);         break;
@@ -723,20 +951,46 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
         break;
 
     case 0x0489: case 0x0461:
-        switch (mt->val_) {
-        case 0x0489:
-            if(size <= 4) {
-                duration_in_ms = static_cast<int64_t>(getFloat(buf, bigEndian) * time_code_scale * 1000);
+        if(!m_modifyMetadata)
+        {
+            switch (mt->val_)
+            {
+            case 0x0489:
+                if(size <= 4)
+                {
+                    duration_in_ms = static_cast<int64_t>(getFloat(buf, bigEndian) * time_code_scale * 1000);
+                }
+                else
+                {
+                    duration_in_ms = static_cast<int64_t>(getDouble(buf, bigEndian) * time_code_scale * 1000);
+                }
+                break;
+            case 0x0461:
+            {
+                duration_in_ms = returnValue(buf, size)/1000000000; break;
             }
-            else {
-                duration_in_ms = static_cast<int64_t>(getDouble(buf, bigEndian) * time_code_scale * 1000);
             }
-            break;
-        case 0x0461: {
-            duration_in_ms = returnValue(buf, size)/1000000000; break;
+            xmpData_[mt->label_] = duration_in_ms;
         }
+        else
+        {
+            byte *rawDuration;
+            switch (mt->val_)
+            {
+            case 0x0489:
+                rawDuration = returnBuf(xmpData_[mt->label_].toFloat()
+                        /(time_code_scale*1000),size);
+                io_->seek(-size,BasicIo::cur);
+                io_->write(rawDuration,size);
+                break;
+            case 0x0461:
+                rawDuration = returnBuf(xmpData_[mt->label_].toFloat()
+                        /(1000000000),size);
+                io_->seek(-size,BasicIo::cur);
+                io_->write(rawDuration,size);
+                break;
+            }
         }
-        xmpData_[mt->label_] = duration_in_ms;
         break;
 
     case 0x0057:
@@ -745,8 +999,19 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
         break;
 
     case 0xad7b1:
-        time_code_scale = (double)returnValue(buf, size)/(double)1000000000;
-        xmpData_["Xmp.video.TimecodeScale"] = time_code_scale;
+        if(!m_modifyMetadata)
+        {
+            time_code_scale = (double)returnValue(buf, size)/(double)1000000000;
+            xmpData_["Xmp.video.TimecodeScale"] = time_code_scale;
+        }
+        else
+        {
+            byte *rawTimeCodeScale = returnBuf((uint64_t)(xmpData_["Xmp.video.TimecodeScale"]
+                                               .toFloat()*1000000000),size);
+            io_->seek(size,BasicIo::cur);
+            io_->write(rawTimeCodeScale,size);
+            free(rawTimeCodeScale);
+        }
         break;
 
     case 0x0003:
@@ -756,8 +1021,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
 
     case 0x3e383: case 0x383e3:
         internalMt = find(streamRate, stream);
-        if (returnValue(buf, size)) {
-            switch (stream) {
+        if (returnValue(buf, size))
+        {
+            switch (stream)
+            {
             case 1: temp = (double)1000000000/(double)returnValue(buf, size); break;
             case 2: temp = static_cast<double>(returnValue(buf, size) / 1000); break;
             }
@@ -810,7 +1077,8 @@ uint32_t MatroskaVideo::findBlockSize(byte b)
 Image::AutoPtr newMkvInstance(BasicIo::AutoPtr io, bool /*create*/)
 {
     Image::AutoPtr image(new MatroskaVideo(io));
-    if (!image->good()) {
+    if (!image->good())
+    {
         image.reset();
     }
     return image;
@@ -824,7 +1092,8 @@ bool isMkvType(BasicIo& iIo, bool advance)
 
     if (iIo.error() || iIo.eof()) return false;
 
-    if (0x1a != tmpBuf[0] || 0x45 != tmpBuf[1] || 0xdf != tmpBuf[2] || 0xa3 != tmpBuf[3]) {
+    if (0x1a != tmpBuf[0] || 0x45 != tmpBuf[1] || 0xdf != tmpBuf[2] || 0xa3 != tmpBuf[3])
+    {
         result = false;
     }
 

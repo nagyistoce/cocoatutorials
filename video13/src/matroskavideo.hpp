@@ -59,6 +59,12 @@ namespace Exiv2 {
        bool operator==(uint64_t key) const { return val_ == key; }
     }; // struct TagDetails
 
+    struct RevMatroskaTags {
+        const char* label_;
+        uint64_t val_;
+
+       bool operator==(const std::string& key) const{return label_ == key;}
+    };
     /*!
       @brief Class to access Matroska video files.
      */
@@ -144,6 +150,7 @@ namespace Exiv2 {
         uint64_t height_, width_;
         //! Variable to decide whether to modify the metada
         bool m_modifyMetadata;
+        long mtLocation;
 
     }; // class MatroskaVideo
 
