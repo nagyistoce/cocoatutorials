@@ -112,7 +112,7 @@ namespace Exiv2 {
           @param buf Data buffer which cotains tag ID.
           @param size Size of the data block used to store Tag Information.
          */
-        void tagDecoder(Exiv2::DataBuf & buf, unsigned long size);
+        void tagDecoder(Exiv2::DataBuf & buf, uint32_t size);
 
     private:
         /*!
@@ -120,37 +120,37 @@ namespace Exiv2 {
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void fileTypeDecoder(unsigned long size);
+        void fileTypeDecoder(uint32_t size);
         /*!
           @brief Interpret Media Header Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void mediaHeaderDecoder(unsigned long size);
+        void mediaHeaderDecoder(uint32_t size);
         /*!
           @brief Interpret Video Header Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void videoHeaderDecoder(unsigned long size);
+        void videoHeaderDecoder(uint32_t size);
         /*!
           @brief Interpret Movie Header Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void movieHeaderDecoder(unsigned long size);
+        void movieHeaderDecoder(uint32_t size);
         /*!
           @brief Interpret Track Header Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void trackHeaderDecoder(unsigned long size);
+        void trackHeaderDecoder(uint32_t size);
         /*!
           @brief Interpret Handler Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void handlerDecoder(unsigned long size);
+        void handlerDecoder(uint32_t size);
         /*!
           @brief Interpret Tag which contain other sub-tags,
               and save it in the respective XMP container.
@@ -161,7 +161,7 @@ namespace Exiv2 {
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void sampleDesc(unsigned long size);
+        void sampleDesc(uint32_t size);
         /*!
           @brief Interpret Image Description Tag, and save it
               in the respective XMP container.
@@ -172,37 +172,37 @@ namespace Exiv2 {
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void userDataDecoder(unsigned long size);
+        void userDataDecoder(uint32_t size);
         /*!
           @brief Interpret Preview Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void previewTagDecoder(unsigned long size);
+        void previewTagDecoder(uint32_t size);
         /*!
           @brief Interpret Meta Keys Tags, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void keysTagDecoder(unsigned long size);
+        void keysTagDecoder(uint32_t size);
         /*!
           @brief Interpret Track Aperture Tags, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void trackApertureTagDecoder(unsigned long size);
+        void trackApertureTagDecoder(uint32_t size);
         /*!
           @brief Interpret Nikon Tag, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void NikonTagsDecoder(unsigned long size);
+        void NikonTagsDecoder(uint32_t size);
         /*!
           @brief Interpret Tags from Different Camera make, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-        void CameraTagsDecoder(unsigned long size);
+        void CameraTagsDecoder(uint32_t size);
         /*!
           @brief Interpret Audio Description Tag, and save it
               in the respective XMP container.
@@ -223,12 +223,14 @@ namespace Exiv2 {
               be skipped and not decoded.
           @param size Size of the data block that is to skipped.
          */
-        void discard(unsigned long size);
+        void discard(uint32_t size);
         /*!
           @brief Calculates Aspect Ratio of a video, and stores it in the
               respective XMP container.
          */
         void aspectRatio();
+        void reverseTagDetails(const Internal::TagDetails inputTagVocabulary[],
+                               Internal::RevTagDetails  outputTagVocabulary[] , int32_t size);
 
     private:
         //! @name NOT Implemented
@@ -251,7 +253,7 @@ namespace Exiv2 {
          * \param atomId
          * \return all the locations where atoms with atomId exist.
          */
-        std::vector< pair<unsigned long,unsigned long> > findAtomPositions(const char *atomId);
+        std::vector< pair<uint32_t,uint32_t> > findAtomPositions(const char *atomId);
 
     private:
         //! Variable which stores Time Scale unit, used to calculate time.

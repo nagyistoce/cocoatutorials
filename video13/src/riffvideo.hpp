@@ -148,7 +148,7 @@ protected:
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-    void junkHandler(long size);
+    void junkHandler(int32_t size);
 
     /*! find whether stream is audio or video
         */
@@ -158,19 +158,19 @@ protected:
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-    void streamHandler(long size);
+    void streamHandler(int32_t size);
     /*!
           @brief Interpret Stream Format tag information, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-    void streamFormatHandler(long size);
+    void streamFormatHandler(int32_t size);
     /*!
           @brief Interpret Riff Header tag information, and save it
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-    void aviHeaderTagsHandler(long size);
+    void aviHeaderTagsHandler(int32_t size);
     /*!
           @brief Interpret Riff List tag information, and save it
               in the respective XMP container.
@@ -182,7 +182,7 @@ protected:
               in the respective XMP container.
           @param size Size of the data block used to store Tag Information.
          */
-    void streamDataTagHandler(long size);
+    void streamDataTagHandler(int32_t size);
     /*!
           @brief Interpret INFO tag information, and save it
               in the respective XMP container.
@@ -206,30 +206,32 @@ protected:
           @param size Size of the data block used to store Tag Information.
           @param i parameter used to overload function
          */
-    void dateTimeOriginal(long size, int i = 0);
+    void dateTimeOriginal(int32_t size, int32_t i = 0);
     /*!
           @brief Calculates Sample Rate of a particular stream.
           @param buf Data buffer with the dividend.
           @param divisor The Divisor required to calculate sample rate.
           @return Return the sample rate of the stream.
          */
-    double returnSampleRate(Exiv2::DataBuf& buf, long divisor = 1);
+    double returnSampleRate(Exiv2::DataBuf& buf, int32_t divisor = 1);
     /*!
           @brief Calculates Aspect Ratio of a video, and stores it in the
               respective XMP container.
           @param width Width of the video.
           @param height Height of the video.
          */
-    void fillAspectRatio(long width = 1,long height = 1);
+    void fillAspectRatio(int32_t width = 1, int32_t height = 1);
     /*!
           @brief Calculates Duration of a video, and stores it in the
               respective XMP container.
           @param frame_rate Frame rate of the video.
           @param frame_count Total number of frames present in the video.
          */
-    void fillDuration(double frame_rate, long frame_count);
+    void fillDuration(double frame_rate, int32_t frame_count);
 
     bool copyRestOfTheFile(DataBuf oldSavedData);
+    void reverseTagDetails(const Internal::TagDetails inputTagVocabulary[],
+                           Internal::RevTagDetails  outputTagVocabulary[] , int32_t size);
 
 private:
     //! @name NOT Implemented
@@ -247,8 +249,8 @@ private:
           @return 4 if opening or writing to the associated BasicIo fails
          */
     EXV_DLLLOCAL void doWriteMetadata();
-    std::vector<long> findChunkPositions(const char *chunkId);
-    std::vector<long> findHeaderPositions(const char* headerId);
+    std::vector<int32_t> findChunkPositions(const char *chunkId);
+    std::vector<int32_t> findHeaderPositions(const char* headerId);
     bool writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData);
     bool writeNewChunk(std::string chunkData,std::string chunkId);
 
