@@ -647,32 +647,19 @@ enum audioDescTags
      */
 bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
 {
-    int32_t i;
-    for(i = 0; i < 4; ++i)
-        if(tolower(buf.pData_[i]) != tolower(str[i]))
-            return false;
-    return true;
-}
+    bool    result = true ;
+    for(int32_t i = 0; result && i < 4; ++i)
+        result = tolower(buf.pData_[i]) == tolower(str[i]) ;
+    return result;
+};
 
 bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
 {
-    int32_t i,j;
-    for (i=0; i< arraysize; i++)
-    {
-        bool matched = true;
-        for(j = 0; j < 4; j++ )
-        {
-            if(tolower(buf.pData_[j]) != arr[i][j])
-            {
-                matched = false;
-                break;
-            }
-        }
-        if(matched)
-        {
-            return true;
-        }
-    }
+    bool result = arraysize > 0 ;;
+    for (int32_t i=0; result && i < arraysize; i++)
+        for(int32_t j=0; result && j < 4; j++ )
+            result = tolower(buf.pData_[j]) == arr[i][j];
+    return result;
 }
 
 /*!
@@ -857,7 +844,6 @@ DataBuf returnUnsignedBuf(uint64_t intValue,int32_t n=4)
 {
     DataBuf buf((uint32_t)(n+1));
     buf.pData_[n] = '\0';
-    int32_t i;
     for(int32_t i = n - 1; i >= 0; i--)
     {
 #ifdef _MSC_VER
@@ -2532,14 +2518,14 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     }
                 }
             }
-            else if(dataType == 4)
+            else if(dataType == 4) // what is 4?  would it be better to have an enum with a name for each dataType?
             {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
                 if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
                 {
-                    byte rawTagData[4];
+                    // byte rawTagData[4];
                     const int32_t tagData = xmpData_[exvGettext(td->label_)].toLong();
-                    io_->write((byte*)&rawTagData,4);
+                    io_->write((byte*)&tagData,4);
                     io_->seek((dataLength-4),BasicIo::cur);
                 }
                 else
@@ -3376,10 +3362,8 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
 
 void QuickTimeVideo::fileTypeDecoder(uint32_t size)
 {
-    DataBuf buf(5);
-    const int32_t cur_pos = io_->tell();
+    DataBuf     buf(5);
     std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpSeq);
     const TagVocabulary* td;
 
