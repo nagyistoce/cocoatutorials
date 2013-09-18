@@ -10,7 +10,7 @@ source ./functions.source
 
 (	cd "$testdir"
 
-    for file in ../data/video/video-*; do
+    for file in ../data/video/modifiedvideo/video-*; do
         video="`basename "$file"`"
 		if [ $video != "video-test.out" ] ; then
 
@@ -19,7 +19,7 @@ source ./functions.source
     	    echo
         	echo "-----> $video <-----"
 
-	        copyTestFile "video/$video" "$video"
+	        copyTestFile "video/modifiedvideo/$video" "$video"
 
     	    echo
         	echo "Command: exiv2 -u -pa $video"
@@ -36,6 +36,9 @@ source ./functions.source
 ) 3>&1 > "$testdir/video-test.out" 2>&1
 
 echo "."
+
+#Delete Temporary Directory 
+rm $testdir/$datadir/video/modifiedvideo -rf
 
 # ----------------------------------------------------------------------
 # Result
