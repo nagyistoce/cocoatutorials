@@ -649,16 +649,31 @@ bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
 {
     bool    result = true ;
     for(int32_t i = 0; result && i < 4; ++i)
-        result = tolower(buf.pData_[i]) == tolower(str[i]) ;
+        if(tolower(buf.pData_[i]) != tolower(str[i]))
+            result = false;
     return result;
-};
+}
 
 bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
 {
-    bool result = arraysize > 0 ;;
-    for (int32_t i=0; result && i < arraysize; i++)
-        for(int32_t j=0; result && j < 4; j++ )
-            result = tolower(buf.pData_[j]) == arr[i][j];
+    bool result = arraysize > 0 ;
+    if(result)
+    {
+        for (int32_t i=0; i < arraysize; i++)
+        {
+            result = true;
+            for(int32_t j=0; j < 4; j++ )
+            {
+                if(tolower(buf.pData_[j]) != arr[i][j])
+                {
+                    result = false;
+                    break;
+                }
+            }
+            if(result)
+                return result;
+        }
+    }
     return result;
 }
 
@@ -2777,8 +2792,9 @@ void QuickTimeVideo::audioDescDecoder()
             case AudioChannels:
                 if(xmpData_["Xmp.audio.ChannelType"].count() >0)
                 {
-                    uint16_t channelType =(uint16_t) xmpData_["Xmp.audio.ChannelType"].toLong();
-                    io_->write((byte*)&channelType,2);
+                    DataBuf rawBuf(2);
+                    rawBuf = returnBuf((int64_t)xmpData_["Xmp.audio.ChannelType"].toLong(),2);
+                    io_->write(rawBuf.pData_,2);
                 }
                 else
                 {
@@ -2786,8 +2802,9 @@ void QuickTimeVideo::audioDescDecoder()
                 }
                 if(xmpData_["Xmp.audio.BitsPerSample"].count() >0)
                 {
-                    uint16_t bitsPerSample =(uint16_t) (xmpData_["Xmp.audio.BitsPerSample"].toLong()/256);
-                    io_->write((byte*)&bitsPerSample,2);
+                    DataBuf rawBuf(2);
+                    rawBuf = returnBuf((int64_t)xmpData_["Xmp.audio.BitsPerSample"].toLong(),2);
+                    io_->write(rawBuf.pData_,2);
                 }
                 else
                 {
@@ -2801,7 +2818,9 @@ void QuickTimeVideo::audioDescDecoder()
                     rawSampleRate.pData_[4] = '\0';
                     const int64_t sampleRate = (int64_t)xmpData_["Xmp.audio.SampleRate"].toLong();
                     rawSampleRate = returnBuf(sampleRate,4);
-                    io_->write(rawSampleRate.pData_,4);
+
+                    io_->write(rawSampleRate.pData_+2,2);
+                    io_->write(rawSampleRate.pData_,2);
                 }
                 else
                 {
@@ -3363,6 +3382,7 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
 void QuickTimeVideo::fileTypeDecoder(uint32_t size)
 {
     DataBuf     buf(5);
+    buf.pData_[4] = '\0';
     std::memset(buf.pData_, 0x0, buf.size_);
     Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpSeq);
     const TagVocabulary* td;

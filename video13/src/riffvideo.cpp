@@ -520,6 +520,7 @@ namespace Exiv2
                 return true;
             }
         }
+        return false;
     }
 
     enum streamTypeInfo
@@ -1221,9 +1222,18 @@ void RiffVideo::nikonTagsHandler()
                         int32_t i;
                         byte rawMakerNoteType[dataSize];
                         std::string makerNoteType = xmpData_["Xmp.video.MakerNoteType"].toString();
-                        for( i=0; i<dataSize; i++)
+                        for( i=0; i<(int32_t)min((int32_t)dataSize,
+                                                 (int32_t)makerNoteType.size()); i++)
                         {
                             rawMakerNoteType[i] = makerNoteType[i];
+                        }
+                        if((int32_t)dataSize > (int32_t)makerNoteType.size())
+                        {
+                            for(i=(int32_t)(makerNoteType.size()); i<dataSize; i++)
+                            {
+                                rawMakerNoteType[i] = (byte)0;
+                            }
+
                         }
                         io_->write(rawMakerNoteType,dataSize);
                     }
@@ -1253,10 +1263,20 @@ void RiffVideo::nikonTagsHandler()
                         std::string makerNoteVersion = xmpData_["Xmp.video.MakerNoteVersion"].toString();
                         byte rawMakerNoteVersion[originalDataSize];
                         int32_t tmpCounter = 0;
-                        while(dataSize)
+                        int32_t i;
+                        for(i=(int32_t)min((int32_t)dataSize,(int32_t)makerNoteVersion.size());
+                            i>=(int32_t)0; i--)
                         {
-                            rawMakerNoteVersion[tmpCounter] = (byte) (makerNoteVersion[(4 - dataSize) * 2] - 48);
-                            --dataSize;tmpCounter++;
+                            rawMakerNoteVersion[tmpCounter] = (byte) (makerNoteVersion[(4 - i) * 2] - 48);
+                            tmpCounter++;
+                        }
+                        if((int32_t)originalDataSize > (int32_t)makerNoteVersion.size())
+                        {
+                            for(i=(int32_t)(makerNoteVersion.size()); i<originalDataSize; i++)
+                            {
+                                rawMakerNoteVersion[i] = (byte)0;
+                            }
+
                         }
                         io_->write(rawMakerNoteVersion,originalDataSize);
                     }
@@ -1299,9 +1319,18 @@ void RiffVideo::nikonTagsHandler()
                             int32_t i;
                             byte rawnikonData[dataSize];
                             std::string nikonData = xmpData_[exvGettext(td->label_)].toString();
-                            for( i=0; i<dataSize; i++)
+                            for( i=0; i<(int32_t)min((int32_t)dataSize,
+                                                     (int32_t)nikonData.size()); i++)
                             {
                                 rawnikonData[i] = nikonData[i];
+                            }
+                            if((int32_t)dataSize > (int32_t)nikonData.size())
+                            {
+                                for(i=(int32_t)(nikonData.size()); i<dataSize; i++)
+                                {
+                                    rawnikonData[i] = (byte)0;
+                                }
+
                             }
                             io_->write(rawnikonData,dataSize);
                         }
@@ -1319,8 +1348,8 @@ void RiffVideo::nikonTagsHandler()
                         }
                         else if(xmpData_[exvGettext(td->label_)].count() > 0)
                         {
-                            const uint32_t nikonData = xmpData_[exvGettext(td->label_)].toLong();
-                            io_->write((byte*)nikonData,dataSize);
+                            int32_t nikonData = xmpData_[exvGettext(td->label_)].toFloat();
+                            io_->write((byte*)&nikonData,dataSize);
                         }
                         else
                         {
@@ -1330,12 +1359,15 @@ void RiffVideo::nikonTagsHandler()
                     case 0x0008: case 0x0009: case 0x000a: case 0x000b:
                     case 0x000f: case 0x001b: case 0x0016:
 
+                        io_->read(buf.pData_, dataSize);
+                        buf2.pData_[0] = buf.pData_[4];
+                        buf2.pData_[1] = buf.pData_[5];
+                        buf2.pData_[2] = buf.pData_[6];
+                        buf2.pData_[3] = buf.pData_[7];
+                        denominator = (double)Exiv2::getLong(buf2.pData_, littleEndian);
+
                         if(!m_modifyMetadata)
                         {
-                            io_->read(buf.pData_, dataSize);
-                            buf2.pData_[0] = buf.pData_[4]; buf2.pData_[1] = buf.pData_[5];
-                            buf2.pData_[2] = buf.pData_[6]; buf2.pData_[3] = buf.pData_[7];
-                            denominator = (double)Exiv2::getLong(buf2.pData_, littleEndian);
                             if (denominator != 0)
                                 xmpData_[exvGettext(td->label_)] = (double)Exiv2::getLong(buf.pData_, littleEndian) / denominator;
                             else
@@ -1343,8 +1375,10 @@ void RiffVideo::nikonTagsHandler()
                         }
                         else if(xmpData_[exvGettext(td->label_)].count() > 0)
                         {
-                            const int32_t nikonData = (int32_t)((double)xmpData_[exvGettext(td->label_)].toLong() * (double)denominator);
-                            io_->write((byte*)&nikonData,dataSize);
+                            io_->seek(-dataSize,BasicIo::cur);
+                            int32_t nikonData = (xmpData_[exvGettext(td->label_)].toFloat()*denominator);
+                            io_->write((byte*)&nikonData,4);
+                            io_->seek((dataSize-4),BasicIo::cur);
                         }
                         else
                         {
@@ -1795,7 +1829,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
             case (maxDataRate):
                 if(xmpData_["Xmp.video.MaxDataRate"].count() > 0 )
                 {
-                    int32_t maxDataRate = xmpData_["Xmp.video.MaxDataRate"].toLong()*1024;
+                    uint32_t maxDataRate = (xmpData_["Xmp.video.MaxDataRate"].toFloat()*1024);
                     io_->write((byte*)&maxDataRate,4);
                 }
                 else
@@ -1991,7 +2025,8 @@ void RiffVideo::streamHandler(int32_t size)
 
             if(xmpData_["Xmp.video.FrameRate"].count() > 0)
             {
-                int32_t frameRate = (int32_t)xmpData_["Xmp.video.FrameRate"].toLong()*multiplier;
+                int32_t frameRate = xmpData_["Xmp.video.FrameRate"].toFloat()*multiplier;
+
                 io_->write((byte*)&frameRate,4);
                 io_->seek(4,BasicIo::cur);
             }
@@ -2621,7 +2656,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
     {
         std::pair<std::string,std::string> unitChunk = (*it);
         addSize += (int32_t)unitChunk.first.size() + (int32_t)8;
-            addSize += addSize%2;
+        addSize += addSize%2;
     }
     const int32_t cur_pos = io_->tell();
     DataBuf buf((uint32_t)5);
@@ -2653,7 +2688,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         std::string chunkId = unitChunk.second;
         std::string tmpChunkData = unitChunk.first;
         uint64_t chunkSize = tmpChunkData.size();
-            chunkSize += chunkSize%2;
+        chunkSize += chunkSize%2;
 
         DataBuf copiedData((int32_t)(chunkSize+8));
 
