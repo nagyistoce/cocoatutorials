@@ -485,7 +485,7 @@ namespace Exiv2
       @param str char* Pointer to string
       @return Returns true if the buffer value is equal to string.
      */
-    uint64_t i,j;
+    int64_t i,j;
     bool equalsRiffTag(Exiv2::DataBuf& buf ,const char* str)
     {
         for( i=0; i<4; i++ )
@@ -815,7 +815,7 @@ void RiffVideo::tagDecoder()
         io_->read(chkHeader.pData_, 4);
 
         HeaderChunk *tmpHeaderChunk = new HeaderChunk();
-        ((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
+        memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
 
         uint32_t listend = io_->tell() + listsize - 4 ;
 
@@ -1079,7 +1079,7 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
             uint32_t bufMinSize = (uint32_t)Exiv2::getShort(dataLength.pData_, littleEndian);
             byte rawDateTimeOriginal[bufMinSize];
             const std::string dateAndTime = xmpData_["Xmp.video.DateUT"].toString();
-            for(i=0; i<(int32_t)bufMinSize; i++)
+            for(i=0; i<bufMinSize; i++)
             {
                 rawDateTimeOriginal[i] = dateAndTime[i];
             }
@@ -2008,7 +2008,7 @@ void RiffVideo::streamHandler(int32_t size)
                 byte rawVideoCodec[4];
                 const std::string codec = xmpData_["Xmp.video.Codec"].toString();
                 int32_t i;
-                for( i=0;i<codec.size();i++)
+                for( i=0;i<(int32_t)codec.size();i++)
                 {
                     rawVideoCodec[i] = (byte)codec[i];
                 }
