@@ -87,7 +87,7 @@ if [ $errors ]; then
 	NC='\e[0m' # No Color
 	echo -e "${red}Test cases Failed because of Changes in the Source code or Test samples${NC}"
 else
-	green='\e[0;32m' #Display fonts in Red color
+	green='\e[0;32m' #Display fonts in Green color
 	NC='\e[0m' # No Color
 	echo -e "${green}All testcases passed.${NC}"
 	echo "That's all Folks!"
