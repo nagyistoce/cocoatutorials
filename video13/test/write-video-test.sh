@@ -80,7 +80,7 @@ echo "."
 #Delete Temporary Directory 
 rm $testdir/modifiedvideo -rf
 
-diffCheck "$testdir/video-test.out" "$testdir/$datadir/video-test.out"
+diffCheck "$testdir/video-test.out" "$testdir/$datadir/write-video-test.out"
 
 if [ $errors ]; then
 	red='\e[0;31m' #Display fonts in Red color
