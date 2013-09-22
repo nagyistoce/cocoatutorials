@@ -3,23 +3,20 @@
 
 source ./functions.source
 
-echo "Creating temporary directory modifiedvideo to test Video Metadata Read-Write functionality*****" 
+echo "Creating temporary directory modifiedvideo to test Video Metadata Read-Write functionality" 
 
-mkdir $testdir/modifiedvideo
-videos=$testdir/modifiedvideo/video*
+videos=$testdir/video*
 
 #copy all test Video files to temporary Directory
 cd $testdir
 for file in ../data/video/video-*; do
 	 video="`basename "$file"`"
 		if [ $video != "video-test.out" ] ; then
-			copyTestFile "video/$video" "modifiedvideo/$video"
+			copyTestFile "video/$video" "$video"
 		fi
 done
 
 #Write all Metadata to the files
-echo "Writing Metadata To the RIFF,QuickTime and Matroska video Files.."
-
 runTest exiv2 -M "set Xmp.video.MicroSecPerFrame 64" $videos
 runTest exiv2 -M "set Xmp.video.MaxDataRate 4096" $videos
 runTest exiv2 -M "set Xmp.video.FrameCount 2048" $videos
@@ -51,22 +48,25 @@ echo "Metadata has been written to the File"
 
 (	cd "$testdir"
 
-    for file in $testdir/modifiedvideo/video-*; do
-        video="`basename "$file"`"
-		if [ $video != "video-test.out" ] ; then
+    for file in video-*; do
+              video="`basename "$file"`"
+	if [ $video != "video-test.out" ] ; then
+
 	        printf "." >&3
+
     	    echo
         	echo "-----> $video <-----"
+
     	    echo
         	echo "Command: exiv2 -u -pa $video"
 	        runTest exiv2 -u -pa "$video"
-    	    exitcode="$?"
+    	     exitcode="$?"
         	echo "Exit code: $exitcode"
 
 	        if [ "$exitcode" -ne 0 -a "$exitcode" -ne 253 ] ; then
     	        continue
         	fi
-		fi
+	fi
     done
 
 ) 3>&1 > "$testdir/video-test.out" 2>&1
@@ -76,11 +76,10 @@ echo "."
 # ----------------------------------------------------------------------
 # Result
 
-
-#Delete Temporary Directory 
-rm $testdir/modifiedvideo -rf
-
 diffCheck "$testdir/video-test.out" "$testdir/$datadir/write-video-test.out"
+
+	#Delete Temporary Directory 
+        rm $testdir/* -rf
 
 if [ $errors ]; then
 	red='\e[0;31m' #Display fonts in Red color
