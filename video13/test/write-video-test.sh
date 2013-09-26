@@ -49,7 +49,7 @@ echo "Metadata has been written to the File"
 (	cd "$testdir"
 
     for file in video-*; do
-              video="`basename "$file"`"
+        video="`basename "$file"`"
 	if [ $video != "video-test.out" ] ; then
 
 	        printf "." >&3
