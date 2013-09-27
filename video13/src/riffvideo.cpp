@@ -2703,7 +2703,12 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         {
             rawChunkData[i] = (byte)tmpChunkData[i];
         }
+        if(tmpChunkData.size()%2 != 0)
+        {
+            rawChunkData[(int32_t)(chunkSize-1)] = (byte)0;
+        }
 
+        std::cout << chunkSize << std::endl;
         io_->write(rawChunkId,4);
         io_->write((byte*)&chunkSize,4);
         io_->write(rawChunkData,chunkSize);
