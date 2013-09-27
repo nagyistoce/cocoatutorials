@@ -8,6 +8,8 @@
 
 source ./functions.source
 
+out=$(real_path "$testdir/$this.out")
+
 (	cd "$testdir"
 
     for file in ../data/video/video-*; do
@@ -39,11 +41,14 @@ echo "."
 
 # ----------------------------------------------------------------------
 # Result
-if ! diff   -q $diffargs "$testdir/$datadir/video/video-test.out" "$testdir/video-test.out" ; then
-    diff -u -a $diffargs "$testdir/$datadir/video/video-test.out" "$testdir/video-test.out"
-    exit 1
+cp $out /home/mmh
+diffCheck "$out" "$testdir/$datadir/video/$this.out" 
+
+if [ $errors ]; then
+	echo -e $errors 'test case(s) failed!'
+else
+	echo -e "all testcases passed."
 fi
-echo "All testcases passed."
 
 # That's all Folks!
 ##
