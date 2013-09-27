@@ -52,7 +52,8 @@ copyTestFile()
 	if [ $# == 2 ]; then
 		cp -f "$here/data/$1" "$here/tmp/$2"
 	elif [ $# == 1 ]; then
-		cp -f "$here/data/$1" "$here/tmp/$1"
+		stub=$(basename $1)
+		cp -f "$here/data/$1" "$here/tmp/$stub"
 	else
 		echo "*** error copyTestFile: illegal number of inputs = $# ***"
 	fi
@@ -213,13 +214,13 @@ iptcTest()
 # Make sure to pass the test file first and the known good file second
 diffCheck() 
 {
-    test=$1
-    good=$2
+    test=$(real_path $1)
+    good=$(real_path $2)
     
     #run diff and check results
-    diff -q --binary $diffargs $test $good
+    diff -q --binary $diffargs "$test" "$good"
     if [ $? -ne 0 ]; then
-       errors=`expr $errors + 1`
+       errors=$(expr $errors + 1)
     else
        rm $test
     fi 
