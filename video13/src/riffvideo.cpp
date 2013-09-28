@@ -1452,7 +1452,8 @@ void RiffVideo::infoTagsHandler()
             dataLenght -= infoSize;
             if(tv && infoSize >  4)
             {
-                DataBuf tmpBuf((uint32_t)infoSize);
+                DataBuf tmpBuf((uint32_t)infoSize+1);
+                tmpBuf.pData_[infoSize] = '\0';
                 io_->read(tmpBuf.pData_,infoSize);
                 xmpData_[exvGettext(tv->label_)] = tmpBuf.pData_;
             }
