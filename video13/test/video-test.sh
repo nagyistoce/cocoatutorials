@@ -41,7 +41,7 @@ echo "."
 
 # ----------------------------------------------------------------------
 # Result
-cp $out /home/mmh
+
 diffCheck "$out" "$testdir/$datadir/video/$this.out" 
 
 if [ $errors ]; then
