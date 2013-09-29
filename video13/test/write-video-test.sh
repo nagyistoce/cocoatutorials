@@ -58,7 +58,8 @@ copyTestFile "video/$this.out"
 
     	echo
         echo "Command: exiv2 -u -pa $video"
-	    runTest exiv2 -u -pa "$video"
+        # run command                 | strip Date tags | replace high bytes with underscores
+	    runTest exiv2 -u -pa "$video" | grep -v -e Date | sed -E -e 's/[\d128-\d255]/_/g'
     	exitcode="$?"
         echo "Exit code: $exitcode"
 
