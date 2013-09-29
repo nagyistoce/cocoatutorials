@@ -25,7 +25,8 @@ out=$(real_path "$testdir/$this.out")
 
     	    echo
         	echo "Command: exiv2 -u -pa $video"
-	        runTest exiv2 -u -pa "$video"
+        	# run command                 | replace high bytes with underscores and remove Date tags
+	        runTest exiv2 -u -pa "$video" | sed -E -e 's/[\d128-\d255]/_/g' | grep -v -e Date
     	    exitcode="$?"
         	echo "Exit code: $exitcode"
 
