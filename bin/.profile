@@ -433,7 +433,7 @@ differ () {
 		cmd=opendiff
 	fi
 	echo $cmd ${args[*]}
-	     $cmd ${args[*]}
+	     $cmd ${args[*]} &
 }
 
 ##
