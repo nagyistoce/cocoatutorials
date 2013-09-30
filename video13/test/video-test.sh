@@ -15,7 +15,6 @@ out=$(real_path "$testdir/$this.out")
     for file in ../data/video/video-*; do
         video="`basename "$file"`"
 		if [ $video != "video-test.out" ] ; then
-
 	        printf "." >&3
 
     	    echo
@@ -25,14 +24,8 @@ out=$(real_path "$testdir/$this.out")
 
     	    echo
         	echo "Command: exiv2 -u -pa $video"
-        	# run command                 | replace high bytes with underscores and remove Date tags
-	        runTest exiv2 -u -pa "$video" | sed -E -e 's/[\d128-\d255]/_/g' | grep -v -e Date
-    	    exitcode="$?"
-        	echo "Exit code: $exitcode"
-
-	        if [ "$exitcode" -ne 0 -a "$exitcode" -ne 253 ] ; then
-    	        continue
-        	fi
+            # run command                 | no binary and no Date tags
+	        runTest exiv2 -u -pa "$video" | iconv -f UTF-8 -t ASCII | grep -v -e Date
 		fi
     done
 

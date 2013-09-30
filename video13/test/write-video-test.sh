@@ -58,17 +58,11 @@ copyTestFile "video/$this.out"
 
     	echo
         echo "Command: exiv2 -u -pa $video"
-        # run command                 | replace high bytes with underscores
-	    runTest exiv2 -u -pa "$video" | sed -E -e 's/[\d128-\d255]/_/g' | grep -v -e Date
-    	exitcode="$?"
-        echo "Exit code: $exitcode"
-
-	    if [ "$exitcode" -ne 0 -a "$exitcode" -ne 253 ] ; then
-    	    continue
-        fi
+        # run command                 | no binary and no Date tags
+	    runTest exiv2 -u -pa "$video" | iconv -f UTF-8 -t ASCII | grep -v -e Date
     done
 
-) 3>&1 2>&1 > "$out"
+) 3>&1 > "$out" 2>&1 
 
 echo "."
 
