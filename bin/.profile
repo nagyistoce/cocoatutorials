@@ -419,6 +419,24 @@ remember() {
 }
 
 ##
+# run the local kdiff3 type tool
+differ () {
+	declare -a args
+	for arg in "$@"; do
+		if [ -e $arg ]; then
+			args+=("$arg")
+		fi
+		shift
+	done
+	cmd=kdiff3
+	if [ "$PLATFORM" == "macosx" ]; then
+		cmd=opendiff
+	fi
+	echo $cmd ${args[*]}
+	     $cmd ${args[*]}
+}
+
+##
 # platform adjustments
 if [ "$PLATFORM" == "cygwin" ]; then
     d=$(find /c/boost -maxdepth 1 -type d -name "boo*" | sort | tail -1)

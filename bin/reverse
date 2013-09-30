@@ -4,3 +4,6 @@ my @lines = <STDIN> ;
 while ( my $line = pop @lines) {
 	print $line ;
 }
+
+# That's all Folks!
+##
