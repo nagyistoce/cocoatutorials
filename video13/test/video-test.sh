@@ -8,34 +8,44 @@
 
 source ./functions.source
 
+##
+# set up the output file
 out=$(real_path "$testdir/$this.out")
+copyTestFile "video/$this.out"
 
 (	cd "$testdir"
 
-    for file in ../data/video/video-*; do
-        video="`basename "$file"`"
-		if [ $video != "video-test.out" ] ; then
-	        printf "." >&3
-
-    	    echo
-        	echo "-----> $video <-----"
-
-	        copyTestFile "video/$video" "$video"
-
-    	    echo
-        	echo "Command: exiv2 -u -pa $video"
-            # run command                 | no binary and no Date tags
-	        runTest exiv2 -u -pa "$video" | iconv -f UTF-8 -t ASCII | grep -v -e Date
+	copyVideoFiles
+	##
+	# find video files data/video and copy them for testing
+	declare -a videos
+	for video in $datadir/video/* ; do
+		# http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
+		ext="${video##*.}"
+		if [ $ext != out ]; then
+			copyTestFile "$video" 
+			videos+=($(basename "$video"))
 		fi
+	done
+	# http://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
+	readarray -t sorted < <(printf '%s\0' "${videos[@]}" | sort -z | xargs -0n1) 
+	
+	for video in ${videos[*]}; do
+	    printf "." >&3
+    	echo
+        echo "-----> $video <-----"
+    	echo
+        echo "Command: exiv2 -u -pa $video"
+        # run command                 | no binary and no Date tags
+	    runTest exiv2 -u -pa "$video" | sed -E -e 's/\d128-\d255/_/g' | grep -v -e Date | grep -v -e NumOfC
     done
 
-) 3>&1 > "$testdir/video-test.out" 2>&1
+) 3>&1 2>&1 > "$out" 
 
 echo "."
 
 # ----------------------------------------------------------------------
 # Result
-
 diffCheck "$out" "$testdir/$datadir/video/$this.out" 
 
 if [ $errors ]; then

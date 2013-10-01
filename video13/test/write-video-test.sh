@@ -10,6 +10,7 @@ copyTestFile "video/$this.out"
 
 (	cd "$testdir"
 
+	copyVideoFiles
 	##
 	# find video files data/video and copy them for testing
 	declare -a videos
@@ -20,7 +21,9 @@ copyTestFile "video/$this.out"
 			copyTestFile "$video" 
 			videos+=($(basename "$video"))
 		fi
-	done 
+	done
+	# http://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
+	readarray -t sorted < <(printf '%s\0' "${videos[@]}" | sort -z | xargs -0n1) 
 
 	# write metadata to videos
 	runTest exiv2 -M "set Xmp.video.MicroSecPerFrame 64"      ${videos[*]}
@@ -52,23 +55,20 @@ copyTestFile "video/$this.out"
 	
 	for video in ${videos[*]}; do
 	    printf "." >&3
-
     	echo
         echo "-----> $video <-----"
-
     	echo
         echo "Command: exiv2 -u -pa $video"
         # run command                 | no binary and no Date tags
-	    runTest exiv2 -u -pa "$video" | iconv -f UTF-8 -t ASCII | grep -v -e Date
+	    runTest exiv2 -u -pa "$video" | sed -E -e 's/\d128-\d255/_/g' | grep -v -e Date | grep -v -e NumOfC
     done
 
-) 3>&1 > "$out" 2>&1 
+) 3>&1 2>&1 > "$out"  
 
 echo "."
 
 # ----------------------------------------------------------------------
 # Result
-
 diffCheck "$out" "$testdir/$datadir/video/$this.out" 
 
 if [ $errors ]; then

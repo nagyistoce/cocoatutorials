@@ -351,9 +351,19 @@ real_path ()
 		realpath "$1"
 	else
 		readlink -f "$1"
-	fi
+    fi
 }
 
+copyVideoFiles ()
+{
+	##
+	# debugging code NEVER SUBMIT
+	if [ "$FACTORY" == "rmills-mbp.localXX" ]; then
+    	for v in write-video-test.out video-test.out; do
+	    	cp ~/gnu/exiv2/testdata/trunk/video/$v ~/gnu/exiv2/video13/test/data/video/
+		done
+	fi
+}
 
 ##
 # prepare temp files and other variables
