@@ -114,7 +114,7 @@ fi
 # export ARCHFLAGS="-arch x86_64" # "-arch i386 -arch ppc"
 # export CFLAGS="$ARCHFLAGS"      # "-arch i386 -arch ppc"
 # export LDFLAGS="$ARCHFLAGS"     # "-arch i386 -arch ppc"
-export L="-exec ls -daltFh {} ;"
+export L="-exec ls -dalt {} ;"
 export X="-exec rm -rf {} ;"
 export C="-exec ce {} ;"
 export I="-exec lipo -info {} ;"
@@ -191,12 +191,12 @@ socks() {
 
 
 diros() {
-    ls -ltF $* | sort --key=5 --numeric-sort
+    ls -lt $* | sort --key=5 --numeric-sort
 #   ls -ltFp $* | tigersort +4 -n
 }
 
 diron() {
-    ls -ltF $* | sort --key=9 --ignore-case
+    ls -lt  $* | sort --key=9 --ignore-case
 #   ls -ltp $* | tigersort +8 -i
 }
 
@@ -338,7 +338,7 @@ alias 2=to
 alias rename=mv
 alias move=mv
 alias del='rm -rf'
-alias dirod='ls -altFr'
+alias dirod='ls -alt'
 alias xcopy='ditto'
 alias finder='find . -depth -iname'
 alias shellx=open
