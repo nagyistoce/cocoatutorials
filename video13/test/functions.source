@@ -356,13 +356,34 @@ real_path ()
 
 copyVideoFiles ()
 {
+	pushd "$testdir" 2>/dev/null >/dev/null
+
 	##
-	# debugging code NEVER SUBMIT
+	# find video files data/video and copy them for testing
+	declare -a videos
+	for video in $datadir/video/* ; do
+		# http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
+		ext="${video##*.}"
+		if [ $ext != out ]; then
+			copyTestFile "$video" 
+			videos+=($(basename "$video"))
+		fi
+	done
+
+	##
+	# TODO: remove debugging code
 	if [ "$FACTORY" == "rmills-mbp.localXX" ]; then
     	for v in write-video-test.out video-test.out; do
 	    	cp ~/gnu/exiv2/testdata/trunk/video/$v ~/gnu/exiv2/video13/test/data/video/
 		done
 	fi
+
+	# http://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
+	readarray -t sorted < <(printf '%s\0' "${videos[@]}" | sort -z | xargs -0n1) 
+	echo ${videos[*]}
+	unset  videos
+
+	popd 2>/dev/null >/dev/null
 }
 
 ##

@@ -4,26 +4,13 @@
 source ./functions.source
 
 ##
-# set up the output file
+# set up output and reference file
 out=$(real_path "$testdir/$this.out")
-copyTestFile "video/$this.out"
+copyTestFile       "video/$this.out"
 
 (	cd "$testdir"
 
-	copyVideoFiles
-	##
-	# find video files data/video and copy them for testing
-	declare -a videos
-	for video in $datadir/video/* ; do
-		# http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
-		ext="${video##*.}"
-		if [ $ext != out ]; then
-			copyTestFile "$video" 
-			videos+=($(basename "$video"))
-		fi
-	done
-	# http://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
-	readarray -t sorted < <(printf '%s\0' "${videos[@]}" | sort -z | xargs -0n1) 
+	videos=($(copyVideoFiles))
 
 	# write metadata to videos
 	runTest exiv2 -M "set Xmp.video.MicroSecPerFrame 64"      ${videos[*]}
@@ -59,8 +46,8 @@ copyTestFile "video/$this.out"
         echo "-----> $video <-----"
     	echo
         echo "Command: exiv2 -u -pa $video"
-        # run command                 | no binary and no Date tags
-	    runTest exiv2 -u -pa "$video" | sed -E -e 's/\d128-\d255/_/g' | grep -v -e Date | grep -v -e NumOfC
+        # run command                 | ignore binary and no Date nor NumOfColours tags
+	    runTest exiv2 -u -pa "$video" | sed -E -e 's/\d128-\d255/_/g' | grep -a -v -e Date -v -e NumOfC
     done
 
 ) 3>&1 2>&1 > "$out"  
