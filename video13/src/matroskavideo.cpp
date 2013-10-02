@@ -43,11 +43,14 @@ EXIV2_RCSID("@(#) $Id$")
 
 // *****************************************************************************
 // class member definitions
-namespace Exiv2 {
-    namespace Internal {
+namespace Exiv2
+{
+    namespace Internal
+    {
 
     //! List of composite tags. They are skipped and the child tags are read immediately
-    uint64_t compositeTagsList[] = {
+    uint64_t compositeTagsList[] =
+    {
         0x0000, 0x000e, 0x000f, 0x0020, 0x0026, 0x002e, 0x0036,
         0x0037, 0x003b, 0x005b, 0x0060, 0x0061, 0x0068, 0x05b9,
         0x0dbb, 0x1034, 0x1035, 0x1854, 0x21a7, 0x2240, 0x23c0,
@@ -58,7 +61,8 @@ namespace Exiv2 {
     };
 
     //! List of tags which are ignored, i.e., tag and value won't be read
-    uint64_t ignoredTagsList[] = {
+    uint64_t ignoredTagsList[] =
+    {
         0x0021, 0x0023, 0x0033, 0x0071, 0x0077, 0x006c, 0x0067, 0x007b, 0x02f2, 0x02f3,
         0x1031, 0x1032, 0x13ab, 0x13ac, 0x15ee, 0x23a2, 0x23c6, 0x2e67, 0x33a4, 0x33c5,
         0x3446, 0x2de7, 0x2df8, 0x26bf, 0x28ca, 0x3384, 0x13b8, 0x037e, 0x0485, 0x18d7,
@@ -467,13 +471,13 @@ namespace Exiv2 {
           bytes are used to calculate the rest of the Tag.
           Returns Tag Value.
      */
-    uint64_t returnTagValue(const byte* buf, long size)
+    uint64_t returnTagValue(const byte* buf, int32_t size)
     {
         assert(size > 0 && size <= 8);
 
         uint64_t b0 = buf[0] & (0xff >> size);
         uint64_t tag = b0 << ((size - 1) * 8);
-        for (long i = 1; i < size; ++i)
+        for (int32_t i = 1; i < size; ++i)
         {
             tag |= static_cast<uint64_t>(buf[i]) << ((size - i - 1) * 8);
         }
@@ -485,7 +489,7 @@ namespace Exiv2 {
         @brief Function used to convert buffer data into numerical information,
             information stored in BigEndian format
      */
-    int64_t returnValue(const byte* buf, long size)
+    int64_t returnValue(const byte* buf, int32_t size)
     {
 
         int64_t temp = 0;
@@ -498,7 +502,7 @@ namespace Exiv2 {
         //        std::cerr << "size = " << size << ", val = " << temp << std::hex << " (0x" << temp << std::dec << ")";
 
         uint64_t ret = 0;
-        for (long i = 0; i < size; ++i)
+        for (int32_t i = 0; i < size; ++i)
         {
             ret |= static_cast<uint64_t>(buf[i]) << ((size - i - 1) * 8);
         }
@@ -508,11 +512,11 @@ namespace Exiv2 {
 
         return ret;
     }
-    byte* returnBuf(uint64_t numValue,long size)
+    byte* returnBuf(uint64_t numValue,int32_t size)
     {
         byte *retVal;
         retVal = (byte *)malloc(size*sizeof(8));
-        for (long i = 0; i < size; i++) {
+        for (int32_t i = 0; i < size; i++) {
             retVal[size-i-1]     = (byte)(((uint32_t)numValue)%(uint32_t)256);
             numValue = numValue/256;
         }
@@ -644,16 +648,16 @@ void MatroskaVideo::decodeBlock()
 
     DataBuf buf2(bufMinSize+1);
     std::memset(buf2.pData_, 0x0, buf2.size_);
-    long s = static_cast<long>(size) ;
+    int32_t s = static_cast<int32_t>(size) ;
     io_->read(buf2.pData_,s);
     contentManagement(mt, buf2.pData_,s);
 } // MatroskaVideo::decodeBlock
 
-void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, long size)
+void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, int32_t size)
 {
     int64_t duration_in_ms = 0;
     static double time_code_scale = 1.0, temp = 0;
-    static long stream = 0, track_count = 0;
+    static int32_t stream = 0, track_count = 0;
     char str[4] = "No";
     const MatroskaTags* internalMt = 0;
     const RevMatroskaTags* revInternalMt = 0;
@@ -1016,7 +1020,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, l
 
     case 0x0003:
         internalMt = find(matroskaTrackType, returnValue(buf, size));
-        stream = static_cast<long>(internalMt->val_);
+        stream = static_cast<int32_t>(internalMt->val_);
         break;
 
     case 0x3e383: case 0x383e3:

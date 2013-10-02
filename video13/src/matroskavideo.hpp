@@ -37,13 +37,15 @@
 
 // *****************************************************************************
 // namespace extensions
-namespace Exiv2 {
+namespace Exiv2
+{
 
 // *****************************************************************************
 // class definitions
 
     // Add MKV to the supported image formats
-    namespace ImageType {
+    namespace ImageType
+    {
         const int mkv = 21; //!< Treating mkv as an image type>
     }
 
@@ -51,7 +53,8 @@ namespace Exiv2 {
     /*!
       @brief Helper structure for the Matroska tags lookup table.
      */
-    struct MatroskaTags {
+    struct MatroskaTags
+    {
         uint64_t val_;                          //!< Tag value
         const char* label_;                     //!< Translation of the tag value
 
@@ -59,7 +62,8 @@ namespace Exiv2 {
        bool operator==(uint64_t key) const { return val_ == key; }
     }; // struct TagDetails
 
-    struct RevMatroskaTags {
+    struct RevMatroskaTags
+    {
         const char* label_;
         uint64_t val_;
 
@@ -68,7 +72,8 @@ namespace Exiv2 {
     /*!
       @brief Class to access Matroska video files.
      */
-    class EXIV2API MatroskaVideo : public Image {
+    class EXIV2API MatroskaVideo : public Image
+    {
     public:
         //! @name Creators
         //@{
@@ -119,7 +124,7 @@ namespace Exiv2 {
           @param buf Pointer to the memory area with the tag information.
           @param size Size of \em buf.
          */
-        void contentManagement(const MatroskaTags* mt, const byte* buf, long size);
+        void contentManagement(const MatroskaTags* mt, const byte* buf, int32_t size);
         /*!
           @brief Calculates Aspect Ratio of a video, and stores it in the
               respective XMP container.
@@ -150,7 +155,7 @@ namespace Exiv2 {
         uint64_t height_, width_;
         //! Variable to decide whether to modify the metada
         bool m_modifyMetadata;
-        long mtLocation;
+        int32_t mtLocation;
 
     }; // class MatroskaVideo
 
