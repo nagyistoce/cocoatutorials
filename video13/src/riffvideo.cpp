@@ -1338,7 +1338,7 @@ void RiffVideo::nikonTagsHandler()
                             }
                             if((int32_t)dataSize > (int32_t)nikonData.size())
                             {
-                                for(i=(int32_t)(nikonData.size()); i<dataSize; i++)
+                                for(i=(int32_t)nikonData.size(); i<dataSize; i++)
                                 {
                                     rawnikonData[i] = (byte)0;
                                 }
@@ -1359,7 +1359,7 @@ void RiffVideo::nikonTagsHandler()
                         }
                         else if(xmpData_[exvGettext(td->label_)].count() > 0)
                         {
-                            float nikonData = xmpData_[exvGettext(td->label_)].toFloat();
+                            int32_t nikonData = (int32_t)xmpData_[exvGettext(td->label_)].toFloat();
                             io_->write((Exiv2::byte*)&nikonData,dataSize);
                         }
                         else
@@ -1387,7 +1387,7 @@ void RiffVideo::nikonTagsHandler()
                         else if(xmpData_[exvGettext(td->label_)].count() > 0)
                         {
                             io_->seek(-dataSize,BasicIo::cur);
-                            float nikonData = (xmpData_[exvGettext(td->label_)].toFloat()*denominator);
+                            int32_t nikonData = (int32_t)(xmpData_[exvGettext(td->label_)].toFloat()*denominator);
                             io_->write((Exiv2::byte*)&nikonData,4);
                             io_->seek((dataSize-4),BasicIo::cur);
                         }
@@ -1841,7 +1841,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
             case (maxDataRate):
                 if(xmpData_["Xmp.video.MaxDataRate"].count() > 0 )
                 {
-                    float maxDataRate = (xmpData_["Xmp.video.MaxDataRate"].toFloat()*1024);
+                    int32_t maxDataRate = (int32_t)(xmpData_["Xmp.video.MaxDataRate"].toFloat()*1024);
                     io_->write((byte*)&maxDataRate,4);
                 }
                 else
@@ -2037,7 +2037,7 @@ void RiffVideo::streamHandler(int32_t size)
 
             if(xmpData_["Xmp.video.FrameRate"].count() > 0)
             {
-                float frameRate = xmpData_["Xmp.video.FrameRate"].toFloat()*multiplier;
+                int32_t frameRate = (int32_t)xmpData_["Xmp.video.FrameRate"].toFloat()*multiplier;
 
                 io_->write((Exiv2::byte*)&frameRate,4);
                 io_->seek(4,BasicIo::cur);
