@@ -67,8 +67,8 @@ public:
 
     public:
         byte m_chunkId[5];
-        unsigned long m_chunkLocation;
-        unsigned long m_chunkSize;
+        uint64_t m_chunkLocation;
+        uint64_t m_chunkSize;
     };
 
     class HeaderChunk

@@ -36,11 +36,13 @@ EXIV2_RCSID("@(#) $Id$")
 #include "basicio.hpp"
 #include "tags.hpp"
 #include "tags_int.hpp"
-
+#include "types.hpp"
+#include "tiffimage_int.hpp"
 // + standard includes
 #include <cmath>
 #include <cassert>
 
+using namespace std;
 // *****************************************************************************
 // class member definitions
 namespace Exiv2
@@ -653,7 +655,7 @@ void MatroskaVideo::decodeBlock()
     contentManagement(mt, buf2.pData_,s);
 } // MatroskaVideo::decodeBlock
 
-void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, int32_t size)
+void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte* buf, int32_t size)
 {
     int64_t duration_in_ms = 0;
     static double time_code_scale = 1.0, temp = 0;
@@ -681,9 +683,16 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, i
             {
                 byte rawTagData[size];
                 std::string tagData = xmpData_[mt->label_].toString();
-                for(int i=0; i<size; i++)
+                for(int32_t i=0; i<min(size,(int32_t) tagData.size()); i++)
                 {
                     rawTagData[i] = (byte)tagData[i];
+                }
+                if(size > (int32_t) tagData.size())
+                {
+                    for(int32_t i=(int32_t) tagData.size(); i<size; i++)
+                    {
+                        rawTagData[i] = (byte)0;
+                    }
                 }
                 io_->seek(-size,BasicIo::cur);
                 io_->write(rawTagData,size);
@@ -982,14 +991,12 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const byte* buf, i
             switch (mt->val_)
             {
             case 0x0489:
-                rawDuration = returnBuf(xmpData_[mt->label_].toFloat()
-                        /(time_code_scale*1000),size);
+                rawDuration = returnBuf( (uint64_t) (xmpData_[mt->label_].toFloat() /(time_code_scale*1000.0)),size);
                 io_->seek(-size,BasicIo::cur);
                 io_->write(rawDuration,size);
                 break;
             case 0x0461:
-                rawDuration = returnBuf(xmpData_[mt->label_].toFloat()
-                        /(1000000000),size);
+                rawDuration = returnBuf( (uint64_t) (xmpData_[mt->label_].toFloat() / 1000000000.0),size);
                 io_->seek(-size,BasicIo::cur);
                 io_->write(rawDuration,size);
                 break;

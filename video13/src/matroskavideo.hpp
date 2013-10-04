@@ -124,7 +124,7 @@ namespace Exiv2
           @param buf Pointer to the memory area with the tag information.
           @param size Size of \em buf.
          */
-        void contentManagement(const MatroskaTags* mt, const byte* buf, int32_t size);
+        void contentManagement(const MatroskaTags* mt, const Exiv2::byte* buf, int32_t size);
         /*!
           @brief Calculates Aspect Ratio of a video, and stores it in the
               respective XMP container.

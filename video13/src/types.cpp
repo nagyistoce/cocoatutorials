@@ -125,12 +125,6 @@ namespace Exiv2 {
         return tit->size_;
     }
 
-    DataBuf::DataBuf(DataBuf& rhs)
-        : pData_(rhs.pData_), size_(rhs.size_)
-    {
-        rhs.release();
-    }
-
     DataBuf::DataBuf(const DataBuf& rhs)
         : pData_(rhs.pData_), size_(rhs.size_)
     {

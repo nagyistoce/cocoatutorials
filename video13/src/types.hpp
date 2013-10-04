@@ -204,7 +204,6 @@ namespace Exiv2 {
                  object similar to std::auto_ptr, i.e., the original object is
                  modified.
          */
-        DataBuf(DataBuf& rhs);
         DataBuf(const DataBuf& rhs);
         //! Destructor, deletes the allocated buffer
         ~DataBuf() { delete[] pData_; }
