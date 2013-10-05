@@ -47,7 +47,7 @@ copyTestFile       "video/$this.out"
     	echo
         echo "Command: exiv2 -u -pa $video"
         # run command                 | ignore binary and no Date nor NumOfColours tags
-	    runTest exiv2 -u -pa "$video" | sed -E -e 's/\d128-\d255/_/g' | grep -a -v -e Date -v -e NumOfC
+	    runTest exiv2 -u -pa "$video" | sed -E -e 's/\d128-\d255/_/g' | grep -a -v -e Date
     done
 
 ) 3>&1 2>&1 > "$out"  
