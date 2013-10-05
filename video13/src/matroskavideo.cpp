@@ -473,7 +473,7 @@ namespace Exiv2
           bytes are used to calculate the rest of the Tag.
           Returns Tag Value.
      */
-    uint64_t returnTagValue(const byte* buf, int32_t size)
+    uint64_t returnTagValue(const Exiv2::byte* buf, int32_t size)
     {
         assert(size > 0 && size <= 8);
 
@@ -491,7 +491,7 @@ namespace Exiv2
         @brief Function used to convert buffer data into numerical information,
             information stored in BigEndian format
      */
-    int64_t returnValue(const byte* buf, int32_t size)
+    int64_t returnValue(const Exiv2::byte* buf, int32_t size)
     {
 
         int64_t temp = 0;
@@ -514,12 +514,12 @@ namespace Exiv2
 
         return ret;
     }
-    byte* returnBuf(uint64_t numValue,int32_t size)
+    Exiv2::byte* returnBuf(uint64_t numValue,int32_t size)
     {
-        byte *retVal;
-        retVal = (byte *)malloc(size*sizeof(8));
+        Exiv2::byte *retVal;
+        retVal = (Exiv2::byte *)malloc(size*sizeof(8));
         for (int32_t i = 0; i < size; i++) {
-            retVal[size-i-1]     = (byte)(((uint32_t)numValue)%(uint32_t)256);
+            retVal[size-i-1]     = (Exiv2::byte)(((uint32_t)numValue)%(uint32_t)256);
             numValue = numValue/256;
         }
         return retVal;
@@ -599,7 +599,7 @@ void MatroskaVideo::readMetadata()
 
 void MatroskaVideo::decodeBlock()
 {
-    byte buf[8];
+    Exiv2::byte buf[8];
     mtLocation = io_->tell();
     io_->read(buf, 1);
 
@@ -681,21 +681,22 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         {
             if(xmpData_[mt->label_].count() > 0)
             {
-                byte rawTagData[size];
+                Exiv2::byte *rawTagData = new byte[size];
                 std::string tagData = xmpData_[mt->label_].toString();
                 for(int32_t i=0; i<min(size,(int32_t) tagData.size()); i++)
                 {
-                    rawTagData[i] = (byte)tagData[i];
+                    rawTagData[i] = (Exiv2::byte)tagData[i];
                 }
                 if(size > (int32_t) tagData.size())
                 {
                     for(int32_t i=(int32_t) tagData.size(); i<size; i++)
                     {
-                        rawTagData[i] = (byte)0;
+                        rawTagData[i] = (Exiv2::byte)0;
                     }
                 }
                 io_->seek(-size,BasicIo::cur);
                 io_->write(rawTagData,size);
+                delete[] rawTagData;
             }
         }
         break;
@@ -711,7 +712,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         {
             if(xmpData_[mt->label_].count() > 0)
             {
-                byte *rawTagData = returnBuf((uint64_t)xmpData_[mt->label_].toFloat(),size);
+                Exiv2::byte *rawTagData = returnBuf((uint64_t)xmpData_[mt->label_].toFloat(),size);
                 io_->seek(-size,BasicIo::cur);
                 io_->write(rawTagData,size);
                 free(rawTagData);
@@ -765,9 +766,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revVidScanTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawVidScanFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawVidScanFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawVidScanFlag,size);
+                        free(rawVidScanFlag);
                     }
                     break;
 
@@ -779,9 +781,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revAudChannelsTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawAudChannelsFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawAudChannelsFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawAudChannelsFlag,size);
+                        free(rawAudChannelsFlag);
                     }
                     break;
 
@@ -793,9 +796,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revComprAlgoTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawComprAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawComprAlgoFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawComprAlgoFlag,size);
+                        free(rawComprAlgoFlag);
                     }
                     break;
 
@@ -807,9 +811,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revEncryAlgo,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawEncryAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawEncryAlgoFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawEncryAlgoFlag,size);
+                        free(rawEncryAlgoFlag);
                     }
                     break;
 
@@ -821,9 +826,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revEncodTypeTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawEncodTypeFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawEncodTypeFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawEncodTypeFlag,size);
+                        free(rawEncodTypeFlag);
                     }
                     break;
 
@@ -836,9 +842,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revContSignAlgo,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawContSignAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawContSignAlgoFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawContSignAlgoFlag,size);
+                        free(rawContSignAlgoFlag);
                     }
                     break;
 
@@ -851,9 +858,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revContSignHashAlgo,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawContSignHashAlgoFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawContSignHashAlgoFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawContSignHashAlgoFlag,size);
+                        free(rawContSignHashAlgoFlag);
                     }
                     break;
 
@@ -864,9 +872,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revDispUnitTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawDispUnitFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawDispUnitFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawDispUnitFlag,size);
+                        free(rawDispUnitFlag);
                     }
                     break;
 
@@ -878,9 +887,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revAspRatioTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawAspRatioFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawAspRatioFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawAspRatioFlag,size);
+                        free(rawAspRatioFlag);
                     }
                     break;
 
@@ -893,9 +903,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revChaptPhyEqTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawChaptPhyEqFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawChaptPhyEqFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawChaptPhyEqFlag,size);
+                        free(rawChaptPhyEqFlag);
                     }
                     break;
 
@@ -908,9 +919,10 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     revInternalMt = find(revChaptTransCodecTag,xmpData_[mt->label_].toString());
                     if(revInternalMt)
                     {
-                        byte *rawChaptTransCodecFlag = returnBuf(revInternalMt->val_,size);
+                        Exiv2::byte *rawChaptTransCodecFlag = returnBuf(revInternalMt->val_,size);
                         io_->seek(-size,BasicIo::cur);
                         io_->write(rawChaptTransCodecFlag,size);
+                        free(rawChaptTransCodecFlag);
                     }
                     break;
                 }
@@ -926,7 +938,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         {
             if(xmpData_[mt->label_].count() > 0)
             {
-                byte rawFloatValue[size];
+                Exiv2::byte *rawFloatValue = new byte[size];
                 float floatValue = xmpData_[mt->label_].toFloat();
                 memcpy(rawFloatValue,&floatValue,sizeof(float));
                 //                io_->seek(-size,BasicIo::cur);//Tobe tested
@@ -987,7 +999,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         }
         else
         {
-            byte *rawDuration;
+            Exiv2::byte *rawDuration;
             switch (mt->val_)
             {
             case 0x0489:
@@ -1001,6 +1013,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                 io_->write(rawDuration,size);
                 break;
             }
+            free(rawDuration);
         }
         break;
 
@@ -1017,7 +1030,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         }
         else
         {
-            byte *rawTimeCodeScale = returnBuf((uint64_t)(xmpData_["Xmp.video.TimecodeScale"]
+            Exiv2::byte *rawTimeCodeScale = returnBuf((uint64_t)(xmpData_["Xmp.video.TimecodeScale"]
                                                .toFloat()*1000000000),size);
             io_->seek(size,BasicIo::cur);
             io_->write(rawTimeCodeScale,size);
@@ -1072,7 +1085,7 @@ void MatroskaVideo::aspectRatio()
     }
 } // MatroskaVideo::aspectRatio
 
-uint32_t MatroskaVideo::findBlockSize(byte b)
+uint32_t MatroskaVideo::findBlockSize(Exiv2::byte b)
 {
     if      (b & 128) return 1;
     else if (b &  64) return 2;
@@ -1098,7 +1111,7 @@ Image::AutoPtr newMkvInstance(BasicIo::AutoPtr io, bool /*create*/)
 bool isMkvType(BasicIo& iIo, bool advance)
 {
     bool result = true;
-    byte tmpBuf[4];
+    Exiv2::byte tmpBuf[4];
     iIo.read(tmpBuf, 4);
 
     if (iIo.error() || iIo.eof()) return false;
