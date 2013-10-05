@@ -59,6 +59,9 @@ class EXIV2API RiffVideo:public Image
 public:
 
     //List, Header,Primitive and Junk chunks inside m_riffFileSkeleton reveal entire RIFF structure
+    /*!
+     * \brief The PrimitiveChunk class Hold the information about a unit chunk.
+     */
     class PrimitiveChunk
     {
     public:
@@ -66,11 +69,15 @@ public:
         ~PrimitiveChunk(){}
 
     public:
-        byte m_chunkId[5];
-        uint64_t m_chunkLocation;
-        uint64_t m_chunkSize;
+        byte m_chunkId[5];                   //!< Primitive chunk ID.
+        uint64_t m_chunkLocation;            //!< Chunk location in afile.
+        uint64_t m_chunkSize;                //!< Chunk size.
     };
 
+    /*!
+     * \brief The HeaderChunk class Hold the information about Header chunk
+     *        Containing multiple primitive chunks.
+     */
     class HeaderChunk
     {
     public:
@@ -78,11 +85,15 @@ public:
         ~HeaderChunk(){}
 
     public:
-        byte m_headerId[5];
-        unsigned long m_headerLocation;
-        unsigned long m_headerSize;
+        byte m_headerId[5];                      //!< Chunk Header Id
+        unsigned long m_headerLocation;          //!< Header Chunk Location in a file.
+        unsigned long m_headerSize;              //!< Header Chunk size
     };
 
+    /*!
+     * \brief The RiffMetaSkeleton class Hold information about all the
+     *        chunks present in a file.
+     */
     class RiffMetaSkeleton
     {
     public:
@@ -90,15 +101,18 @@ public:
         ~RiffMetaSkeleton(){}
 
     public:
-        vector<HeaderChunk*> m_headerChunks;
-        vector<PrimitiveChunk*> m_primitiveChunks;
+        vector<HeaderChunk*> m_headerChunks;         //!< vector containing all Header chunks.
+        vector<PrimitiveChunk*> m_primitiveChunks;   //!< vector Containing all the primitve chunks
     };
 
+    /*!
+     * \brief The IoPosition enum reveal the position,while traversing the file.
+     */
     enum IoPosition
     {
-        LastChunk,//"MOVI" or "DATA"
-        TraversingChunk, //"AVI" "hdrl" etc which further have sub-chunks
-        PremitiveChunk   // Remaining chunks which do not have subchunk
+        LastChunk,           //!< "MOVI" or "DATA"
+        TraversingChunk,     //!< "AVI" "hdrl" etc which further have sub-chunks
+        PremitiveChunk       //!< Remaining chunks which do not have subchunk
     };
     //! @name Creators
     //@{
@@ -135,13 +149,8 @@ protected:
          */
     void decodeBlock();
     /*!
-          @brief Interpret tag information, and call the respective function
-              to save it in the respective XMP container. Decodes a Tag
-              Information and saves it in the respective XMP container, if
-              the block size is small.
-          @param buf Data buffer which cotains tag ID.
-          @param size Size of the data block used to store Tag Information.
-         */
+     * \brief tagDecoder Main method to call corresponding handler methos for decoding tags.
+     */
     void tagDecoder();
     /*!
           @brief Interpret Junk tag information, and save it
@@ -229,7 +238,19 @@ protected:
          */
     void fillDuration(double frame_rate, int32_t frame_count);
 
+    /*!
+     * \brief copyRestOfTheFile copy rest of the file content as it is
+     * \param oldSavedData saved data from file, where data is already written into the file.
+     * \return
+     */
     bool copyRestOfTheFile(DataBuf oldSavedData);
+
+    /*!
+     * \brief reverseTagDetails reverse the position of members of a structure
+     * \param inputTagVocabulary
+     * \param outputTagVocabulary
+     * \param size
+     */
     void reverseTagDetails(const Internal::TagDetails inputTagVocabulary[],
                            Internal::RevTagDetails  outputTagVocabulary[] , int32_t size);
 
@@ -249,9 +270,35 @@ private:
           @return 4 if opening or writing to the associated BasicIo fails
          */
     EXV_DLLLOCAL void doWriteMetadata();
+
+    /*!
+     * \brief findChunkPositions Finds the primitive shunk position in a file.
+     * \param chunkId Id of chunk to be searched
+     * \return
+     */
     std::vector<int32_t> findChunkPositions(const char *chunkId);
+
+    /*!
+     * \brief findHeaderPositions Finds the location of Header chunk in a file.
+     * \param headerId Id of Header Chunk to be searched.
+     * \return
+     */
     std::vector<int32_t> findHeaderPositions(const char* headerId);
+
+    /*!
+     * \brief writeNewSubChunks Writes the new chunk,also hold the data from overwritten
+     *                          location in a file.
+     * \param chunkData vector containing chunk ID and chunk Data
+     * \return
+     */
     bool writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData);
+
+    /*!
+     * \brief writeNewChunk Used to write new chunk.
+     * \param chunkData
+     * \param chunkId
+     * \return
+     */
     bool writeNewChunk(std::string chunkData,std::string chunkId);
 
 private:

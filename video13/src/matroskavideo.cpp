@@ -289,6 +289,7 @@ namespace Exiv2
         {   0xf43b675, "Cluster" },                                     //s
     };
 
+    //! Multimedia type.
     extern const MatroskaTags matroskaTrackType[] =
     {
         {   0x1,  "Video" },
@@ -300,6 +301,7 @@ namespace Exiv2
         {   0x20, "Control" }
     };
 
+    //! Algorith information.
     extern const MatroskaTags compressionAlgorithm[] =
     {
         {   0, "zlib " },
@@ -308,6 +310,7 @@ namespace Exiv2
         {   3, "Header Stripping" }
     };
 
+    //! Channel Type Information.
     extern const MatroskaTags audioChannels[] =
     {
         {   1, "Mono" },
@@ -316,6 +319,7 @@ namespace Exiv2
         {   7, "7.1 Surround Sound" }
     };
 
+    //! Display Information.
     extern const MatroskaTags displayUnit[] =
     {
         {   0x0,  "Pixels" },
@@ -323,6 +327,7 @@ namespace Exiv2
         {   0x2,  "inches" }
     };
 
+    //! Encryption Algorithm.
     extern const MatroskaTags encryptionAlgorithm[] =
     {
         {   0, "Not Encrypted" },
@@ -333,6 +338,7 @@ namespace Exiv2
         {   5, "AES" }
     };
 
+    //! Chapter Information.
     extern const MatroskaTags chapterPhysicalEquivalent[] =
     {
         {   10, "Index" },
@@ -344,24 +350,28 @@ namespace Exiv2
         {   70, "Set / Package" },
     };
 
+    //! Encoding Information.
     extern const MatroskaTags encodingType[] =
     {
         {   0, "Compression" },
         {   1, "Encryption" }
     };
 
+    //! VideoScan Information.
     extern const MatroskaTags videoScanType[] =
     {
         {   0, "Progressive" },
         {   1, "Interlaced" }
     };
 
+    //! Chapter related Information.
     extern const MatroskaTags chapterTranslateCodec[] =
     {
         {   0, "Matroska Script" },
         {   1, "DVD Menu" }
     };
 
+    //! Aspect Ratio Information.
     extern const MatroskaTags aspectRatioType[] =
     {
         {   0, "Free Resizing" },
@@ -369,12 +379,14 @@ namespace Exiv2
         {   2, "Fixed" }
     };
 
+    //! Content Signature Information.
     extern const MatroskaTags contentSignatureAlgorithm[] =
     {
         {   0, "Not Signed" },
         {   1, "RSA" }
     };
 
+    //! Content SIgnature Hash Information.
     extern const MatroskaTags contentSignatureHashAlgorithm[] =
     {
         {   0, "Not Signed" },
@@ -382,6 +394,7 @@ namespace Exiv2
         {   2, "MD5" }
     };
 
+    //! Track Information.
     extern const MatroskaTags trackEnable[] =
     {
         {   0x1,  "Xmp.video.Enabled" },
@@ -389,6 +402,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTEnabled" }
     };
 
+    //! Default Action Information.
     extern const MatroskaTags defaultOn[] =
     {
         {   0x1,  "Xmp.video.DefaultOn" },
@@ -396,6 +410,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTDefaultOn" }
     };
 
+    //! Track Information.
     extern const MatroskaTags trackForced[] =
     {
         {   0x1,  "Xmp.video.TrackForced" },
@@ -403,6 +418,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTTrackForced" }
     };
 
+    //! Track Information.
     extern const MatroskaTags trackLacing[] =
     {
         {   0x1,  "Xmp.video.TrackLacing" },
@@ -410,6 +426,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTTrackLacing" }
     };
 
+    //! Codec Information.
     extern const MatroskaTags codecDecodeAll[] =
     {
         {   0x1,  "Xmp.video.CodecDecodeAll" },
@@ -417,6 +434,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTCodecDecodeAll" }
     };
 
+    //! Codec Information.
     extern const MatroskaTags codecDownloadUrl[] =
     {
         {   0x1,  "Xmp.video.CodecDownloadUrl" },
@@ -424,6 +442,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTCodecDownloadUrl" }
     };
 
+    //! Codec Information.
     extern const MatroskaTags codecSettings[] =
     {
         {   0x1,  "Xmp.video.CodecSettings" },
@@ -431,6 +450,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTCodecSettings" }
     };
 
+    //! Track Information.
     extern const MatroskaTags trackCodec[] =
     {
         {   0x1,  "Xmp.video.Codec" },
@@ -438,6 +458,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTCodec" }
     };
 
+    //! Track Language Information.
     extern const MatroskaTags trackLanguage[] =
     {
         {   0x1,  "Xmp.video.TrackLang" },
@@ -445,6 +466,7 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTLang" }
     };
 
+    //! Codec Information.
     extern const MatroskaTags codecInfo[] =
     {
         {   0x1,  "Xmp.video.CodecInfo" },
@@ -452,12 +474,19 @@ namespace Exiv2
         {   0x11, "Xmp.video.SubTCodecInfo" }
     };
 
+    //! Stream Rate Information.
     extern const MatroskaTags streamRate[] =
     {
         {   0x1,  "Xmp.video.FrameRate" },
         {   0x2,  "Xmp.audio.DefaultDuration" }
     };
 
+    /*!
+     * \brief reverseMatroskaTag reverse the members of a structure
+     * \param inputMatroskaTag
+     * \param outputMatroskaTag
+     * \param size
+     */
     void reverseMatroskaTag(const MatroskaTags inputMatroskaTag[],RevMatroskaTags  outputMatroskaTag[] ,int size)
     {
         for (int i=0; i<size ;i++)
@@ -514,6 +543,13 @@ namespace Exiv2
 
         return ret;
     }
+
+    /*!
+     * \brief returnBuf Return raw byte,ready to be written to the file,from value.
+     * \param numValue
+     * \param size size of rawData in number of bytes.
+     * \return
+     */
     Exiv2::byte* returnBuf(uint64_t numValue,int32_t size)
     {
         Exiv2::byte *retVal;

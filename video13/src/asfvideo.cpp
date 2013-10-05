@@ -160,6 +160,7 @@ namespace Exiv2 {
         {   0x7A22, "GSM-AMR (VBR including SID)" }
     };
 
+    //! File properties.
     extern const TagDetails filePropertiesTags[] =  {
         {    7, "Xmp.video.FileLength" },
         {    6, "Xmp.video.CreationDate" },
@@ -170,6 +171,7 @@ namespace Exiv2 {
         {    1, "Xmp.video.MaxBitRate" }
     };
 
+    //!Contents Description.
     extern const TagDetails contentDescriptionTags[] =  {
         {    0, "Xmp.video.Title" },
         {    1, "Xmp.video.Author" },

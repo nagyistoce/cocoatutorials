@@ -47,6 +47,7 @@ namespace Exiv2
 namespace Internal
 {
 
+//! File type information.
 extern const TagVocabulary qTimeFileType[] =
 {
     {   "3g2a", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-0 V1.0" },
@@ -137,12 +138,14 @@ extern const TagVocabulary qTimeFileType[] =
     {   "ssc2", "Samsung stereoscopic, dual stream" },
 };
 
+//! hadler Class Information.
 extern const TagVocabulary handlerClassTags[] =
 {
     {   "dhlr", "Data Handler" },
     {   "mhlr", "Media Handler" }
 };
 
+//! Handler Type Information.
 extern const TagVocabulary handlerTypeTags[] =
 {
     {   "alis", "Alias Data" },
@@ -163,6 +166,7 @@ extern const TagVocabulary handlerTypeTags[] =
     {   "vide", "Video Track" }
 };
 
+//! Vendor Id information.
 extern const TagVocabulary vendorIDTags[] =
 {
     {   "FFMP", "FFmpeg" },
@@ -184,12 +188,14 @@ extern const TagVocabulary vendorIDTags[] =
     {   "niko", "Nikon" }
 };
 
+//! Camera Information.
 extern const TagVocabulary cameraByteOrderTags[] =
 {
     {   "II", "Little-endian (Intel, II)" },
     {   "MM", "Big-endian (Motorola, MM)" }
 };
 
+//! Graphics related Information.
 extern const TagDetails graphicsModetags[] =
 {
     {   0x0, "srcCopy" },
@@ -225,6 +231,7 @@ extern const TagDetails graphicsModetags[] =
     {   0x110, "Component Alpha" }
 };
 
+//! Media Language Codes.
 extern const TagDetails mediaLanguageCode[] =
 {
     { 0x0, "English" },
@@ -336,6 +343,8 @@ extern const TagDetails mediaLanguageCode[] =
     { 0x89, "Dzongkha" },
     { 0x8a, "JavaneseRom" }
 };
+
+//! User Date related Information.
 extern const TagVocabulary userDatatags[] =
 {
     {   "AllF", "PlayAllFrames" },
@@ -372,6 +381,7 @@ extern const TagVocabulary userDatatags[] =
     {   "thmb", "MakerNotePentax5a/OlympusThumbnail" },
 };
 
+//! User Data related Information.
 extern const TagVocabulary userDataReferencetags[] =
 {
     {   "CNCV", "Xmp.video.CompressorVersion" },
@@ -437,6 +447,7 @@ extern const TagVocabulary userDataReferencetags[] =
     {   "Cmbo", "Xmp.video.CameraByteOrder" },
 };
 
+//! Nikon Tags Information.
 extern const TagDetails NikonNCTGTags[] =
 {
     {       0x0001, "Xmp.video.Make" },
@@ -482,12 +493,14 @@ extern const TagDetails NikonNCTGTags[] =
     {    0x20000ab, "Xmp.video.VariProgram" },
 };
 
+//! Nikon Color space Information.
 extern const TagDetails NikonColorSpace[] =
 {
     {       1, "sRGB" },
     {       2, "Adobe RGB" },
 };
 
+//! Nikon Tags.
 extern const TagVocabulary NikonGPS_Latitude_Longitude_ImgDirection_Reference[] =
 {
     {   "N", "North" },
@@ -498,12 +511,14 @@ extern const TagVocabulary NikonGPS_Latitude_Longitude_ImgDirection_Reference[] 
     {   "T", "True North" },
 };
 
+//! Nikon Tags
 extern const TagDetails NikonGPSAltitudeRef[] =
 {
     {   0, "Above Sea Level" },
     {   1, "Below Sea Level" },
 };
 
+//! Nikon Tags.
 extern const TagDetails NikonExposureProgram[] =
 {
     {   0, "Not Defined" },
@@ -517,6 +532,7 @@ extern const TagDetails NikonExposureProgram[] =
     {   8, "Landscape" },
 };
 
+//! Nikon Tags.
 extern const TagDetails NikonMeteringMode[] =
 {
     {   0, "Unknown" },
@@ -529,6 +545,7 @@ extern const TagDetails NikonMeteringMode[] =
     { 255, "Other" },
 };
 
+//! picture tags.
 extern const TagDetails PictureControlAdjust[] =
 {
     {   0, "Default Settings" },
@@ -567,6 +584,7 @@ extern const TagDetails DateDisplayFormat[] =
     {   2, "D/M/Y" }
 };
 
+//! Filter Effects.
 extern const TagDetails FilterEffect[] =
 {
     {   0x80, "Off" },
@@ -577,6 +595,7 @@ extern const TagDetails FilterEffect[] =
     {   0xff, "n/a"   },
 };
 
+//! Toning Effect.
 extern const TagDetails ToningEffect[] =
 {
     {   0x80, "B&W" },
@@ -592,6 +611,7 @@ extern const TagDetails ToningEffect[] =
     {   0xff, "n/a" },
 };
 
+//! White balance Information.
 extern const TagDetails whiteBalance[] =
 {
     {   0, "Auto" },
@@ -602,37 +622,52 @@ extern const TagDetails whiteBalance[] =
     {   5, "Manual" },
 };
 
+//! To select specific bytes with in a chunk.
 enum movieHeaderTags
 {
     MovieHeaderVersion, CreateDate, ModifyDate, TimeScale, Duration, PreferredRate, PreferredVolume,
     PreviewTime = 18, PreviewDuration,PosterTime, SelectionTime, SelectionDuration, CurrentTime, NextTrackID
 };
+
+//! To select specific bytes with in a chunk.
 enum trackHeaderTags
 {
     TrackHeaderVersion, TrackCreateDate, TrackModifyDate, TrackID, TrackDuration = 5, TrackLayer = 8,
     TrackVolume, ImageWidth = 19, ImageHeight
 };
+
+//! To select specific bytes with in a chunk.
 enum mediaHeaderTags
 {
     MediaHeaderVersion, MediaCreateDate, MediaModifyDate, MediaTimeScale, MediaDuration, MediaLanguageCode
 };
+
+//! To select specific bytes with in a chunk.
 enum handlerTags
 {
     HandlerClass = 1, HandlerType, HandlerVendorID
 };
+
+//! To select specific bytes with in a chunk.
 enum videoHeaderTags
 {
     GraphicsMode = 2, OpColor
 };
+
+//! To select specific bytes with in a chunk.
 enum stream
 {
     Video, Audio, Hint, Null, GenMediaHeader
 };
+
+//! To select specific bytes with in a chunk.
 enum imageDescTags
 {
     codec, VendorID = 4, SourceImageWidth_Height = 7,  XResolution,
     YResolution, CompressorName = 10, BitDepth
 };
+
+//! To select specific bytes with in a chunk.
 enum audioDescTags
 {
     AudioFormat, AudioVendorID = 4, AudioChannels, AudioSampleRate = 7, MOV_AudioFormat = 13
@@ -653,6 +688,14 @@ bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
             result = false;
     return result;
 }
+
+/*!
+ * \brief equalsQTimeTag Overloaded method to handle array of tags.
+ * \param buf
+ * \param arr
+ * \param arraysize
+ * \return
+ */
 
 bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
 {
@@ -796,6 +839,7 @@ const std::vector<int32_t> getLongFromString(const std::string stringData,char s
       @brief Function used to convert buffer data into 64-bit
           signed integer, information stored in Big Endian format
       @param buf Data buffer that will contain data to be converted
+      @param n
       @return Returns a signed 64-bit integer
      */
 int64_t returnBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
@@ -834,6 +878,7 @@ DataBuf returnBuf(int64_t intValue,int32_t n=4)
       @brief Function used to convert buffer data into 64-bit
           unsigned integer, information stored in Big Endian format
       @param buf Data buffer that will contain data to be converted
+      @param n
       @return Returns an unsigned 64-bit integer
      */
 uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
@@ -850,6 +895,13 @@ uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
     return temp;
 }
 
+/*!
+ * \brief returnUnsignedBuf converts integer value to byte value
+ *                          which can be written to the file.
+ * \param intValue
+ * \param n
+ * \return
+ */
 DataBuf returnUnsignedBuf(uint64_t intValue,int32_t n=4)
 {
     DataBuf buf((uint32_t)(n+1));

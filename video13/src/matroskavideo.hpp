@@ -62,11 +62,15 @@ namespace Exiv2
        bool operator==(uint64_t key) const { return val_ == key; }
     }; // struct TagDetails
 
+    /*!
+     * \brief The RevMatroskaTags struct reverse the matroskatag structure.
+     */
     struct RevMatroskaTags
     {
-        const char* label_;
-        uint64_t val_;
+        const char* label_;                     //!< Translation of the tag value
+        uint64_t val_;                          //!< Tag value
 
+       //! Comparison operator for use with the find template
        bool operator==(const std::string& key) const{return label_ == key;}
     };
     /*!

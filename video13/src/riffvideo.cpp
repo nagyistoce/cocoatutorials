@@ -85,6 +85,7 @@ namespace Exiv2
         return true;
     }
 
+    //! RIFF INFO tags supported Under Exiv2.
     extern const TagVocabulary infoTags[] =
     {
         {   "AGES", "Xmp.video.Rated" },
@@ -173,6 +174,7 @@ namespace Exiv2
         {   "YEAR", "Xmp.video.Year" }
     };
 
+    //! Audio Encoding Information.
     extern const TagDetails audioEncodingValues[] =
     {
         {   0x1, "Microsoft PCM" },
@@ -420,6 +422,7 @@ namespace Exiv2
         {   0xffff, "Development" }
     };
 
+    //! Nikon tags.
     extern const TagDetails nikonAVITags[] =
     {
         {   0x0003, "Xmp.video.Make" },
@@ -459,6 +462,7 @@ namespace Exiv2
         {   8, "Rotate 270 CW" }
     };
      */
+    //! Metering tags.
     extern const TagDetails meteringMode[] =
     {
         {   0, "Unknown" },
@@ -471,6 +475,7 @@ namespace Exiv2
         { 255, "Other" }
     };
 
+    //!Resolution tag.
     extern const TagDetails resolutionUnit[] =
     {
         {   1, "None" },
@@ -478,6 +483,8 @@ namespace Exiv2
         {   3, "cm" }
     };
 
+    int64_t i;     //!< temporary variable.
+    int64_t j;     //!< temporary variable.
     /*!
       @brief Function used to check equality of a Tags with a
           particular string (ignores case while comparing).
@@ -485,7 +492,6 @@ namespace Exiv2
       @param str char* Pointer to string
       @return Returns true if the buffer value is equal to string.
      */
-    int64_t i,j;
     bool equalsRiffTag(Exiv2::DataBuf& buf ,const char* str)
     {
         for( i=0; i<4; i++ )
@@ -494,6 +500,13 @@ namespace Exiv2
         return true;
     }
 
+    /*!
+     * \brief simpleBytesComparision bitwise comparition of string and and buffer.
+     * \param buf
+     * \param str
+     * \param size
+     * \return
+     */
     bool simpleBytesComparision(Exiv2::DataBuf& buf ,const char* str,int32_t size)
     {
         for( i=0; i<size; i++ )
@@ -502,6 +515,13 @@ namespace Exiv2
         return true;
     }
 
+    /*!
+     * \brief equalsRiffTag overloade function to handle tag Array.
+     * \param buf
+     * \param arr
+     * \param arraysize
+     * \return
+     */
     bool equalsRiffTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
     {
         for ( i=0; i< arraysize; i++)
@@ -523,22 +543,31 @@ namespace Exiv2
         return false;
     }
 
+    //! To select specific bytes with in a chunk.
     enum streamTypeInfo
     {
         Audio = 1, MIDI, Text, Video
     };
+
+    //! To select specific bytes with in a chunk.
     enum streamHeaderTags
     {
         codec = 1, sampleRate = 5, sampleCount = 8, quality = 10, sampleSize
     };
+
+    //! To select specific bytes with in a chunk.
     enum bmptags
     {
         imageWidth, imageHeight, planes, bitDepth, compression, imageLength, pixelsPerMeterX, pixelsPerMeterY, numColors, numImportantColors
     };
+
+    //! To select specific bytes with in a chunk.
     enum audioFormatTags
     {
         encoding, numberOfChannels, audioSampleRate, avgBytesPerSec = 4, bitsPerSample = 7
     };
+
+    //! To select specific bytes with in a chunk.
     enum aviHeaderTags
     {
         frameRate, maxDataRate, frameCount = 4,  initialFrames ,streamCount, suggestedBufferSize ,imageWidth_h, imageHeight_h
@@ -2563,8 +2592,7 @@ Image::AutoPtr newRiffInstance(BasicIo::AutoPtr io, bool /*create*/)
  * \brief RiffVideo::copyRestOfTheFile
  * Move all data to next locations,Currently its blockwise copy,which is inefficient for a
  * huge video files,and should be changed to inserting technique without moving huge data
- *like Bundle technology as suggested by Robin.
- * .
+ * like Bundle technology as suggested by Robin.
  * \param oldSavedData
  * \return
  */

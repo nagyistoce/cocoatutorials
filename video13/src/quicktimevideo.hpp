@@ -24,7 +24,8 @@
   @version $Rev$
   @authors  Abhinav Badola for GSoC 2012
            <a href="mailto:mail.abu.to@gmail.com">mail.abu.to@gmail.com</a>
-           Mahesh Hegde for GSoC 2013 <maheshmhegade at gmail dot com>
+           Mahesh Hegde for GSoC 2013
+           <a href="maheshmhegade at gmail dot com">maheshmhegade@gmail.com</a>
   @date    28-Jun-12, AB: created
  */
 #ifndef QUICKTIMEVIDEO_HPP
@@ -66,9 +67,9 @@ namespace Exiv2 {
             QuickAtom(){}
             ~QuickAtom(){}
         public:
-            byte m_AtomId[5];
-            unsigned long m_AtomLocation;
-            unsigned long m_AtomSize;
+            byte m_AtomId[5];                     //!< Id of the Atom.
+            unsigned long m_AtomLocation;         //!< Location of atom inside a file
+            unsigned long m_AtomSize;             //!< Size of atom
         };
     public:
         //! @name Creators
