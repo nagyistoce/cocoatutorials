@@ -815,7 +815,7 @@ void RiffVideo::tagDecoder()
         io_->read(chkHeader.pData_, 4);
 
         HeaderChunk *tmpHeaderChunk = new HeaderChunk();
-        memcpy((byte *)tmpHeaderChunk->m_headerId,(const byte*)chkHeader.pData_,5);
+        memcpy((Exiv2::byte *)tmpHeaderChunk->m_headerId,(const Exiv2::byte*)chkHeader.pData_,5);
 
         int32_t listend = io_->tell() + listsize - 4 ;
 
@@ -839,7 +839,7 @@ void RiffVideo::tagDecoder()
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5)))
             {
                 PrimitiveChunk *tmpPremitiveChunk = new PrimitiveChunk();
-                memcpy((byte*)tmpPremitiveChunk->m_chunkId,(const byte*)chkId.pData_,5);
+                memcpy((Exiv2::byte*)tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)chkId.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 8;
                 tmpPremitiveChunk->m_chunkSize = size;
                 m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
@@ -1076,7 +1076,7 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
             io_->read(dataLength.pData_,1);
             io_->seek(3,BasicIo::cur);
             uint32_t bufMinSize = (uint32_t)Exiv2::getShort(dataLength.pData_, littleEndian);
-            byte rawDateTimeOriginal[bufMinSize];
+            Exiv2::byte *rawDateTimeOriginal= new byte[bufMinSize];
             const std::string dateAndTime = xmpData_["Xmp.video.DateUT"].toString();
             for(i=0; i<min((int32_t)bufMinSize,(int32_t)dateAndTime.size()); i++)
             {
@@ -1086,10 +1086,11 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
             {
                 for(i=(int32_t)dateAndTime.size(); i<(int32_t)bufMinSize; i++)
                 {
-                    rawDateTimeOriginal[i] = (byte)0;
+                    rawDateTimeOriginal[i] = (Exiv2::byte)0;
                 }
             }
             io_->write(rawDateTimeOriginal,bufMinSize);
+            delete[] rawDateTimeOriginal;
         }
 
         if(xmpData_["Xmp.video.StreamName"].count() >0)
@@ -1100,7 +1101,7 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
             io_->seek(3,BasicIo::cur);
 
             uint32_t bufMinSize = (uint32_t)Exiv2::getShort(dataLength.pData_, littleEndian);
-            byte rawStreamName[bufMinSize];
+            Exiv2::byte *rawStreamName= new byte[bufMinSize];
             const std::string streamName = xmpData_["Xmp.video.StreamName"].toString();
             for(i=0; i<min((int32_t)bufMinSize,(int32_t)streamName.size()); i++)
             {
@@ -1110,10 +1111,11 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
             {
                 for(i=(int32_t)streamName.size(); i<(int32_t)bufMinSize; i++)
                 {
-                    rawStreamName[i] = (byte)0;
+                    rawStreamName[i] = (Exiv2::byte)0;
                 }
             }
             io_->write(rawStreamName,4);
+            delete[] rawStreamName;
         }
     }
     return;
@@ -1158,7 +1160,7 @@ void RiffVideo::odmlTagsHandler()
                 {
                     io_->seek(4,BasicIo::cur);
                     int32_t frameCnt =  xmpData_["Xmp.video.TotalFrameCount"].toLong();
-                    io_->write((byte *)&frameCnt,2);
+                    io_->write((Exiv2::byte *)&frameCnt,2);
                     return;
                 }
             }
@@ -1232,7 +1234,7 @@ void RiffVideo::nikonTagsHandler()
                     else if(xmpData_["Xmp.video.MakerNoteType"].count() > 0)
                     {
                         int32_t i;
-                        byte rawMakerNoteType[dataSize];
+                        Exiv2::byte *rawMakerNoteType = new byte[dataSize];
                         std::string makerNoteType = xmpData_["Xmp.video.MakerNoteType"].toString();
                         for( i=0; i<(int32_t)min((int32_t)dataSize,
                                                  (int32_t)makerNoteType.size()); i++)
@@ -1243,11 +1245,11 @@ void RiffVideo::nikonTagsHandler()
                         {
                             for(i=(int32_t)(makerNoteType.size()); i<dataSize; i++)
                             {
-                                rawMakerNoteType[i] = (byte)0;
+                                rawMakerNoteType[i] = (Exiv2::byte)0;
                             }
-
                         }
                         io_->write(rawMakerNoteType,dataSize);
+                        delete[] rawMakerNoteType;
                     }
                     else
                     {
@@ -1273,24 +1275,25 @@ void RiffVideo::nikonTagsHandler()
                     {
                         int32_t originalDataSize = dataSize;
                         std::string makerNoteVersion = xmpData_["Xmp.video.MakerNoteVersion"].toString();
-                        byte rawMakerNoteVersion[originalDataSize];
+                        Exiv2::byte *rawMakerNoteVersion = new byte[originalDataSize];
                         int32_t tmpCounter = 0;
                         int32_t i;
                         for(i=(int32_t)min((int32_t)dataSize,(int32_t)makerNoteVersion.size());
                             i>=(int32_t)0; i--)
                         {
-                            rawMakerNoteVersion[tmpCounter] = (byte) (makerNoteVersion[(4 - i) * 2] - 48);
+                            rawMakerNoteVersion[tmpCounter] = (Exiv2::byte) (makerNoteVersion[(4 - i) * 2] - 48);
                             tmpCounter++;
                         }
                         if((int32_t)originalDataSize > (int32_t)makerNoteVersion.size())
                         {
                             for(i=(int32_t)(makerNoteVersion.size()); i<originalDataSize; i++)
                             {
-                                rawMakerNoteVersion[i] = (byte)0;
+                                rawMakerNoteVersion[i] = (Exiv2::byte)0;
                             }
 
                         }
                         io_->write(rawMakerNoteVersion,originalDataSize);
+                        delete[] rawMakerNoteVersion;
                     }
                     else
                     {
@@ -1329,21 +1332,22 @@ void RiffVideo::nikonTagsHandler()
                         else if(xmpData_[exvGettext(td->label_)].count() > 0)
                         {
                             int32_t i;
-                            byte rawnikonData[dataSize];
+                            Exiv2::byte *rawnikonData = new byte[dataSize];
                             std::string nikonData = xmpData_[exvGettext(td->label_)].toString();
                             for( i=0; i<(int32_t)min((int32_t)dataSize,
                                                      (int32_t)nikonData.size()); i++)
                             {
-                                rawnikonData[i] = nikonData[i];
+                                rawnikonData[i] = (Exiv2::byte)nikonData[i];
                             }
                             if((int32_t)dataSize > (int32_t)nikonData.size())
                             {
                                 for(i=(int32_t)nikonData.size(); i<dataSize; i++)
                                 {
-                                    rawnikonData[i] = (byte)0;
+                                    rawnikonData[i] = (Exiv2::byte)0;
                                 }
                             }
                             io_->write(rawnikonData,dataSize);
+                            delete[] rawnikonData;
                         }
                         else
                         {
@@ -1452,7 +1456,7 @@ void RiffVideo::infoTagsHandler()
             if(equalsRiffTag(buf,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5)))
             {
                 PrimitiveChunk *tmpPremitiveChunk = new PrimitiveChunk();
-                memcpy((byte*)tmpPremitiveChunk->m_chunkId,(const byte*)buf.pData_,5);
+                memcpy((Exiv2::byte*)tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)buf.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 4;
                 m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
             }
@@ -1487,7 +1491,7 @@ void RiffVideo::infoTagsHandler()
                 if(xmpData_[exvGettext(tv->label_)].count() >0)
                 {
                     int32_t i;
-                    byte rawInfoData[infoSize];
+                    Exiv2::byte *rawInfoData = new byte[infoSize];
                     const std::string infoData = xmpData_[exvGettext(tv->label_)].toString();
                     for( i=0; i<min(infoSize,(int32_t)infoData.size()) ;i++)
                     {
@@ -1498,10 +1502,11 @@ void RiffVideo::infoTagsHandler()
                         int32_t i;
                         for( i=infoData.size();i< infoSize ; i++)
                         {
-                            rawInfoData[i] = (byte)0;
+                            rawInfoData[i] = (Exiv2::byte)0;
                         }
                     }
                     io_->write(rawInfoData,infoSize);
+                    delete[] rawInfoData;
                 }
             }
         }
@@ -1830,7 +1835,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.MicroSecPerFrame"].count() > 0 )
                 {
                     int32_t microSecondsperFrame = xmpData_["Xmp.video.MicroSecPerFrame"].toLong();
-                    io_->write((byte*)&microSecondsperFrame,4);
+                    io_->write((Exiv2::byte*)&microSecondsperFrame,4);
                 }
                 else
                 {
@@ -1842,7 +1847,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.MaxDataRate"].count() > 0 )
                 {
                     int32_t maxDataRate = (int32_t)(xmpData_["Xmp.video.MaxDataRate"].toFloat()*1024);
-                    io_->write((byte*)&maxDataRate,4);
+                    io_->write((Exiv2::byte*)&maxDataRate,4);
                 }
                 else
                 {
@@ -1854,7 +1859,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.FrameCount"].count() > 0)
                 {
                     int32_t frameCount = xmpData_["Xmp.video.FrameCount"].toLong();
-                    io_->write((byte*)&frameCount,4);
+                    io_->write((Exiv2::byte*)&frameCount,4);
                 }
                 else
                 {
@@ -1866,7 +1871,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.InitialFrames"].count() > 0)
                 {
                     int32_t initFrames = xmpData_["Xmp.video.InitialFrames"].toLong();
-                    io_->write((byte*)&initFrames,4);
+                    io_->write((Exiv2::byte*)&initFrames,4);
                 }
                 else
                 {
@@ -1878,7 +1883,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.StreamCount"].count() > 0)
                 {
                     int32_t streamCount = xmpData_["Xmp.video.StreamCount"].toLong();
-                    io_->write((byte*)&streamCount,4);
+                    io_->write((Exiv2::byte*)&streamCount,4);
                 }
                 else
                 {
@@ -1890,7 +1895,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.SuggestedBufferSize"].count() >0)
                 {
                     int32_t sugBufferSize = xmpData_["Xmp.video.SuggestedBufferSize"].toLong();
-                    io_->write((byte*)&sugBufferSize,4);
+                    io_->write((Exiv2::byte*)&sugBufferSize,4);
                 }
                 else
                 {
@@ -1902,7 +1907,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.Width"].count() > 0)
                 {
                     int32_t imageWidth = xmpData_["Xmp.video.Width"].toLong();
-                    io_->write((byte*)&imageWidth,4);
+                    io_->write((Exiv2::byte*)&imageWidth,4);
                 }
                 else
                 {
@@ -1914,7 +1919,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 if(xmpData_["Xmp.video.Height"].count() > 0)
                 {
                     int32_t imageHeight = xmpData_["Xmp.video.Height"].toLong();
-                    io_->write((byte*)&imageHeight,4);
+                    io_->write((Exiv2::byte*)&imageHeight,4);
                 }
                 break;
 
@@ -2017,12 +2022,12 @@ void RiffVideo::streamHandler(int32_t size)
         {
             if(xmpData_["Xmp.video.Codec"].count() > 0)
             {
-                byte rawVideoCodec[4];
+                Exiv2::byte rawVideoCodec[4];
                 const std::string codec = xmpData_["Xmp.video.Codec"].toString();
                 int32_t i;
                 for( i=0;i<(int32_t)codec.size();i++)
                 {
-                    rawVideoCodec[i] = (byte)codec[i];
+                    rawVideoCodec[i] = (Exiv2::byte)codec[i];
                 }
                 io_->write(rawVideoCodec,4);
                 io_->seek(12,BasicIo::cur);
@@ -2050,7 +2055,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.FrameCount"].count() > 0)
             {
                 int32_t frameCount = xmpData_["Xmp.video.FrameCount"].toLong();
-                io_->write((byte*)&frameCount,4);
+                io_->write((Exiv2::byte*)&frameCount,4);
                 io_->seek(4,BasicIo::cur);
             }
             else
@@ -2061,7 +2066,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.VideoQuality"].count() > 0)
             {
                 int32_t quality = xmpData_["Xmp.video.VideoQuality"].toLong();
-                io_->write((byte*)&quality,4);
+                io_->write((Exiv2::byte*)&quality,4);
             }
             else
             {
@@ -2071,19 +2076,19 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.VideoSampleSize"].count() > 0)
             {
                 int32_t sampleSize = xmpData_["Xmp.video.VideoSampleSize"].toLong();
-                io_->write((byte*)&sampleSize,4);
+                io_->write((Exiv2::byte*)&sampleSize,4);
             }
         }
         else if(streamType_ == Audio)
         {
             if(xmpData_["Xmp.audio.Codec"].count() > 0)
             {
-                byte rawAudioCodec[4];
+                Exiv2::byte rawAudioCodec[4];
                 const std::string audioCodec = xmpData_["Xmp.audio.Codec"].toString();
                 uint64_t i;
                 for(i=0; i<audioCodec.size(); i++)
                 {
-                    rawAudioCodec[i] = (byte)audioCodec[i];
+                    rawAudioCodec[i] = (Exiv2::byte)audioCodec[i];
                 }
                 io_->write(rawAudioCodec,4);
                 io_->seek(12,BasicIo::cur);
@@ -2099,7 +2104,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.audio.SampleRate"].count() > 0)
             {
                 int32_t sampleRate = (int32_t)xmpData_["Xmp.audio.SampleRate"].toLong()*multiplier;
-                io_->write((byte*)&sampleRate,4);
+                io_->write((Exiv2::byte*)&sampleRate,4);
                 io_->seek(4,BasicIo::cur);
             }
             else
@@ -2110,7 +2115,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.audio.SampleCount"].count() > 0)
             {
                 int32_t sampleCount = xmpData_["Xmp.audio.SampleCount"].toLong();
-                io_->write((byte*)&sampleCount,4);
+                io_->write((Exiv2::byte*)&sampleCount,4);
             }
         }
         else
@@ -2118,7 +2123,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.Codec"].count() > 0)
             {
                 int32_t codec = xmpData_["Xmp.video.Codec"].toLong();
-                io_->write((byte*)&codec,4);
+                io_->write((Exiv2::byte*)&codec,4);
                 io_->seek(12,BasicIo::cur);
             }
             else
@@ -2132,7 +2137,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.StreamSampleRate"].count() > 0)
             {
                 int32_t streamSampleRate = (int32_t)xmpData_["Xmp.video.StreamSampleRate"].toLong()*multiplier;
-                io_->write((byte*)&streamSampleRate,4);
+                io_->write((Exiv2::byte*)&streamSampleRate,4);
                 io_->seek(4,BasicIo::cur);
             }
             else
@@ -2143,7 +2148,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.StreamSampleCount"].count() > 0)
             {
                 int32_t streamSampleCount = xmpData_["Xmp.video.StreamSampleCount"].toLong();
-                io_->write((byte*)&streamSampleCount,4);
+                io_->write((Exiv2::byte*)&streamSampleCount,4);
                 io_->seek(4,BasicIo::cur);
             }
             else
@@ -2154,7 +2159,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.StreamQuality"].count() > 0)
             {
                 int32_t streamQuality = xmpData_["Xmp.video.StreamQuality"].toLong();
-                io_->write((byte*)&streamQuality,4);
+                io_->write((Exiv2::byte*)&streamQuality,4);
             }
             else
             {
@@ -2164,7 +2169,7 @@ void RiffVideo::streamHandler(int32_t size)
             if(xmpData_["Xmp.video.StreamSampleSize"].count() > 0)
             {
                 int32_t streamSampleSize = xmpData_["Xmp.video.StreamSampleSize"].toLong();
-                io_->write((byte*)&streamSampleSize,4);
+                io_->write((Exiv2::byte*)&streamSampleSize,4);
             }
         }
     }
@@ -2294,7 +2299,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.Width"].count() > 0)
             {
                 const int32_t width = xmpData_["Xmp.video.Width"].toLong();
-                io_->write((byte*)&width,4);
+                io_->write((Exiv2::byte*)&width,4);
             }
             else
             {
@@ -2304,7 +2309,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.Height"].count() > 0)
             {
                 const int32_t height = xmpData_["Xmp.video.Height"].toLong();
-                io_->write((byte*)&height,4);
+                io_->write((Exiv2::byte*)&height,4);
             }
             else
             {
@@ -2314,7 +2319,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.Planes"].count() > 0)
             {
                 uint16_t videoPlanes = (uint16_t)xmpData_["Xmp.video.Planes"].toLong();
-                io_->write((byte*)&videoPlanes,2);
+                io_->write((Exiv2::byte*)&videoPlanes,2);
             }
             else
             {
@@ -2324,7 +2329,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.PixelDepth"].count() > 0)
             {
                 const uint16_t pixelDepth = (uint16_t)xmpData_["Xmp.video.PixelDepth"].toLong();
-                io_->write((byte*)&pixelDepth,2);
+                io_->write((Exiv2::byte*)&pixelDepth,2);
             }
             else
             {
@@ -2343,7 +2348,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.ImageLength"].count() > 0)
             {
                 const int32_t imageLength = xmpData_["Xmp.video.ImageLength"].toLong();
-                io_->write((byte*)&imageLength,4);
+                io_->write((Exiv2::byte*)&imageLength,4);
             }
             else
             {
@@ -2353,7 +2358,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.PixelPerMeterX"].count() > 0)
             {
                 const int32_t pixelPerMeterX = xmpData_["Xmp.video.PixelPerMeterX"].toLong();
-                io_->write((byte*)&pixelPerMeterX,4);
+                io_->write((Exiv2::byte*)&pixelPerMeterX,4);
             }
             else
             {
@@ -2363,7 +2368,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.PixelPerMeterY"].count() > 0)
             {
                 const int32_t pixelPerMeterY = xmpData_["Xmp.video.PixelPerMeterY"].toLong();
-                io_->write((byte*)&pixelPerMeterY,4);
+                io_->write((Exiv2::byte*)&pixelPerMeterY,4);
             }
             else
             {
@@ -2373,7 +2378,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.video.NumOfColours"].count() > 0)
             {
                 const int32_t numOfColours = xmpData_["Xmp.video.NumOfColours"].toLong();
-                io_->write((byte*)&numOfColours,4);
+                io_->write((Exiv2::byte*)&numOfColours,4);
             }
             else
             {
@@ -2385,12 +2390,12 @@ void RiffVideo::streamFormatHandler(int32_t size)
                 if(xmpData_["Xmp.video.NumOfImpColours"].toString() == "All")
                 {
                     const int32_t numImportantColours = (int32_t) 0;
-                    io_->write((byte*)&numImportantColours,4);
+                    io_->write((Exiv2::byte*)&numImportantColours,4);
                 }
                 else
                 {
                     const int32_t numImportantColours = xmpData_["Xmp.video.NumOfImpColours"].toLong();
-                    io_->write((byte*)&numImportantColours,4);
+                    io_->write((Exiv2::byte*)&numImportantColours,4);
                 }
             }
             else
@@ -2412,7 +2417,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
                 if(rtd)
                 {
                     uint16_t compressorCode= (uint16_t)rtd->val_;
-                    io_->write((byte*)&compressorCode,2);
+                    io_->write((Exiv2::byte*)&compressorCode,2);
                 }
                 else
                 {
@@ -2433,7 +2438,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
                 int32_t i;
                 for( i=0; i<=sizeChan;i++)
                 {
-                    tmpBuf.pData_[i] = (byte)audioChannealType[i];
+                    tmpBuf.pData_[i] = (Exiv2::byte)audioChannealType[i];
                 }
                 uint16_t channelType = 0;
                 if(simpleBytesComparision(tmpBuf,"MONO",sizeChan))
@@ -2446,7 +2451,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
                     channelType = 5;
                 else if(simpleBytesComparision(tmpBuf,"7.1 SURROUND SOUND",sizeChan))
                     channelType = 7;
-                io_->write((byte*)&channelType,2);
+                io_->write((Exiv2::byte*)&channelType,2);
             }
             else
             {
@@ -2456,7 +2461,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.audio.SampleRate"].count() > 0)
             {
                 const uint16_t sampleRate = (uint16_t)xmpData_["Xmp.audio.SampleRate"].toLong();
-                io_->write((byte*)&sampleRate,2);
+                io_->write((Exiv2::byte*)&sampleRate,2);
                 io_->seek(2,BasicIo::cur);
             }
             else
@@ -2467,7 +2472,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.audio.SampleType"].count() > 0)
             {
                 const uint16_t sampleType = (uint16_t)xmpData_["Xmp.audio.SampleType"].toLong();
-                io_->write((byte*)&sampleType,2);
+                io_->write((Exiv2::byte*)&sampleType,2);
                 io_->seek(4,BasicIo::cur);
             }
             else
@@ -2478,7 +2483,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
             if(xmpData_["Xmp.audio.BitsPerSample"].count() > 0)
             {
                 const uint16_t bitsPerSample = (uint16_t)xmpData_["Xmp.audio.BitsPerSample"].toLong();
-                io_->write((byte*)&bitsPerSample,2);
+                io_->write((Exiv2::byte*)&bitsPerSample,2);
             }
         }
     }
@@ -2614,28 +2619,28 @@ bool RiffVideo::writeNewChunk(std::string chunkData, std::string chunkId)
     const int32_t originalSize = Exiv2::getULong(buf.pData_, littleEndian);
     int32_t newRiffSize = originalSize + 100 ;
 
-    io_->write((byte*)&newRiffSize,4);
+    io_->write((Exiv2::byte*)&newRiffSize,4);
     io_->seek(originalSize,BasicIo::beg);
 
-    byte rawListFlag[4] = {'L','I','S','T'};
-    byte rawInfoFlag[4] = {'I','N','F','O'};
-    byte rawChunkId[4] = {(byte)chunkId[0],(byte)chunkId[1],
-                          (byte)chunkId[2],(byte)chunkId[3]};
-    byte rawChunkData[80] = {};
+    Exiv2::byte rawListFlag[4] = {'L','I','S','T'};
+    Exiv2::byte rawInfoFlag[4] = {'I','N','F','O'};
+    Exiv2::byte rawChunkId[4] = {(Exiv2::byte)chunkId[0],(Exiv2::byte)chunkId[1],
+                          (Exiv2::byte)chunkId[2],(Exiv2::byte)chunkId[3]};
+    Exiv2::byte rawChunkData[80] = {};
     int32_t i;
     for( i=0; i<min((int32_t)chunkData.size(),(int32_t)80); i++)
     {
-        rawChunkData[i] = (byte)chunkData[i];
+        rawChunkData[i] = (Exiv2::byte)chunkData[i];
     }
 
     int32_t listSize = 92;
     int32_t chunkSize = 80;
 
     io_->write(rawListFlag,4);
-    io_->write((byte*)&listSize,4);
+    io_->write((Exiv2::byte*)&listSize,4);
     io_->write(rawInfoFlag,4);
     io_->write(rawChunkId,4);
-    io_->write((byte*)&chunkSize,4);
+    io_->write((Exiv2::byte*)&chunkSize,4);
     io_->write(rawChunkData,80);
     return true;
 }
@@ -2672,7 +2677,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
 
     const int32_t originalSize = Exiv2::getULong(buf.pData_, littleEndian);
     int32_t newRiffSize = originalSize + addSize ;
-    io_->write((byte*)&newRiffSize,4);
+    io_->write((Exiv2::byte*)&newRiffSize,4);
 
     io_->seek(cur_pos,BasicIo::beg);
     io_->read(buf.pData_,4);
@@ -2680,7 +2685,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
 
     const int32_t originalListSize = Exiv2::getULong(buf.pData_, littleEndian);
     int32_t newListSize = originalListSize + addSize ;
-    io_->write((byte*)&newListSize,4);
+    io_->write((Exiv2::byte*)&newListSize,4);
 
     io_->read(buf.pData_,4);
     std::vector<DataBuf> previousData;
@@ -2700,22 +2705,23 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         io_->read(copiedData.pData_,(chunkSize+8));
         io_->seek(((-1)*(chunkSize+8)),BasicIo::cur);
         previousData.push_back(copiedData);
-        byte rawChunkId[4] = {(byte)chunkId[0],(byte)chunkId[1],
-                              (byte)chunkId[2],(byte)chunkId[3]};
-        byte rawChunkData[(int32_t)chunkSize];
+        Exiv2::byte rawChunkId[4] = {(Exiv2::byte)chunkId[0],(Exiv2::byte)chunkId[1],
+                              (Exiv2::byte)chunkId[2],(Exiv2::byte)chunkId[3]};
+        Exiv2::byte *rawChunkData = new byte[(int32_t)chunkSize];
 
         for(i=0; i < chunkSize; i++)
         {
-            rawChunkData[i] = (byte)tmpChunkData[i];
+            rawChunkData[i] = (Exiv2::byte)tmpChunkData[i];
         }
         if(tmpChunkData.size()%2 != 0)
         {
-            rawChunkData[(int32_t)(chunkSize-1)] = (byte)0;
+            rawChunkData[(int32_t)(chunkSize-1)] = (Exiv2::byte)0;
         }
 
         io_->write(rawChunkId,4);
-        io_->write((byte*)&chunkSize,4);
+        io_->write((Exiv2::byte*)&chunkSize,4);
         io_->write(rawChunkData,chunkSize);
+        delete[] rawChunkData;
     }
 
     int32_t accessIndex = 0;
@@ -2743,16 +2749,18 @@ bool isRiffType(BasicIo& iIo, bool advance)
 {
     const int32_t len = 2;
     const unsigned char RiffVideoId[4] = { 'R', 'I', 'F' ,'F'};
-    byte buf[len];
+    Exiv2::byte *buf = new byte[len];
     iIo.read(buf, len);
     if (iIo.error() || iIo.eof())
     {
+        delete[] buf;
         return false;
     }
     bool matched = (memcmp(buf, RiffVideoId, len) == 0);
     if (!advance || !matched) {
         iIo.seek(-len, BasicIo::cur);
     }
+    delete[] buf;
     return matched;
 }
 
