@@ -843,8 +843,8 @@ void RiffVideo::tagDecoder()
         uint32_t listsize = Exiv2::getULong(listSize.pData_, littleEndian);
         io_->read(chkHeader.pData_, 4);
 
-        HeaderChunk *tmpHeaderChunk = new HeaderChunk();
-        memcpy((Exiv2::byte *)tmpHeaderChunk->m_headerId,(const Exiv2::byte*)chkHeader.pData_,5);
+        HeaderChunk* tmpHeaderChunk = new HeaderChunk();
+        memcpy((Exiv2::byte* )tmpHeaderChunk->m_headerId,(const Exiv2::byte*)chkHeader.pData_,5);
 
         int32_t listend = io_->tell() + listsize - 4 ;
 
@@ -867,8 +867,8 @@ void RiffVideo::tagDecoder()
 
             if(equalsRiffTag(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5)))
             {
-                PrimitiveChunk *tmpPremitiveChunk = new PrimitiveChunk();
-                memcpy((Exiv2::byte*)tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)chkId.pData_,5);
+                PrimitiveChunk* tmpPremitiveChunk = new PrimitiveChunk();
+                memcpy((Exiv2::byte* )tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)chkId.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 8;
                 tmpPremitiveChunk->m_chunkSize = size;
                 m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
@@ -988,7 +988,7 @@ void RiffVideo::tagDecoder()
         uint32_t size = Exiv2::getULong(junkSize.pData_, littleEndian);
         if(!m_decodeMetaData)
         {
-            HeaderChunk *tmpHeaderChunk = new HeaderChunk();
+            HeaderChunk* tmpHeaderChunk = new HeaderChunk();
             tmpHeaderChunk->m_headerLocation = io_->tell() - 8;
             tmpHeaderChunk->m_headerSize = size;
             m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
@@ -1007,7 +1007,7 @@ void RiffVideo::tagDecoder()
         uint32_t size = Exiv2::getULong(dataSize.pData_, littleEndian);
         if(!m_decodeMetaData)
         {
-            HeaderChunk *tmpHeaderChunk = new HeaderChunk();
+            HeaderChunk* tmpHeaderChunk = new HeaderChunk();
             tmpHeaderChunk->m_headerLocation = io_->tell() - 8;
             tmpHeaderChunk->m_headerSize = size;
             m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
@@ -1247,7 +1247,7 @@ void RiffVideo::nikonTagsHandler()
                     {
                         int32_t originalDataSize = dataSize;
                         std::string makerNoteVersion = xmpData_["Xmp.video.MakerNoteVersion"].toString();
-                        Exiv2::byte *rawMakerNoteVersion = new byte[originalDataSize];
+                        Exiv2::byte* rawMakerNoteVersion = new byte[originalDataSize];
                         int32_t tmpCounter = 0;
                         int32_t i;
                         for(i=(int32_t)min((int32_t)dataSize,(int32_t)makerNoteVersion.size());
@@ -1437,7 +1437,7 @@ void RiffVideo::infoTagsHandler()
             io_->read(buf.pData_, 4);
             if(equalsRiffTag(buf,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5)))
             {
-                PrimitiveChunk *tmpPremitiveChunk = new PrimitiveChunk();
+                PrimitiveChunk* tmpPremitiveChunk = new PrimitiveChunk();
                 memcpy((Exiv2::byte*)tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)buf.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 4;
                 m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
@@ -2385,7 +2385,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         previousData.push_back(copiedData);
         Exiv2::byte rawChunkId[4] = {(Exiv2::byte)chunkId[0],(Exiv2::byte)chunkId[1],
                                      (Exiv2::byte)chunkId[2],(Exiv2::byte)chunkId[3]};
-        Exiv2::byte *rawChunkData = new byte[(int32_t)chunkSize];
+        Exiv2::byte* rawChunkData = new byte[(int32_t)chunkSize];
 
         for(i=0; i < chunkSize; i++)
         {
@@ -2497,7 +2497,7 @@ bool isRiffType(BasicIo& iIo, bool advance)
 {
     const int32_t len = 2;
     const unsigned char RiffVideoId[4] = { 'R', 'I', 'F' ,'F'};
-    Exiv2::byte *buf = new byte[len];
+    Exiv2::byte* buf = new byte[len];
     iIo.read(buf, len);
     if (iIo.error() || iIo.eof())
     {

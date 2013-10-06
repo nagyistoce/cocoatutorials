@@ -1168,10 +1168,10 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
                                   "tapt","keys","url ","urn ","dcom","smhd"};
     if(equalsQTimeTag(buf,allAtomFlags,(int)(sizeof(allAtomFlags)/5)))
     {
-        QuickAtom *tmpAtom = new QuickAtom();
+        QuickAtom* tmpAtom = new QuickAtom();
         tmpAtom->m_AtomLocation = io_->tell();
         tmpAtom->m_AtomSize = size;
-        memcpy((Exiv2::byte *)tmpAtom->m_AtomId,(const Exiv2::byte*)buf.pData_,5);
+        memcpy((Exiv2::byte* )tmpAtom->m_AtomId,(const Exiv2::byte*)buf.pData_,5);
         m_QuickSkeleton.push_back(tmpAtom);
     }
 
@@ -2617,7 +2617,7 @@ void QuickTimeVideo::imageDescDecoder()
                     Exiv2::byte rawCodec[4];
                     if(td)
                     {
-                        const char *codecNameTag = td->label_;
+                        const char* codecNameTag = td->label_;
                         int32_t j;
                         for(j=0; j<4 ;j++)
                         {
@@ -2646,7 +2646,7 @@ void QuickTimeVideo::imageDescDecoder()
                     if(td)
                     {
                         Exiv2::byte rawVendorID[4];
-                        const char *vendorID = td->label_;
+                        const char* vendorID = td->label_;
                         int32_t j;
                         for(j=0; j<4 ;j++)
                         {
@@ -3135,7 +3135,7 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
                 {
                     Exiv2::byte rawMajorBrand[4];
                     td = find(revTagVocabulary, xmpData_["Xmp.video.MajorBrand"].toString());
-                    const char *majorBrandVoc = td->label_;
+                    const char* majorBrandVoc = td->label_;
                     int32_t j;
                     for(j=0; j<4 ;j++)
                     {
@@ -3166,7 +3166,7 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
                     td = find(revTagVocabulary, xmpData_["Xmp.video.CompatibleBrands"].toString());
                     if(td)
                     {
-                        const char *compatibleBrandVoc = td->label_;
+                        const char* compatibleBrandVoc = td->label_;
                         int32_t j;
                         for(j=0; j<4 ;j++)
                         {
@@ -3202,8 +3202,8 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
     std::memset(buf.pData_, 0x0, buf.size_);
     buf.pData_[4] = '\0';
     int64_t time_scale = 1;
-    const TagDetails *td;
-    const RevTagDetails *rtd;
+    const TagDetails* td;
+    const RevTagDetails* rtd;
 
     if(!m_modifyMetadata)
     {
@@ -4274,7 +4274,7 @@ void QuickTimeVideo::writeApertureData(Exiv2::Xmpdatum xmpApertureData, int16_t 
 bool isQTimeType(BasicIo& iIo, bool advance)
 {
     const int32_t len = 4;
-    Exiv2::byte *buf = new byte[len];
+    Exiv2::byte* buf = new byte[len];
     iIo.read(buf, len);
     iIo.read(buf, len);
 
