@@ -294,12 +294,35 @@ private:
     bool writeNewSubChunks(std::vector<std::pair<std::string,std::string> > chunkData);
 
     /*!
-     * \brief writeNewChunk Used to write new chunk.
-     * \param chunkData
-     * \param chunkId
-     * \return
+     * \brief writeStringData
+     * \param stringData
+     * \param skipOffset
      */
-    bool writeNewChunk(std::string chunkData,std::string chunkId);
+    void writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size, int32_t skipOffset=0);
+
+    /*!
+     * \brief writeLongData
+     * \param xmpIntData
+     * \param size
+     * \param skipOffset
+     */
+    void writeLongData(Exiv2::Xmpdatum xmpIntData, int32_t size=4, int32_t skipOffset=0);
+
+    /*!
+     * \brief writeFloatData
+     * \param xmpIntData
+     * \param size
+     * \param skipOffset
+     */
+    void writeFloatData(Exiv2::Xmpdatum xmpIntData, int32_t size=4, int32_t skipOffset=0);
+
+    /*!
+     * \brief writeShortData
+     * \param xmpIntData
+     * \param size
+     * \param skipOffset
+     */
+    void writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size=2, int32_t skipOffset=0);
 
 private:
     //! Variable to check the end of metadata traversing.

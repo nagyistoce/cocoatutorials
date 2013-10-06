@@ -230,6 +230,12 @@ namespace Exiv2 {
               respective XMP container.
          */
         void aspectRatio();
+        /*!
+         * \brief reverseTagDetails
+         * \param inputTagVocabulary
+         * \param outputTagVocabulary
+         * \param size
+         */
         void reverseTagDetails(const Internal::TagDetails inputTagVocabulary[],
                                Internal::RevTagDetails  outputTagVocabulary[] , int32_t size);
 
@@ -255,6 +261,38 @@ namespace Exiv2 {
          * \return all the locations where atoms with atomId exist.
          */
         std::vector< pair<uint32_t,uint32_t> > findAtomPositions(const char *atomId);
+
+        /*!
+           * \brief writeStringData
+           * \param xmpStringData
+           * \param size
+           * \param skipOffset
+           */
+          void writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size, int32_t skipOffset=0);
+
+          /*!
+           * \brief writeLongData
+           * \param xmpIntData
+           * \param size
+           * \param skipOffset
+           */
+          void writeLongData(Exiv2::Xmpdatum xmpIntData, int32_t size=4, int32_t skipOffset=0);
+
+          /*!
+           * \brief writeShortData
+           * \param xmpIntData
+           * \param size
+           * \param skipOffset
+           */
+          void writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size=2, int32_t skipOffset=0);
+
+          /*!
+           * \brief writeApertureData
+           * \param xmpIntData
+           * \param size
+           * \param skipOffset
+           */
+          void writeApertureData(Exiv2::Xmpdatum xmpIntData, int16_t size, int32_t skipOffset=0);
 
     private:
         //! Variable which stores Time Scale unit, used to calculate time.

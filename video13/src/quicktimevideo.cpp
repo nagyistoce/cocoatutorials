@@ -44,652 +44,652 @@ EXIV2_RCSID("@(#) $Id$")
 // class member definitions
 namespace Exiv2
 {
-namespace Internal
-{
+    namespace Internal
+    {
 
-//! File type information.
-extern const TagVocabulary qTimeFileType[] =
-{
-    {   "3g2a", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-0 V1.0" },
-    {   "3g2b", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-A V1.0.0" },
-    {   "3g2c", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-B v1.0" },
-    {   "3ge6", "3GPP (.3GP) Release 6 MBMS Extended Presentations" },
-    {   "3ge7", "3GPP (.3GP) Release 7 MBMS Extended Presentations" },
-    {   "3gg6", "3GPP Release 6 General Profile" },
-    {   "3gp1", "3GPP Media (.3GP) Release 1 (probably non-existent)" },
-    {   "3gp2", "3GPP Media (.3GP) Release 2 (probably non-existent)" },
-    {   "3gp3", "3GPP Media (.3GP) Release 3 (probably non-existent)" },
-    {   "3gp4", "3GPP Media (.3GP) Release 4" },
-    {   "3gp5", "3GPP Media (.3GP) Release 5" },
-    {   "3gp6", "3GPP Media (.3GP) Release 6 Streaming Servers" },
-    {   "3gs7", "3GPP Media (.3GP) Release 7 Streaming Servers" },
-    {   "CAEP", "Canon Digital Camera" },
-    {   "CDes", "Convergent Design" },
-    {   "F4A ", "Audio for Adobe Flash Player 9+ (.F4A)" },
-    {   "F4B ", "Audio Book for Adobe Flash Player 9+ (.F4B)" },
-    {   "F4P ", "Protected Video for Adobe Flash Player 9+ (.F4P)" },
-    {   "F4V ", "Video for Adobe Flash Player 9+ (.F4V)" },
-    {   "JP2 ", "JPEG 2000 Image (.JP2) [ISO 15444-1 ?]" },
-    {   "JP20", "Unknown, from GPAC samples (prob non-existent)" },
-    {   "KDDI", "3GPP2 EZmovie for KDDI 3G cellphones" },
-    {   "M4A ", "Apple iTunes AAC-LC (.M4A) Audio" },
-    {   "M4B ", "Apple iTunes AAC-LC (.M4B) Audio Book" },
-    {   "M4P ", "Apple iTunes AAC-LC (.M4P) AES Protected Audio" },
-    {   "M4V ", "Apple iTunes Video (.M4V) Video" },
-    {   "M4VH", "Apple TV (.M4V)" },
-    {   "M4VP", "Apple iPhone (.M4V)" },
-    {   "MPPI", "Photo Player, MAF [ISO/IEC 23000-3]" },
-    {   "MSNV", "MPEG-4 (.MP4) for SonyPSP" },
-    {   "NDAS", "MP4 v2 [ISO 14496-14] Nero Digital AAC Audio" },
-    {   "NDSC", "MPEG-4 (.MP4) Nero Cinema Profile" },
-    {   "NDSH", "MPEG-4 (.MP4) Nero HDTV Profile" },
-    {   "NDSM", "MPEG-4 (.MP4) Nero Mobile Profile" },
-    {   "NDSP", "MPEG-4 (.MP4) Nero Portable Profile" },
-    {   "NDSS", "MPEG-4 (.MP4) Nero Standard Profile" },
-    {   "NDXC", "H.264/MPEG-4 AVC (.MP4) Nero Cinema Profile" },
-    {   "NDXH", "H.264/MPEG-4 AVC (.MP4) Nero HDTV Profile" },
-    {   "NDXM", "H.264/MPEG-4 AVC (.MP4) Nero Mobile Profile" },
-    {   "NDXP", "H.264/MPEG-4 AVC (.MP4) Nero Portable Profile" },
-    {   "NDXS", "H.264/MPEG-4 AVC (.MP4) Nero Standard Profile" },
-    {   "NIKO", "Nikon" },
-    {   "ROSS", "Ross Video" },
-    {   "avc1", "MP4 Base w/ AVC ext [ISO 14496-12:2005]" },
-    {   "caqv", "Casio Digital Camera" },
-    {   "da0a", "DMB MAF w/ MPEG Layer II aud, MOT slides, DLS, JPG/PNG/MNG images" },
-    {   "da0b", "DMB MAF, extending DA0A, with 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "da1a", "DMB MAF audio with ER-BSAC audio, JPG/PNG/MNG images" },
-    {   "da1b", "DMB MAF, extending da1a, with 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "da2a", "DMB MAF aud w/ HE-AAC v2 aud, MOT slides, DLS, JPG/PNG/MNG images" },
-    {   "da2b", "DMB MAF, extending da2a, with 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "da3a", "DMB MAF aud with HE-AAC aud, JPG/PNG/MNG images" },
-    {   "da3b", "DMB MAF, extending da3a w/ BIFS, 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "dmb1", "DMB MAF supporting all the components defined in the specification" },
-    {   "dmpf", "Digital Media Project" },
-    {   "drc1", "Dirac (wavelet compression), encapsulated in ISO base media (MP4)" },
-    {   "dv1a", "DMB MAF vid w/ AVC vid, ER-BSAC aud, BIFS, JPG/PNG/MNG images, TS" },
-    {   "dv1b", "DMB MAF, extending dv1a, with 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "dv2a", "DMB MAF vid w/ AVC vid, HE-AAC v2 aud, BIFS, JPG/PNG/MNG images, TS" },
-    {   "dv2b", "DMB MAF, extending dv2a, with 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "dv3a", "DMB MAF vid w/ AVC vid, HE-AAC aud, BIFS, JPG/PNG/MNG images, TS" },
-    {   "dv3b", "DMB MAF, extending dv3a, with 3GPP timed text, DID, TVA, REL, IPMP" },
-    {   "dvr1", "DVB (.DVB) over RTP" },
-    {   "dvt1", "DVB (.DVB) over MPEG-2 Transport Stream" },
-    {   "isc2", "ISMACryp 2.0 Encrypted File" },
-    {   "iso2", "MP4 Base Media v2 [ISO 14496-12:2005]" },
-    {   "isom", "MP4 Base Media v1 [IS0 14496-12:2003]" },
-    {   "jpm ", "JPEG 2000 Compound Image (.JPM) [ISO 15444-6]" },
-    {   "jpx ", "JPEG 2000 with extensions (.JPX) [ISO 15444-2]" },
-    {   "mj2s", "Motion JPEG 2000 [ISO 15444-3] Simple Profile" },
-    {   "mjp2", "Motion JPEG 2000 [ISO 15444-3] General Profile" },
-    {   "mmp4", "MPEG-4/3GPP Mobile Profile (.MP4/3GP) (for NTT)" },
-    {   "mp21", "MPEG-21 [ISO/IEC 21000-9]" },
-    {   "mp41", "MP4 v1 [ISO 14496-1:ch13]" },
-    {   "mp42", "MP4 v2 [ISO 14496-14]" },
-    {   "mp71", "MP4 w/ MPEG-7 Metadata [per ISO 14496-12]" },
-    {   "mqt ", "Sony / Mobile QuickTime (.MQV) US Patent 7,477,830 (Sony Corp)" },
-    {   "niko", "Nikon" },
-    {   "odcf", "OMA DCF DRM Format 2.0 (OMA-TS-DRM-DCF-V2_0-20060303-A)" },
-    {   "opf2", "OMA PDCF DRM Format 2.1 (OMA-TS-DRM-DCF-V2_1-20070724-C)" },
-    {   "opx2", "OMA PDCF DRM + XBS extensions (OMA-TS-DRM_XBS-V1_0-20070529-C)" },
-    {   "pana", "Panasonic Digital Camera" },
-    {   "qt  ", "Apple QuickTime (.MOV/QT)" },
-    {   "sdv ", "SD Memory Card Video" },
-    {   "ssc1", "Samsung stereoscopic, single stream" },
-    {   "ssc2", "Samsung stereoscopic, dual stream" },
-};
+    //! File type information.
+    extern const TagVocabulary qTimeFileType[] =
+    {
+        {   "3g2a", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-0 V1.0" },
+        {   "3g2b", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-A V1.0.0" },
+        {   "3g2c", "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-B v1.0" },
+        {   "3ge6", "3GPP (.3GP) Release 6 MBMS Extended Presentations" },
+        {   "3ge7", "3GPP (.3GP) Release 7 MBMS Extended Presentations" },
+        {   "3gg6", "3GPP Release 6 General Profile" },
+        {   "3gp1", "3GPP Media (.3GP) Release 1 (probably non-existent)" },
+        {   "3gp2", "3GPP Media (.3GP) Release 2 (probably non-existent)" },
+        {   "3gp3", "3GPP Media (.3GP) Release 3 (probably non-existent)" },
+        {   "3gp4", "3GPP Media (.3GP) Release 4" },
+        {   "3gp5", "3GPP Media (.3GP) Release 5" },
+        {   "3gp6", "3GPP Media (.3GP) Release 6 Streaming Servers" },
+        {   "3gs7", "3GPP Media (.3GP) Release 7 Streaming Servers" },
+        {   "CAEP", "Canon Digital Camera" },
+        {   "CDes", "Convergent Design" },
+        {   "F4A ", "Audio for Adobe Flash Player 9+ (.F4A)" },
+        {   "F4B ", "Audio Book for Adobe Flash Player 9+ (.F4B)" },
+        {   "F4P ", "Protected Video for Adobe Flash Player 9+ (.F4P)" },
+        {   "F4V ", "Video for Adobe Flash Player 9+ (.F4V)" },
+        {   "JP2 ", "JPEG 2000 Image (.JP2) [ISO 15444-1 ?]" },
+        {   "JP20", "Unknown, from GPAC samples (prob non-existent)" },
+        {   "KDDI", "3GPP2 EZmovie for KDDI 3G cellphones" },
+        {   "M4A ", "Apple iTunes AAC-LC (.M4A) Audio" },
+        {   "M4B ", "Apple iTunes AAC-LC (.M4B) Audio Book" },
+        {   "M4P ", "Apple iTunes AAC-LC (.M4P) AES Protected Audio" },
+        {   "M4V ", "Apple iTunes Video (.M4V) Video" },
+        {   "M4VH", "Apple TV (.M4V)" },
+        {   "M4VP", "Apple iPhone (.M4V)" },
+        {   "MPPI", "Photo Player, MAF [ISO/IEC 23000-3]" },
+        {   "MSNV", "MPEG-4 (.MP4) for SonyPSP" },
+        {   "NDAS", "MP4 v2 [ISO 14496-14] Nero Digital AAC Audio" },
+        {   "NDSC", "MPEG-4 (.MP4) Nero Cinema Profile" },
+        {   "NDSH", "MPEG-4 (.MP4) Nero HDTV Profile" },
+        {   "NDSM", "MPEG-4 (.MP4) Nero Mobile Profile" },
+        {   "NDSP", "MPEG-4 (.MP4) Nero Portable Profile" },
+        {   "NDSS", "MPEG-4 (.MP4) Nero Standard Profile" },
+        {   "NDXC", "H.264/MPEG-4 AVC (.MP4) Nero Cinema Profile" },
+        {   "NDXH", "H.264/MPEG-4 AVC (.MP4) Nero HDTV Profile" },
+        {   "NDXM", "H.264/MPEG-4 AVC (.MP4) Nero Mobile Profile" },
+        {   "NDXP", "H.264/MPEG-4 AVC (.MP4) Nero Portable Profile" },
+        {   "NDXS", "H.264/MPEG-4 AVC (.MP4) Nero Standard Profile" },
+        {   "NIKO", "Nikon" },
+        {   "ROSS", "Ross Video" },
+        {   "avc1", "MP4 Base w/ AVC ext [ISO 14496-12:2005]" },
+        {   "caqv", "Casio Digital Camera" },
+        {   "da0a", "DMB MAF w/ MPEG Layer II aud, MOT slides, DLS, JPG/PNG/MNG images" },
+        {   "da0b", "DMB MAF, extending DA0A, with 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "da1a", "DMB MAF audio with ER-BSAC audio, JPG/PNG/MNG images" },
+        {   "da1b", "DMB MAF, extending da1a, with 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "da2a", "DMB MAF aud w/ HE-AAC v2 aud, MOT slides, DLS, JPG/PNG/MNG images" },
+        {   "da2b", "DMB MAF, extending da2a, with 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "da3a", "DMB MAF aud with HE-AAC aud, JPG/PNG/MNG images" },
+        {   "da3b", "DMB MAF, extending da3a w/ BIFS, 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "dmb1", "DMB MAF supporting all the components defined in the specification" },
+        {   "dmpf", "Digital Media Project" },
+        {   "drc1", "Dirac (wavelet compression), encapsulated in ISO base media (MP4)" },
+        {   "dv1a", "DMB MAF vid w/ AVC vid, ER-BSAC aud, BIFS, JPG/PNG/MNG images, TS" },
+        {   "dv1b", "DMB MAF, extending dv1a, with 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "dv2a", "DMB MAF vid w/ AVC vid, HE-AAC v2 aud, BIFS, JPG/PNG/MNG images, TS" },
+        {   "dv2b", "DMB MAF, extending dv2a, with 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "dv3a", "DMB MAF vid w/ AVC vid, HE-AAC aud, BIFS, JPG/PNG/MNG images, TS" },
+        {   "dv3b", "DMB MAF, extending dv3a, with 3GPP timed text, DID, TVA, REL, IPMP" },
+        {   "dvr1", "DVB (.DVB) over RTP" },
+        {   "dvt1", "DVB (.DVB) over MPEG-2 Transport Stream" },
+        {   "isc2", "ISMACryp 2.0 Encrypted File" },
+        {   "iso2", "MP4 Base Media v2 [ISO 14496-12:2005]" },
+        {   "isom", "MP4 Base Media v1 [IS0 14496-12:2003]" },
+        {   "jpm ", "JPEG 2000 Compound Image (.JPM) [ISO 15444-6]" },
+        {   "jpx ", "JPEG 2000 with extensions (.JPX) [ISO 15444-2]" },
+        {   "mj2s", "Motion JPEG 2000 [ISO 15444-3] Simple Profile" },
+        {   "mjp2", "Motion JPEG 2000 [ISO 15444-3] General Profile" },
+        {   "mmp4", "MPEG-4/3GPP Mobile Profile (.MP4/3GP) (for NTT)" },
+        {   "mp21", "MPEG-21 [ISO/IEC 21000-9]" },
+        {   "mp41", "MP4 v1 [ISO 14496-1:ch13]" },
+        {   "mp42", "MP4 v2 [ISO 14496-14]" },
+        {   "mp71", "MP4 w/ MPEG-7 Metadata [per ISO 14496-12]" },
+        {   "mqt ", "Sony / Mobile QuickTime (.MQV) US Patent 7,477,830 (Sony Corp)" },
+        {   "niko", "Nikon" },
+        {   "odcf", "OMA DCF DRM Format 2.0 (OMA-TS-DRM-DCF-V2_0-20060303-A)" },
+        {   "opf2", "OMA PDCF DRM Format 2.1 (OMA-TS-DRM-DCF-V2_1-20070724-C)" },
+        {   "opx2", "OMA PDCF DRM + XBS extensions (OMA-TS-DRM_XBS-V1_0-20070529-C)" },
+        {   "pana", "Panasonic Digital Camera" },
+        {   "qt  ", "Apple QuickTime (.MOV/QT)" },
+        {   "sdv ", "SD Memory Card Video" },
+        {   "ssc1", "Samsung stereoscopic, single stream" },
+        {   "ssc2", "Samsung stereoscopic, dual stream" },
+    };
 
-//! hadler Class Information.
-extern const TagVocabulary handlerClassTags[] =
-{
-    {   "dhlr", "Data Handler" },
-    {   "mhlr", "Media Handler" }
-};
+    //! hadler Class Information.
+    extern const TagVocabulary handlerClassTags[] =
+    {
+        {   "dhlr", "Data Handler" },
+        {   "mhlr", "Media Handler" }
+    };
 
-//! Handler Type Information.
-extern const TagVocabulary handlerTypeTags[] =
-{
-    {   "alis", "Alias Data" },
-    {   "crsm", "Clock Reference" },
-    {   "hint", "Hint Track" },
-    {   "ipsm", "IPMP" },
-    {   "m7sm", "MPEG-7 Stream" },
-    {   "mdir", "Metadata" },
-    {   "mdta", "Metadata Tags" },
-    {   "mjsm", "MPEG-J" },
-    {   "ocsm", "Object Content" },
-    {   "odsm", "Object Descriptor" },
-    {   "sdsm", "Scene Description" },
-    {   "soun", "Audio Track" },
-    {   "text", "Text" },
-    {   "tmcd", "Time Code" },
-    {   "url ", "URL" },
-    {   "vide", "Video Track" }
-};
+    //! Handler Type Information.
+    extern const TagVocabulary handlerTypeTags[] =
+    {
+        {   "alis", "Alias Data" },
+        {   "crsm", "Clock Reference" },
+        {   "hint", "Hint Track" },
+        {   "ipsm", "IPMP" },
+        {   "m7sm", "MPEG-7 Stream" },
+        {   "mdir", "Metadata" },
+        {   "mdta", "Metadata Tags" },
+        {   "mjsm", "MPEG-J" },
+        {   "ocsm", "Object Content" },
+        {   "odsm", "Object Descriptor" },
+        {   "sdsm", "Scene Description" },
+        {   "soun", "Audio Track" },
+        {   "text", "Text" },
+        {   "tmcd", "Time Code" },
+        {   "url ", "URL" },
+        {   "vide", "Video Track" }
+    };
 
-//! Vendor Id information.
-extern const TagVocabulary vendorIDTags[] =
-{
-    {   "FFMP", "FFmpeg" },
-    {   "appl", "Apple" },
-    {   "olym", "Olympus" },
-    {   "GIC ", "General Imaging Co." },
-    {   "fe20", "Olympus (fe20)" },
-    {   "pana", "Panasonic" },
-    {   "KMPI", "Konica-Minolta" },
-    {   "kdak", "Kodak" },
-    {   "pent", "Pentax" },
-    {   "NIKO", "Nikon" },
-    {   "leic", "Leica" },
-    {   "pr01", "Olympus (pr01)" },
-    {   "SMI ", "Sorenson Media Inc." },
-    {   "mino", "Minolta" },
-    {   "sany", "Sanyo" },
-    {   "ZORA", "Zoran Corporation" },
-    {   "niko", "Nikon" }
-};
+    //! Vendor Id information.
+    extern const TagVocabulary vendorIDTags[] =
+    {
+        {   "FFMP", "FFmpeg" },
+        {   "appl", "Apple" },
+        {   "olym", "Olympus" },
+        {   "GIC ", "General Imaging Co." },
+        {   "fe20", "Olympus (fe20)" },
+        {   "pana", "Panasonic" },
+        {   "KMPI", "Konica-Minolta" },
+        {   "kdak", "Kodak" },
+        {   "pent", "Pentax" },
+        {   "NIKO", "Nikon" },
+        {   "leic", "Leica" },
+        {   "pr01", "Olympus (pr01)" },
+        {   "SMI ", "Sorenson Media Inc." },
+        {   "mino", "Minolta" },
+        {   "sany", "Sanyo" },
+        {   "ZORA", "Zoran Corporation" },
+        {   "niko", "Nikon" }
+    };
 
-//! Camera Information.
-extern const TagVocabulary cameraByteOrderTags[] =
-{
-    {   "II", "Little-endian (Intel, II)" },
-    {   "MM", "Big-endian (Motorola, MM)" }
-};
+    //! Camera Information.
+    extern const TagVocabulary cameraByteOrderTags[] =
+    {
+        {   "II", "Little-endian (Intel, II)" },
+        {   "MM", "Big-endian (Motorola, MM)" }
+    };
 
-//! Graphics related Information.
-extern const TagDetails graphicsModetags[] =
-{
-    {   0x0, "srcCopy" },
-    {   0x1, "srcOr" },
-    {   0x2, "srcXor" },
-    {   0x3, "srcBic" },
-    {   0x4, "notSrcCopy" },
-    {   0x5, "notSrcOr" },
-    {   0x6, "notSrcXor" },
-    {   0x7, "notSrcBic" },
-    {   0x8, "patCopy" },
-    {   0x9, "patOr" },
-    {   0xa, "patXor" },
-    {   0xb, "patBic" },
-    {   0xc, "notPatCopy" },
-    {   0xd, "notPatOr" },
-    {   0xe, "notPatXor" },
-    {   0xf, "notPatBic" },
-    {   0x20, "blend" },
-    {   0x21, "addPin" },
-    {   0x22, "addOver" },
-    {   0x23, "subPin" },
-    {   0x24, "transparent" },
-    {   0x25, "addMax" },
-    {   0x26, "subOver" },
-    {   0x27, "addMin" },
-    {   0x31, "grayishTextOr" },
-    {   0x32, "hilite" },
-    {   0x40, "ditherCopy" },
-    {   0x100, "Alpha" },
-    {   0x101, "White Alpha" },
-    {   0x102, "Pre-multiplied Black Alpha" },
-    {   0x110, "Component Alpha" }
-};
+    //! Graphics related Information.
+    extern const TagDetails graphicsModetags[] =
+    {
+        {   0x0, "srcCopy" },
+        {   0x1, "srcOr" },
+        {   0x2, "srcXor" },
+        {   0x3, "srcBic" },
+        {   0x4, "notSrcCopy" },
+        {   0x5, "notSrcOr" },
+        {   0x6, "notSrcXor" },
+        {   0x7, "notSrcBic" },
+        {   0x8, "patCopy" },
+        {   0x9, "patOr" },
+        {   0xa, "patXor" },
+        {   0xb, "patBic" },
+        {   0xc, "notPatCopy" },
+        {   0xd, "notPatOr" },
+        {   0xe, "notPatXor" },
+        {   0xf, "notPatBic" },
+        {   0x20, "blend" },
+        {   0x21, "addPin" },
+        {   0x22, "addOver" },
+        {   0x23, "subPin" },
+        {   0x24, "transparent" },
+        {   0x25, "addMax" },
+        {   0x26, "subOver" },
+        {   0x27, "addMin" },
+        {   0x31, "grayishTextOr" },
+        {   0x32, "hilite" },
+        {   0x40, "ditherCopy" },
+        {   0x100, "Alpha" },
+        {   0x101, "White Alpha" },
+        {   0x102, "Pre-multiplied Black Alpha" },
+        {   0x110, "Component Alpha" }
+    };
 
-//! Media Language Codes.
-extern const TagDetails mediaLanguageCode[] =
-{
-    { 0x0, "English" },
-    { 0x1, "French" },
-    { 0x2, "German" },
-    { 0x3, "Italian" },
-    { 0x4, "Dutch" },
-    { 0x5, "Swedish" },
-    { 0x6, "Spanish" },
-    { 0x7, "Danish" },
-    { 0x8, "Portuguese" },
-    { 0x9, "Norwegian" },
-    { 0xa, "Hebrew" },
-    { 0xb, "Japanese" },
-    { 0xc, "Arabic" },
-    { 0xd, "Finnish" },
-    { 0xe, "Greek" },
-    { 0xf, "Icelandic" },
-    { 0x10, "Maltese" },
-    { 0x11, "Turkish" },
-    { 0x12, "Croatian" },
-    { 0x13, "Traditional Chinese" },
-    { 0x14, "Urdu" },
-    { 0x15, "Hindi" },
-    { 0x16, "Thai" },
-    { 0x17, "Korean" },
-    { 0x18, "Lithuanian" },
-    { 0x19, "Polish" },
-    { 0x1a, "Hungarian" },
-    { 0x1b, "Estonian" },
-    { 0x1c, "Lettish" },
-    { 0x1c, "Latvian" },
-    { 0x1d, "Saami" },
-    { 0x1d, "Sami" },
-    { 0x1e, "Faroese" },
-    { 0x1f, "Farsi" },
-    { 0x20, "Russian" },
-    { 0x21, "Simplified Chinese" },
-    { 0x22, "Flemish" },
-    { 0x23, "Irish" },
-    { 0x24, "Albanian" },
-    { 0x25, "Romanian" },
-    { 0x26, "Czech" },
-    { 0x27, "Slovak" },
-    { 0x28, "Slovenian" },
-    { 0x29, "Yiddish" },
-    { 0x2a, "Serbian" },
-    { 0x2b, "Macedonian" },
-    { 0x2c, "Bulgarian" },
-    { 0x2d, "Ukrainian" },
-    { 0x2e, "Belarusian" },
-    { 0x2f, "Uzbek" },
-    { 0x30, "Kazakh" },
-    { 0x31, "Azerbaijani" },
-    { 0x32, "AzerbaijanAr" },
-    { 0x33, "Armenian" },
-    { 0x34, "Georgian" },
-    { 0x35, "Moldavian" },
-    { 0x36, "Kirghiz" },
-    { 0x37, "Tajiki" },
-    { 0x38, "Turkmen" },
-    { 0x39, "Mongolian" },
-    { 0x3a, "MongolianCyr" },
-    { 0x3b, "Pashto" },
-    { 0x3c, "Kurdish" },
-    { 0x3d, "Kashmiri" },
-    { 0x3e, "Sindhi" },
-    { 0x3f, "Tibetan" },
-    { 0x40, "Nepali" },
-    { 0x41, "Sanskrit" },
-    { 0x42, "Marathi" },
-    { 0x43, "Bengali" },
-    { 0x44, "Assamese" },
-    { 0x45, "Gujarati" },
-    { 0x46, "Punjabi" },
-    { 0x47, "Oriya" },
-    { 0x48, "Malayalam" },
-    { 0x49, "Kannada" },
-    { 0x4a, "Tamil" },
-    { 0x4b, "Telugu" },
-    { 0x4c, "Sinhala" },
-    { 0x4d, "Burmese" },
-    { 0x4e, "Khmer" },
-    { 0x4f, "Lao" },
-    { 0x50, "Vietnamese" },
-    { 0x51, "Indonesian" },
-    { 0x52, "Tagalog" },
-    { 0x53, "MalayRoman" },
-    { 0x54, "MalayArabic" },
-    { 0x55, "Amharic" },
-    { 0x56, "Galla" },
-    { 0x57, "Oromo" },
-    { 0x58, "Somali" },
-    { 0x59, "Swahili" },
-    { 0x5a, "Kinyarwanda" },
-    { 0x5b, "Rundi" },
-    { 0x5c, "Nyanja" },
-    { 0x5d, "Malagasy" },
-    { 0x5e, "Esperanto" },
-    { 0x80, "Welsh" },
-    { 0x81, "Basque" },
-    { 0x82, "Catalan" },
-    { 0x83, "Latin" },
-    { 0x84, "Quechua" },
-    { 0x85, "Guarani" },
-    { 0x86, "Aymara" },
-    { 0x87, "Tatar" },
-    { 0x88, "Uighur" },
-    { 0x89, "Dzongkha" },
-    { 0x8a, "JavaneseRom" }
-};
+    //! Media Language Codes.
+    extern const TagDetails mediaLanguageCode[] =
+    {
+        { 0x0, "English" },
+        { 0x1, "French" },
+        { 0x2, "German" },
+        { 0x3, "Italian" },
+        { 0x4, "Dutch" },
+        { 0x5, "Swedish" },
+        { 0x6, "Spanish" },
+        { 0x7, "Danish" },
+        { 0x8, "Portuguese" },
+        { 0x9, "Norwegian" },
+        { 0xa, "Hebrew" },
+        { 0xb, "Japanese" },
+        { 0xc, "Arabic" },
+        { 0xd, "Finnish" },
+        { 0xe, "Greek" },
+        { 0xf, "Icelandic" },
+        { 0x10, "Maltese" },
+        { 0x11, "Turkish" },
+        { 0x12, "Croatian" },
+        { 0x13, "Traditional Chinese" },
+        { 0x14, "Urdu" },
+        { 0x15, "Hindi" },
+        { 0x16, "Thai" },
+        { 0x17, "Korean" },
+        { 0x18, "Lithuanian" },
+        { 0x19, "Polish" },
+        { 0x1a, "Hungarian" },
+        { 0x1b, "Estonian" },
+        { 0x1c, "Lettish" },
+        { 0x1c, "Latvian" },
+        { 0x1d, "Saami" },
+        { 0x1d, "Sami" },
+        { 0x1e, "Faroese" },
+        { 0x1f, "Farsi" },
+        { 0x20, "Russian" },
+        { 0x21, "Simplified Chinese" },
+        { 0x22, "Flemish" },
+        { 0x23, "Irish" },
+        { 0x24, "Albanian" },
+        { 0x25, "Romanian" },
+        { 0x26, "Czech" },
+        { 0x27, "Slovak" },
+        { 0x28, "Slovenian" },
+        { 0x29, "Yiddish" },
+        { 0x2a, "Serbian" },
+        { 0x2b, "Macedonian" },
+        { 0x2c, "Bulgarian" },
+        { 0x2d, "Ukrainian" },
+        { 0x2e, "Belarusian" },
+        { 0x2f, "Uzbek" },
+        { 0x30, "Kazakh" },
+        { 0x31, "Azerbaijani" },
+        { 0x32, "AzerbaijanAr" },
+        { 0x33, "Armenian" },
+        { 0x34, "Georgian" },
+        { 0x35, "Moldavian" },
+        { 0x36, "Kirghiz" },
+        { 0x37, "Tajiki" },
+        { 0x38, "Turkmen" },
+        { 0x39, "Mongolian" },
+        { 0x3a, "MongolianCyr" },
+        { 0x3b, "Pashto" },
+        { 0x3c, "Kurdish" },
+        { 0x3d, "Kashmiri" },
+        { 0x3e, "Sindhi" },
+        { 0x3f, "Tibetan" },
+        { 0x40, "Nepali" },
+        { 0x41, "Sanskrit" },
+        { 0x42, "Marathi" },
+        { 0x43, "Bengali" },
+        { 0x44, "Assamese" },
+        { 0x45, "Gujarati" },
+        { 0x46, "Punjabi" },
+        { 0x47, "Oriya" },
+        { 0x48, "Malayalam" },
+        { 0x49, "Kannada" },
+        { 0x4a, "Tamil" },
+        { 0x4b, "Telugu" },
+        { 0x4c, "Sinhala" },
+        { 0x4d, "Burmese" },
+        { 0x4e, "Khmer" },
+        { 0x4f, "Lao" },
+        { 0x50, "Vietnamese" },
+        { 0x51, "Indonesian" },
+        { 0x52, "Tagalog" },
+        { 0x53, "MalayRoman" },
+        { 0x54, "MalayArabic" },
+        { 0x55, "Amharic" },
+        { 0x56, "Galla" },
+        { 0x57, "Oromo" },
+        { 0x58, "Somali" },
+        { 0x59, "Swahili" },
+        { 0x5a, "Kinyarwanda" },
+        { 0x5b, "Rundi" },
+        { 0x5c, "Nyanja" },
+        { 0x5d, "Malagasy" },
+        { 0x5e, "Esperanto" },
+        { 0x80, "Welsh" },
+        { 0x81, "Basque" },
+        { 0x82, "Catalan" },
+        { 0x83, "Latin" },
+        { 0x84, "Quechua" },
+        { 0x85, "Guarani" },
+        { 0x86, "Aymara" },
+        { 0x87, "Tatar" },
+        { 0x88, "Uighur" },
+        { 0x89, "Dzongkha" },
+        { 0x8a, "JavaneseRom" }
+    };
 
-//! User Date related Information.
-extern const TagVocabulary userDatatags[] =
-{
-    {   "AllF", "PlayAllFrames" },
-    {   "CNCV", "CompressorVersion" },
-    {   "CNFV", "FirmwareVersion" },
-    {   "CNMN", "Model" },
-    {   "CNTH", "CanonCNTH" },
-    {   "DcMD", "DcMD" },
-    {   "FFMV", "FujiFilmFFMV" },
-    {   "INFO", "SamsungINFO" },
-    {   "LOOP", "LoopStyle" },
-    {   "MMA0", "MinoltaMMA0" },
-    {   "MMA1", "MinoltaMMA1" },
-    {   "MVTG", "FujiFilmMVTG" },
-    {   "NCDT", "NikonNCDT" },
-    {   "PANA", "PanasonicPANA" },
-    {   "PENT", "PentaxPENT" },
-    {   "PXMN", "MakerNotePentax5b" },
-    {   "PXTH", "PentaxPreview" },
-    {   "QVMI", "CasioQVMI" },
-    {   "SDLN", "PlayMode" },
-    {   "SelO", "PlaySelection" },
-    {   "TAGS", "KodakTags/KonicaMinoltaTags/MinoltaTags/NikonTags/OlympusTags/PentaxTags/SamsungTags/SanyoMOV/SanyoMP4" },
-    {   "WLOC", "WindowLocation" },
-    {   "XMP_", "XMP" },
-    {   "Xtra", "Xtra" },
-    {   "hinf", "HintTrackInfo" },
-    {   "hinv", "HintVersion" },
-    {   "hnti", "Hint" },
-    {   "meta", "Meta" },
-    {   "name", "Name" },
-    {   "ptv ", "PrintToVideo" },
-    {   "scrn", "OlympusPreview" },
-    {   "thmb", "MakerNotePentax5a/OlympusThumbnail" },
-};
+    //! User Date related Information.
+    extern const TagVocabulary userDatatags[] =
+    {
+        {   "AllF", "PlayAllFrames" },
+        {   "CNCV", "CompressorVersion" },
+        {   "CNFV", "FirmwareVersion" },
+        {   "CNMN", "Model" },
+        {   "CNTH", "CanonCNTH" },
+        {   "DcMD", "DcMD" },
+        {   "FFMV", "FujiFilmFFMV" },
+        {   "INFO", "SamsungINFO" },
+        {   "LOOP", "LoopStyle" },
+        {   "MMA0", "MinoltaMMA0" },
+        {   "MMA1", "MinoltaMMA1" },
+        {   "MVTG", "FujiFilmMVTG" },
+        {   "NCDT", "NikonNCDT" },
+        {   "PANA", "PanasonicPANA" },
+        {   "PENT", "PentaxPENT" },
+        {   "PXMN", "MakerNotePentax5b" },
+        {   "PXTH", "PentaxPreview" },
+        {   "QVMI", "CasioQVMI" },
+        {   "SDLN", "PlayMode" },
+        {   "SelO", "PlaySelection" },
+        {   "TAGS", "KodakTags/KonicaMinoltaTags/MinoltaTags/NikonTags/OlympusTags/PentaxTags/SamsungTags/SanyoMOV/SanyoMP4" },
+        {   "WLOC", "WindowLocation" },
+        {   "XMP_", "XMP" },
+        {   "Xtra", "Xtra" },
+        {   "hinf", "HintTrackInfo" },
+        {   "hinv", "HintVersion" },
+        {   "hnti", "Hint" },
+        {   "meta", "Meta" },
+        {   "name", "Name" },
+        {   "ptv ", "PrintToVideo" },
+        {   "scrn", "OlympusPreview" },
+        {   "thmb", "MakerNotePentax5a/OlympusThumbnail" },
+    };
 
-//! User Data related Information.
-extern const TagVocabulary userDataReferencetags[] =
-{
-    {   "CNCV", "Xmp.video.CompressorVersion" },
-    {   "CNFV", "Xmp.video.FirmwareVersion" },
-    {   "CNMN", "Xmp.video.Model" },
-    {   "NCHD", "Xmp.video.MakerNoteType" },
-    {   "WLOC", "Xmp.video.WindowLocation" },
-    {   "SDLN", "Xmp.video.PlayMode" },
-    {   "FFMV", "Xmp.video.StreamName" },
-    {   "SelO", "Xmp.video.PlaySelection" },
-    {   "name", "Xmp.video.Name" },
-    {   "vndr", "Xmp.video.Vendor" },
-    {   " ART", "Xmp.video.Artist" },
-    {   " alb", "Xmp.video.Album" },
-    {   " arg", "Xmp.video.Arranger" },
-    {   " ark", "Xmp.video.ArrangerKeywords" },
-    {   " cmt", "Xmp.video.Comment" },
-    {   " cok", "Xmp.video.ComposerKeywords" },
-    {   " com", "Xmp.video.Composer" },
-    {   " cpy", "Xmp.video.Copyright" },
-    {   " day", "Xmp.video.CreateDate" },
-    {   " dir", "Xmp.video.Director" },
-    {   " ed1", "Xmp.video.Edit1" },
-    {   " ed2", "Xmp.video.Edit2" },
-    {   " ed3", "Xmp.video.Edit3" },
-    {   " ed4", "Xmp.video.Edit4" },
-    {   " ed5", "Xmp.video.Edit5" },
-    {   " ed6", "Xmp.video.Edit6" },
-    {   " ed7", "Xmp.video.Edit7" },
-    {   " ed8", "Xmp.video.Edit8" },
-    {   " ed9", "Xmp.video.Edit9" },
-    {   " enc", "Xmp.video.Encoder" },
-    {   " fmt", "Xmp.video.Format" },
-    {   " gen", "Xmp.video.Genre" },
-    {   " grp", "Xmp.video.Grouping" },
-    {   " inf", "Xmp.video.Information" },
-    {   " isr", "Xmp.video.ISRCCode" },
-    {   " lab", "Xmp.video.RecordLabelName" },
-    {   " lal", "Xmp.video.RecordLabelURL" },
-    {   " lyr", "Xmp.video.Lyrics" },
-    {   " mak", "Xmp.video.Make" },
-    {   " mal", "Xmp.video.MakerURL" },
-    {   " mod", "Xmp.video.Model" },
-    {   " nam", "Xmp.video.Title" },
-    {   " pdk", "Xmp.video.ProducerKeywords" },
-    {   " phg", "Xmp.video.RecordingCopyright" },
-    {   " prd", "Xmp.video.Producer" },
-    {   " prf", "Xmp.video.Performers" },
-    {   " prk", "Xmp.video.PerformerKeywords" },
-    {   " prl", "Xmp.video.PerformerURL" },
-    {   " req", "Xmp.video.Requirements" },
-    {   " snk", "Xmp.video.SubtitleKeywords" },
-    {   " snm", "Xmp.video.Subtitle" },
-    {   " src", "Xmp.video.SourceCredits" },
-    {   " swf", "Xmp.video.SongWriter" },
-    {   " swk", "Xmp.video.SongWriterKeywords" },
-    {   " swr", "Xmp.video.SoftwareVersion" },
-    {   " too", "Xmp.video.Encoder" },
-    {   " trk", "Xmp.video.Track" },
-    {   " wrt", "Xmp.video.Composer" },
-    {   " xyz", "Xmp.video.GPSCoordinates" },
-    {   "CMbo", "Xmp.video.CameraByteOrder" },
-    {   "Cmbo", "Xmp.video.CameraByteOrder" },
-};
+    //! User Data related Information.
+    extern const TagVocabulary userDataReferencetags[] =
+    {
+        {   "CNCV", "Xmp.video.CompressorVersion" },
+        {   "CNFV", "Xmp.video.FirmwareVersion" },
+        {   "CNMN", "Xmp.video.Model" },
+        {   "NCHD", "Xmp.video.MakerNoteType" },
+        {   "WLOC", "Xmp.video.WindowLocation" },
+        {   "SDLN", "Xmp.video.PlayMode" },
+        {   "FFMV", "Xmp.video.StreamName" },
+        {   "SelO", "Xmp.video.PlaySelection" },
+        {   "name", "Xmp.video.Name" },
+        {   "vndr", "Xmp.video.Vendor" },
+        {   " ART", "Xmp.video.Artist" },
+        {   " alb", "Xmp.video.Album" },
+        {   " arg", "Xmp.video.Arranger" },
+        {   " ark", "Xmp.video.ArrangerKeywords" },
+        {   " cmt", "Xmp.video.Comment" },
+        {   " cok", "Xmp.video.ComposerKeywords" },
+        {   " com", "Xmp.video.Composer" },
+        {   " cpy", "Xmp.video.Copyright" },
+        {   " day", "Xmp.video.CreateDate" },
+        {   " dir", "Xmp.video.Director" },
+        {   " ed1", "Xmp.video.Edit1" },
+        {   " ed2", "Xmp.video.Edit2" },
+        {   " ed3", "Xmp.video.Edit3" },
+        {   " ed4", "Xmp.video.Edit4" },
+        {   " ed5", "Xmp.video.Edit5" },
+        {   " ed6", "Xmp.video.Edit6" },
+        {   " ed7", "Xmp.video.Edit7" },
+        {   " ed8", "Xmp.video.Edit8" },
+        {   " ed9", "Xmp.video.Edit9" },
+        {   " enc", "Xmp.video.Encoder" },
+        {   " fmt", "Xmp.video.Format" },
+        {   " gen", "Xmp.video.Genre" },
+        {   " grp", "Xmp.video.Grouping" },
+        {   " inf", "Xmp.video.Information" },
+        {   " isr", "Xmp.video.ISRCCode" },
+        {   " lab", "Xmp.video.RecordLabelName" },
+        {   " lal", "Xmp.video.RecordLabelURL" },
+        {   " lyr", "Xmp.video.Lyrics" },
+        {   " mak", "Xmp.video.Make" },
+        {   " mal", "Xmp.video.MakerURL" },
+        {   " mod", "Xmp.video.Model" },
+        {   " nam", "Xmp.video.Title" },
+        {   " pdk", "Xmp.video.ProducerKeywords" },
+        {   " phg", "Xmp.video.RecordingCopyright" },
+        {   " prd", "Xmp.video.Producer" },
+        {   " prf", "Xmp.video.Performers" },
+        {   " prk", "Xmp.video.PerformerKeywords" },
+        {   " prl", "Xmp.video.PerformerURL" },
+        {   " req", "Xmp.video.Requirements" },
+        {   " snk", "Xmp.video.SubtitleKeywords" },
+        {   " snm", "Xmp.video.Subtitle" },
+        {   " src", "Xmp.video.SourceCredits" },
+        {   " swf", "Xmp.video.SongWriter" },
+        {   " swk", "Xmp.video.SongWriterKeywords" },
+        {   " swr", "Xmp.video.SoftwareVersion" },
+        {   " too", "Xmp.video.Encoder" },
+        {   " trk", "Xmp.video.Track" },
+        {   " wrt", "Xmp.video.Composer" },
+        {   " xyz", "Xmp.video.GPSCoordinates" },
+        {   "CMbo", "Xmp.video.CameraByteOrder" },
+        {   "Cmbo", "Xmp.video.CameraByteOrder" },
+    };
 
-//! Nikon Tags Information.
-extern const TagDetails NikonNCTGTags[] =
-{
-    {       0x0001, "Xmp.video.Make" },
-    {       0x0002, "Xmp.video.Model" },
-    {       0x0003, "Xmp.video.Software" },
-    {       0x0011, "Xmp.video.CreationDate" },
-    {       0x0012, "Xmp.video.DateTimeOriginal" },
-    {       0x0013, "Xmp.video.FrameCount" },
-    {       0x0016, "Xmp.video.FrameRate" },
-    {       0x0022, "Xmp.video.FrameWidth" },
-    {       0x0023, "Xmp.video.FrameHeight" },
-    {       0x0032, "Xmp.audio.channelType" },
-    {       0x0033, "Xmp.audio.BitsPerSample" },
-    {       0x0034, "Xmp.audio.sampleRate" },
-    {    0x1108822, "Xmp.video.ExposureProgram" },
-    {    0x1109204, "Xmp.video.ExposureCompensation" },
-    {    0x1109207, "Xmp.video.MeteringMode" },
-    {    0x110a434, "Xmp.video.LensModel" },
-    {    0x1200000, "Xmp.video.GPSVersionID" },
-    {    0x1200001, "Xmp.video.GPSLatitudeRef" },
-    {    0x1200002, "Xmp.video.GPSLatitude" },
-    {    0x1200003, "Xmp.video.GPSLongitudeRef" },
-    {    0x1200004, "Xmp.video.GPSLongitude" },
-    {    0x1200005, "Xmp.video.GPSAltitudeRef" },
-    {    0x1200006, "Xmp.video.GPSAltitude" },
-    {    0x1200007, "Xmp.video.GPSTimeStamp" },
-    {    0x1200008, "Xmp.video.GPSSatellites" },
-    {    0x1200010, "Xmp.video.GPSImgDirectionRef" },
-    {    0x1200011, "Xmp.video.GPSImgDirection" },
-    {    0x1200012, "Xmp.video.GPSMapDatum" },
-    {    0x120001d, "Xmp.video.GPSDateStamp" },
-    {    0x2000001, "Xmp.video.MakerNoteVersion" },
-    {    0x2000005, "Xmp.video.WhiteBalance" },
-    {    0x200000b, "Xmp.video.WhiteBalanceFineTune" },
-    {    0x200001e, "Xmp.video.ColorSpace" },
-    {    0x2000023, "Xmp.video.PictureControlData" },
-    {    0x2000024, "Xmp.video.WorldTime" },
-    {    0x200002c, "Xmp.video.UnknownInfo" },
-    {    0x2000032, "Xmp.video.UnknownInfo2" },
-    {    0x2000039, "Xmp.video.LocationInfo" },
-    {    0x2000083, "Xmp.video.LensType" },
-    {    0x2000084, "Xmp.video.LensModel" },
-    {    0x20000ab, "Xmp.video.VariProgram" },
-};
+    //! Nikon Tags Information.
+    extern const TagDetails NikonNCTGTags[] =
+    {
+        {       0x0001, "Xmp.video.Make" },
+        {       0x0002, "Xmp.video.Model" },
+        {       0x0003, "Xmp.video.Software" },
+        {       0x0011, "Xmp.video.CreationDate" },
+        {       0x0012, "Xmp.video.DateTimeOriginal" },
+        {       0x0013, "Xmp.video.FrameCount" },
+        {       0x0016, "Xmp.video.FrameRate" },
+        {       0x0022, "Xmp.video.FrameWidth" },
+        {       0x0023, "Xmp.video.FrameHeight" },
+        {       0x0032, "Xmp.audio.channelType" },
+        {       0x0033, "Xmp.audio.BitsPerSample" },
+        {       0x0034, "Xmp.audio.sampleRate" },
+        {    0x1108822, "Xmp.video.ExposureProgram" },
+        {    0x1109204, "Xmp.video.ExposureCompensation" },
+        {    0x1109207, "Xmp.video.MeteringMode" },
+        {    0x110a434, "Xmp.video.LensModel" },
+        {    0x1200000, "Xmp.video.GPSVersionID" },
+        {    0x1200001, "Xmp.video.GPSLatitudeRef" },
+        {    0x1200002, "Xmp.video.GPSLatitude" },
+        {    0x1200003, "Xmp.video.GPSLongitudeRef" },
+        {    0x1200004, "Xmp.video.GPSLongitude" },
+        {    0x1200005, "Xmp.video.GPSAltitudeRef" },
+        {    0x1200006, "Xmp.video.GPSAltitude" },
+        {    0x1200007, "Xmp.video.GPSTimeStamp" },
+        {    0x1200008, "Xmp.video.GPSSatellites" },
+        {    0x1200010, "Xmp.video.GPSImgDirectionRef" },
+        {    0x1200011, "Xmp.video.GPSImgDirection" },
+        {    0x1200012, "Xmp.video.GPSMapDatum" },
+        {    0x120001d, "Xmp.video.GPSDateStamp" },
+        {    0x2000001, "Xmp.video.MakerNoteVersion" },
+        {    0x2000005, "Xmp.video.WhiteBalance" },
+        {    0x200000b, "Xmp.video.WhiteBalanceFineTune" },
+        {    0x200001e, "Xmp.video.ColorSpace" },
+        {    0x2000023, "Xmp.video.PictureControlData" },
+        {    0x2000024, "Xmp.video.WorldTime" },
+        {    0x200002c, "Xmp.video.UnknownInfo" },
+        {    0x2000032, "Xmp.video.UnknownInfo2" },
+        {    0x2000039, "Xmp.video.LocationInfo" },
+        {    0x2000083, "Xmp.video.LensType" },
+        {    0x2000084, "Xmp.video.LensModel" },
+        {    0x20000ab, "Xmp.video.VariProgram" },
+    };
 
-//! Nikon Color space Information.
-extern const TagDetails NikonColorSpace[] =
-{
-    {       1, "sRGB" },
-    {       2, "Adobe RGB" },
-};
+    //! Nikon Color space Information.
+    extern const TagDetails NikonColorSpace[] =
+    {
+        {       1, "sRGB" },
+        {       2, "Adobe RGB" },
+    };
 
-//! Nikon Tags.
-extern const TagVocabulary NikonGPS_Latitude_Longitude_ImgDirection_Reference[] =
-{
-    {   "N", "North" },
-    {   "S", "South" },
-    {   "E", "East" },
-    {   "W", "West" },
-    {   "M", "Magnetic North" },
-    {   "T", "True North" },
-};
+    //! Nikon Tags.
+    extern const TagVocabulary NikonGPS_Latitude_Longitude_ImgDirection_Reference[] =
+    {
+        {   "N", "North" },
+        {   "S", "South" },
+        {   "E", "East" },
+        {   "W", "West" },
+        {   "M", "Magnetic North" },
+        {   "T", "True North" },
+    };
 
-//! Nikon Tags
-extern const TagDetails NikonGPSAltitudeRef[] =
-{
-    {   0, "Above Sea Level" },
-    {   1, "Below Sea Level" },
-};
+    //! Nikon Tags
+    extern const TagDetails NikonGPSAltitudeRef[] =
+    {
+        {   0, "Above Sea Level" },
+        {   1, "Below Sea Level" },
+    };
 
-//! Nikon Tags.
-extern const TagDetails NikonExposureProgram[] =
-{
-    {   0, "Not Defined" },
-    {   1, "Manual" },
-    {   2, "Program AE" },
-    {   3, "Aperture-priority AE" },
-    {   4, "Shutter speed priority AE" },
-    {   5, "Creative (Slow speed)" },
-    {   6, "Action (High speed)" },
-    {   7, "Portrait" },
-    {   8, "Landscape" },
-};
+    //! Nikon Tags.
+    extern const TagDetails NikonExposureProgram[] =
+    {
+        {   0, "Not Defined" },
+        {   1, "Manual" },
+        {   2, "Program AE" },
+        {   3, "Aperture-priority AE" },
+        {   4, "Shutter speed priority AE" },
+        {   5, "Creative (Slow speed)" },
+        {   6, "Action (High speed)" },
+        {   7, "Portrait" },
+        {   8, "Landscape" },
+    };
 
-//! Nikon Tags.
-extern const TagDetails NikonMeteringMode[] =
-{
-    {   0, "Unknown" },
-    {   1, "Average" },
-    {   2, "Center-weighted average" },
-    {   3, "Spot" },
-    {   4, "Multi-spot" },
-    {   5, "Multi-segment" },
-    {   6, "Partial" },
-    { 255, "Other" },
-};
+    //! Nikon Tags.
+    extern const TagDetails NikonMeteringMode[] =
+    {
+        {   0, "Unknown" },
+        {   1, "Average" },
+        {   2, "Center-weighted average" },
+        {   3, "Spot" },
+        {   4, "Multi-spot" },
+        {   5, "Multi-segment" },
+        {   6, "Partial" },
+        { 255, "Other" },
+    };
 
-//! picture tags.
-extern const TagDetails PictureControlAdjust[] =
-{
-    {   0, "Default Settings" },
-    {   1, "Quick Adjust" },
-    {   2, "Full Control" },
-};
+    //! picture tags.
+    extern const TagDetails PictureControlAdjust[] =
+    {
+        {   0, "Default Settings" },
+        {   1, "Quick Adjust" },
+        {   2, "Full Control" },
+    };
 
-//! Contrast and Sharpness
-extern const TagDetails NormalSoftHard[] =
-{
-    {   0, "Normal" },
-    {   1, "Soft"   },
-    {   2, "Hard"   }
-};
+    //! Contrast and Sharpness
+    extern const TagDetails NormalSoftHard[] =
+    {
+        {   0, "Normal" },
+        {   1, "Soft"   },
+        {   2, "Hard"   }
+    };
 
-//! Saturation
-extern const TagDetails Saturation[] =
-{
-    {   0, "Normal" },
-    {   1, "Low"    },
-    {   2, "High"   }
-};
+    //! Saturation
+    extern const TagDetails Saturation[] =
+    {
+        {   0, "Normal" },
+        {   1, "Low"    },
+        {   2, "High"   }
+    };
 
-//! YesNo, used for DaylightSavings
-extern const TagDetails YesNo[] =
-{
-    {   0, "No"    },
-    {   1, "Yes"   }
-};
+    //! YesNo, used for DaylightSavings
+    extern const TagDetails YesNo[] =
+    {
+        {   0, "No"    },
+        {   1, "Yes"   }
+    };
 
-//! DateDisplayFormat
-extern const TagDetails DateDisplayFormat[] =
-{
-    {   0, "Y/M/D" },
-    {   1, "M/D/Y" },
-    {   2, "D/M/Y" }
-};
+    //! DateDisplayFormat
+    extern const TagDetails DateDisplayFormat[] =
+    {
+        {   0, "Y/M/D" },
+        {   1, "M/D/Y" },
+        {   2, "D/M/Y" }
+    };
 
-//! Filter Effects.
-extern const TagDetails FilterEffect[] =
-{
-    {   0x80, "Off" },
-    {   0x81, "Yellow"    },
-    {   0x82, "Orange"   },
-    {   0x83, "Red"   },
-    {   0x84, "Green"   },
-    {   0xff, "n/a"   },
-};
+    //! Filter Effects.
+    extern const TagDetails FilterEffect[] =
+    {
+        {   0x80, "Off" },
+        {   0x81, "Yellow"    },
+        {   0x82, "Orange"   },
+        {   0x83, "Red"   },
+        {   0x84, "Green"   },
+        {   0xff, "n/a"   },
+    };
 
-//! Toning Effect.
-extern const TagDetails ToningEffect[] =
-{
-    {   0x80, "B&W" },
-    {   0x81, "Sepia" },
-    {   0x82, "Cyanotype" },
-    {   0x83, "Red" },
-    {   0x84, "Yellow" },
-    {   0x85, "Green" },
-    {   0x86, "Blue-green" },
-    {   0x87, "Blue" },
-    {   0x88, "Purple-blue" },
-    {   0x89, "Red-purple" },
-    {   0xff, "n/a" },
-};
+    //! Toning Effect.
+    extern const TagDetails ToningEffect[] =
+    {
+        {   0x80, "B&W" },
+        {   0x81, "Sepia" },
+        {   0x82, "Cyanotype" },
+        {   0x83, "Red" },
+        {   0x84, "Yellow" },
+        {   0x85, "Green" },
+        {   0x86, "Blue-green" },
+        {   0x87, "Blue" },
+        {   0x88, "Purple-blue" },
+        {   0x89, "Red-purple" },
+        {   0xff, "n/a" },
+    };
 
-//! White balance Information.
-extern const TagDetails whiteBalance[] =
-{
-    {   0, "Auto" },
-    {   1, "Daylight" },
-    {   2, "Shade" },
-    {   3, "Fluorescent" },
-    {   4, "Tungsten" },
-    {   5, "Manual" },
-};
+    //! White balance Information.
+    extern const TagDetails whiteBalance[] =
+    {
+        {   0, "Auto" },
+        {   1, "Daylight" },
+        {   2, "Shade" },
+        {   3, "Fluorescent" },
+        {   4, "Tungsten" },
+        {   5, "Manual" },
+    };
 
-//! To select specific bytes with in a chunk.
-enum movieHeaderTags
-{
-    MovieHeaderVersion, CreateDate, ModifyDate, TimeScale, Duration, PreferredRate, PreferredVolume,
-    PreviewTime = 18, PreviewDuration,PosterTime, SelectionTime, SelectionDuration, CurrentTime, NextTrackID
-};
+    //! To select specific bytes with in a chunk.
+    enum movieHeaderTags
+    {
+        MovieHeaderVersion, CreateDate, ModifyDate, TimeScale, Duration, PreferredRate, PreferredVolume,
+        PreviewTime = 18, PreviewDuration,PosterTime, SelectionTime, SelectionDuration, CurrentTime, NextTrackID
+    };
 
-//! To select specific bytes with in a chunk.
-enum trackHeaderTags
-{
-    TrackHeaderVersion, TrackCreateDate, TrackModifyDate, TrackID, TrackDuration = 5, TrackLayer = 8,
-    TrackVolume, ImageWidth = 19, ImageHeight
-};
+    //! To select specific bytes with in a chunk.
+    enum trackHeaderTags
+    {
+        TrackHeaderVersion, TrackCreateDate, TrackModifyDate, TrackID, TrackDuration = 5, TrackLayer = 8,
+        TrackVolume, ImageWidth = 19, ImageHeight
+    };
 
-//! To select specific bytes with in a chunk.
-enum mediaHeaderTags
-{
-    MediaHeaderVersion, MediaCreateDate, MediaModifyDate, MediaTimeScale, MediaDuration, MediaLanguageCode
-};
+    //! To select specific bytes with in a chunk.
+    enum mediaHeaderTags
+    {
+        MediaHeaderVersion, MediaCreateDate, MediaModifyDate, MediaTimeScale, MediaDuration, MediaLanguageCode
+    };
 
-//! To select specific bytes with in a chunk.
-enum handlerTags
-{
-    HandlerClass = 1, HandlerType, HandlerVendorID
-};
+    //! To select specific bytes with in a chunk.
+    enum handlerTags
+    {
+        HandlerClass = 1, HandlerType, HandlerVendorID
+    };
 
-//! To select specific bytes with in a chunk.
-enum videoHeaderTags
-{
-    GraphicsMode = 2, OpColor
-};
+    //! To select specific bytes with in a chunk.
+    enum videoHeaderTags
+    {
+        GraphicsMode = 2, OpColor
+    };
 
-//! To select specific bytes with in a chunk.
-enum stream
-{
-    Video, Audio, Hint, Null, GenMediaHeader
-};
+    //! To select specific bytes with in a chunk.
+    enum stream
+    {
+        Video, Audio, Hint, Null, GenMediaHeader
+    };
 
-//! To select specific bytes with in a chunk.
-enum imageDescTags
-{
-    codec, VendorID = 4, SourceImageWidth_Height = 7,  XResolution,
-    YResolution, CompressorName = 10, BitDepth
-};
+    //! To select specific bytes with in a chunk.
+    enum imageDescTags
+    {
+        codec, VendorID = 4, SourceImageWidth_Height = 7,  XResolution,
+        YResolution, CompressorName = 10, BitDepth
+    };
 
-//! To select specific bytes with in a chunk.
-enum audioDescTags
-{
-    AudioFormat, AudioVendorID = 4, AudioChannels, AudioSampleRate = 7, MOV_AudioFormat = 13
-};
+    //! To select specific bytes with in a chunk.
+    enum audioDescTags
+    {
+        AudioFormat, AudioVendorID = 4, AudioChannels, AudioSampleRate = 7, MOV_AudioFormat = 13
+    };
 
-/*!
+    /*!
       @brief Function used to check equality of a Tags with a
           particular string (ignores case while comparing).
       @param buf Data buffer that will contain Tag to compare
       @param str char* Pointer to string
       @return Returns true if the buffer value is equal to string.
      */
-bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
-{
-    bool    result = true ;
-    for(int32_t i = 0; result && i < 4; ++i)
-        if(tolower(buf.pData_[i]) != tolower(str[i]))
-            result = false;
-    return result;
-}
+    bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
+    {
+        bool    result = true ;
+        for(int32_t i = 0; result && i < 4; ++i)
+            if(tolower(buf.pData_[i]) != tolower(str[i]))
+                result = false;
+        return result;
+    }
 
-/*!
+    /*!
  * \brief equalsQTimeTag Overloaded method to handle array of tags.
  * \param buf
  * \param arr
@@ -697,119 +697,119 @@ bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
  * \return
  */
 
-bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
-{
-    bool result = arraysize > 0 ;
-    if(result)
+    bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
     {
-        for (int32_t i=0; i < arraysize; i++)
+        bool result = arraysize > 0 ;
+        if(result)
         {
-            result = true;
-            for(int32_t j=0; j < 4; j++ )
+            for (int32_t i=0; i < arraysize; i++)
             {
-                if(tolower(buf.pData_[j]) != arr[i][j])
+                result = true;
+                for(int32_t j=0; j < 4; j++ )
                 {
-                    result = false;
-                    break;
+                    if(tolower(buf.pData_[j]) != arr[i][j])
+                    {
+                        result = false;
+                        break;
+                    }
                 }
+                if(result)
+                    return result;
             }
-            if(result)
-                return result;
         }
+        return result;
     }
-    return result;
-}
 
-/*!
+    /*!
       @brief Function used to ignore Tags and values stored in them,
           since they are not necessary as metadata information
       @param buf Data buffer that will contain Tag to compare
       @return Returns true, if Tag is found in the ignoreList[]
      */
-bool ignoreList (Exiv2::DataBuf& buf)
-{
-    const char ignoreList[13][5] =
+    bool ignoreList (Exiv2::DataBuf& buf)
     {
-        "mdat", "edts", "junk", "iods", "alis", "stsc", "stsz", "stco", "ctts", "stss",
-        "skip", "wide", "cmvd",
-    };
+        const char ignoreList[13][5] =
+        {
+            "mdat", "edts", "junk", "iods", "alis", "stsc", "stsz", "stco", "ctts", "stss",
+            "skip", "wide", "cmvd",
+        };
 
-    int32_t i;
-    for(i = 0 ; i < 13 ; ++i)
-        if(equalsQTimeTag(buf, ignoreList[i]))
-            return true;
+        int32_t i;
+        for(i = 0 ; i < 13 ; ++i)
+            if(equalsQTimeTag(buf, ignoreList[i]))
+                return true;
 
-    return false;
-}
+        return false;
+    }
 
-/*!
+    /*!
       @brief Function used to ignore Tags, basically Tags which
           contain other tags inside them, since they are not necessary
           as metadata information
       @param buf Data buffer that will contain Tag to compare
       @return Returns true, if Tag is found in the ignoreList[]
      */
-bool dataIgnoreList (Exiv2::DataBuf& buf)
-{
-    const char ignoreList[8][5] =
+    bool dataIgnoreList (Exiv2::DataBuf& buf)
     {
-        "moov", "mdia", "minf", "dinf", "alis", "stbl", "cmov",
-        "meta",
-    };
+        const char ignoreList[8][5] =
+        {
+            "moov", "mdia", "minf", "dinf", "alis", "stbl", "cmov",
+            "meta",
+        };
 
-    int32_t i;
-    for(i = 0 ; i < 8 ; ++i)
-        if(equalsQTimeTag(buf, ignoreList[i]))
-            return true;
+        int32_t i;
+        for(i = 0 ; i < 8 ; ++i)
+            if(equalsQTimeTag(buf, ignoreList[i]))
+                return true;
 
-    return false;
-}
+        return false;
+    }
 
-/*!
+    /*!
  * \brief reverseTagVocabulary: reverse attributed of array elements.To perform reverse
  *        operation of getting keys from description
  * \param inputTagVocabulary
  * \param outputTagVocabulary
  * \param size
  */
-void reverseTagVocabulary(const TagVocabulary inputTagVocabulary[],TagVocabulary  outputTagVocabulary[] ,int size)
-{
-    int32_t i;
-    for (i=0; i<size ;i++)
+    void reverseTagVocabulary(const TagVocabulary inputTagVocabulary[],TagVocabulary  outputTagVocabulary[] ,int size)
     {
-        outputTagVocabulary[i].label_ = inputTagVocabulary[i].voc_;
-        outputTagVocabulary[i].voc_ = inputTagVocabulary[i].label_;
+        int32_t i;
+        for (i=0; i<size ;i++)
+        {
+            outputTagVocabulary[i].label_ = inputTagVocabulary[i].voc_;
+            outputTagVocabulary[i].voc_ = inputTagVocabulary[i].label_;
+        }
     }
-}
 
-/*!
+    /*!
  * \brief getNumberFromString
  * \param stringData: stringdata which is formed by concatinating two distinct
  *                    numerical values
  * \param seperator
  * \return
  */
-const std::vector<uint16_t> getNumberFromString(const std::string stringData,char seperator )
-{
-    int32_t counter = (stringData.size() - 1);
-    vector<uint16_t> shortValues;
-    int32_t i;
-    for(i=0; i<2; i++)
+    const std::vector<uint16_t> getNumberFromString(const std::string stringData,char seperator )
     {
-        int32_t tmpValueIndex = 3;
-        Exiv2::byte tmpValue[4] = {};
-        while((counter >= 0) && (stringData[counter] != seperator) && (tmpValueIndex >=0))
+        int32_t counter = (stringData.size() - 1);
+        vector<uint16_t> shortValues;
+        int32_t i;
+        for(i=0; i<2; i++)
         {
-            tmpValue[tmpValueIndex] = stringData[counter];
-            counter--;tmpValueIndex--;
+            int32_t tmpValueIndex = 3;
+            Exiv2::byte tmpValue[4] = {};
+            while((counter >= 0) && (stringData[counter] != seperator) && (tmpValueIndex >=0))
+            {
+                tmpValue[tmpValueIndex] = stringData[counter];
+                counter--;tmpValueIndex--;
+            }
+            counter--;
+            shortValues.push_back((int16_t)Exiv2::getShort(tmpValue, bigEndian));
         }
-        counter--;
-        shortValues.push_back((int16_t)Exiv2::getShort(tmpValue, bigEndian));
+        return shortValues;
     }
-    return shortValues;
-}
 
-/*!
+    /*!
  * \brief getLongFromString functionality is same as above method,with return type
  *        long vector
  * \param stringData: stringdata which is formed by concatinating two distinct
@@ -817,124 +817,124 @@ const std::vector<uint16_t> getNumberFromString(const std::string stringData,cha
  * \param seperator: seperation character like . , etc
  * \return
  */
-const std::vector<int32_t> getLongFromString(const std::string stringData,char seperator )
-{
-    int32_t counter = (stringData.size() - 1);
-    vector<int32_t> longValues;
-    for(int32_t i=0; i<2; i++)
+    const std::vector<int32_t> getLongFromString(const std::string stringData,char seperator )
     {
-        int32_t tmpValueIndex = 3;
-        Exiv2::byte tmpValue[4]={};
-        while((counter >= 0) && (stringData[counter] != seperator) && (tmpValueIndex >=0))
+        int32_t counter = (stringData.size() - 1);
+        vector<int32_t> longValues;
+        for(int32_t i=0; i<2; i++)
         {
-            tmpValue[tmpValueIndex] = stringData[counter];
-            counter--;tmpValueIndex--;
+            int32_t tmpValueIndex = 3;
+            Exiv2::byte tmpValue[4]={};
+            while((counter >= 0) && (stringData[counter] != seperator) && (tmpValueIndex >=0))
+            {
+                tmpValue[tmpValueIndex] = stringData[counter];
+                counter--;tmpValueIndex--;
+            }
+            counter--;
+            longValues.push_back((int32_t)Exiv2::getLong(tmpValue, bigEndian));
         }
-        counter--;
-        longValues.push_back((int32_t)Exiv2::getLong(tmpValue, bigEndian));
+        return longValues;
     }
-    return longValues;
-}
-/*!
+    /*!
       @brief Function used to convert buffer data into 64-bit
           signed integer, information stored in Big Endian format
       @param buf Data buffer that will contain data to be converted
       @param n
       @return Returns a signed 64-bit integer
      */
-int64_t returnBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
-{
-    int64_t temp = 0;
-    int32_t i;
-    for(i = n - 1; i >= 0; i--)
+    int64_t returnBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
+    {
+        int64_t temp = 0;
+        int32_t i;
+        for(i = n - 1; i >= 0; i--)
 #ifdef _MSC_VER
-        temp = temp + static_cast<int64_t>(buf.pData_[i]*(pow(256.0, n-i-1)));
+            temp = temp + static_cast<int64_t>(buf.pData_[i]*(pow(256.0, n-i-1)));
 #else
-        temp = temp + buf.pData_[i]*(pow((float)256,n-i-1));
+            temp = temp + buf.pData_[i]*(pow((float)256,n-i-1));
 #endif
 
-    return temp;
-}
+        return temp;
+    }
 
-/*!
+    /*!
  * \brief returnBuf: converts integer value to byte value
  *                   which can be written to the file.
  * \param intValue
  * \param n
  * \return
  */
-DataBuf returnBuf(int64_t intValue,int32_t n=4)
-{
-    DataBuf buf((uint32_t)(n+1));
-    buf.pData_[n] = '\0';
-    int32_t i;
-    for(i = n - 1; i >= 0; i--)
+    DataBuf returnBuf(int64_t intValue,int32_t n=4)
     {
-        buf.pData_[i] = (Exiv2::byte)(int16_t) ((int32_t)(intValue / (int32_t)pow(256.0,n-i-1)) % 256);
+        DataBuf buf((uint32_t)(n+1));
+        buf.pData_[n] = '\0';
+        int32_t i;
+        for(i = n - 1; i >= 0; i--)
+        {
+            buf.pData_[i] = (Exiv2::byte)(int16_t) ((int32_t)(intValue / (int32_t)pow(256.0,n-i-1)) % 256);
+        }
+        return buf;
     }
-    return buf;
-}
-/*!
+    /*!
       @brief Function used to convert buffer data into 64-bit
           unsigned integer, information stored in Big Endian format
       @param buf Data buffer that will contain data to be converted
       @param n
       @return Returns an unsigned 64-bit integer
      */
-uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
-{
-    uint64_t temp = 0;
-    int32_t i;
-    for( i = n-1; i >= 0; i--)
+    uint64_t returnUnsignedBufValue(Exiv2::DataBuf& buf, int32_t n = 4)
+    {
+        uint64_t temp = 0;
+        int32_t i;
+        for( i = n-1; i >= 0; i--)
 #if _MSC_VER
-        temp = temp + static_cast<uint64_t>(buf.pData_[i]*(pow(static_cast<float>(256), n-i-1)));
+            temp = temp + static_cast<uint64_t>(buf.pData_[i]*(pow(static_cast<float>(256), n-i-1)));
 #else
-        temp = temp + buf.pData_[i]*(pow((float)256,n-i-1));
+            temp = temp + buf.pData_[i]*(pow((float)256,n-i-1));
 #endif
 
-    return temp;
-}
+        return temp;
+    }
 
-/*!
+    /*!
  * \brief returnUnsignedBuf converts integer value to byte value
  *                          which can be written to the file.
  * \param intValue
  * \param n
  * \return
  */
-DataBuf returnUnsignedBuf(uint64_t intValue,int32_t n=4)
-{
-    DataBuf buf((uint32_t)(n+1));
-    buf.pData_[n] = '\0';
-    for(int32_t i = n - 1; i >= 0; i--)
+    DataBuf returnUnsignedBuf(uint64_t intValue,int32_t n=4)
     {
-        buf.pData_[i] = (Exiv2::byte)(uint16_t) ((int32_t)(intValue / (int32_t)pow(256.0,n-i-1)) % 256);
+        DataBuf buf((uint32_t)(n+1));
+        buf.pData_[n] = '\0';
+        for(int32_t i = n - 1; i >= 0; i--)
+        {
+            buf.pData_[i] = (Exiv2::byte)(uint16_t) ((int32_t)(intValue / (int32_t)pow(256.0,n-i-1)) % 256);
+        }
+        return buf;
     }
-    return buf;
-}
-/*!
+    /*!
       @brief Function used to quicktime files, by checking the
           the tags at the start of the file. If the Tag is any one
           of the tags listed below, then it is of Quicktime Type.
       @param a, b, c, d - characters used to compare
       @return Returns true, if Tag is found in the list qTimeTags
      */
-bool isQuickTimeType (char a, char b, char c, char d)
-{
-    char qTimeTags[][5] =
+    bool isQuickTimeType (char a, char b, char c, char d)
     {
-        "PICT", "free", "ftyp", "junk", "mdat",
-        "moov", "pict", "pnot", "skip",  "uuid", "wide"
-    };
+        char qTimeTags[][5] =
+        {
+            "PICT", "free", "ftyp", "junk", "mdat",
+            "moov", "pict", "pnot", "skip",  "uuid", "wide"
+        };
 
-    int32_t i;
-    for( i = 0; i <= 10; i++)
-        if(a == qTimeTags[i][0] && b == qTimeTags[i][1] && c == qTimeTags[i][2] && d == qTimeTags[i][3])
-            return true;
-    return false;
-}
+        int32_t i;
+        for( i = 0; i <= 10; i++)
+            if(a == qTimeTags[i][0] && b == qTimeTags[i][1] && c == qTimeTags[i][2] && d == qTimeTags[i][3])
+                return true;
+        return false;
+    }
 
-}
+    }
 
 }                                      // namespace Internal, Exiv2
 
@@ -1235,46 +1235,12 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         }
         else
         {
-            if ((currentStream_ == Video) && (xmpData_["Xmp.video.URL"].count() >0))
-            {
-                Exiv2::byte *rawURL = new byte[size];
-                const std::string URL = xmpData_["Xmp.video.URL"].toString();
-                for(uint32_t j=0; j<min((uint32_t)URL.size(),size); j++)
-                {
-                    rawURL[j] = (Exiv2::byte)URL[j];
-                }
-                if((uint32_t)URL.size() < size)
-                {
-                    for(uint32_t j=(uint32_t)URL.size(); j< size; j++)
-                    {
-                        rawURL[j] = (Exiv2::byte)0;
-                    }
-                }
-                io_->write(rawURL,size);
-                delete[] rawURL;
-            }
+            if(xmpData_["Xmp.video.URL"].count() > 0)
+                this->writeStringData(xmpData_["Xmp.video.URL"],size);
             else if ((currentStream_ == Audio) && (xmpData_["Xmp.audio.URL"].count() >0))
-            {
-                Exiv2::byte *rawURL= new byte[size];
-                const std::string URL = xmpData_["Xmp.audio.URL"].toString();
-                for(uint32_t j=0; j<min((uint32_t)URL.size(),size); j++)
-                {
-                    rawURL[j] = (Exiv2::byte)URL[j];
-                }
-                if((uint32_t)URL.size() < size)
-                {
-                    for(uint32_t j=(uint32_t)URL.size(); j< size; j++)
-                    {
-                        rawURL[j] = (Exiv2::byte)0;
-                    }
-                }
-                io_->write(rawURL,size);
-                delete[] rawURL;
-            }
+                this->writeStringData(xmpData_["Xmp.audio.URL"],size);
             else
-            {
                 io_->seek(size,BasicIo::cur);
-            }
         }
     }
 
@@ -1291,45 +1257,11 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         else
         {
             if ((currentStream_ == Video) && (xmpData_["Xmp.video.URN"].count() >0))
-            {
-                Exiv2::byte *rawURN = new byte[size];
-                const std::string URN = xmpData_["Xmp.video.URN"].toString();
-                for(uint32_t j=0; j<min((uint32_t)URN.size(),size); j++)
-                {
-                    rawURN[j] = (Exiv2::byte)URN[j];
-                }
-                if((uint32_t)URN.size() < size)
-                {
-                    for(uint32_t j=(uint32_t)URN.size(); j< size; j++)
-                    {
-                        rawURN[j] = (Exiv2::byte)0;
-                    }
-                }
-                io_->write(rawURN,size);
-                delete[] rawURN;
-            }
+                this->writeStringData(xmpData_["Xmp.video.URN"],size);
             else if ((currentStream_ == Audio) && (xmpData_["Xmp.audio.URN"].count() >0))
-            {
-                Exiv2::byte *rawURN = new byte[size];
-                const std::string URN = xmpData_["Xmp.audio.URN"].toString();
-                for(uint32_t j=0; j<min((uint32_t)URN.size(),size); j++)
-                {
-                    rawURN[j] = (Exiv2::byte)URN[j];
-                }
-                if((uint32_t)URN.size() < size)
-                {
-                    for(uint32_t j=(uint32_t)URN.size(); j< size; j++)
-                    {
-                        rawURN[j] = (Exiv2::byte)0;
-                    }
-                }
-                io_->write(rawURN,size);
-                delete[] rawURN;
-            }
+                this->writeStringData(xmpData_["Xmp.audio.URN"],size);
             else
-            {
                 io_->seek(size,BasicIo::cur);
-            }
         }
     }
 
@@ -1342,28 +1274,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         }
         else
         {
-            if(xmpData_["Xmp.video.Compressor"].count() >0)
-            {
-                Exiv2::byte *rawCompressor = new byte[size];
-                const std::string compressor = xmpData_["Xmp.video.Compressor"].toString();
-                for(uint32_t j=0; j<min((uint32_t)compressor.size(),size); j++)
-                {
-                    rawCompressor[j] = (Exiv2::byte)compressor[j];
-                }
-                if((uint32_t)compressor.size() < size)
-                {
-                    for(uint32_t j=(uint32_t)compressor.size(); j< size; j++)
-                    {
-                        rawCompressor[j] = (Exiv2::byte)0;
-                    }
-                }
-                io_->write(rawCompressor,size);
-                delete[] rawCompressor;
-            }
-            else
-            {
-                io_->seek(size,BasicIo::cur);
-            }
+            this->writeStringData(xmpData_["Xmp.video.Compressor"],size);
         }
     }
 
@@ -1377,14 +1288,8 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         }
         else
         {
-            if(xmpData_["Xmp.audio.Balance"].count() >0)
-            {
-                io_->write((Exiv2::byte*)xmpData_["Xmp.audio.Balance"].toString().c_str(),4);
-            }
-            else
-            {
-                io_->seek(4,BasicIo::cur);
-            }
+            DataBuf tmpBuf = returnBuf(xmpData_["Xmp.audio.Balance"].toLong());
+            io_->write(tmpBuf.pData_,2);
         }
     }
 
@@ -1423,24 +1328,10 @@ void QuickTimeVideo::previewTagDecoder(uint32_t size)
     }
     else
     {
-        if(xmpData_["Xmp.video.PreviewDate"].count() >0)
-        {
-            const int32_t previewDate = xmpData_["Xmp.video.PreviewDate"].toLong();
-            io_->write((Exiv2::byte*)&previewDate,4);
-        }
-        else
-        {
-            io_->seek(4,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.video.PreviewVersion"].count() >0)
-        {
-            const uint16_t previewVersion = (uint16_t) xmpData_["Xmp.video.PreviewVersion"].toLong();
-            io_->write((Exiv2::byte*)&previewVersion,2);
-        }
-        else
-        {
-            io_->seek(2,BasicIo::cur);
-        }
+        this->writeLongData(xmpData_["Xmp.video.PreviewDate"]);
+        this->writeShortData(xmpData_["Xmp.video.PreviewVersion"]);
+
+        //Variation
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
         {
             DataBuf buf((uint32_t)5);
@@ -1491,24 +1382,10 @@ void QuickTimeVideo::keysTagDecoder(uint32_t size)
     }
     else
     {
-        if(xmpData_["Xmp.video.PreviewDate"].count() >0)
-        {
-            const int32_t previewDate = xmpData_["Xmp.video.PreviewDate"].toLong();
-            io_->write((Exiv2::byte*)&previewDate,4);
-        }
-        else
-        {
-            io_->seek(4,BasicIo::cur);
-        }
-        if(xmpData_["Xmp.video.PreviewVersion"].count() >0)
-        {
-            const uint16_t previewVersion = (uint16_t) xmpData_["Xmp.video.PreviewVersion"].toLong();
-            io_->write((Exiv2::byte*)&previewVersion,2);
-        }
-        else
-        {
-            io_->seek(2,BasicIo::cur);
-        }
+        this->writeLongData(xmpData_["Xmp.video.PreviewDate"]);
+        this->writeShortData(xmpData_["Xmp.video.PreviewVersion"]);
+
+        //Variation
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
         {
             DataBuf buf((uint32_t)5);
@@ -1593,128 +1470,20 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size)
             if(equalsQTimeTag(buf, "clef"))
             {
                 io_->seek(static_cast<int32_t>(4), BasicIo::cur);
-                if(xmpData_["Xmp.video.CleanApertureWidth"].count() >0)
-                {
-                    Exiv2::byte rawCleanApertureWidth[4];
-                    Exiv2::byte rawCleanApertureWidthTmp[2];
-                    const std::string cleanApertureWidth =  xmpData_["Xmp.video.CleanApertureWidth"].toString();
-                    vector<uint16_t> cleanApertureWidthValue = getNumberFromString(cleanApertureWidth,'.');
-                    memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(0),2);
-                    rawCleanApertureWidth[0] = rawCleanApertureWidthTmp[0];
-                    rawCleanApertureWidth[1] = rawCleanApertureWidthTmp[1];
-                    memcpy(rawCleanApertureWidthTmp,&cleanApertureWidthValue.at(1),2);
-                    rawCleanApertureWidth[2] = rawCleanApertureWidthTmp[0];
-                    rawCleanApertureWidth[3] = rawCleanApertureWidthTmp[1];
-                    io_->write(rawCleanApertureWidth,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
-
-                if(xmpData_["Xmp.video.CleanApertureHeight"].count() >0)
-                {
-                    Exiv2::byte rawCleanApertureHeight[4];
-                    Exiv2::byte rawCleanApertureHeightTmp[2];
-                    const std::string cleanApertureHeight =  xmpData_["Xmp.video.CleanApertureHeight"].toString();
-                    vector<uint16_t> cleanApertureHeightValue = getNumberFromString(cleanApertureHeight,'.');
-                    memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(0),2);
-                    rawCleanApertureHeight[0] = rawCleanApertureHeightTmp[0];
-                    rawCleanApertureHeight[1] = rawCleanApertureHeightTmp[1];
-                    memcpy(rawCleanApertureHeightTmp,&cleanApertureHeightValue.at(1),2);
-                    rawCleanApertureHeight[2] = rawCleanApertureHeightTmp[0];
-                    rawCleanApertureHeight[3] = rawCleanApertureHeightTmp[1];
-                    io_->write(rawCleanApertureHeight,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
+                this->writeApertureData(xmpData_["Xmp.video.CleanApertureWidth"],4);
+                this->writeApertureData(xmpData_["Xmp.video.CleanApertureHeight"],4);
             }
-
             else if(equalsQTimeTag(buf, "prof"))
             {
                 io_->seek(static_cast<int32_t>(4), BasicIo::cur);
-                if(xmpData_["Xmp.video.ProductionApertureWidth"].count() >0)
-                {
-                    Exiv2::byte rawProductionApertureWidth[4];
-                    Exiv2::byte rawProductionApertureWidthTmp[2];
-                    const std::string productionApertureWidth =  xmpData_["Xmp.video.ProductionApertureWidth"].toString();
-                    vector<uint16_t> productionApertureWidthValue = getNumberFromString(productionApertureWidth,'.');
-                    memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(0),2);
-                    rawProductionApertureWidth[0] = rawProductionApertureWidthTmp[0];
-                    rawProductionApertureWidth[1] = rawProductionApertureWidthTmp[1];
-                    memcpy(rawProductionApertureWidthTmp,&productionApertureWidthValue.at(1),2);
-                    rawProductionApertureWidth[2] = rawProductionApertureWidthTmp[0];
-                    rawProductionApertureWidth[3] = rawProductionApertureWidthTmp[1];
-                    io_->write(rawProductionApertureWidth,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
-
-                if(xmpData_["Xmp.video.ProductionApertureHeight"].count() >0)
-                {
-                    Exiv2::byte rawProductionApertureHeight[4];
-                    Exiv2::byte rawProductionApertureHeightTmp[2];
-                    const std::string productionApertureHeight =  xmpData_["Xmp.video.ProductionApertureHeight"].toString();
-                    vector<uint16_t> productionApertureHeightValue = getNumberFromString(productionApertureHeight,'.');
-                    memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(0),2);
-                    rawProductionApertureHeight[0] = rawProductionApertureHeightTmp[0];
-                    rawProductionApertureHeight[1] = rawProductionApertureHeightTmp[1];
-                    memcpy(rawProductionApertureHeightTmp,&productionApertureHeightValue.at(1),2);
-                    rawProductionApertureHeight[2] = rawProductionApertureHeightTmp[0];
-                    rawProductionApertureHeight[3] = rawProductionApertureHeightTmp[1];
-                    io_->write(rawProductionApertureHeight,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
+                this->writeApertureData(xmpData_["Xmp.video.ProductionApertureWidth"],4);
+                this->writeApertureData(xmpData_["Xmp.video.ProductionApertureHeight"],4);
             }
             else if(equalsQTimeTag(buf, "enof"))
             {
                 io_->seek(static_cast<int32_t>(4), BasicIo::cur);
-                if(xmpData_["Xmp.video.EncodedPixelsWidth"].count() >0)
-                {
-                    Exiv2::byte rawEncodedPixelsWidth[4];
-                    Exiv2::byte rawEncodedPixelsWidthTmp[2];
-                    const std::string encodedPixelsWidth =  xmpData_["Xmp.video.EncodedPixelsWidth"].toString();
-                    vector<uint16_t> encodedPixelsWidthValue = getNumberFromString(encodedPixelsWidth,'.');
-                    memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(0),2);
-                    rawEncodedPixelsWidth[0] = rawEncodedPixelsWidthTmp[0];
-                    rawEncodedPixelsWidth[1] = rawEncodedPixelsWidthTmp[1];
-
-                    memcpy(rawEncodedPixelsWidthTmp,&encodedPixelsWidthValue.at(1),2);
-                    rawEncodedPixelsWidth[2] = rawEncodedPixelsWidthTmp[0];
-                    rawEncodedPixelsWidth[3] = rawEncodedPixelsWidthTmp[1];
-                    io_->write(rawEncodedPixelsWidth,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
-
-                if(xmpData_["Xmp.video.EncodedPixelsHeight"].count() >0)
-                {
-                    Exiv2::byte rawEncodedPixelsHeight[4];
-                    Exiv2::byte rawEncodedPixelsHeightTmp[2];
-                    const std::string encodedPixelsHeight =  xmpData_["Xmp.video.EncodedPixelsHeight"].toString();
-                    vector<uint16_t> encodedPixelsHeightValue = getNumberFromString(encodedPixelsHeight,'.');
-                    memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(0),2);
-                    rawEncodedPixelsHeight[0] = rawEncodedPixelsHeightTmp[0];
-                    rawEncodedPixelsHeight[1] = rawEncodedPixelsHeightTmp[1];
-
-                    memcpy(rawEncodedPixelsHeightTmp,&encodedPixelsHeightValue.at(1),2);
-                    rawEncodedPixelsHeight[2] = rawEncodedPixelsHeightTmp[0];
-                    rawEncodedPixelsHeight[3] = rawEncodedPixelsHeightTmp[1];
-                    io_->write(rawEncodedPixelsHeight,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
+                this->writeApertureData(xmpData_["Xmp.video.EncodedPixelsWidth"],4);
+                this->writeApertureData(xmpData_["Xmp.video.EncodedPixelsHeight"],4);
             }
         }
         io_->seek(static_cast<int32_t>(cur_pos + size), BasicIo::beg);
@@ -1759,136 +1528,92 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
         }
         else
         {
-            if(equalsQTimeTag(buf, "NIKO"))
-            {
-                io_->seek(cur_pos, BasicIo::beg);
-                RevTagDetails revTagDetails[(sizeof(whiteBalance)/sizeof(whiteBalance[0]))];
-                reverseTagDetails(whiteBalance,revTagDetails,((sizeof(whiteBalance)/sizeof(whiteBalance[0]))));
+            RevTagDetails revTagDetails[(sizeof(whiteBalance)/sizeof(whiteBalance[0]))];
+            reverseTagDetails(whiteBalance,revTagDetails,((sizeof(whiteBalance)/sizeof(whiteBalance[0]))));
 
-                if(xmpData_["Xmp.video.Make"].count() >0)
+            this->writeShortData(xmpData_["Xmp.video.Make"],24);
+            this->writeShortData(xmpData_["Xmp.video.Model"],24);
+
+            //Variation
+            if(xmpData_["Xmp.video.ExposureTime"].count() >0)
+            {
+                const std::vector<int32_t> d_exposureTime =
+                        getLongFromString(xmpData_["Xmp.video.ExposureTime"].toString(),'/');
+                const int32_t tmpValue = (d_exposureTime.at(1)*10);
+                io_->write((Exiv2::byte*)&tmpValue,4);
+            }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+
+            //Variation
+            if(xmpData_["Xmp.video.FNumber"].count() >0)
+            {
+                io_->seek(4,BasicIo::cur);
+                io_->read(buf2.pData_,4);
+                io_->seek(-8,BasicIo::cur);
+                const int32_t fNumber =(int32_t)
+                        ((double)xmpData_["Xmp.video.FNumber"].toLong()
+                        *(double)getULong(buf2.pData_, littleEndian));
+                io_->write((Exiv2::byte*)&fNumber,4);
+                io_->seek(4,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(8,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.ExposureCompensation"].count() >0)
+            {
+                io_->seek(4,BasicIo::cur);
+                io_->read(buf2.pData_,4);
+                io_->seek(-8,BasicIo::cur);
+                const int32_t exposureCompensation =(int32_t)
+                        ((double)xmpData_["Xmp.video.ExposureCompensation"].toLong()
+                        *(double)getULong(buf2.pData_, littleEndian));
+                io_->write((Exiv2::byte*)&exposureCompensation,4);
+                io_->seek(14,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(18,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
+            {
+                rtd = find(revTagDetails,xmpData_["Xmp.video.WhiteBalance"].toString());
+                if(rtd)
                 {
-                    Exiv2::byte rawMake[24];
-                    const std::string make = xmpData_["Xmp.video.Make"].toString();
-                    int32_t j;
-                    for( j=0; j<24; j++)
-                    {
-                        rawMake[j] = make[j];
-                    }
-                    io_->write(rawMake,24);
-                }
-                else
-                {
-                    io_->seek(24,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.Model"].count() >0)
-                {
-                    Exiv2::byte rawModel[14];
-                    const std::string model = xmpData_["Xmp.video.Model"].toString();
-                    int32_t j;
-                    for( j=0; j<14; j++)
-                    {
-                        rawModel[j] = model[j];
-                    }
-                    io_->write(rawModel,14);
-                }
-                else
-                {
-                    io_->seek(14,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.ExposureTime"].count() >0)
-                {
-                    const std::vector<int32_t> d_exposureTime =
-                            getLongFromString(xmpData_["Xmp.video.ExposureTime"].toString(),'/');
-                    const int32_t tmpValue = (d_exposureTime.at(1)*10);
-                    io_->write((Exiv2::byte*)&tmpValue,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.FNumber"].count() >0)
-                {
-                    io_->seek(4,BasicIo::cur);
-                    io_->read(buf2.pData_,4);
-                    io_->seek(-8,BasicIo::cur);
-                    const int32_t fNumber =(int32_t)
-                            ((double)xmpData_["Xmp.video.FNumber"].toLong()
-                            *(double)getULong(buf2.pData_, littleEndian));
-                    io_->write((Exiv2::byte*)&fNumber,4);
-                    io_->seek(4,BasicIo::cur);
-                }
-                else
-                {
-                    io_->seek(8,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.ExposureCompensation"].count() >0)
-                {
-                    io_->seek(4,BasicIo::cur);
-                    io_->read(buf2.pData_,4);
-                    io_->seek(-8,BasicIo::cur);
-                    const int32_t exposureCompensation =(int32_t)
-                            ((double)xmpData_["Xmp.video.ExposureCompensation"].toLong()
-                            *(double)getULong(buf2.pData_, littleEndian));
-                    io_->write((Exiv2::byte*)&exposureCompensation,4);
-                    io_->seek(14,BasicIo::cur);
-                }
-                else
-                {
-                    io_->seek(18,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
-                {
-                    rtd = find(revTagDetails,xmpData_["Xmp.video.WhiteBalance"].toString());
-                    if(rtd)
-                    {
-                        const int32_t sWhiteBalance = (int32_t)rtd->val_;
-                        io_->write((Exiv2::byte*)&sWhiteBalance,4);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
+                    const int32_t sWhiteBalance = (int32_t)rtd->val_;
+                    io_->write((Exiv2::byte*)&sWhiteBalance,4);
                 }
                 else
                 {
                     io_->seek(4,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.FocalLength"].count() >0)
-                {
-                    io_->seek(4,BasicIo::cur);
-                    io_->read(buf2.pData_,4);
-                    io_->seek(-8,BasicIo::cur);
-                    const int32_t focalLength =(int32_t)((double)xmpData_["Xmp.video.FocalLength"].toLong()
-                            *(double)getULong(buf2.pData_, littleEndian));
-                    io_->write((Exiv2::byte*)&focalLength,4);
-                    io_->seek(99,BasicIo::cur);
-                }
-                else
-                {
-                    io_->seek(103,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.Software"].count() >0)
-                {
-                    Exiv2::byte rawSoftware[48];
-                    const std::string software = xmpData_["Xmp.video.Software"].toString();
-                    int32_t j;
-                    for( j=0; j<48; j++)
-                    {
-                        rawSoftware[j] = software[j];
-                    }
-                    io_->write(rawSoftware,48);
-                }
-                else
-                {
-                    io_->seek(48,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.ISO"].count() >0)
-                {
-                    const int32_t ISO = xmpData_["Xmp.video.ISO"].toLong();
-                    io_->write((Exiv2::byte*)&ISO,4);
                 }
             }
+            else
+            {
+                io_->seek(4,BasicIo::cur);
+            }
+            if(xmpData_["Xmp.video.FocalLength"].count() >0)
+            {
+                io_->seek(4,BasicIo::cur);
+                io_->read(buf2.pData_,4);
+                io_->seek(-8,BasicIo::cur);
+                const int32_t focalLength =(int32_t)((double)xmpData_["Xmp.video.FocalLength"].toLong()
+                        *(double)getULong(buf2.pData_, littleEndian));
+                io_->write((Exiv2::byte*)&focalLength,4);
+                io_->seek(99,BasicIo::cur);
+            }
+            else
+            {
+                io_->seek(103,BasicIo::cur);
+            }
+
+            this->writeStringData(xmpData_["Xmp.video.Software"],48);
+            this->writeLongData(xmpData_["Xmp.video.ISO"]);
         }
+
         io_->seek(cur_pos + size_external, BasicIo::beg);
     }
     return;
@@ -2002,28 +1727,7 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
                     || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
                     || equalsQTimeTag(buf, "FFMV"))
             {
-                if(xmpData_[exvGettext(tv->label_)].count() > 0)
-                {
-                    Exiv2::byte *rawTagData= new byte[size-8];
-                    const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
-                    int32_t j;
-                    for(j=0; j <min((int32_t)(size-8),(int32_t)xmpData_[exvGettext(tv->label_)].size()); j++)
-                    {
-                        rawTagData[j] = tagData[j];
-                    }
-                    if((int32_t)(size-8) > (int32_t)xmpData_[exvGettext(tv->label_)].size())
-                    {
-                        for(int32_t j=(int32_t)xmpData_[exvGettext(tv->label_)].size(); j<(int32_t)(size-8); j++)
-                        {
-                            rawTagData[j] = (Exiv2::byte)0;
-                        }
-                    }
-                    io_->write(rawTagData,(size-8));
-                }
-                else
-                {
-                    io_->seek((size-8),BasicIo::cur);
-                }
+                this->writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
             }
 
             else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo"))
@@ -2033,28 +1737,7 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
 
             else if(tv)
             {
-                if(xmpData_[exvGettext(tv->label_)].count() >0)
-                {
-                    Exiv2::byte *rawtagData = new byte[size-8];
-                    uint32_t newXmpDataSize = xmpData_[exvGettext(tv->label_)].size();
-                    const std::string tagData = xmpData_[exvGettext(tv->label_)].toString();
-                    for(uint32_t j=0; j<min((uint32_t)size-8,(uint32_t)newXmpDataSize); j++)
-                    {
-                        rawtagData[j] = tagData[j];
-                    }
-                    if((uint32_t)size-8 > (uint32_t)newXmpDataSize)
-                    {
-                        for(uint32_t j=newXmpDataSize; j<(uint32_t)(size-8); j++)
-                        {
-                            rawtagData[j] = (Exiv2::byte)0;
-                        }
-                    }
-                    io_->write(rawtagData,(size-8));
-                }
-                else
-                {
-                    io_->seek((size-12),BasicIo::cur);
-                }
+                this->writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
             }
         }
         io_->seek(cur_pos + size_external, BasicIo::beg);
@@ -2312,54 +1995,11 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
             {
                 uint64_t local_pos = io_->tell();
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
-
-                if(xmpData_["Xmp.video.PictureControlVersion"].count() >0)
-                {
-                    Exiv2::byte rawPictureControlVersion[4];
-                    const std::string pictureControlVersion = xmpData_["Xmp.video.PictureControlVersion"].toString();
-                    int32_t j;
-                    for(j=0; j<4; j++)
-                    {
-                        rawPictureControlVersion[j] = pictureControlVersion[j];
-                    }
-                    io_->write(rawPictureControlVersion,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.PictureControlName"].count() >0)
-                {
-                    byte rawPictureControlName[20];
-                    const std::string pictureControlName = xmpData_["Xmp.video.PictureControlName"].toString();
-                    int32_t j;
-                    for(j=0; j<min(20,(int)pictureControlName.size()); j++)
-                    {
-                        rawPictureControlName[j] = pictureControlName[j];
-                    }
-                    io_->write(rawPictureControlName,20);
-                }
-                else
-                {
-                    io_->seek(20,BasicIo::cur);
-                }
-                if(xmpData_["Xmp.video.PictureControlBase"].count() >0)
-                {
-                    byte rawPictureControlBase[20];
-                    const std::string pictureControlBase = xmpData_["Xmp.video.PictureControlBase"].toString();
-                    int32_t j;
-                    for(j=0; j<min(20,(int)pictureControlBase.size()); j++)
-                    {
-                        rawPictureControlBase[j] = pictureControlBase[j];
-                    }
-                    io_->write(rawPictureControlBase,20);
-                }
-                else
-                {
-                    io_->seek(20,BasicIo::cur);
-                }
-
-                io_->seek(4,BasicIo::cur);   std::memset(buf.pData_, 0x0, buf.size_);
+                this->writeShortData(xmpData_["Xmp.video.PictureControlVersion"],4);
+                this->writeShortData(xmpData_["Xmp.video.PictureControlName"],20);
+                this->writeShortData(xmpData_["Xmp.video.PictureControlBase"],20);
+                io_->seek(4,BasicIo::cur);
+                std::memset(buf.pData_, 0x0, buf.size_);
 
                 if(xmpData_["Xmp.video.PictureControlAdjust"].count() >0)
                 {
@@ -2381,6 +2021,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 {
                     io_->seek(1,BasicIo::cur);
                 }
+
                 if(xmpData_["Xmp.video.PictureControlQuickAdjust"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
@@ -2544,15 +2185,8 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
                 std::memset(buf.pData_, 0x0, buf.size_);
 
-                if(xmpData_["Xmp.video.TimeZone"].count() >0)
-                {
-                    uint16_t timeZone = (uint16_t)xmpData_["Xmp.video.TimeZone"].toLong();
-                    io_->write((Exiv2::byte*)&timeZone,2);
-                }
-                else
-                {
-                    io_->seek(2,BasicIo::cur);
-                }
+                this->writeShortData(xmpData_["Xmp.video.TimeZone"]);
+
                 if(xmpData_["Xmp.video.DayLightSavings"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(YesNo)/sizeof(YesNo[0]))];
@@ -2605,28 +2239,9 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 else
                 {
                     if(td && (xmpData_[exvGettext(td->label_)].count() >0))
-                    {
-                        Exiv2::byte *rawTagData = new byte[dataLength];
-                        const std::string m_strData = xmpData_[exvGettext(td->label_)].toString();
-                        int32_t j;
-                        for(j=0; j<min((int32_t)dataLength,(int32_t)m_strData.size()); j++)
-                        {
-                            rawTagData[j] = m_strData[j];
-                        }
-                        if((int32_t)dataLength > (int32_t)m_strData.size())
-                        {
-                            for(j=(int32_t)m_strData.size(); j<(int32_t)dataLength; j++)
-                            {
-                                rawTagData[j] = (Exiv2::byte)0;
-                            }
-                        }
-                        io_->write(rawTagData,dataLength);
-                        delete[] rawTagData;
-                    }
+                        this->writeStringData(xmpData_[exvGettext(td->label_)],dataLength);
                     else
-                    {
                         io_->seek(dataLength,BasicIo::cur);
-                    }
                 }
             }
             else if(dataType == 4) // what is 4?  would it be better to have an enum with a name for each dataType?
@@ -2634,10 +2249,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
                 if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
                 {
-                    // byte rawTagData[4];
-                    const int32_t tagData = xmpData_[exvGettext(td->label_)].toLong();
-                    io_->write((Exiv2::byte*)&tagData,4);
-                    io_->seek((dataLength-4),BasicIo::cur);
+                    this->writeLongData(xmpData_[exvGettext(td->label_)],4,dataLength-4);
                 }
                 else
                 {
@@ -2651,9 +2263,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 io_->read(buf.pData_, 2);
                 if(td &&(xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
                 {
-                    const uint16_t tagData = (uint16_t)xmpData_[exvGettext(td->label_)].toLong();
-                    io_->write((Exiv2::byte*)&tagData,2);
-                    io_->seek((dataLength-2),BasicIo::cur);
+                    this->writeShortData(xmpData_[exvGettext(td->label_)],2,dataLength-2);
                 }
                 else
                 {
@@ -4580,6 +4190,85 @@ Image::AutoPtr newQTimeInstance(BasicIo::AutoPtr io, bool /*create*/)
         image.reset();
     }
     return image;
+}
+
+void QuickTimeVideo::writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size, int32_t skipOffset)
+{
+    if(xmpStringData.count() > 0)
+    {
+        std::string dataString = xmpStringData.toString();
+        Exiv2::byte* rawData = new byte[(uint8_t)size];
+        int32_t newSize = (int32_t)dataString.size();
+        for(int32_t i=0; i<min(newSize,size); i++)
+        {
+            rawData[i] = (Exiv2::byte)dataString[i];
+        }
+        if(size > newSize)
+        {
+            for(int32_t i=newSize; i<size; i++)
+            {
+                rawData[i] = (Exiv2::byte)0;
+            }
+        }
+        io_->write(rawData,size);
+        io_->seek((int)skipOffset,BasicIo::cur);
+        delete[] rawData;
+    }
+    else
+    {
+        io_->seek((size+skipOffset),BasicIo::cur);
+    }
+}
+
+void QuickTimeVideo::writeLongData(Exiv2::Xmpdatum xmpIntData, int32_t size, int32_t skipOffset)
+{
+    if(xmpIntData.count() > 0)
+    {
+        int32_t  rawIntData = (int32_t)xmpIntData.toLong();
+        io_->write((Exiv2::byte*)&rawIntData,size);
+        io_->seek(skipOffset,BasicIo::cur);
+    }
+    else
+    {
+        io_->seek((size+skipOffset),BasicIo::cur);
+    }
+}
+
+void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, int32_t skipOffset)
+{
+    if(xmpIntData.count() > 0)
+    {
+        int16_t  rawIntData = (int16_t)xmpIntData.toLong();
+        io_->write((Exiv2::byte*)&rawIntData,size);
+        io_->seek(skipOffset,BasicIo::cur);
+    }
+    else
+    {
+        io_->seek((size+skipOffset),BasicIo::cur);
+    }
+}
+
+void QuickTimeVideo::writeApertureData(Exiv2::Xmpdatum xmpApertureData, int16_t size, int32_t skipOffset)
+{
+    if(xmpApertureData.count() >0)
+    {
+        Exiv2::byte rawApertureData[4];
+        Exiv2::byte rawApertureDataTmp[2];
+        const std::string apertureData =  xmpApertureData.toString();
+        vector<uint16_t> apertureDataValue = getNumberFromString(apertureData,'.');
+        memcpy(rawApertureDataTmp,&apertureDataValue.at(0),2);
+        rawApertureData[0] = rawApertureDataTmp[0];
+        rawApertureData[1] = rawApertureDataTmp[1];
+        memcpy(rawApertureDataTmp,&apertureDataValue.at(1),2);
+        rawApertureData[2] = rawApertureDataTmp[0];
+        rawApertureData[3] = rawApertureDataTmp[1];
+        io_->write(rawApertureData,size);
+        io_->seek(skipOffset,BasicIo::cur);
+    }
+    else
+    {
+        io_->seek((size+skipOffset),BasicIo::cur);
+    }
 }
 
 bool isQTimeType(BasicIo& iIo, bool advance)

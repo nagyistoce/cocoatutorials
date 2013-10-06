@@ -152,6 +152,15 @@ namespace Exiv2
              */
         EXV_DLLLOCAL void doWriteMetadata();
 
+        /*!
+           * \brief writeStringData
+           * \param xmpStringData
+           * \param size
+           * \param skipOffset
+           */
+          void writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size, int32_t skipOffset=0);
+
+
     private:
         //! Variable to check the end of metadata traversing.
         bool continueTraversing_;
