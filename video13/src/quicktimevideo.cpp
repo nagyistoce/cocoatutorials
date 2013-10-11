@@ -1236,9 +1236,9 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         else
         {
             if(xmpData_["Xmp.video.URL"].count() > 0)
-                this->writeStringData(xmpData_["Xmp.video.URL"],size);
+                writeStringData(xmpData_["Xmp.video.URL"],size);
             else if ((currentStream_ == Audio) && (xmpData_["Xmp.audio.URL"].count() >0))
-                this->writeStringData(xmpData_["Xmp.audio.URL"],size);
+                writeStringData(xmpData_["Xmp.audio.URL"],size);
             else
                 io_->seek(size,BasicIo::cur);
         }
@@ -1257,9 +1257,9 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         else
         {
             if ((currentStream_ == Video) && (xmpData_["Xmp.video.URN"].count() >0))
-                this->writeStringData(xmpData_["Xmp.video.URN"],size);
+                writeStringData(xmpData_["Xmp.video.URN"],size);
             else if ((currentStream_ == Audio) && (xmpData_["Xmp.audio.URN"].count() >0))
-                this->writeStringData(xmpData_["Xmp.audio.URN"],size);
+                writeStringData(xmpData_["Xmp.audio.URN"],size);
             else
                 io_->seek(size,BasicIo::cur);
         }
@@ -1274,7 +1274,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
         }
         else
         {
-            this->writeStringData(xmpData_["Xmp.video.Compressor"],size);
+            writeStringData(xmpData_["Xmp.video.Compressor"],size);
         }
     }
 
@@ -1328,8 +1328,8 @@ void QuickTimeVideo::previewTagDecoder(uint32_t size)
     }
     else
     {
-        this->writeLongData(xmpData_["Xmp.video.PreviewDate"]);
-        this->writeShortData(xmpData_["Xmp.video.PreviewVersion"]);
+        writeLongData(xmpData_["Xmp.video.PreviewDate"]);
+        writeShortData(xmpData_["Xmp.video.PreviewVersion"]);
 
         //Variation
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
@@ -1382,8 +1382,8 @@ void QuickTimeVideo::keysTagDecoder(uint32_t size)
     }
     else
     {
-        this->writeLongData(xmpData_["Xmp.video.PreviewDate"]);
-        this->writeShortData(xmpData_["Xmp.video.PreviewVersion"]);
+        writeLongData(xmpData_["Xmp.video.PreviewDate"]);
+        writeShortData(xmpData_["Xmp.video.PreviewVersion"]);
 
         //Variation
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
@@ -1470,20 +1470,20 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size)
             if(equalsQTimeTag(buf, "clef"))
             {
                 io_->seek(static_cast<int32_t>(4), BasicIo::cur);
-                this->writeApertureData(xmpData_["Xmp.video.CleanApertureWidth"],4);
-                this->writeApertureData(xmpData_["Xmp.video.CleanApertureHeight"],4);
+                writeApertureData(xmpData_["Xmp.video.CleanApertureWidth"],4);
+                writeApertureData(xmpData_["Xmp.video.CleanApertureHeight"],4);
             }
             else if(equalsQTimeTag(buf, "prof"))
             {
                 io_->seek(static_cast<int32_t>(4), BasicIo::cur);
-                this->writeApertureData(xmpData_["Xmp.video.ProductionApertureWidth"],4);
-                this->writeApertureData(xmpData_["Xmp.video.ProductionApertureHeight"],4);
+                writeApertureData(xmpData_["Xmp.video.ProductionApertureWidth"],4);
+                writeApertureData(xmpData_["Xmp.video.ProductionApertureHeight"],4);
             }
             else if(equalsQTimeTag(buf, "enof"))
             {
                 io_->seek(static_cast<int32_t>(4), BasicIo::cur);
-                this->writeApertureData(xmpData_["Xmp.video.EncodedPixelsWidth"],4);
-                this->writeApertureData(xmpData_["Xmp.video.EncodedPixelsHeight"],4);
+                writeApertureData(xmpData_["Xmp.video.EncodedPixelsWidth"],4);
+                writeApertureData(xmpData_["Xmp.video.EncodedPixelsHeight"],4);
             }
         }
         io_->seek(static_cast<int32_t>(cur_pos + size), BasicIo::beg);
@@ -1531,8 +1531,8 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
             RevTagDetails revTagDetails[(sizeof(whiteBalance)/sizeof(whiteBalance[0]))];
             reverseTagDetails(whiteBalance,revTagDetails,((sizeof(whiteBalance)/sizeof(whiteBalance[0]))));
 
-            this->writeShortData(xmpData_["Xmp.video.Make"],24);
-            this->writeShortData(xmpData_["Xmp.video.Model"],24);
+            writeShortData(xmpData_["Xmp.video.Make"],24);
+            writeShortData(xmpData_["Xmp.video.Model"],24);
 
             //Variation
             if(xmpData_["Xmp.video.ExposureTime"].count() >0)
@@ -1610,8 +1610,8 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
                 io_->seek(103,BasicIo::cur);
             }
 
-            this->writeStringData(xmpData_["Xmp.video.Software"],48);
-            this->writeLongData(xmpData_["Xmp.video.ISO"]);
+            writeStringData(xmpData_["Xmp.video.Software"],48);
+            writeLongData(xmpData_["Xmp.video.ISO"]);
         }
 
         io_->seek(cur_pos + size_external, BasicIo::beg);
@@ -1727,7 +1727,7 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
                     || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
                     || equalsQTimeTag(buf, "FFMV"))
             {
-                this->writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
+                writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
             }
 
             else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo"))
@@ -1737,7 +1737,7 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
 
             else if(tv)
             {
-                this->writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
+                writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
             }
         }
         io_->seek(cur_pos + size_external, BasicIo::beg);
@@ -1995,9 +1995,9 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
             {
                 uint64_t local_pos = io_->tell();
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
-                this->writeShortData(xmpData_["Xmp.video.PictureControlVersion"],4);
-                this->writeShortData(xmpData_["Xmp.video.PictureControlName"],20);
-                this->writeShortData(xmpData_["Xmp.video.PictureControlBase"],20);
+                writeShortData(xmpData_["Xmp.video.PictureControlVersion"],4);
+                writeShortData(xmpData_["Xmp.video.PictureControlName"],20);
+                writeShortData(xmpData_["Xmp.video.PictureControlBase"],20);
                 io_->seek(4,BasicIo::cur);
                 std::memset(buf.pData_, 0x0, buf.size_);
 
@@ -2185,7 +2185,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian);
                 std::memset(buf.pData_, 0x0, buf.size_);
 
-                this->writeShortData(xmpData_["Xmp.video.TimeZone"]);
+                writeShortData(xmpData_["Xmp.video.TimeZone"]);
 
                 if(xmpData_["Xmp.video.DayLightSavings"].count() >0)
                 {
@@ -2239,7 +2239,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 else
                 {
                     if(td && (xmpData_[exvGettext(td->label_)].count() >0))
-                        this->writeStringData(xmpData_[exvGettext(td->label_)],dataLength);
+                        writeStringData(xmpData_[exvGettext(td->label_)],dataLength);
                     else
                         io_->seek(dataLength,BasicIo::cur);
                 }
@@ -2249,7 +2249,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
                 if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
                 {
-                    this->writeLongData(xmpData_[exvGettext(td->label_)],4,dataLength-4);
+                    writeLongData(xmpData_[exvGettext(td->label_)],4,dataLength-4);
                 }
                 else
                 {
@@ -2263,7 +2263,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 io_->read(buf.pData_, 2);
                 if(td &&(xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
                 {
-                    this->writeShortData(xmpData_[exvGettext(td->label_)],2,dataLength-2);
+                    writeShortData(xmpData_[exvGettext(td->label_)],2,dataLength-2);
                 }
                 else
                 {

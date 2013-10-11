@@ -1105,9 +1105,9 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
         int32_t bufMinSize = (uint32_t)Exiv2::getShort(dataLength.pData_, littleEndian);
 
         if(xmpData_["Xmp.video.DateUT"].count() > 0)
-            this->writeStringData(xmpData_["Xmp.video.DateUT"],bufMinSize);
+            writeStringData(xmpData_["Xmp.video.DateUT"],bufMinSize);
         else if(xmpData_["Xmp.video.StreamName"].count() >0)
-            this->writeStringData(xmpData_["Xmp.video.StreamName"],bufMinSize);
+            writeStringData(xmpData_["Xmp.video.StreamName"],bufMinSize);
         io_->seek(cur_pos + size, BasicIo::beg);
     }
     return;
@@ -1151,7 +1151,7 @@ void RiffVideo::odmlTagsHandler()
                 if(equalsRiffTag(buf,"DMLH"))
                 {
                     io_->seek(4,BasicIo::cur);
-                    this->writeLongData(xmpData_["Xmp.video.TotalFrameCount"]);
+                    writeLongData(xmpData_["Xmp.video.TotalFrameCount"]);
                     return;
                 }
             }
@@ -1224,7 +1224,7 @@ void RiffVideo::nikonTagsHandler()
                     }
                     else
                     {
-                        this->writeStringData(xmpData_["Xmp.video.MakerNoteType"],dataSize);
+                        writeStringData(xmpData_["Xmp.video.MakerNoteType"],dataSize);
                     }
                 }
                 else if (tagID == 0x0002)
@@ -1351,11 +1351,11 @@ void RiffVideo::nikonTagsHandler()
                         case 0x0003: case 0x0004: case 0x0005: case 0x0006:
                         case 0x0013: case 0x0014: case 0x0018: case 0x001d:
                         case 0x001e: case 0x001f: case 0x0020:
-                            this->writeStringData(xmpData_[exvGettext(td->label_)],dataSize);
+                            writeStringData(xmpData_[exvGettext(td->label_)],dataSize);
                             break;
                         case 0x0007: case 0x0010: case 0x0011: case 0x000c:
                         case 0x0012:
-                            this->writeLongData(xmpData_[exvGettext(td->label_)],dataSize);
+                            writeLongData(xmpData_[exvGettext(td->label_)],dataSize);
                             break;
                         case 0x0008: case 0x0009: case 0x000a: case 0x000b:
                         case 0x000f: case 0x001b: case 0x0016:
@@ -1472,7 +1472,7 @@ void RiffVideo::infoTagsHandler()
             {
                 if(xmpData_[exvGettext(tv->label_)].count() >0)
                 {
-                    this->writeStringData(xmpData_[exvGettext(tv->label_)],infoSize);
+                    writeStringData(xmpData_[exvGettext(tv->label_)],infoSize);
                 }
             }
         }
@@ -1797,7 +1797,7 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
         {
             switch(i)
             {
-            case frameRate: this->writeLongData(xmpData_["Xmp.video.MicroSecPerFrame"]);
+            case frameRate: writeLongData(xmpData_["Xmp.video.MicroSecPerFrame"]);
                 break;
 
                 //Variation
@@ -1813,22 +1813,22 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
                 }
                 break;
 
-            case frameCount: this->writeLongData(xmpData_["Xmp.video.FrameCount"]);
+            case frameCount: writeLongData(xmpData_["Xmp.video.FrameCount"]);
                 break;
 
-            case initialFrames: this->writeLongData(xmpData_["Xmp.video.InitialFrames"]);
+            case initialFrames: writeLongData(xmpData_["Xmp.video.InitialFrames"]);
                 break;
 
-            case streamCount: this->writeLongData(xmpData_["Xmp.video.StreamCount"]);
+            case streamCount: writeLongData(xmpData_["Xmp.video.StreamCount"]);
                 break;
 
-            case suggestedBufferSize: this->writeLongData(xmpData_["Xmp.video.SuggestedBufferSize"]);
+            case suggestedBufferSize: writeLongData(xmpData_["Xmp.video.SuggestedBufferSize"]);
                 break;
 
-            case imageWidth_h: this->writeLongData(xmpData_["Xmp.video.Width"]);
+            case imageWidth_h: writeLongData(xmpData_["Xmp.video.Width"]);
                 break;
 
-            case imageHeight_h: this->writeLongData(xmpData_["Xmp.video.Height"]);
+            case imageHeight_h: writeLongData(xmpData_["Xmp.video.Height"]);
                 break;
 
             default:
@@ -1928,7 +1928,7 @@ void RiffVideo::streamHandler(int32_t size)
         int32_t multiplier;
         if(streamType_ == Video)
         {
-            this->writeStringData(xmpData_["Xmp.video.Codec"],4,12);
+            writeStringData(xmpData_["Xmp.video.Codec"],4,12);
             io_->read(chkId.pData_,bufMinSize);
             multiplier = Exiv2::getULong(chkId.pData_, littleEndian);
 
@@ -1945,13 +1945,13 @@ void RiffVideo::streamHandler(int32_t size)
                 io_->seek(8,BasicIo::cur);
             }
 
-            this->writeLongData(xmpData_["Xmp.video.FrameCount"],4,4);
-            this->writeLongData(xmpData_["Xmp.video.VideoQuality"],4);
-            this->writeLongData(xmpData_["Xmp.video.VideoSampleSize"],4);
+            writeLongData(xmpData_["Xmp.video.FrameCount"],4,4);
+            writeLongData(xmpData_["Xmp.video.VideoQuality"],4);
+            writeLongData(xmpData_["Xmp.video.VideoSampleSize"],4);
         }
         else if(streamType_ == Audio)
         {
-            this->writeStringData(xmpData_["Xmp.audio.Codec"],4,12);
+            writeStringData(xmpData_["Xmp.audio.Codec"],4,12);
 
             io_->read(chkId.pData_,bufMinSize);
             multiplier = Exiv2::getULong(chkId.pData_, littleEndian);
@@ -1968,11 +1968,11 @@ void RiffVideo::streamHandler(int32_t size)
                 io_->seek(8,BasicIo::cur);
             }
 
-            this->writeLongData(xmpData_["Xmp.audio.SampleCount"],4);
+            writeLongData(xmpData_["Xmp.audio.SampleCount"],4);
         }
         else
         {
-            this->writeLongData(xmpData_["Xmp.video.Codec"],4,12);
+            writeLongData(xmpData_["Xmp.video.Codec"],4,12);
 
             io_->read(chkId.pData_,bufMinSize);
             multiplier = Exiv2::getULong(chkId.pData_, littleEndian);
@@ -1989,9 +1989,9 @@ void RiffVideo::streamHandler(int32_t size)
                 io_->seek(8,BasicIo::cur);
             }
 
-            this->writeLongData(xmpData_["Xmp.video.StreamSampleCount"],4,4);
-            this->writeLongData(xmpData_["Xmp.video.StreamQuality"],4);
-            this->writeLongData(xmpData_["Xmp.video.StreamSampleSize"],4);
+            writeLongData(xmpData_["Xmp.video.StreamSampleCount"],4,4);
+            writeLongData(xmpData_["Xmp.video.StreamQuality"],4);
+            writeLongData(xmpData_["Xmp.video.StreamSampleSize"],4);
         }
     }
     return;
@@ -2117,18 +2117,18 @@ void RiffVideo::streamFormatHandler(int32_t size)
             chkId.pData_[4] = '\0';
             io_->read(chkId.pData_,4);
 
-            this->writeLongData(xmpData_["Xmp.video.Width"],4);
-            this->writeLongData(xmpData_["Xmp.video.Height"],4);
+            writeLongData(xmpData_["Xmp.video.Width"],4);
+            writeLongData(xmpData_["Xmp.video.Height"],4);
 
-            this->writeShortData(xmpData_["Xmp.video.Planes"]);
-            this->writeShortData(xmpData_["Xmp.video.PixelDepth"]);
+            writeShortData(xmpData_["Xmp.video.Planes"]);
+            writeShortData(xmpData_["Xmp.video.PixelDepth"]);
 
-            this->writeStringData(xmpData_["Xmp.video.Compressor"],4);
+            writeStringData(xmpData_["Xmp.video.Compressor"],4);
 
-            this->writeLongData(xmpData_["Xmp.video.ImageLength"],4);
-            this->writeLongData(xmpData_["Xmp.video.PixelPerMeterX"],4);
-            this->writeLongData(xmpData_["Xmp.video.PixelPerMeterY"],4);
-            this->writeLongData(xmpData_["Xmp.video.NumOfColours"],4);
+            writeLongData(xmpData_["Xmp.video.ImageLength"],4);
+            writeLongData(xmpData_["Xmp.video.PixelPerMeterX"],4);
+            writeLongData(xmpData_["Xmp.video.PixelPerMeterY"],4);
+            writeLongData(xmpData_["Xmp.video.NumOfColours"],4);
 
             //Variation
             if(xmpData_["Xmp.video.NumOfImpColours"].count() > 0)
@@ -2140,7 +2140,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
                 }
                 else
                 {
-                    this->writeLongData(xmpData_["Xmp.video.NumOfImpColours"],4);
+                    writeLongData(xmpData_["Xmp.video.NumOfImpColours"],4);
                 }
             }
             else
@@ -2204,9 +2204,9 @@ void RiffVideo::streamFormatHandler(int32_t size)
                 io_->seek(2,BasicIo::cur);
             }
 
-            this->writeShortData(xmpData_["Xmp.audio.SampleRate"],2,2);
-            this->writeShortData(xmpData_["Xmp.audio.SampleType"],2,4);
-            this->writeShortData(xmpData_["Xmp.audio.BitsPerSample"],2);
+            writeShortData(xmpData_["Xmp.audio.SampleRate"],2,2);
+            writeShortData(xmpData_["Xmp.audio.SampleType"],2,4);
+            writeShortData(xmpData_["Xmp.audio.BitsPerSample"],2);
         }
     }
     return;

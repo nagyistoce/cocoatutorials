@@ -42,6 +42,8 @@ EXIV2_RCSID("@(#) $Id$")
 #include <cmath>
 #include <cassert>
 
+#define lengthof(x) (sizeof(x)/sizeof(x[0]))
+
 using namespace std;
 // *****************************************************************************
 // class member definitions
@@ -792,17 +794,17 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         {
             if(xmpData_[mt->label_].count() >0)
             {
-                const int32_t videoTagSize = (const int32_t)(sizeof(videoScanType)/sizeof(videoScanType[0]));
-                const int32_t audioTagSize = (const int32_t)(sizeof(audioChannels)/sizeof(audioChannels[0]));
-                const int32_t compressionTagSize = (const int32_t)(sizeof(compressionAlgorithm)/sizeof(compressionAlgorithm[0]));
-                const int32_t encryptionTagSize = (const int32_t)(sizeof(encryptionAlgorithm)/sizeof(encryptionAlgorithm[0]));
-                const int32_t encodingTagSize = (const int32_t)(sizeof(encodingType)/sizeof(encodingType[0]));
-                const int32_t contentTagSize = (const int32_t)(sizeof(contentSignatureAlgorithm)/sizeof(contentSignatureAlgorithm[0]));
-                const int32_t contentHashTagSize = (const int32_t)(sizeof(contentSignatureHashAlgorithm)/sizeof(contentSignatureHashAlgorithm[0]));
-                const int32_t displayTagSize = (const int32_t)(sizeof(displayUnit)/sizeof(displayUnit[0]));
-                const int32_t aspectTagSize = (const int32_t)(sizeof(aspectRatioType)/sizeof(aspectRatioType[0]));
-                const int32_t physicalTagSize = (const int32_t)(sizeof(chapterPhysicalEquivalent)/sizeof(chapterPhysicalEquivalent[0]));
-                const int32_t translateTagSize = (const int32_t)(sizeof(chapterTranslateCodec)/sizeof(chapterTranslateCodec[0]));
+                const int32_t videoTagSize = lengthof(videoScanType);
+                const int32_t audioTagSize = lengthof(audioChannels);
+                const int32_t compressionTagSize = lengthof(compressionAlgorithm);
+                const int32_t encryptionTagSize = lengthof(encryptionAlgorithm);
+                const int32_t encodingTagSize = lengthof(encodingType);
+                const int32_t contentTagSize = lengthof(contentSignatureAlgorithm);
+                const int32_t contentHashTagSize = lengthof(contentSignatureHashAlgorithm);
+                const int32_t displayTagSize = lengthof(displayUnit);
+                const int32_t aspectTagSize = lengthof(aspectRatioType);
+                const int32_t physicalTagSize = lengthof(chapterPhysicalEquivalent);
+                const int32_t translateTagSize = lengthof(chapterTranslateCodec);
 
                 switch (mt->val_)
                 {
@@ -810,57 +812,57 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
                     RevMatroskaTags revVidStructure[videoTagSize];
                     reverseMatroskaTag(videoScanType,revVidStructure,videoTagSize);
                     rtd =  find(revVidStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x001f:
                     RevMatroskaTags revAudStructure[audioTagSize];
                     reverseMatroskaTag(audioChannels,revAudStructure,audioTagSize);
                     rtd =  find(revAudStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x0254:
                     RevMatroskaTags revComStructure[compressionTagSize];
                     reverseMatroskaTag(compressionAlgorithm,revComStructure,compressionTagSize);
                     rtd =  find(revComStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x07e1:
                     RevMatroskaTags revEnrStructure[encryptionTagSize];
                     reverseMatroskaTag(encryptionAlgorithm,revEnrStructure,encryptionTagSize);
                     rtd =  find(revEnrStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x1033:
                     RevMatroskaTags revEncStructure[encodingTagSize];
                     reverseMatroskaTag(encodingType,revEncStructure,encodingTagSize);
                     rtd =  find(revEncStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x07e5:
                     RevMatroskaTags revConStructure[contentTagSize];
                     reverseMatroskaTag(contentSignatureAlgorithm,revConStructure,contentTagSize);
                     rtd =  find(revConStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x07e6:
                     RevMatroskaTags revHasStructure[contentHashTagSize];
                     reverseMatroskaTag(contentSignatureHashAlgorithm,revHasStructure,contentHashTagSize);
                     rtd =  find(revHasStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x14b2:
                     RevMatroskaTags revDisStructure[displayTagSize];
                     reverseMatroskaTag(displayUnit,revDisStructure,displayTagSize);
                     rtd =  find(revDisStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x14b3:
                     RevMatroskaTags revAspStructure[aspectTagSize];
                     reverseMatroskaTag(aspectRatioType,revAspStructure,aspectTagSize);
                     rtd =  find(revAspStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x23c3:
                     RevMatroskaTags revPhyStructure[physicalTagSize];
                     reverseMatroskaTag(chapterPhysicalEquivalent,revPhyStructure,physicalTagSize);
                     rtd =  find(revPhyStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 case 0x29bf:
                     RevMatroskaTags revTraStructure[translateTagSize];
                     reverseMatroskaTag(chapterTranslateCodec,revTraStructure,translateTagSize);
                     rtd =  find(revTraStructure,xmpData_[mt->label_].toString());
-                    this->writeMatroskaKey(rtd,size);break;
+                    writeMatroskaKey(rtd,size);break;
                 }
             }
         }
