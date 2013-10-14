@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cat /dev/clipboard
+
+# That's all Folks
+##

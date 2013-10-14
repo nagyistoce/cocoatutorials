@@ -1,0 +1,6 @@
+#!/bin/bash
+
+tee -a /dev/clipboard >/dev/null
+
+# That's all Folks
+##
