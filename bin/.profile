@@ -343,6 +343,7 @@ alias xcopy='ditto'
 alias finder='find . -depth -iname'
 alias shellx=open
 alias start=open
+alias get=git
 
 if [ $PLATFORM == linux ]; then 
     alias open=xdg-open
