@@ -268,7 +268,9 @@ to() {
     # pain over.  find possible targets
     tmp=/tmp/2.tmp
     find . -name "$target" -print > $tmp
-    count=$(wc -l $tmp | rev | sed -e "s/.* //" | rev)
+    # count=$(wc -l $tmp | rev | sed -e "s/.* //" | rev)
+    declare -i count=0
+    for i in $(cat $tmp); do : $((count++));done
 
     if [ "$count" == "1" ]; then
         dir=$(cat "$tmp")
