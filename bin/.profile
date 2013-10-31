@@ -53,6 +53,10 @@ if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
     FACTORY=novariant
 fi
 
+if [[ "$FACTORY" == "rmills-MacBookPro" ]]; then # && ! -z "$CBL_STONEHENGE" ]]; then
+	FACTORY=adobe
+fi
+
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
 export PATH=".:${BIN}:$BIN/$PLATFORM:/sbin:/usr/sbin:/usr/local/bin:/opt/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:/opt/subversion/bin:"
@@ -464,7 +468,7 @@ export EXIV2_AWSUBUNTU_PASSWORD=p%40ssw0rd
 export EXIV2_AWSUBUNTU_HOST=54.251.248.216
 
 ##
-# last minute adjustments for local machines
+# last minute adjustments for different machines
 if [ "$FACTORY" == "novariant" ]; then
     export DISPLAY=:4.0
     export "PATH=~/local/bin/:$PATH"
@@ -476,6 +480,16 @@ if [ "$FACTORY" == "rmills-imac" ]; then
     export "PATH=/opt/subversion/bin:$PATH"
 fi
 
+if [ "$FACTORY" == "rmills-w7" -a "$PLATFORM" == "cygwin" ]; then
+	FACTORY="adobe"
+fi
+
+if [ "$FACTORY" == "adobe" ]; then
+    P4CLIENT=rmills-mbp
+    P4PORT=langley:1740
+    P4USER=rmills
+    if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
+fi
 
 cd ~/
 # That's all Folks!
