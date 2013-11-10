@@ -1460,6 +1460,7 @@ void RiffVideo::infoTagsHandler()
     else
     {
         //First write the tags which already exist in a file
+        std::vector<std::string> existingInfoTags;
         while(dataLenght > 0)
         {
             io_->read(buf.pData_, 4);
@@ -1472,6 +1473,7 @@ void RiffVideo::infoTagsHandler()
             {
                 if(xmpData_[exvGettext(tv->label_)].count() >0)
                 {
+                    existingInfoTags.push_back((std::string)tv->voc_);
                     writeStringData(xmpData_[exvGettext(tv->label_)],infoSize);
                 }
             }
@@ -1480,164 +1482,16 @@ void RiffVideo::infoTagsHandler()
         //Secondly write tags which are supported by Digikam,
         //Note that create new LIST chunk is created if tag did not exist before
         std::vector<std::pair<std::string,std::string> > writethis;
-        if((xmpData_["Xmp.video.Comment"].count() > 0) &&
-                ((findChunkPositions("CMNT")).size() == 0))
+        for(int32_t i =0; i< (int32_t)(sizeof(infoTags)/sizeof(infoTags[0])); i++)
         {
-            const std::string commentData = xmpData_["Xmp.video.Comment"].toString();
-            const std::string commentFlag = "CMNT";
-            writethis.push_back(make_pair(commentData,commentFlag));
-        }
-
-        if((xmpData_["Xmp.video.Genre"].count() > 0) &&
-                ((findChunkPositions("GENR")).size() == 0))
-        {
-            const std::string genreData = xmpData_["Xmp.video.Genre"].toString();
-            const std::string genreFlag = "GENR";
-            writethis.push_back(make_pair(genreData,genreFlag));
-        }
-
-        if((xmpData_["Xmp.video.Artist"].count() > 0) &&
-                ((findChunkPositions("IART")).size() == 0))
-        {
-            const std::string artistData = xmpData_["Xmp.video.Artist"].toString();
-            const std::string artistFlag = "IART";
-            writethis.push_back(make_pair(artistData,artistFlag));
-        }
-
-        if((xmpData_["Xmp.video.Cinematographer"].count() > 0) &&
-                ((findChunkPositions("ICNM")).size() == 0))
-        {
-            const std::string cinematographerData = xmpData_["Xmp.video.Cinematographer"].toString();
-            const std::string cinematographerFlag = "ICNM";
-            writethis.push_back(make_pair(cinematographerData,cinematographerFlag));
-        }
-
-        if((xmpData_["Xmp.video.EditedBy"].count() > 0) &&
-                ((findChunkPositions("IEDT")).size() == 0))
-        {
-            const std::string editedByData = xmpData_["Xmp.video.EditedBy"].toString();
-            const std::string editedByFlag = "IEDT";
-            writethis.push_back(make_pair(editedByData,editedByFlag));
-        }
-
-        if((xmpData_["Xmp.video.Engineer"].count() > 0) &&
-                ((findChunkPositions("IENG")).size() == 0))
-        {
-            const std::string engineerData = xmpData_["Xmp.video.Engineer"].toString();
-            const std::string engineerFlag = "IENG";
-            writethis.push_back(make_pair(engineerData,engineerFlag));
-        }
-
-        if((xmpData_["Xmp.video.Language"].count() > 0) &&
-                ((findChunkPositions("ILNG")).size() == 0))
-        {
-            const std::string languageData = xmpData_["Xmp.video.Language"].toString();
-            const std::string languageFlag = "ILNG";
-            writethis.push_back(make_pair(languageData,languageFlag));
-        }
-
-        if((xmpData_["Xmp.video.MusicBy"].count() > 0) &&
-                ((findChunkPositions("IMUS")).size() == 0))
-        {
-            const std::string musicByData = xmpData_["Xmp.video.MusicBy"].toString();
-            const std::string musicByFlag = "IMUS";
-            writethis.push_back(make_pair(musicByData,musicByFlag));
-        }
-
-        if((xmpData_["Xmp.video.Title"].count() > 0) &&
-                ((findChunkPositions("INAM")).size() == 0))
-        {
-            const std::string titleData = xmpData_["Xmp.video.Title"].toString();
-            const std::string titleFlag = "INAM";
-            writethis.push_back(make_pair(titleData,titleFlag));
-        }
-
-        if((xmpData_["Xmp.video.ProducedBy"].count() > 0) &&
-                ((findChunkPositions("IPRO")).size() == 0))
-        {
-            const std::string producedByData = xmpData_["Xmp.video.ProducedBy"].toString();
-            const std::string producedByFlag = "IPRO";
-            writethis.push_back(make_pair(producedByData,producedByFlag));
-        }
-
-        if((xmpData_["Xmp.video.Source"].count() > 0) &&
-                ((findChunkPositions("ISRC")).size() == 0))
-        {
-            const std::string sourceData = xmpData_["Xmp.video.Source"].toString();
-            const std::string sourceFlag = "ISRC";
-            writethis.push_back(make_pair(sourceData,sourceFlag));
-        }
-
-        if((xmpData_["Xmp.video.Starring"].count() > 0) &&
-                ((findChunkPositions("ISTR")).size() == 0))
-        {
-            const std::string starringData = xmpData_["Xmp.video.Starring"].toString();
-            const std::string starringFlag = "ISTR";
-            writethis.push_back(make_pair(starringData,starringFlag));
-        }
-
-        if((xmpData_["Xmp.video.Language"].count() > 0) &&
-                ((findChunkPositions("LANG")).size() == 0))
-        {
-            const std::string languageData = xmpData_["Xmp.video.Language"].toString();
-            const std::string languageFlag = "LANG";
-            writethis.push_back(make_pair(languageData,languageFlag));
-        }
-
-        if((xmpData_["Xmp.video.LocationInfo"].count() > 0) &&
-                ((findChunkPositions("LOCA")).size() == 0))
-        {
-            const std::string locationInfoData = xmpData_["Xmp.video.LocationInfo"].toString();
-            const std::string locationInfoFlag = "LOCA";
-            writethis.push_back(make_pair(locationInfoData,locationInfoFlag));
-        }
-
-        if((xmpData_["Xmp.video.TapeName"].count() > 0) &&
-                ((findChunkPositions("TAPE")).size() == 0))
-        {
-            const std::string tapeNameData = xmpData_["Xmp.video.TapeName"].toString();
-            const std::string tapeNameFlag = "TAPE";
-            writethis.push_back(make_pair(tapeNameData,tapeNameFlag));
-        }
-
-        if((xmpData_["Xmp.video.Year"].count() > 0) &&
-                ((findChunkPositions("YEAR")).size() == 0))
-        {
-            const std::string yearData = xmpData_["Xmp.video.Year"].toString();
-            const std::string yearFlag = "YEAR";
-            writethis.push_back(make_pair(yearData,yearFlag));
-        }
-
-        if((xmpData_["Xmp.video.Product"].count() > 0) &&
-                ((findChunkPositions("IPRD")).size() == 0))
-        {
-            const std::string productData = xmpData_["Xmp.video.Product"].toString();
-            const std::string productFlag = "IPRD";
-            writethis.push_back(make_pair(productData,productFlag));
-        }
-
-        if((xmpData_["Xmp.video.PerformerKeywords"].count() > 0) &&
-                ((findChunkPositions("IKEY")).size() == 0))
-        {
-            const std::string performerKeywordsData = xmpData_["Xmp.video.PerformerKeywords"].toString();
-            const std::string performerKeywordsFlag = "IKEY";
-            writethis.push_back(make_pair(performerKeywordsData,performerKeywordsFlag));
-        }
-
-        if((xmpData_["Xmp.video.Copyright"].count() > 0) &&
-                ((findChunkPositions("ICOP")).size() == 0))
-        {
-            const std::string copyrightData = xmpData_["Xmp.video.Copyright"].toString();
-            const std::string copyrightFlag = "ICOP";
-            writethis.push_back(make_pair(copyrightData,copyrightFlag));
-        }
-
-        if((xmpData_["Xmp.video.Country"].count() > 0) &&
-                ((findChunkPositions("ICNT")).size() == 0))
-        {
-            const std::string countryData = xmpData_["Xmp.video.Country"].toString();
-            const std::string countryFlag = "ICNT";
-            writethis.push_back(make_pair(countryData,countryFlag));
+            const std::string infoTagData = xmpData_[infoTags[i].label_].toString();
+            const std::string infoTagFlag = (std::string)infoTags[i].voc_;
+            if((xmpData_[infoTags[i].label_].count() > 0) &&
+                ((findChunkPositions(infoTags[i].voc_)).size() == 0)
+                    && !(std::find(existingInfoTags.begin(), existingInfoTags.end(), infoTagFlag) != existingInfoTags.end()))
+            {
+                writethis.push_back(make_pair(infoTagData,infoTagFlag));
+            }
         }
 
         if(writethis.size() > 0)
@@ -2513,3 +2367,4 @@ bool isRiffType(BasicIo& iIo, bool advance)
 }
 
 }                                       // namespace Exiv2
+
