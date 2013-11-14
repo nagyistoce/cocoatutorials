@@ -484,9 +484,14 @@ if [ "$FACTORY" == "rmills-w7" -a "$PLATFORM" == "cygwin" ]; then
 	FACTORY="adobe"
 fi
 
+if [ $(hostname) == Robins-MacBook-Pro.local ]; then
+	FACTORY="adobe"
+fi
+	
+
 if [ "$FACTORY" == "adobe" ]; then
-    P4CLIENT=rmills-mbp
-    P4PORT=langley:1740
+    P4CLIENT=rmills-MacBookPro
+    P4PORT=ssl:scm003.corp.adobe.com:3070
     P4USER=rmills
     if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
 fi
