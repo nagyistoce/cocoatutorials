@@ -343,7 +343,7 @@ alias 2=to
 # dos like things
 alias rename=mv
 alias move=mv
-alias del='rm -rf'
+alias del='sudo rm -rf'
 alias dirod='ls -alt'
 alias xcopy='ditto'
 alias finder='find . -depth -iname'
@@ -494,6 +494,20 @@ if [ "$FACTORY" == "adobe" ]; then
     P4PORT=ssl:scm003.corp.adobe.com:3070
     P4USER=rmills
     if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
+fi
+
+if [ "$PLATFORM" == "macosx" ]; then
+	pushd / >/dev/null
+	# turn off local backup in time machine
+	# https://discussions.apple.com/message/21716617#21716617
+	# https://discussions.apple.com/thread/3233868
+	if [ -e .MobileBackups.trash ]; then
+  		sudo chmod -Rf 777 .MobileBackups.trash
+  		sudo rm -rf .MobileBackups.trash
+  	fi
+  	sudo tmutil disablelocal
+  	echo turned off local backups
+  	popd >/dev/null
 fi
 
 cd ~/
