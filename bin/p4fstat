@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#!/bin/bash
+
+syntax() {
+	echo "usage: $0 [{--help|-?}| --file | key file ]+..."
+}
+
+syntaxError() {
+	syntax
+	exit 1
+}
+
+bomb() {
+	echo "*** $1 requires an argument ***" 1>&2	
+	exit 1
+}
+
+tmp=/tmp/p4fstat.txt
+f=0
+declare -a keys
+declare -a files
+
+# http://mywiki.wooledge.org/BashFAQ/035
+while [ $# -ge 1 ]; do
+    case "$1" in
+      -h|--help|-\?) syntaxError; exit 0 ;;
+      -v|--verbose)  v=1; shift ;;
+      -f|--file)     f=1
+                     if [ "${#files[@]}" != 0 ]; then
+                          f=2
+                     fi 
+                     ;;
+      -*)            echo "invalid option: $1" 1>&2; syntaxError ; ;;
+      *)             if [ -f $1 ]; then
+                        files+=($1)
+                     elif [ ! -d $1 ]; then
+                         keys+=($1)
+                     fi
+                     ;;  	
+    esac
+    shift
+done
+
+# echo -- files -- ; for file in "${files[@]}"; do echo $file ; done
+# echo -- keys  -- ; for key  in "${keys[@]}";  do echo $key  ; done
+
+if [ ${#files} == "0" ]; then syntax ; exit 0 ; fi
+
+for file in "${files[@]}"; do
+	declare -a results;
+	if [ $f == 1 ]; then results+=($file) ; fi
+	for key in "${keys[@]}" ; do
+		results+=($(p4 fstat $file | grep "$key" | cut -d' ' -f 2 -f 3))
+	done
+	if [ $f == 2 ]; then results+=($file) ; fi
+	echo "${results[@]}"
+	# echo -----
+    unset results;
+done
+
+# That's all Folks
+##
