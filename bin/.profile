@@ -490,7 +490,7 @@ fi
 	
 
 if [ "$FACTORY" == "adobe" ]; then
-    P4CLIENT=rmills-MacBookPro
+    P4CLIENT=rmills-mbp-Xcode5Dev
     P4PORT=ssl:scm003.corp.adobe.com:3070
     P4USER=rmills
     if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
@@ -506,7 +506,7 @@ if [ "$PLATFORM" == "macosx" ]; then
   		sudo rm -rf .MobileBackups.trash
   	fi
   	sudo tmutil disablelocal
-  	echo turned off local backups
+  	# echo turned off local backups
   	popd >/dev/null
 fi
 
