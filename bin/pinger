@@ -1,0 +1,13 @@
+#!/bin/bash
+
+secs=$1
+if [ -z "$secs" ]; then secs=60; fi
+echo secs = $secs
+
+while [ 1 ]; do
+    curl --silent -I HEAD http://clanmills.com/ | grep Date
+    sleep "$secs"
+done
+
+# That's all Folks
+##
