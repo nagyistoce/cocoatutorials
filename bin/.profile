@@ -487,13 +487,19 @@ fi
 if [ $(hostname) == Robins-MacBook-Pro.local ]; then
 	FACTORY="adobe"
 fi
-	
 
 if [ "$FACTORY" == "adobe" ]; then
     P4CLIENT=rmills-mbp-Xcode5Dev
     P4PORT=ssl:scm003.corp.adobe.com:3070
     P4USER=rmills
     if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
+	
+	if [ $PLATFORM == "macosx" ]; then
+		 docs () {
+			cd /Langley/1740/rmills-mbp/PE/12X/Main/Tools/ReaderNextBuild/Documents
+			export P4CLIENT=rmills-mbp
+		}
+	fi
 fi
 
 if [ "$PLATFORM" == "macosx" ]; then
