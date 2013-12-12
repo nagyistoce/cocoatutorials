@@ -511,6 +511,7 @@ if [ "$PLATFORM" == "macosx" ]; then
   		sudo chmod -Rf 777 .MobileBackups.trash
   		sudo rm -rf .MobileBackups.trash
   	fi
+  	# tmutil = Time Machine Util ; pmset = Power Management Settings ;
   	sudo tmutil disablelocal
   	# echo turned off local backups
   	popd >/dev/null
