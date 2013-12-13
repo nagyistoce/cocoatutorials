@@ -1,0 +1,18 @@
+#!/bin/bash
+
+to=/Applications/Xcode$1.app
+from=/Applications/Xcode.app
+
+if [ $# != 1 ]; then
+	echo "***" syntax xcode n "***"
+else
+	if [ -d $to ]; then
+		unlink     $from   
+		ln -s  $to $from
+	else 
+		echo "***" $to does not exist "***"
+	fi
+fi
+
+# That's all Folks
+##
