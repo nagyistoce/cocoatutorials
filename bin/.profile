@@ -515,6 +515,7 @@ if [ "$PLATFORM" == "macosx" ]; then
   	sudo tmutil disablelocal
   	# echo turned off local backups
   	popd >/dev/null
+    export BOOST_ROOT=${HOME}/boost/boost_1_55_0/
 fi
 
 cd ~/
