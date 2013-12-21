@@ -2,16 +2,17 @@
 
 to=/Applications/Xcode$1.app
 from=/Applications/Xcode.app
+p=0
 
 if [ $# != 1 ]; then
-	echo "***" syntax xcode n "***"
+	pathname $from
+elif [ -e $from -a ! -l $from ]; then
+	echo $from is not a link
+elif [ ! -d $to ]; then
+	echo "***" $to is not a directory or does not exist "***"
 else
-	if [ -d $to ]; then
-		unlink     $from   
-		ln -s  $to $from
-	else 
-		echo "***" $to does not exist "***"
-	fi
+	unlink     $from   
+	ln -s  $to $from
 fi
 
 # That's all Folks

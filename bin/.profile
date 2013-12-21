@@ -489,7 +489,7 @@ if [ $(hostname) == Robins-MacBook-Pro.local ]; then
 fi
 
 if [ "$FACTORY" == "adobe" ]; then
-    P4CLIENT=rmills-mbp-Xcode5Dev
+    P4CLIENT=rmills-mbp-X5d2
     P4PORT=ssl:scm003.corp.adobe.com:3070
     P4USER=rmills
     if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
@@ -503,19 +503,19 @@ if [ "$FACTORY" == "adobe" ]; then
 fi
 
 if [ "$PLATFORM" == "macosx" ]; then
+  	alias xce='open -a /Applications/Xcode.app'
+
 	pushd / >/dev/null
-	# turn off local backup in time machine
-	# https://discussions.apple.com/message/21716617#21716617
-	# https://discussions.apple.com/thread/3233868
-	if [ -e .MobileBackups.trash ]; then
-  		sudo chmod -Rf 777 .MobileBackups.trash
-  		sudo rm -rf .MobileBackups.trash
-  	fi
-  	# tmutil = Time Machine Util ; pmset = Power Management Settings ;
-  	sudo tmutil disablelocal
-  	# echo turned off local backups
+		# turn off local backup in time machine
+		# https://discussions.apple.com/message/21716617#21716617
+		# https://discussions.apple.com/thread/3233868
+		if [ -e .MobileBackups.trash ]; then
+  			sudo chmod -Rf 777 .MobileBackups.trash
+  			sudo rm -rf .MobileBackups.trash
+  		fi
+  		# tmutil = Time Machine Util ; pmset = Power Management Settings ;
+  		sudo tmutil disablelocal
   	popd >/dev/null
-    export BOOST_ROOT=${HOME}/boost/boost_1_55_0/
 fi
 
 cd ~/
