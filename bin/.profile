@@ -518,6 +518,10 @@ if [ "$PLATFORM" == "macosx" ]; then
   	popd >/dev/null
 fi
 
+if [ "$PLATFORM" == "cygwin" -a "$FACTORY" == "rmills-vista" ]; then
+    cp /cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/*.jpg /cygdrive/z/Users/rmills/clanmills/files/themes/
+fi
+
 cd ~/
 # That's all Folks!
 ##
