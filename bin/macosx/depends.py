@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 r"""depends.py - find the depenancies of a library
 
@@ -65,7 +65,7 @@ def UB(x):
 ##
 #
 def tsort(dict):
-	filename='/tmp/tsort.txt'
+	filename='/tmp/tsortXX.txt'
 	file=open(filename,'w')
 	for key in dict.keys():
 		cmd = 'otool -L "%s"' % key		         		# otool -L tells us the dependancies of this library
