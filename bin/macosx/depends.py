@@ -79,7 +79,7 @@ def tsort(dict):
 	bar = '-'*20
 	print bar
 	sys.stdout.flush()
-	cmd='tsort -q "%s"' % (filename)
+	cmd='tsort "%s" 2>/dev/null' % (filename)
 	# os.system(cmd)
 	#print bar
 	lines=os.popen(cmd).readlines()
