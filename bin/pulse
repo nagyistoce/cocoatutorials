@@ -3,8 +3,8 @@
 if [ $# == 1 ]; then
 	utility=$1
 	while echo $(date) \
-	      $utility: $(( $(ps ax | grep $utility | wc -l) -2 )) \
-	            df: $(df -m . | grep dev | sed -e 's/ * / /g' | cut -d' ' -f4,5)
+	      "$utility": $(( $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5 | grep -i "$utility" | wc -l) -0 )) \
+	              df: $(df -m . | grep dev | sed -e 's/ * / /g' | cut -d' ' -f4,5)
 	do
 		sleep 60
   done
