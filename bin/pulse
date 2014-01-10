@@ -4,10 +4,10 @@ if [ $# == 1 ]; then
 	utility=$1
 	while echo $(date) \
 	      "$utility": $(( $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5 | grep -i "$utility" | wc -l) -0 )) \
-	              df: $(df -m . | grep -v -e blocks | sed -e 's/ * / /g' | cut -d' ' -f4,5)
+	              df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
 	do
 		sleep 60
-  done
+    done
 else
 	echo "pulse utility"
 fi
