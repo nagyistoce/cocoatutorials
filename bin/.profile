@@ -53,7 +53,7 @@ if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
     FACTORY=novariant
 fi
 
-if [[ "$FACTORY" == "rmills-mbp15" ]]; then # && ! -z "$CBL_STONEHENGE" ]]; then
+if [[ "$FACTORY" == "rmills-mbp15.local" ]]; then # && ! -z "$CBL_STONEHENGE" ]]; then
 	FACTORY=adobe
 fi
 
