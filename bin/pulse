@@ -2,8 +2,9 @@
 
 if [ $# == 1 ]; then
 	utility=$1
+	c=$(for p in $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$utility" | wc -l)
 	while echo $(date) \
-	      "$utility": $(( $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5 | grep -i "$utility" | wc -l) -0 )) \
+	      "$utility": $(( c - 1 )) \
 	              df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
 	do
 		sleep 60
