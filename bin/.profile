@@ -59,7 +59,7 @@ fi
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
-export PATH=".:${BIN}:$BIN/$PLATFORM:/sbin:/usr/sbin:/usr/local/bin:/opt/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:/opt/subversion/bin:"
+export PATH=".:${BIN}:$BIN/$PLATFORM:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/opt/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:/opt/subversion/bin:"
 export MANPATH="/usr/local/share/man:/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
@@ -484,14 +484,9 @@ if [ "$FACTORY" == "rmills-w7" -a "$PLATFORM" == "cygwin" ]; then
 	FACTORY="adobe"
 fi
 
-if [ $(hostname) == Robins-MacBook-Pro.local ]; then
-	FACTORY="adobe"
-fi
-
 if [ "$FACTORY" == "adobe" ]; then
     P4CLIENT=rmills-mbp-X5d2
     P4PORT=ssl:scm003.corp.adobe.com:3070
-    P4USER=rmills
     if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
 	
 	if [ $PLATFORM == "macosx" ]; then
@@ -504,6 +499,7 @@ fi
 
 if [ "$PLATFORM" == "macosx" ]; then
   	alias xce='open -a /Applications/Xcode.app'
+  	alias svn='/opt/local/bin/svn'
 
 	pushd / >/dev/null
 		# turn off local backup in time machine
@@ -516,6 +512,10 @@ if [ "$PLATFORM" == "macosx" ]; then
   		# tmutil = Time Machine Util ; pmset = Power Management Settings ;
   		sudo tmutil disablelocal
   	popd >/dev/null
+  	if [ $FACTORY == rmills-mbp.local ]; then
+    	P4CLIENT=rmills-mpb13-7Xd2
+    	P4PORT=ssl:scm003.corp.adobe.com:3070
+    fi
 fi
 
 if [ "$PLATFORM" == "cygwin" -a "$FACTORY" == "rmills-vista" ]; then
@@ -536,30 +536,4 @@ export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 # Finished adapting your PATH environment variable for use with MacPorts.
 
 
-
-##
-# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2012-11-02_at_21:07:59
-##
-
-# MacPorts Installer addition on 2012-11-02_at_21:07:59: adding an appropriate PATH variable for use with MacPorts.
-#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-# Finished adapting your PATH environment variable for use with MacPorts.
-
-
-##
-# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2013-05-17_at_13:58:40
-##
-
-# MacPorts Installer addition on 2013-05-17_at_13:58:40: adding an appropriate PATH variable for use with MacPorts.
-#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-# Finished adapting your PATH environment variable for use with MacPorts.
-
-
-##
-# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2013-07-18_at_20:22:40
-##
-
-# MacPorts Installer addition on 2013-07-18_at_20:22:40: adding an appropriate PATH variable for use with MacPorts.
-#export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-# Finished adapting your PATH environment variable for use with MacPorts.
 
