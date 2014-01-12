@@ -1,7 +1,11 @@
 #!/bin/bash
 
-syntaxError() {
+syntax() {
 	echo "usage: $0 [--every n]+ utility ..."
+}
+
+syntaxError() {
+	syntax
 	exit 1
 }
 
@@ -11,34 +15,41 @@ bomb() {
 }
 
 ##
-# set up the defaults (San Jose, CA)
+# set up defaults
 e=60
+h=0
 v=0
+utils=()
  
 # http://mywiki.wooledge.org/BashFAQ/035
-while true; do
+while [ $# != 0 ]; do
     case "$1" in
-      -h|--help|-\?) syntaxError; exit 0 ;;
-      -v|--verbose)  v=1; shift ;;
+      -h|--help|-\?) h=1        ; shift  ;;
+      -v|--verbose)  v=1        ; shift  ;;
       -e|--every)    if [ $# -gt 1 ]; then e=$2; shift 2 ; else bomb $1 ; fi ;;
-      -*)            echo "invalid option: $1" 1>&2; syntaxError; exit 1;;
-      *)             break;;
+      -*)            echo "invalid option: $1" 1>&2; syntaxError ;;
+      *)             utils+=($1); shift ;;
     esac
 done
 
-if [ $# == 0 ]; then syntaxError ; fi
-
-n=0
-while [ $n == 0 ]; do 
-	for u in $*; do
-		if [ $(( n++ )) == 0 ]; then echo -n $(date) '' ; fi
-		c=$(for p in $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$u" | wc -l)
-		echo -n "$u": $((c)) ''
+if [ ${#utils} != 0 ]; then
+	while [ true ]; do
+		n=1
+		tmp=/tmp/pulse 
+		ps ax | sed -e 's/ * / /g' | cut -d' ' -f5 > $tmp
+		for u in ${utils[@]}; do
+			if [ $(( n++ )) == 1 ]; then echo -n $(date) '' ; fi
+			c=$(for p in $(cat $tmp); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$u" | wc -l)
+			echo -n "$u": $((c)) ''
+		done
+		echo df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
+		sleep $e
 	done
-	echo df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
-	sleep $e
-	n=0 
-done
+else
+	h=1
+fi
+
+if [ $h == 1 ]; then syntaxError ; fi
 
 # That's all Folks!
 ##
