@@ -1,17 +1,44 @@
 #!/bin/bash
 
-if [ $# == 1 ]; then
-	utility=$1
-	c=$(for p in $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$utility" | wc -l)
-	while echo $(date) \
-	      "$utility": $(( c - 1 )) \
-	              df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
-	do
-		sleep 60
-    done
-else
-	echo "pulse utility"
-fi
+syntaxError() {
+	echo "usage: $0 [--every n]+ utility ..."
+	exit 1
+}
+
+bomb() {
+	echo "*** $1 requires an argument ***" 1>&2	
+	exit 1
+}
+
+##
+# set up the defaults (San Jose, CA)
+e=60
+v=0
+ 
+# http://mywiki.wooledge.org/BashFAQ/035
+while true; do
+    case "$1" in
+      -h|--help|-\?) syntaxError; exit 0 ;;
+      -v|--verbose)  v=1; shift ;;
+      -e|--every)    if [ $# -gt 1 ]; then e=$2; shift 2 ; else bomb $1 ; fi ;;
+      -*)            echo "invalid option: $1" 1>&2; syntaxError; exit 1;;
+      *)             break;;
+    esac
+done
+
+if [ $# == 0 ]; then syntaxError ; fi
+
+n=0
+while [ $n == 0 ]; do 
+	for u in $*; do
+		if [ $(( n++ )) == 0 ]; then echo -n $(date) '' ; fi
+		c=$(for p in $(ps ax | sed -e 's/ * / /g' | cut -d' ' -f5); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$u" | wc -l)
+		echo -n "$u": $((c)) ''
+	done
+	echo df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
+	sleep $e
+	n=0 
+done
 
 # That's all Folks!
 ##
