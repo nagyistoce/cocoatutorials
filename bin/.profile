@@ -305,6 +305,15 @@ to() {
 }
 alias 2=to
 
+path() {
+    if [ -d $1 ]; then
+    	(cd $1 ; pwd)
+    else
+    	(cd $(dirname $1) ;echo $(pwd)/$(basename $1))
+    fi
+}
+
+
 ##
 # set CE = editor of choice (obsolete)
 #if [ -z "$SSH_CLIENT" ]; then
@@ -516,6 +525,10 @@ if [ "$PLATFORM" == "macosx" ]; then
     	P4CLIENT=rmills-mpb13-7Xd2
     	P4PORT=ssl:scm003.corp.adobe.com:3070
     fi
+fi
+
+if [ "$PLATFORM" == "linux" ]; then
+  	alias svn='/usr/local/bin/svn'
 fi
 
 if [ "$PLATFORM" == "cygwin" -a "$FACTORY" == "rmills-vista" ]; then
