@@ -5,18 +5,26 @@ nonegs() {
 	echo $1 | sed -e 's/-//g'
 }
 
-dirs=()
-dirs[$(nonegs 'rmills-mpb13-7Xd2')]=/Langley/X5d2/PESandbox
+# dirs=()
+# dirs[$(nonegs 'rmills-mpb13-7Xd2')]=/Langley/X5d2/PESandbox
 # dirs[$(nonegs 'rmills-mbp')]=/Langley/1740/rmills-mbp/PE/12X/Main
 
-for d in "${dirs[@]}"; do 
-	echo $d
-done
+# for d in "${dirs[@]}"; do 
+#	echo $d
+# done
 
 # echo t1 $(nonegs 'rmills-mpb13-7Xd2')
 # echo t2 $(nonegs 'rmills-mbp')
 
-cd ${dirs[$(nonegs "$P4CLIENT")]}
+A=unknown
+if [ "$P4CLIENT" = "rmills-mpb13-7Xd2" ]; then A=X5d2 ; fi
+
+if [ $A == unknown ]; then
+	echo "*** P4CLIENT=$P4CLIENT unknown ***"
+else
+	cd /Langley/$A/PESandbox/Tools/Ant
+fi
+
 
 # That's all Folks
 ##
