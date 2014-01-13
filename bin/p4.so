@@ -6,14 +6,17 @@ nonegs() {
 }
 
 dirs=()
-dirs[$(nonegs 'rmills-mpb13-7Xd2')]='/Langley/X5d2/PESandbox'
-# dirs[$(nonegs 'rmills-mbp')]='/Langley/1740/rmills-mbp/PE/12X/Main'
+dirs[$(nonegs 'rmills-mpb13-7Xd2')]=/Langley/X5d2/PESandbox
+# dirs[$(nonegs 'rmills-mbp')]=/Langley/1740/rmills-mbp/PE/12X/Main
 
-for d in ${dirs[*]}; do 
+for d in "${dirs[@]}"; do 
 	echo $d
 done
 
-# cd "${dirs[$(nonegs $P4CLIENT)]}"
+# echo t1 $(nonegs 'rmills-mpb13-7Xd2')
+# echo t2 $(nonegs 'rmills-mbp')
+
+cd ${dirs[$(nonegs "$P4CLIENT")]}
 
 # That's all Folks
 ##
