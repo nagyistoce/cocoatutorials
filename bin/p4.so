@@ -1,0 +1,15 @@
+##
+# cd to P4 'home' for client space
+
+nonegs() { 
+	echo $1 | sed -e 's/-//g'
+}
+
+dirs=()
+dirs[$(nonegs 'rmills-mpb13-7Xd2')]=/Langley/X5d2/PESandbox
+dirs[$(nonegs 'rmills-mbp')]=/Langley/1740/rmills-mbp/PE/12X/Main
+
+cd "${dirs[$(nonegs $P4CLIENT)]}"
+
+# That's all Folks
+##
