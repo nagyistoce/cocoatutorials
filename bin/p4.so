@@ -6,19 +6,20 @@ nonegs() {
 }
 
 d="$1"
-D=/Langley
-A=unknown
-
 if [ -z $d ]; then d=/Tools/Ant ; fi
 
-if [ "$P4CLIENT" = "rmills-mpb13-7Xd2" ]; then A=X5d2 ; fi
+A=
+D=/Langley
 
-if [ $A == unknown ]; then
-	echo "*** P4CLIENT=$P4CLIENT unknown ***"
+
+if [ "$P4CLIENT" = "rmills-mpb13-7Xd2" ]; then A=X5d2/PESandbox ; fi
+if [ "$P4CLIENT" = "rmills-mbp-X5d2"   ]; then A=X5d2/PESandbox ; fi
+
+if [ ! -z $A ]; then
+	cd ${D}/${A}/${d}
 else
-	cd ${D}/${A}/$(ls ${D}/${A})/$d
+	echo "*** P4CLIENT=$P4CLIENT unknown ***"
 fi
-
 
 # That's all Folks
 ##

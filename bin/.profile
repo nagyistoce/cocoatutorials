@@ -53,13 +53,13 @@ if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
     FACTORY=novariant
 fi
 
-if [[ "$FACTORY" == "rmills-mbp15.local" ]]; then # && ! -z "$CBL_STONEHENGE" ]]; then
+if [[ "$FACTORY" == "rmillsmbp.corp.adobe.com" ]]; then
 	FACTORY=adobe
 fi
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
-export PATH=".:${BIN}:$BIN/$PLATFORM:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/opt/local/bin:/usr/X11R6/bin:/Developer/Tools:${PATH}:$MAGICK_HOME/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Developer/usr/bin:/usr/libexec:/opt/subversion/bin:"
+export PATH=".:${BIN}:$BIN/$PLATFORM:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/"
 export MANPATH="/usr/local/share/man:/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
@@ -508,7 +508,9 @@ fi
 
 if [ "$PLATFORM" == "macosx" ]; then
   	alias xce='open -a /Applications/Xcode.app'
-  	alias svn='/opt/local/bin/svn'
+  	if [ -e /opt/local/bin/svn ]; then
+  		alias svn='/opt/local/bin/svn'
+  	fi
 
 	pushd / >/dev/null
 		# turn off local backup in time machine
@@ -521,7 +523,7 @@ if [ "$PLATFORM" == "macosx" ]; then
   		# tmutil = Time Machine Util ; pmset = Power Management Settings ;
   		sudo tmutil disablelocal
   	popd >/dev/null
-  	if [ $FACTORY == rmills-mbp.local ]; then
+  	if [ $FACTORY == rmills-mbp.local -o $FACTORY == rmillsmbp13.local ]; then
     	P4CLIENT=rmills-mpb13-7Xd2
     	P4PORT=ssl:scm003.corp.adobe.com:3070
     fi
