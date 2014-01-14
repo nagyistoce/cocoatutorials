@@ -527,8 +527,9 @@ if [ "$PLATFORM" == "linux" ]; then
   	alias svn='/usr/local/bin/svn'
 fi
 
-if [ "$PLATFORM" == "cygwin" -a "$FACTORY" == "rmills-vista" ]; then
-    cp /cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/*.jpg /cygdrive/z/Users/rmills/clanmills/files/themes/
+themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
+if [ -e $themes ]; then
+    (cp ${themes}/*.jpg /cygdrive/z/Users/rmills/clanmills/files/themes/ 2>/dev/null >/dev/null)
 fi
 
 cd ~/
