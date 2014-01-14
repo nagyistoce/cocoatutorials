@@ -59,12 +59,11 @@ fi
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
-export PATH=".:${BIN}:$BIN/$PLATFORM:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/"
+export PATH=".:${BIN}:$BIN/$PLATFORM:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/"
 export MANPATH="/usr/local/share/man:/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/opt/local/lib/pkgconfig
-
 
 ## 
 # SCM support
@@ -98,7 +97,6 @@ fi
 # clanmills support
 export REMOTEHOST=clanmills.homedns.org
 export GPGKEY=CF1649DA
-
 
 ##
 # photos
@@ -394,10 +392,6 @@ alias robin='cd ~/Projects/cocoatutorials/robin'
 alias clanmills.com='ssh clanmil1@clanmills.com'
 
 ##
-# keep QtCreator happy
-mkdir -p /tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib
-
-##
 # apache-maven (and itext support)
 # http://maven.apache.org/download.html
 # export M2_HOME=/usr/local/apache-maven/apache-maven-3.0.3
@@ -549,6 +543,3 @@ cd ~/
 # MacPorts Installer addition on 2011-12-06_at_12:29:07: adding an appropriate PATH variable for use with MacPorts.
 export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 # Finished adapting your PATH environment variable for use with MacPorts.
-
-
-

@@ -11,7 +11,6 @@ if [ -z $d ]; then d=/Tools/Ant ; fi
 A=
 D=/Langley
 
-
 if [ "$P4CLIENT" = "rmills-mpb13-7Xd2" ]; then A=X5d2/PESandbox ; fi
 if [ "$P4CLIENT" = "rmills-mbp-X5d2"   ]; then A=X5d2/PESandbox ; fi
 
