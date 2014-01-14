@@ -13,6 +13,7 @@ D=/Langley
 
 if [ "$P4CLIENT" = "rmills-mpb13-7Xd2" ]; then A=X5d2/PESandbox ; fi
 if [ "$P4CLIENT" = "rmills-mbp-X5d2"   ]; then A=X5d2/PESandbox ; fi
+if [ "$P4CLIENT" = "rmills-mbp"        ]; then A=1740/rmills-mbp/PE/12X/Main ; fi
 
 if [ ! -z $A ]; then
 	cd ${D}/${A}/${d}
