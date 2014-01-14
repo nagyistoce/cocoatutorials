@@ -357,6 +357,7 @@ alias finder='find . -depth -iname'
 alias shellx=open
 alias start=open
 alias get=git
+alias p4s='. p4.so'
 
 if [ $PLATFORM == linux ]; then 
     alias open=xdg-open
