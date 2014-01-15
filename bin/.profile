@@ -378,6 +378,13 @@ if [ $PLATFORM == linux ]; then
     PATH=$PATH:$HOME/bin:$JRE_HOME/bin
 fi
 
+if [ $PLATFORM == macosx ]; then
+	function smartdiff()
+	{
+		"/Applications/SmartSynchronize 3.3.app/Contents/MacOS/SmartSynchronize" "$@" &
+	}
+fi
+
 # hieroglyphics
 alias ..='cd ..'
 alias ...=sudo
