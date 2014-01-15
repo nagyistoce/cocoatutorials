@@ -163,6 +163,14 @@ dir() {
     fi
 }
 
+thepath() {
+    if [ -d $1 ]; then
+    	(cd $1 ; pwd)
+    else
+    	(cd $(dirname $1) ;echo $(pwd)/$(basename $1))
+    fi
+}
+
 export HISTTIMEFORMAT="%T "
 history() { 
     builtin history | tail -30
