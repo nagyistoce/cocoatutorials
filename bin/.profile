@@ -510,7 +510,7 @@ if [ "$FACTORY" == "adobe" ]; then
 	
 	if [ $PLATFORM == "macosx" ]; then
 		 docs () {
-			cd /Langley/1740/rmills-mbp/PE/12X/Main/Tools/ReaderNextBuild/Documents
+			cd /Langley/rmills-mbp/PE/12X/Main/Tools/ReaderNextBuild/Documents
 			export P4CLIENT=rmills-mbp
 		}
 	fi
