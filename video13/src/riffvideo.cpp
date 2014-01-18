@@ -690,76 +690,93 @@ void RiffVideo::doWriteMetadata()
 
     //find and move to avih position
     int32_t dummyLong = 0;
-    uint32_t i;
+    uint32_t i,j,maxCount;
 
-    std::vector<int32_t> avihChunkPositions = findChunkPositions("AVIH");
-    for (i=0; i<avihChunkPositions.size(); i++)
-    {
-        io_->seek(avihChunkPositions[i]+4,BasicIo::beg);
-        aviHeaderTagsHandler(dummyLong);
-    }
-
-    //find and move to strh position
     std::vector<int32_t> strhChunkPositions = findChunkPositions("STRH");
-    for(i=0; i< strhChunkPositions.size(); i++)
+
+    std::vector<std::string> primitiveFlags;
+    //Add new tags to the beginning of the container prmitiveFlags and handle conditions to the end of case statements.
+    primitiveFlags.push_back("STRN");
+    primitiveFlags.push_back("FMT ");
+    primitiveFlags.push_back("STRF");
+    primitiveFlags.push_back("STRH");
+    primitiveFlags.push_back("AVIH");
+
+    maxCount = (uint32_t) primitiveFlags.size();
+    for (j=0; j<maxCount; j++)
     {
-        io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
-        setStreamType();
-        streamHandler(dummyLong);
+        std::vector<int32_t> primitivePositions = findChunkPositions(primitiveFlags.back().c_str());
+        primitiveFlags.pop_back();
+        for (i=0; i<(uint32_t)primitivePositions.size(); i++)
+        {
+            io_->seek(primitivePositions[i]+4,BasicIo::beg);
+            switch (j)
+            {
+            case 0:
+                aviHeaderTagsHandler(dummyLong);
+                break;
+            case 1:
+                setStreamType();
+                streamHandler(dummyLong);
+                break;
+            case 2:
+                io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
+                setStreamType();
+                io_->seek(primitivePositions[i]+4,BasicIo::beg);
+                streamFormatHandler(dummyLong);
+                break;
+            case 3:
+                streamType_ = Audio;
+                streamHandler(dummyLong);
+                break;
+            case 4:
+                dateTimeOriginal(dummyLong);
+                break;
+            default:
+                break;
+            }
+        }
+        primitivePositions.clear();
     }
 
-    std::vector<int32_t> strfChunkPositions = findChunkPositions("STRF");
-    for(i=0; i<strfChunkPositions.size(); i++)
-    {
-        io_->seek(strhChunkPositions[i]+4,BasicIo::beg);
-        setStreamType();
-        io_->seek(strfChunkPositions[i]+4,BasicIo::beg);
-        streamFormatHandler(dummyLong);
-    }
+    std::vector<std::string> headerFlags;
+    //Add new tags to the beginning of the container headerFlags and handle conditions to the end of case statements.
+    headerFlags.push_back("INFO");
+    headerFlags.push_back("NCDT");
+    headerFlags.push_back("ODML");
+    headerFlags.push_back("IDIT");
 
-    std::vector<int32_t> fmtChunkPositions = findChunkPositions("FMT ");
-    for(i=0; i< fmtChunkPositions.size(); i++)
+    maxCount = (uint32_t) headerFlags.size();
+    for (j=0; j<maxCount; j++)
     {
-        streamType_ = Audio;
-        io_->seek(fmtChunkPositions[i]+4,BasicIo::beg);
-        streamHandler(dummyLong);
-    }
+        std::vector<int32_t> headerPositions = findHeaderPositions(headerFlags.back().c_str());
+        headerFlags.pop_back();
 
-    std::vector<int32_t> strnChunkPositions = findChunkPositions("STRN");
-    for(i=0;i<strnChunkPositions.size(); i++)
-    {
-        io_->seek(strnChunkPositions[i]+4,BasicIo::beg);
-        dateTimeOriginal(dummyLong);
+        for (i=0; i<(uint32_t)headerPositions.size(); i++)
+        {
+            io_->seek(headerPositions[i],BasicIo::beg);
+            switch (j)
+            {
+            case 0:
+                io_->seek(headerPositions[i]+8,BasicIo::beg);
+                dateTimeOriginal(dummyLong);
+                break;
+            case 1:
+                odmlTagsHandler();
+                break;
+            case 2:
+                nikonTagsHandler();
+                break;
+            case 3:
+                infoTagsHandler();
+                break;
+            //TODO :implement write functionality for header chunks and exif and iptc metadata
+            default:
+                break;
+            }
+        }
+        headerPositions.clear();
     }
-
-    std::vector<int32_t> iditChunkPositions = findHeaderPositions("IDIT");
-    for(i=0; i<iditChunkPositions.size(); i++)
-    {
-        io_->seek(iditChunkPositions[i]+8,BasicIo::beg);
-        dateTimeOriginal(dummyLong);
-    }
-
-    std::vector<int32_t> odmlHeaderPositions = findHeaderPositions("ODML");
-    for(i=0;i<odmlHeaderPositions.size(); i++)
-    {
-        io_->seek(odmlHeaderPositions[i],BasicIo::beg);
-        odmlTagsHandler();
-    }
-
-    std::vector<int32_t> ncdtHeaderPositions = findHeaderPositions("NCDT");
-    for(i=0;i<ncdtHeaderPositions.size(); i++)
-    {
-        io_->seek(ncdtHeaderPositions[i],BasicIo::beg);
-        nikonTagsHandler();
-    }
-
-    std::vector<int32_t> infoHeaderPositions = findHeaderPositions("INFO");
-    for(i=0;i<infoHeaderPositions.size(); i++)
-    {
-        io_->seek(infoHeaderPositions[i],BasicIo::beg);
-        infoTagsHandler();
-    }
-    //TODO :implement write functionality for header chunks and exif and iptc metadata
     return;
 }// RiffVideo::doWriteMetadata
 
