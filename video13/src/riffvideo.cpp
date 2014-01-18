@@ -712,9 +712,7 @@ void RiffVideo::doWriteMetadata()
             io_->seek(primitivePositions[i]+4,BasicIo::beg);
             switch (j)
             {
-            case 0:
-                aviHeaderTagsHandler(dummyLong);
-                break;
+            case 0: aviHeaderTagsHandler(dummyLong); break;
             case 1:
                 setStreamType();
                 streamHandler(dummyLong);
@@ -729,11 +727,8 @@ void RiffVideo::doWriteMetadata()
                 streamType_ = Audio;
                 streamHandler(dummyLong);
                 break;
-            case 4:
-                dateTimeOriginal(dummyLong);
-                break;
-            default:
-                break;
+            case 4: dateTimeOriginal(dummyLong); break;
+            default:break;
             }
         }
         primitivePositions.clear();
@@ -761,18 +756,11 @@ void RiffVideo::doWriteMetadata()
                 io_->seek(headerPositions[i]+8,BasicIo::beg);
                 dateTimeOriginal(dummyLong);
                 break;
-            case 1:
-                odmlTagsHandler();
-                break;
-            case 2:
-                nikonTagsHandler();
-                break;
-            case 3:
-                infoTagsHandler();
-                break;
+            case 1: odmlTagsHandler(); break;
+            case 2: nikonTagsHandler(); break;
+            case 3: infoTagsHandler(); break;
             //TODO :implement write functionality for header chunks and exif and iptc metadata
-            default:
-                break;
+            default: break;
             }
         }
         headerPositions.clear();
