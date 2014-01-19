@@ -544,8 +544,9 @@ if [ "$PLATFORM" == "linux" ]; then
 fi
 
 themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
+themez=/cygdrive/z/Users/rmills/clanmills/files/themes/
 if [ -e $themes ]; then
-    (cp ${themes}/*.jpg /cygdrive/z/Users/rmills/clanmills/files/themes/ 2>/dev/null >/dev/null)
+	(cd $themes; for i in *.jpg;do if [ ! -e $themez/$i ]; then cp $i $themez ; fi; done)
 fi
 
 cd ~/
