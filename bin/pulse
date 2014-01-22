@@ -41,19 +41,19 @@ if [ ${#utils} != 0 ]; then
 
 	while [ true ]; do
 		n=1
-		tmp=/tmp/pulse 
-		ps ax | cut -b 28-9999 | cut -d' ' -f 1 > $tmp
-
+		t=/tmp/pulse.txt
+		ps ax | cut -b 28-9999 | cut -d' ' -f 1 | read -a ps
+		
 		for u in ${utils[@]}; do
 			c=0
-			for i in $(cat $tmp); do echo $i $(basename "$i") ; done
-
-			if [ $(( n++ )) == 1 ]; then echo -n $(date) '' ; fi
-			c=$(for p in $(cat $tmp); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$u" | wc -l)
+			for p in u in ${ps[@]}; do 
+				if [ $(( n++ )) == 1 ]; then echo -n $(date) '' ; fi
+				if echo $(basename $p) | grep "$u" ; then :$((c++)); fi
+			done
 			echo -n "$u": $((c)) ''
 		done
 		echo df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
-		sleep $e
+	sleep $e
 	done
 else
 	h=1
