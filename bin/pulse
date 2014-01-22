@@ -38,22 +38,15 @@ done
 ##
 # do the business
 if [ ${#utils} != 0 ]; then
-
 	while [ true ]; do
 		n=1
-		t=/tmp/pulse.txt
-		ps ax | cut -b 28-9999 | cut -d' ' -f 1 | read -a ps
-		
+		tmp=/tmp/pulse 
 		for u in ${utils[@]}; do
-			c=0
-			for p in u in ${ps[@]}; do 
-				if [ $(( n++ )) == 1 ]; then echo -n $(date) '' ; fi
-				if echo $(basename $p) | grep "$u" ; then :$((c++)); fi
-			done
-			echo -n "$u": $((c)) ''
+			if [ $(( n++ )) == 1 ]; then echo -n $(date) '' ; fi
+			echo -n $u $(ps ax | cut -b 28-9999 | cut -d' ' -f 1 | grep $u | wc -l) ''
 		done
 		echo df: $(echo $(df -m . | grep -v -e blocks) | cut -d' ' -f4,5)
-	sleep $e
+		sleep $e
 	done
 else
 	h=1
