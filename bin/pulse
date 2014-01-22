@@ -38,11 +38,16 @@ done
 ##
 # do the business
 if [ ${#utils} != 0 ]; then
+
 	while [ true ]; do
 		n=1
 		tmp=/tmp/pulse 
-		ps ax | sed -e 's/ * / /g' | cut -d' ' -f5 > $tmp
+		ps ax | cut -b 28-9999 | cut -d' ' -f 1 > $tmp
+
 		for u in ${utils[@]}; do
+			c=0
+			for i in $(cat $tmp); do echo $i $(basename "$i") ; done
+
 			if [ $(( n++ )) == 1 ]; then echo -n $(date) '' ; fi
 			c=$(for p in $(cat $tmp); do if [ -e $p ]; then echo $(basename $p); fi ; done | grep "$u" | wc -l)
 			echo -n "$u": $((c)) ''
