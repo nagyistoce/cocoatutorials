@@ -1,0 +1,15 @@
+#/bin/bash
+
+disk=/Volumes/xfer-rmills
+if [ -e $disk ]; then 
+    diskutil unmount $disk
+else
+	echo $disk is not mounted
+fi
+
+if [ -e $disk ]; then 
+    echo '***' unable to unmount $disk '***'
+fi
+
+# That's all Folks!
+##
