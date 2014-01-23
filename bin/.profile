@@ -546,7 +546,7 @@ fi
 themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
 themez=/cygdrive/z/Users/rmills/clanmills/files/themes/
 if [ -e $themes ]; then
-	(cd $themes; for i in *.jpg;do if [ ! -e $themez/$i ]; then cp $i $themez ; fi; done)
+	(cd $themes; for i in *.jpg;do if [ ! -e $themez/$i ]; then echo $i ; cp $i $themez ; fi; done)
 fi
 
 cd ~/
