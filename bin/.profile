@@ -518,6 +518,7 @@ fi
 
 if [ "$PLATFORM" == "macosx" ]; then
   	alias xce='open -a /Applications/Xcode.app'
+  	alias HH='cd ~/Desktop/Stuff/HH'
   	if [ -e /opt/local/bin/svn ]; then
   		alias svn='/opt/local/bin/svn'
   	fi
