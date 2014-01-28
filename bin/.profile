@@ -519,7 +519,7 @@ fi
 if [ "$PLATFORM" == "macosx" ]; then
   	alias xce='open -a /Applications/Xcode.app'
   	alias HH='cd ~/Desktop/Stuff/HH'
-  	alias themes='~/clanmills/files/themes'
+  	alias themes='cd ~/clanmills/files/themes'
   	if [ -e /opt/local/bin/svn ]; then
   		alias svn='/opt/local/bin/svn'
   	fi
