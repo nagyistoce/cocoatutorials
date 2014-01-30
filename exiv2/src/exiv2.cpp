@@ -207,7 +207,7 @@ void Params::cleanup()
 void Params::version(bool verbose,std::ostream& os) const
 {
     bool  b64    = sizeof(void*)==8;
-    const char* sBuild = b64 ? "(64 bit build)" : "(32 bit build)" ;
+    const char* sBuild = b64 ? "(64 bit build you know)" : "(32 bit build you know)" ;
     os << EXV_PACKAGE_STRING << " " << Exiv2::versionNumberHexString() << " " << sBuild << "\n"
        << _("Copyright (C) 2004-2013 Andreas Huggel.\n")
        << "\n"
