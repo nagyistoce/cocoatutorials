@@ -546,6 +546,7 @@ if [ "$PLATFORM" == "linux" ]; then
 fi
 
 if [ "$PLATFORM" == "cygwin" ]; then
+    PATH=/usr/bin:$PATH
 	themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
 	themez=/cygdrive/z/Users/rmills/clanmills/files/themes/
 	if [ ! -e $themez ]; then
