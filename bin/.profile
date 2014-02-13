@@ -53,7 +53,7 @@ if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
     FACTORY=novariant
 fi
 
-if [[ "$FACTORY" == "rmillsmbp.corp.adobe.com" ]]; then
+if [ "$FACTORY" == "rmillsmbp.corp.adobe.com" -o  "$FACTORY" == "rmillsmbp.local" ]; then
 	FACTORY=adobe
 fi
 
@@ -518,8 +518,6 @@ fi
 
 if [ "$PLATFORM" == "macosx" ]; then
   	alias xce='open -a /Applications/Xcode.app'
-  	alias HH='cd ~/Desktop/Stuff/HH'
-  	alias themes='cd ~/clanmills/files/themes'
   	if [ -e /opt/local/bin/svn ]; then
   		alias svn='/opt/local/bin/svn'
   	fi
@@ -535,9 +533,12 @@ if [ "$PLATFORM" == "macosx" ]; then
   		# tmutil = Time Machine Util ; pmset = Power Management Settings ;
   		sudo tmutil disablelocal
   	popd >/dev/null
-  	if [ $FACTORY == rmills-mbp.local -o $FACTORY == rmillsmbp13.local ]; then
+  	if [ $FACTORY == rmills-mbp.local -o $FACTORY == rmillsmbp13.local -o $FACTORY == rmillsmbp.local ]; then
     	P4CLIENT=rmills-mpb13-7Xd2
     	P4PORT=ssl:scm003.corp.adobe.com:3070
+    fi
+  	if [ $FACTORY == rmillsmbp.local ]; then
+    	P4CLIENT=rmills-mpb-X5d2
     fi
 fi
 
@@ -545,16 +546,9 @@ if [ "$PLATFORM" == "linux" ]; then
   	alias svn='/usr/local/bin/svn'
 fi
 
-if [ "$PLATFORM" == "cygwin" ]; then
-    PATH=/usr/bin:$PATH
-	themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
-	themez=/cygdrive/z/Users/rmills/clanmills/files/themes/
-	if [ ! -e $themez ]; then
-		mkdir -p $themez 2>/dev/null >/dev/null
-	fi
-	if [[ -e $themes && -e $themez ]]; then
-		(cd $themes; for i in *.jpg;do if [ ! -e $themez/$i ]; then echo $i ; cp $i $themez ; fi; done)
-	fi
+themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
+if [ -e $themes ]; then
+    (cp ${themes}/*.jpg /cygdrive/z/Users/rmills/clanmills/files/themes/ 2>/dev/null >/dev/null)
 fi
 
 cd ~/
