@@ -1,0 +1,7 @@
+#!/bin/bash
+
+every=${1:-120}
+pulse java p4 clang xcodebuild --every $every
+
+# That's all folks
+##
