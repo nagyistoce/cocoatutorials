@@ -403,6 +403,8 @@ alias collages='cd ~/Pictures/Picasa/Collages'
 alias tuts='cd ~/Projects/cocoatutorials'
 alias QtSee='cd ~/Projects/cocoatutorials/QtSee'
 alias robin='cd ~/Projects/cocoatutorials/robin'
+alias HH='cd ~/Desktop/Stuff/HH'
+
 #
 # Favorite servers
 alias clanmills.com='ssh clanmil1@clanmills.com'
