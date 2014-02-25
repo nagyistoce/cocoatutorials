@@ -1,0 +1,35 @@
+#!/bin/bash
+
+##
+# change jenkins.war file on MacOS-X
+#
+syntax() {
+	echo "usage: $0 [jenkins.war]"
+}
+
+syntaxError() {
+	syntax
+	exit 1
+}
+
+error() {
+	echo $@ 2>&1
+	exit 1
+}
+
+bomb() {
+	echo "*** $1 requires an argument ***" 1>&2	
+	exit 1
+}
+
+jenkins="$1"
+if [ -z   "$jenkins" ]; then jenkins=jenkins.war                         ; fi
+if [ ! -e "$jenkins" ]; then error $jenkins does not exist               ; fi
+if [ "$EUID" != 0    ]; then error "ROOT priviledges required to run $0" ; fi
+
+launchctl unload /Library/LaunchDaemons/org.jenkins-ci.plist
+cp $jenkins /Applications/Jenkins/jenkins.war 
+launchctl   load /Library/LaunchDaemons/org.jenkins-ci.plist
+
+# That's all Folks
+##
