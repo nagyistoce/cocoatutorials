@@ -20,7 +20,7 @@ if [ -z $test ]; then
 	test=tests
 fi
 
-for d in $(find "$msvc" -name exiv2.exe -exec dirname {} ";"); do
+for d in $(find "$msvc" -name exifprint.exe -exec dirname {} ";"); do
     export EXIV2_BINDIR=$d
     bar='-----'
     Bar=$bar
