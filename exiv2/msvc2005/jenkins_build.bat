@@ -1,0 +1,122 @@
+
+
+set   "INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\INCLUDE;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\INCLUDE;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\include;c:\Program Files (x86)\Microsoft Visual Studio .NET 2003\SDK\v1.1\include\;c:\home\rmills\dev\win32\boost\include\boost-1_42
+set   "LIB=C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\LIB;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\LIB;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\lib;C:\Program Files (x86)\Microsoft Visual Studio 8\SDK\v2.0\lib;c:\Program Files (x86)\Microsoft Visual Studio .NET 2003\SDK\v1.1\Lib\"
+set   "LIBPATH=C:\Windows\Microsoft.NET\Framework\v2.0.50727;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\LIB"
+set   "VS80COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\Tools\"
+call "%VS80COMNTOOLS%\..\..\Vc\bin\vcvars32.bat"
+echo ------------
+set
+echo .
+if NOT EXIST ..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\expat-2.1.0
+if NOT EXIST ..\zlib-1.2.7  xcopy/yesihq  c:\exiv2libs\zlib-1.2.7  ..\zlib-1.2.7
+cd     msvc2005
+set T=0
+if %Win32%==true if %debug%==true   if %static%==true devenv exiv2.sln %ACTION% "Debug|Win32"     
+if %Win32%==true if %release%==true if %static%==true devenv exiv2.sln %ACTION% "Release|Win32"    
+if %Win32%==true if %debug%==true   if %dll%==true    devenv exiv2.sln %ACTION% "DebugDLL|Win32"   
+if %Win32%==true if %release%==true if %dll%==true    devenv exiv2.sln %ACTION% "ReleaseDLL|Win32" 
+if %x64%==true   if %debug%==true   if %static%==true devenv exiv2.sln %ACTION% "Debug|x64"        
+if %x64%==true   if %release%==true if %static%==true devenv exiv2.sln %ACTION% "Release|x64"      
+if %x64%==true   if %debug%==true   if %dll%==true    devenv exiv2.sln %ACTION% "DebugDLL|x64"     
+if %x64%==true   if %release%==true if %dll%==true    devenv exiv2.sln %ACTION% "ReleaseDLL|x64"   
+if %Win32%==true if %debug%==true   if %static%==true set T=1
+if %Win32%==true if %release%==true if %static%==true set T=1
+if %Win32%==true if %debug%==true   if %dll%==true    set T=1
+if %Win32%==true if %release%==true if %dll%==true    set T=1
+if %x64%==true   if %debug%==true   if %static%==true set T=1
+if %x64%==true   if %release%==true if %static%==true set T=1
+if %x64%==true   if %debug%==true   if %dll%==true    set T=1
+if %x64%==true   if %release%==true if %dll%==true    set T=1
+if %ACTION%==/clean   set T=0
+if %ACTION%==/upgrade set T=0
+if %T%==0 set tests=false
+if %T%==0 set teste=false
+if %T%==0 set testv=false
+if %T%==0 set testr=false
+for /f "tokens=*" %%a in ('cygpath -au ..') do set FOO=%%a
+if %tests%==true  bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005'
+
+
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+
+
