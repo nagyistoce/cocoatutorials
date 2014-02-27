@@ -4,7 +4,7 @@ set   "LIB=C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\LIB;C:\Pro
 set   "LIBPATH=C:\Windows\Microsoft.NET\Framework\v2.0.50727;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\LIB"
 set   "VS80COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\Tools\"
 call "%VS80COMNTOOLS%\..\..\Vc\bin\vcvars32.bat"
-echo ------------
+rem echo ------------
 set
 echo .
 if NOT EXIST ..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\expat-2.1.0
@@ -14,38 +14,69 @@ if %ACTION%==/clean   set tests=false
 if %ACTION%==/upgrade set tests=false
 for /f "tokens=*" %%a in ('cygpath -au ..') do set FOO=%%a
 
-if %Win32%==true if %debug%==true if %static%==true (
-  devenv exiv2.sln %ACTION% "Debug|Win32"     
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/Debug'
-)
-if %Win32%==true if %release%==true if %static%==true (
-  devenv exiv2.sln %ACTION% "Release|Win32"    
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/Release'
-)
-if %Win32%==true if %debug%==true   if %dll%==true (
-  devenv exiv2.sln %ACTION% "DebugDLL|Win32"   
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/DebugDLL'
-)  
-if %Win32%==true if %release%==true if %dll%==true (
-  devenv exiv2.sln %ACTION% "ReleaseDLL|Win32" 
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/ReleaseDLL'
-)  
-if %x64%==true   if %debug%==true   if %static%==true (
-  rue devenv exiv2.sln %ACTION% "Debug|x64"        
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Debug'
-)  
-if %x64%==true   if %release%==true if %static%==true (
-  rue devenv exiv2.sln %ACTION% "Release|x64"      
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Release'
-)  
-if %x64%==true   if %debug%==true   if %dll%==true (
-  devenv exiv2.sln %ACTION% "DebugDLL|x64"     
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/DebugDLL'
-)  
-if %x64%==true   if %release%==true if %dll%==true (
-  devenv exiv2.sln %ACTION% "ReleaseDLL|x64"   
-  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/ReleaseDLL'
-)
+if %Win32%==true (
+  if %debug%==true (
+    if %static%==true (
+      devenv exiv2.sln %ACTION% "Debug|Win32"     
+      if %tests%==true (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/Debug'
+) ) ) )
+
+if %Win32%==true (
+  if %release%==true (
+    if %static%==true  (
+      devenv exiv2.sln %ACTION% "Release|Win32"    
+      if %tests%==true   (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/Release'
+) ) ) )
+
+if %Win32%==true (
+  if %debug%==true (
+    if %dll%==true   (
+      devenv exiv2.sln %ACTION% "DebugDLL|Win32"   
+      if %tests%==true (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/DebugDLL'
+) ) ) )
+
+if %Win32%==true (
+  if %release%==true (
+    if %dll%==true     (
+      devenv exiv2.sln %ACTION% "ReleaseDLL|Win32" 
+      if %tests%==true   (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/ReleaseDLL'
+) ) ) )
+
+if %x64%==true (
+  if %debug%==true (
+    if %static%==true (
+      rue devenv exiv2.sln %ACTION% "Debug|x64"        
+      if %tests%==true (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Debug'
+) ) ) )
+
+if %x64%==true (
+  if %release%==true (
+    if %static%==true  (
+      rue devenv exiv2.sln %ACTION% "Release|x64"      
+      if %tests%==true   (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Release'
+) ) ) )
+
+if %x64%==true (
+  if %debug%==true (
+    if %dll%==true   (
+      devenv exiv2.sln %ACTION% "DebugDLL|x64"     
+      if %tests%==true (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/DebugDLL'
+) ) ) )
+
+if %x64%==true   (
+  if %release%==true (
+    if %dll%==true     (
+      devenv exiv2.sln %ACTION% "ReleaseDLL|x64"   
+      if %tests%==true   (
+        call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/ReleaseDLL'
+) ) ) )
 
 rem That's all Folks!
 rem -----------------
