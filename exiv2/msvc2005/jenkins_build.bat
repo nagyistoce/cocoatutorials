@@ -10,29 +10,42 @@ echo .
 if NOT EXIST ..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\expat-2.1.0
 if NOT EXIST ..\zlib-1.2.7  xcopy/yesihq  c:\exiv2libs\zlib-1.2.7  ..\zlib-1.2.7
 cd     msvc2005
-set T=0
-if %Win32%==true if %debug%==true   if %static%==true devenv exiv2.sln %ACTION% "Debug|Win32"     
-if %Win32%==true if %release%==true if %static%==true devenv exiv2.sln %ACTION% "Release|Win32"    
-if %Win32%==true if %debug%==true   if %dll%==true    devenv exiv2.sln %ACTION% "DebugDLL|Win32"   
-if %Win32%==true if %release%==true if %dll%==true    devenv exiv2.sln %ACTION% "ReleaseDLL|Win32" 
-if %x64%==true   if %debug%==true   if %static%==true devenv exiv2.sln %ACTION% "Debug|x64"        
-if %x64%==true   if %release%==true if %static%==true devenv exiv2.sln %ACTION% "Release|x64"      
-if %x64%==true   if %debug%==true   if %dll%==true    devenv exiv2.sln %ACTION% "DebugDLL|x64"     
-if %x64%==true   if %release%==true if %dll%==true    devenv exiv2.sln %ACTION% "ReleaseDLL|x64"   
-if %Win32%==true if %debug%==true   if %static%==true set T=1
-if %Win32%==true if %release%==true if %static%==true set T=1
-if %Win32%==true if %debug%==true   if %dll%==true    set T=1
-if %Win32%==true if %release%==true if %dll%==true    set T=1
-if %x64%==true   if %debug%==true   if %static%==true set T=1
-if %x64%==true   if %release%==true if %static%==true set T=1
-if %x64%==true   if %debug%==true   if %dll%==true    set T=1
-if %x64%==true   if %release%==true if %dll%==true    set T=1
-if %ACTION%==/clean   set T=0
-if %ACTION%==/upgrade set T=0
-if %T%==0 set tests=false
-if %T%==0 set teste=false
-if %T%==0 set testv=false
-if %T%==0 set testr=false
+if %ACTION%==/clean   set tests=false
+if %ACTION%==/upgrade set tests=false
 for /f "tokens=*" %%a in ('cygpath -au ..') do set FOO=%%a
-if %tests%==true  bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005'
 
+if %Win32%==true if %debug%==true if %static%==true (
+  devenv exiv2.sln %ACTION% "Debug|Win32"     
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/Debug'
+)
+if %Win32%==true if %release%==true if %static%==true (
+  devenv exiv2.sln %ACTION% "Release|Win32"    
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/Release'
+)
+if %Win32%==true if %debug%==true   if %dll%==true (
+  devenv exiv2.sln %ACTION% "DebugDLL|Win32"   
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/DebugDLL'
+)  
+if %Win32%==true if %release%==true if %dll%==true (
+  devenv exiv2.sln %ACTION% "ReleaseDLL|Win32" 
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/Win32/ReleaseDLL'
+)  
+if %x64%==true   if %debug%==true   if %static%==true (
+  rue devenv exiv2.sln %ACTION% "Debug|x64"        
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Debug'
+)  
+if %x64%==true   if %release%==true if %static%==truw (
+  rue devenv exiv2.sln %ACTION% "Release|x64"      
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Release'
+)  
+if %x64%==true   if %debug%==true   if %dll%==true (
+  devenv exiv2.sln %ACTION% "DebugDLL|x64"     
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/DebugDLL'
+)  
+if %x64%==true   if %release%==true if %dll%==true (
+  devenv exiv2.sln %ACTION% "ReleaseDLL|x64"   
+  if %tests%==true bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/ReleaseDLL'
+)
+
+rem That's all Folks!
+rem -----------------
