@@ -49,7 +49,7 @@ if %Win32%==true (
 if %x64%==true (
   if %debug%==true (
     if %static%==true (
-      rue devenv exiv2.sln %ACTION% "Debug|x64"        
+      devenv exiv2.sln %ACTION% "Debug|x64"        
       if %tests%==true (
         call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Debug'
 ) ) ) )
@@ -57,7 +57,7 @@ if %x64%==true (
 if %x64%==true (
   if %release%==true (
     if %static%==true  (
-      rue devenv exiv2.sln %ACTION% "Release|x64"      
+      devenv exiv2.sln %ACTION% "Release|x64"      
       if %tests%==true   (
         call bash -c 'cd %FOO%;cd test;./testMSVC.sh ../msvc2005/bin/x64/Release'
 ) ) ) )
