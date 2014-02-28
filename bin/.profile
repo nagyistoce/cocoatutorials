@@ -373,7 +373,7 @@ if [ $PLATFORM == linux ]; then
     alias start=open
     
     J=jdk1.7.0_21
-    if [ -d /usr/local/java/jdk.1.7.0_51]; then J=jdk1.7.0_51 ; fi
+    if [ -d /usr/local/java/jdk.1.7.0_51 ]; then J=jdk1.7.0_51 ; fi
     export JAVA_HOME=/usr/local/java/$J
     export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
     
