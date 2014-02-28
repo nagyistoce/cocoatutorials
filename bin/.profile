@@ -371,11 +371,14 @@ if [ $PLATFORM == linux ]; then
     alias open=xdg-open
     alias shellx=open
     alias start=open
-#   export PATH=$PATH:/usr/lib/java/jre1.7.0/bin/
-    export JAVA_HOME=/usr/local/java/jdk1.7.0_21
+    
+    J=jdk1.7.0_21
+    if [ -d /usr/local/java/jdk.1.7.0_51]; then J=jdk1.7.0_51 ; fi
+    export JAVA_HOME=/usr/local/java/$J
     export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
-    JRE_HOME=/usr/local/java/jre1.7.0_21
-    PATH=$PATH:$HOME/bin:$JRE_HOME/bin
+    
+    # JRE_HOME=/usr/local/java/jre1.7.0_21
+    # PATH=$PATH:$HOME/bin:$JRE_HOME/bin
 fi
 
 if [ $PLATFORM == macosx ]; then
@@ -542,6 +545,20 @@ if [ "$PLATFORM" == "macosx" ]; then
   	if [ $FACTORY == rmillsmbp.local ]; then
     	P4CLIENT=rmills-mpb-X5d2
     fi
+    
+    ##
+    # add ANT if it's on the machine
+    if [ -e /Users/rmills/gnu/ant/trunk/core/dist/bin/ant ]; then
+        export ANT_HOME=/Users/rmills/gnu/ant/trunk/core/dist
+    	export PATH=$PATH:$ANT_HOME/bin
+    fi
+    
+    ##
+    # add EASYANT if it's on the machine
+    # if [ -e /Users/rmills/gnu/ant/easyant/easyant-core-0.9-src/bin/easyant ]; then
+    #   export EASYANT_HOME=/Users/rmills/gnu/ant/easyant/easyant-core-0.9-src
+    #	export PATH=$PATH:$EASYANT_HOME/bin
+    # fi
 fi
 
 if [ "$PLATFORM" == "linux" ]; then
