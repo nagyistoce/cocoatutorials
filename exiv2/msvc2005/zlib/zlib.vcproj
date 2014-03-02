@@ -106,7 +106,7 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDLL|Win32"
-			OutputDirectory="$(PlatformName)/$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="./build/$(PlatformName)/$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -423,7 +423,7 @@
 		</Configuration>
 		<Configuration
 			Name="DebugDLL|Win32"
-			OutputDirectory="$(PlatformName)/$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="./build/$(PlatformName)/$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
