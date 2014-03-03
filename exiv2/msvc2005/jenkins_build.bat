@@ -36,8 +36,10 @@ call "%VS80COMNTOOLS%\..\..\Vc\bin\vcvars32.bat"
 
 rem --
 rem Pull in support libraries
-if NOT EXIST ..\..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\..\expat-2.1.0
-if NOT EXIST ..\..\zlib-1.2.7  xcopy/yesihq  c:\exiv2libs\zlib-1.2.7  ..\..\zlib-1.2.7
+if NOT EXIST ..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\expat-2.1.0
+if NOT EXIST ..\zlib-1.2.7  xcopy/yesihq  c:\exiv2libs\zlib-1.2.7  ..\zlib-1.2.7
+
+cd msvc2005
 
 rem --
 rem build and test
