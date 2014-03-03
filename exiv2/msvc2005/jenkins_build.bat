@@ -29,20 +29,18 @@ if NOT DEFINED INCLUDE       set "INCLUDE=C:\Program Files (x86)\Microsoft Visua
 if NOT DEFINED LIB           set "LIB=C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\LIB;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\LIB;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\lib;C:\Program Files (x86)\Microsoft Visual Studio 8\SDK\v2.0\lib;c:\Program Files (x86)\Microsoft Visual Studio .NET 2003\SDK\v1.1\Lib\"
 if NOT DEFINED LIBPATH       set "LIBPATH=C:\Windows\Microsoft.NET\Framework\v2.0.50727;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\ATLMFC\LIB"
 if NOT DEFINED VS80COMNTOOLS set "VS80COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\Tools\"
+
+rem  --
 rem  set the build environment
 call "%VS80COMNTOOLS%\..\..\Vc\bin\vcvars32.bat"
-set
-echo .
 
 rem --
-rem Pull in the support libraries
-cd  ..
-if NOT EXIST ..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\expat-2.1.0
-if NOT EXIST ..\zlib-1.2.7  xcopy/yesihq  c:\exiv2libs\zlib-1.2.7  ..\zlib-1.2.7
+rem Pull in support libraries
+if NOT EXIST ..\..\expat-2.1.0 xcopy/yesihq  c:\exiv2libs\expat-2.1.0 ..\..\expat-2.1.0
+if NOT EXIST ..\..\zlib-1.2.7  xcopy/yesihq  c:\exiv2libs\zlib-1.2.7  ..\..\zlib-1.2.7
 
 rem --
 rem build and test
-cd     msvc2005
 if %ACTION%==/clean   set tests=false
 if %ACTION%==/upgrade set tests=false
 for /f "tokens=*" %%a in ('cygpath -au ..') do set FOO=%%a
