@@ -2,28 +2,28 @@
 rem --
 rem build exiv2 library from Jenkins (or the command-line)
 
-if NOT DEFINED ACTION        set  ACTION=/build
-if NOT DEFINED COMPILER      set  COMPILER=G++
-if NOT DEFINED BuildEnv      set  BuildEnv=native
-if NOT DEFINED Builder       set  Builder=2005
+if NOT DEFINED ACTION        set ACTION=/build
+if NOT DEFINED COMPILER      set COMPILER=G++
+if NOT DEFINED BuildEnv      set BuildEnv=native
+if NOT DEFINED Builder       set Builder=2005
 
-if NOT DEFINED release       set  release=false
-if NOT DEFINED debug         set  debug=false
-if NOT DEFINED static        set  static=false
-if NOT DEFINED dll           set  dll=false
-if NOT DEFINED x64           set  x64=false
-if NOT DEFINED Win32         set  Win32=false
+if NOT DEFINED release       set release=false
+if NOT DEFINED debug         set debug=false
+if NOT DEFINED static        set static=false
+if NOT DEFINED dll           set dll=false
+if NOT DEFINED x64           set x64=false
+if NOT DEFINED Win32         set Win32=false
 
-if NOT DEFINED tests         set  tests=false
-if NOT DEFINED teste         set  teste=false
-if NOT DEFINED testv         set  testv=false
-if NOT DEFINED testr         set  testr=false
+if NOT DEFINED tests         set tests=false
+if NOT DEFINED teste         set teste=false
+if NOT DEFINED testv         set testv=false
+if NOT DEFINED testr         set testr=false
 
-if NOT DEFINED expat         set  expat=true
-if NOT DEFINED zlib          set  zlib=true
-if NOT DEFINED curl          set  curl=false
-if NOT DEFINED libssh        set  libssh=false
-if NOT DEFINED openssl       set  openssl=false
+if NOT DEFINED expat         set expat=true
+if NOT DEFINED zlib          set zlib=true
+if NOT DEFINED curl          set curl=false
+if NOT DEFINED libssh        set libssh=false
+if NOT DEFINED openssl       set openssl=false
 
 if %ACTION%==/clean          set tests=false
 if %ACTION%==/upgrade        set tests=false
