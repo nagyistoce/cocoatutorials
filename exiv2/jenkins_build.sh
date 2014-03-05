@@ -14,6 +14,8 @@ if [ ! -e configure ]; then
 	./configure --prefix=$PWD/usr
 fi
 
+touch src/version.cpp
+
 make
 make install
 make samples
