@@ -2,6 +2,8 @@
 rem --
 rem build exiv2 library from Jenkins (or the command-line)
 
+if NOT label==MSVC exit/b 0
+
 if NOT DEFINED ACTION        set ACTION=/build
 if NOT DEFINED COMPILER      set COMPILER=G++
 if NOT DEFINED BuildEnv      set BuildEnv=native
