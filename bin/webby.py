@@ -586,18 +586,28 @@ def objMerge(a,b):
 def readStory(filename):
     result=''
     igs=set()
+    global title,now
     try:
-        pat=re.compile(r".ignore[ \t]+(.*)")
+        pat      =re.compile(r".ignore[ \t]+(.*)")
+        pat_title=re.compile(r".title[ \t]+(.*)")
+        pat_now  =re.compile(r".now[ \t]+(.*)")
         f = open(filename)
         lines = f.readlines()
         for line in lines:
-            if re.match(pat,line):
+            if re.match(pat_title,line):
+                title=re.match(pat_title,line).groups()[0]
+                print "*** title ",title
+            elif re.match(pat_now,line):
+                now=re.match(pat_now,line).groups()[0]
+                print "*** now ",now
+            elif re.match(pat,line):
                 for ig in re.match(pat,line).groups()[0].split():
                     igs.add(ig)
             else:
                 result += line
     except:
         result=''
+
     return result,igs
 
 
@@ -703,7 +713,6 @@ def main(argv):
     ##
     if 1:   
         myData = 0 
-        subs['title'] = title
 
         searcher(photoDir,myData)
 
@@ -723,6 +732,9 @@ def main(argv):
                 nIgnored+=1
             filedict[k].append(bIgnore)
 
+        subs['title'] = title
+        subs['now']   = now
+        
         print 'Visited %d files, found %d ignored %d' % (vcount, fcount,nIgnored)
 
         ##
