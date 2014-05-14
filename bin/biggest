@@ -1,0 +1,8 @@
+#!/bin/bash
+
+lines=$1
+if [ -z $lines ]; then lines=20 ; fi
+du -m . | sort --numeric | tail -$lines
+
+# That's all Folks!
+##

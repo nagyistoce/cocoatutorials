@@ -85,6 +85,8 @@ capDir       = 0
 
 fcount       = 0
 vcount       = 0
+seq          = 6 # index of sequence in fileDict[key][tuple]
+seqs         = []
 
 
 ##
@@ -95,7 +97,7 @@ subs = {}
 
 #
 # use a dictionary to hold the data for every pathname
-filedict = {}      # pathname : [ filename,xmlDate,datetime ]
+filedict = {}      # pathname : [ filename,xmlDate,datetime,image,aspect,ignore,sequence ]
 
 #
 ##
@@ -111,13 +113,15 @@ def syntax():
 #
 def fixCaps(s):
     """fixCaps - add spaces before capitalized words """
-    result = ""
-    if len(s) > 0:
-        result = s[:1]
-        for c in s[1:]:
-            if c.isupper():
-                result += " "
-            result += c
+    result = s
+    if s:
+        result=''
+        if len(s) > 0:
+            result = s[:1]
+            for c in s[1:]:
+                if c.isupper():
+                    result += " "
+                result += c
     return result
 ##
 
@@ -311,7 +315,10 @@ def cmpNameDesc(x,y):      return compare(y,x)
 def cmpNameReversed(x,y):  return compare(reverseString(filedict[x][0]),reverseString(filedict[y][0]))
 
 def cmpDate(x,y):
-    result = compare(filedict[x][1],filedict[y][1])
+    global seq
+    result= (filedict[x][seq] - filedict[y][seq]) if (filedict[x][seq] != 0 or filedict[y][seq] != 0) else 0
+    if result==0:
+        result = compare(filedict[x][1],filedict[y][1])
     if result==0:
         result=cmpName(x,y)
     return result
@@ -365,7 +372,9 @@ def visitfile(filename,pathname,myData):
         except:pass
 
         xmlDate = getXMLtimez(timestamp)
-        filedict[pathname] = [filename, xmlDate,timestamp,image,aspect]
+        ignore=False
+        sequence=0
+        filedict[pathname] = [filename, xmlDate,timestamp,image,aspect,ignore,sequence]
         fcount = fcount + 1
     except:
     #   print "*** TROUBLE with " + pathname + " ***"
@@ -586,11 +595,12 @@ def objMerge(a,b):
 def readStory(filename):
     result=''
     igs=set()
-    global title,now
+    global title,now,seqs
     try:
         pat      =re.compile(r".ignore[ \t]+(.*)")
         pat_title=re.compile(r".title[ \t]+(.*)")
         pat_now  =re.compile(r".now[ \t]+(.*)")
+        pat_seq  =re.compile(r".seq[ \t]+(.*)")
         f = open(filename)
         lines = f.readlines()
         for line in lines:
@@ -600,6 +610,8 @@ def readStory(filename):
             elif re.match(pat_now,line):
                 now=re.match(pat_now,line).groups()[0]
                 print "*** now ",now
+            elif re.match(pat_seq,line):
+                seqs.append(re.match(pat_seq,line).groups()[0])
             elif re.match(pat,line):
                 for ig in re.match(pat,line).groups()[0].split():
                     igs.add(ig)
@@ -664,7 +676,6 @@ def main(argv):
         print "main subs = ",subs
         subs = objMerge(subs,configModule.loadLibrary(subs))
         print "and now subs = ",subs
-
 
     if os.path.abspath(mepath) == os.path.abspath(configModule.__file__):
         print "unable to locate your config webby.py file"
@@ -738,6 +749,27 @@ def main(argv):
         print 'Visited %d files, found %d ignored %d' % (vcount, fcount,nIgnored)
 
         ##
+        # bump sequence (index=seq) for all images with .seq in story.txt
+        global seqs
+        S=0 # increment for every sequenced image
+        for s in seqs:
+            S=S+1
+            scount=0
+            K=0
+            for k in filedict.keys():
+                stub=os.path.splitext(os.path.basename(k))[0]
+                if stub.find(s) != -1:
+                    scount=scount+1
+                    K=k
+            if  scount==1:
+                filedict[K][seq]=S
+            #   print K,S
+
+        #for k in sorted(filedict.keys(),cmpDate):
+        #    print filedict[k][0],filedict[k][seq]
+        # sys.exit(0)
+        
+        ##
         # figure out the prev/next pages
         pages = len(filedict.keys()) - nIgnored
         page  = 0
@@ -785,7 +817,6 @@ def main(argv):
         alt['705'] = 'Sunday on the river' 
         alts=alt
         
-        
 
         for k in sorted(filedict.keys(),cmpDate):
             pathname   = k
@@ -795,6 +826,8 @@ def main(argv):
             image      = filedict[k][3]
             aspect     = filedict[k][4]
             bIgnore    = filedict[k][5]
+            sequence   = filedict[k][seq]
+            pname      = os.path.splitext(filename)[0]
             
             if bIgnore:
                 continue        
@@ -891,8 +924,6 @@ def main(argv):
 
 #           print timestring, "=> ",filename
 
-            pname           = os.path.splitext(filename)[0]
-            
             # if no caption and name =~ /xxx_nnnn/ use blank
             if caption==0:
                 if re.compile(r"[A-Z][A-Z][A-Z]_[0-9][0-9][0-9][0-9]").match(pname):
@@ -900,7 +931,8 @@ def main(argv):
                 if re.compile(r"[a-z][a-z][a-z]_[0-9][0-9][0-9][0-9]").match(pname):
                     caption='&nbsp;'
 
-            subs['pname' ]  = pname
+            subs['pname' ]  = fixCaps(pname)
+            caption=fixCaps(caption)
             captions.append(caption)
             if caption:
                 print "caption = ", caption
@@ -986,7 +1018,6 @@ def main(argv):
         subs['download'  ] = mb(treesize(os.path.join(webDir,imagesDir)))
 
         print "wrote ",pages," pages"
-
 
         ##
         # write the index page and lightbox

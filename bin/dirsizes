@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for i in *; do (du -m "$i"|tail -1); done | sort --numeric
+
+# That's all Folks!
+##
