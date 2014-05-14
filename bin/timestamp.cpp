@@ -6,9 +6,22 @@
 #include <time.h>
 #include <math.h>
 
+const char* timestring(time_t clock)
+{
+	static char buffer[100];
+
+	// 2012:04:07 16:12:44
+	struct tm*  tmp = localtime(&clock);
+	size_t      l   = strftime(buffer, sizeof(buffer)/sizeof(buffer[0]),"%Y:%m:%d %H:%M:%S",tmp);
+	buffer[l]       = 0;
+	return buffer;
+}
+
 int syntax()
 {
-	printf("syntax: timestamp <seconds>+\n") ;
+    time_t c     ;
+    time_t clock = time(&c);
+	printf("syntax: timestamp <seconds>+  Eg: %lu %s\n",clock,timestring(clock)) ;
 	return 1 ;
 }
 
@@ -59,8 +72,8 @@ int main(int argc,char* argv[])
 		} else {
 			time  = (long) atoi(arg) ;
 		}
-		time_t clock = (clock_t) time           ;
-		printf("%u = %s\n",time,ctime(&clock))    ;
+		time_t     clock = (clock_t) time ;
+		printf("%u = %s\n",time,timestring(time)/*,ctime(&clock)*/)    ;
 	}
 
 	return 0 ;
