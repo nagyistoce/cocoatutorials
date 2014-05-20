@@ -1,0 +1,17 @@
+#!/usr/bin/env perl
+
+use Math::Trig;
+
+if ( $#ARGV < 0 ) {
+	printf ("syntax: $0 degrees+\n");
+	exit(1);
+}
+
+for ( $i = 0 ; $i <= $#ARGV ; $i++ ) { 
+	my $degree=$ARGV[$i];
+	my $radian=atan2(1,1) * $degree /45.0 ;
+	printf("%.3f\n",sin($radian));
+}
+
+# That's all Folks
+##

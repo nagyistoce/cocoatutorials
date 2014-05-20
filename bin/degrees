@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+if ( $#ARGV < 0 ) {
+	printf ("syntax: $0 degrees+\n");
+	exit(1);
+}
+
+for ( $i = 0 ; $i <= $#ARGV ; $i++ ) { 
+	my $radian=$ARGV[$i];
+	my $degree=45.0 * $radian /atan2(1,1) ;
+	printf("%.1f\n",$degree);
+}
+
+# That's all Folks
+##
