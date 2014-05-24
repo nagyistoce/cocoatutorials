@@ -82,6 +82,7 @@ cwd          = os.getcwd()
 now          = string.lower(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S%Z')) # ctime()
 width        = 750
 capDir       = 0
+geotag       = False
 
 fcount       = 0
 vcount       = 0
@@ -106,7 +107,7 @@ filedict = {}      # pathname : [ filename,xmlDate,datetime,image,aspect,ignore,
 # 
 def syntax():
     """syntax - print syntax of webby.py """
-    print "syntax: webby [[-photos] <photoDirectory>] [-config config] [-webdir <webdir>] [-title <title>] [-capdir <capdir>]]+ "
+    print "syntax: webby [[-photos] <photoDirectory>] [-config config] [-webdir <webdir>] [-title <title>] [-geotag]+ [-capdir <capdir>]]+ "
 
 
 ##
@@ -640,12 +641,14 @@ def main(argv):
     global download,css,photogif,email,copyright,title,cols,author,cwd,time
     global subs
     global capDir
+    global geotag
 
     photoDir = cmLib.getOpt(opts,'photos',os.path.expanduser('~/Pictures'))
     title    = cmLib.getOpt(opts,'title' ,fixCaps(os.path.basename(os.path.expanduser(photoDir))))
     webDir   = cmLib.getOpt(opts,'webdir',os.path.join(cwd,"temp"))
     capDir   = cmLib.getOpt(opts,"capdir",False)
     config   = cmLib.getOpt(opts,'config','webby')
+    geotag   = cmLib.getOpt(opts,'geotag',False)
     cols     = eval(cmLib.getOpt(opts,'cols','3'))
     width    = eval(cmLib.getOpt(opts,'width','750'))
 
@@ -881,6 +884,8 @@ def main(argv):
 
             except KeyError:
                 noop()
+            if not geotag:
+                bGeotag=False
 
             ##
             # if there's a caption, use it!  (for Picasa support)

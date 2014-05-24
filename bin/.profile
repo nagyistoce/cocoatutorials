@@ -407,6 +407,7 @@ alias tuts='cd ~/Projects/cocoatutorials'
 alias QtSee='cd ~/Projects/cocoatutorials/QtSee'
 alias robin='cd ~/Projects/cocoatutorials/robin'
 alias HH='cd ~/Desktop/Stuff/HH'
+alias PP='cd ~/Desktop/Stuff/PP'
 
 #
 # Favorite servers

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: Latin-1 -*-
+# -*- coding: UTF-8 -*-
 r"""cmLib - clanmillsLibrary for Python
 
 This exports:
@@ -84,8 +84,10 @@ def getOpts(argv,opts,default):
     #   print 'opt = ' + opt
         if ( opt[0] == '-'):
             opt = opt[1:]
-            value = argv[1]
-            next = 2
+            value=True
+            if len(argv)>1 and argv[1][0] != '-':
+            	value = argv[1]
+            	next = 2
         else:
             value = opt
             opt   = default
