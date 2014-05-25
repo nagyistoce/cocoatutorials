@@ -1,0 +1,1 @@
+I am planning to develop a plugin to create a web gallery from a SH3D model.  The purpose is to enable designers to share their work with stakeholders.  Currently, SH3D can create images and videos.  This plugin will be extend the feature "3D View/Create photos as points of view" to create a web gallery.
