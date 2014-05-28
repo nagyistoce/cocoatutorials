@@ -5,9 +5,17 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -42,7 +50,18 @@ public class ToWebPlugin extends Plugin {
            putPropertyValue(Property.MENU, "Tools");
            // Enables the action by default
            setEnabled(true);
+	       	String path = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	       	try {
+	   			pluginDir     = URLDecoder.decode(path, "UTF-8");
+	   			pluginDir     = Paths.get(pluginDir).getParent().toString();
+	   			templateDir   = Paths.get(pluginDir).resolve("ToWebPlugin").toString();
+	   		} catch (UnsupportedEncodingException e) {
+	   			e.printStackTrace();
+	   		}
         }
+
+        public String pluginDir   ="";
+        public String templateDir ="";
 
         private boolean saveImage(BufferedImage image,String pathName,String fileType)
         {
@@ -75,7 +94,13 @@ public class ToWebPlugin extends Plugin {
         public void execute()
         {
             Home    home      = getHome();
-            String  directory = "/Users/rmills/Documents/SH3D_ToWebPlugin/";
+            // String  directory = "/Users/rmills/Documents/SH3D_ToWebPlugin/";
+            
+            // create directory for output 
+            Path    Directory = Paths.get(System.getProperty("user.home")).resolve("Documents").resolve("ToWebPlugin");
+            String  directory = Directory.toString();
+            (new File(directory)).mkdirs();
+            
             String  message   = ""    ;
 
             int     width     = 400   ;
@@ -85,13 +110,64 @@ public class ToWebPlugin extends Plugin {
             String  ext       = ".png";
             String  file      = ""    ;
 
-            boolean bCameras  = false ;
-            boolean bLevels   = false ;
+            boolean bCameras  = true  ;
+            boolean bLevels   = true  ;
 
             String  name      = "index.html";
-            String  path      = directory + name;
+            String  path      = Directory.resolve(name).toString();
             
-            STRawGroupDir ts  = new STRawGroupDir("/Users/rmills/gnu/SH3D/ToWebPlugin/templates",'$','$');
+            System.out.println("directory = " + directory );
+
+            // find templates in the jar
+            // http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
+            // List<String> list = new ArrayList<String>();
+            // File[] webimages =  
+            // BufferedImage image = ImageIO.read(this.getClass().getResource(webimages[nextIndex].getName() ));
+            
+            CodeSource src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
+            if (src != null) {
+	            URL jarCode = src.getLocation();
+	            ZipInputStream zip = null;
+				try {
+					zip = new ZipInputStream(jarCode.openStream());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	            while( zip != null ) {
+	                ZipEntry entry = null;
+					try {
+						entry = zip.getNextEntry();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	                if (entry != null) {
+		                String entryName = entry.getName();
+		                System.out.println(entryName);
+	                } else {
+	                	zip = null;
+	                }
+	                
+	                // .read(this.getClass().getResource("CompanyLogo.png"))
+	                
+	                if (name.startsWith("templates/")  && name.endsWith(".st")) {
+	                	
+	                }
+	            }
+            } 
+            System.out.println("------------------------");
+
+            // enumerate files in templateDir (overwrite templates in the jar)
+            File   textFolder = new File(templateDir);
+            File[] stFiles    = textFolder.listFiles( new FileFilter() {
+                   public boolean accept( File file ) {
+                	   return file.getName().endsWith(".st");
+                   }
+            });
+            for ( File stFile : stFiles ) System.out.println(stFile);
+            System.out.println("------------------------");
+            
+            STRawGroupDir ts  = new STRawGroupDir(templateDir,'$','$');
             ST            t2  = ts.getInstanceOf("page"); // load page.st
             
             String[] users = { "Robin", "Mills" };
@@ -115,7 +191,7 @@ public class ToWebPlugin extends Plugin {
                         BufferedImage   image = comp.getOffScreenImage(width,height);
                         name  = camera.getName();
                         file  = name + ext      ;
-                        path  = directory + file;
+                        path  = Directory.resolve(file).toString();
                         if ( saveImage(image,path,type) ) {
                             writeOut(out,String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name));
                             message += String.format("%s\n", path);
@@ -138,7 +214,7 @@ public class ToWebPlugin extends Plugin {
                         plan.paint(g);
                         name  = level.getName() ;
                         file  = name + ext      ;
-                        path  = directory + file;
+                        path  = Directory.resolve(file).toString();
                         if ( saveImage(image,path,type) ) {
                             writeOut(out,String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name));
                             message += String.format("%s\n", path);

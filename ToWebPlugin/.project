@@ -3,6 +3,7 @@
 	<name>ToWebPlugin</name>
 	<comment></comment>
 	<projects>
+		<project>SweetHome3D-trunk</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -14,4 +15,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>page.st</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/templates/page.st</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
