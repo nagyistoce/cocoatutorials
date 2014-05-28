@@ -12,6 +12,8 @@ import java.io.UnsupportedEncodingException;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import org.stringtemplate.v4.*;
+
 import com.eteks.sweethome3d.model.Camera;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.Level;
@@ -83,11 +85,21 @@ public class ToWebPlugin extends Plugin {
             String  ext       = ".png";
             String  file      = ""    ;
 
-            boolean bCameras  = true  ;
-            boolean bLevels   = true  ;
+            boolean bCameras  = false ;
+            boolean bLevels   = false ;
 
             String  name      = "index.html";
             String  path      = directory + name;
+            
+            STRawGroupDir ts  = new STRawGroupDir("/Users/rmills/gnu/SH3D/ToWebPlugin/templates",'$','$');
+            ST            t2  = ts.getInstanceOf("page"); // load page.st
+            
+            String[] users = { "Robin", "Mills" };
+
+            t2.add("name", "World");
+            t2.add("title", "I am the Hello World Title");
+            t2.add("users",users);
+            System.out.print(t2.render());
 
             try {
                 DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
