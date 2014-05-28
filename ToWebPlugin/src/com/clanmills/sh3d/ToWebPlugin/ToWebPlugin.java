@@ -2,6 +2,7 @@ package com.clanmills.sh3d.ToWebPlugin;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -23,12 +24,15 @@ import com.eteks.sweethome3d.swing.PlanComponent;
  */
 public class ToWebPlugin extends Plugin {
     @Override
-    public PluginAction[] getActions() {
+    public PluginAction[] getActions()
+    {
         return new PluginAction [] {new ToWebAction()};
     }
 
-    public class ToWebAction extends PluginAction {
-        public ToWebAction() {
+    public class ToWebAction extends PluginAction
+    {
+        public ToWebAction()
+        {
            putPropertyValue(Property.NAME, "ToWebPlugin...");
            putPropertyValue(Property.MENU, "Tools");
            // Enables the action by default
@@ -57,22 +61,20 @@ public class ToWebPlugin extends Plugin {
             int     width     = 800  ;
             int     height    = 600  ;
             String  type      = "PNG";
-            boolean bLevels   = true ;
             boolean bCameras  = true ;
+            boolean bLevels   = true ;
             
             // paint with every camera
             if ( bCameras ) {
                 // save camera
                 Camera camera1    = home.getCamera();
-            	for ( Camera camera : home.getStoredCameras() ) {
+                for ( Camera camera : home.getStoredCameras() ) {
                     home.setCamera(camera);
                     HomeComponent3D comp  = new HomeComponent3D(home);
                     BufferedImage   image = comp.getOffScreenImage(width,height);
                     String          path  = directory + camera.getName() + ".png";
-                    if ( saveImage(image,path,type) ) {
-                        message += String.format("%s\n", path);
-                    }
-            	}
+                    message += saveImage(image,path,type) ? String.format("%s\n", path) : "";
+                }
                 // restore camera
                 home.setCamera(camera1);
             }
@@ -82,20 +84,17 @@ public class ToWebPlugin extends Plugin {
                 UserPreferences prefs = getUserPreferences();
                 Level level1 = home.getSelectedLevel();
                 for ( Level level : home.getLevels() ) {
-                	home.setSelectedLevel(level);
-                	String          path  = directory + level.getName() + ".png";
-                    BufferedImage   image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D      g     = image.createGraphics();
-                    PlanComponent   plan  = new PlanComponent(home,prefs, null);
+                    home.setSelectedLevel(level);
+                    String        path  = directory + level.getName() + ".png";
+                    BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D    g     = image.createGraphics();
+                    PlanComponent plan  = new PlanComponent(home,prefs, null);
                     plan.setSize(width, height);
                     plan.paint(g);
-                    if ( saveImage(image,path,type) ) {
-                        message += String.format("%s\n", path);
-                    }
+                    message += saveImage(image,path,type) ? String.format("%s\n", path) : "";
                 }
                 home.setSelectedLevel(level1);
             }
-            
             
             // inform user
             if ( message.length() > 0 ) {
