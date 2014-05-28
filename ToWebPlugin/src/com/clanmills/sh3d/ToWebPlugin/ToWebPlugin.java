@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -40,8 +41,8 @@ public class ToWebPlugin extends Plugin {
            // Enables the action by default
            setEnabled(true);
         }
-        
-        public boolean saveImage(BufferedImage image,String pathName,String fileType)
+
+        private boolean saveImage(BufferedImage image,String pathName,String fileType)
         {
             boolean result=false;
             try {
@@ -53,7 +54,21 @@ public class ToWebPlugin extends Plugin {
             }
             return result;
         }
-        
+
+        private boolean writeOut(DataOutputStream out,String s)
+        {
+            boolean result=false;
+            try {
+                out.write(s.getBytes("US-ASCII"));
+                result=true;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
         @Override
         public void execute()
         {
@@ -73,58 +88,58 @@ public class ToWebPlugin extends Plugin {
 
             String  name      = "index.html";
             String  path      = directory + name;
-            
-        	try {
-				DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
-				out.write(("<html><body><table>\n").getBytes("US-ASCII"));
-     
-				// paint with every camera
-				if ( bCameras ) {
-				    // save camera
-				    Camera camera1    = home.getCamera();
-				    for ( Camera camera : home.getStoredCameras() ) {
-				        home.setCamera(camera);
-				        HomeComponent3D comp  = new HomeComponent3D(home);
-				        BufferedImage   image = comp.getOffScreenImage(width,height);
-				        name  = camera.getName();
-				        file  = name + ext      ;
-				        path  = directory + file;
-				        if ( saveImage(image,path,type) ) {
-				            out.write(String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name).getBytes("US-ASCII"));
-				            message += String.format("%s\n", path);
-				        }
-				    }
-				    // restore camera
-				    home.setCamera(camera1);
-				}
-				
-				// paint every level
-				if ( bLevels ) {
-				    UserPreferences prefs = getUserPreferences();
-				    Level level1 = home.getSelectedLevel();
-				    for ( Level level : home.getLevels() ) {
-				        home.setSelectedLevel(level);
-				        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				        Graphics2D    g     = image.createGraphics();
-				        PlanComponent plan  = new PlanComponent(home,prefs, null);
-				        plan.setSize(width, height);
-				        plan.paint(g);
-				        name  = level.getName() ;
-				        file  = name + ext      ;
-				        path  = directory + file;
-				        if ( saveImage(image,path,type) ) {
-				            out.write(String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name).getBytes("US-ASCII"));
-				            message += String.format("%s\n", path);
-				        }
-				    }
-				    home.setSelectedLevel(level1);
-				}
-				out.write(("</table></body></html>\n").getBytes("US-ASCII"));
-				out.close();
-			} catch ( IOException e) {
-				e.printStackTrace();
-			}
-            
+
+            try {
+                DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
+                writeOut(out,"<html><body><table>\n");
+
+                // paint with every camera
+                if ( bCameras ) {
+                    // save camera
+                    Camera camera1    = home.getCamera();
+                    for ( Camera camera : home.getStoredCameras() ) {
+                        home.setCamera(camera);
+                        HomeComponent3D comp  = new HomeComponent3D(home);
+                        BufferedImage   image = comp.getOffScreenImage(width,height);
+                        name  = camera.getName();
+                        file  = name + ext      ;
+                        path  = directory + file;
+                        if ( saveImage(image,path,type) ) {
+                            writeOut(out,String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name));
+                            message += String.format("%s\n", path);
+                        }
+                    }
+                    // restore camera
+                    home.setCamera(camera1);
+                }
+
+                // paint every level
+                if ( bLevels ) {
+                    UserPreferences prefs = getUserPreferences();
+                    Level level1 = home.getSelectedLevel();
+                    for ( Level level : home.getLevels() ) {
+                        home.setSelectedLevel(level);
+                        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D    g     = image.createGraphics();
+                        PlanComponent plan  = new PlanComponent(home,prefs, null);
+                        plan.setSize(width, height);
+                        plan.paint(g);
+                        name  = level.getName() ;
+                        file  = name + ext      ;
+                        path  = directory + file;
+                        if ( saveImage(image,path,type) ) {
+                            writeOut(out,String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name));
+                            message += String.format("%s\n", path);
+                        }
+                    }
+                    home.setSelectedLevel(level1);
+                }
+                writeOut(out,"</table></body></html>\n");
+                out.close();
+            } catch ( IOException e) {
+                e.printStackTrace();
+            }
+
             // inform user
             if ( message.length() > 0 ) {
                 message = "images:\n" + message;
