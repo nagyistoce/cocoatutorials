@@ -2,8 +2,10 @@ package com.clanmills.sh3d.ToWebPlugin;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -57,44 +59,71 @@ public class ToWebPlugin extends Plugin {
         {
             Home    home      = getHome();
             String  directory = "/Users/rmills/Documents/SH3D_ToWebPlugin/";
-            String  message   = ""   ;
-            int     width     = 800  ;
-            int     height    = 600  ;
-            String  type      = "PNG";
-            boolean bCameras  = true ;
-            boolean bLevels   = true ;
+            String  message   = ""    ;
+
+            int     width     = 400   ;
+            int     height    = 300   ;
+
+            String  type      = "PNG" ;
+            String  ext       = ".png";
+            String  file      = ""    ;
+
+            boolean bCameras  = true  ;
+            boolean bLevels   = true  ;
+
+            String  name      = "index.html";
+            String  path      = directory + name;
             
-            // paint with every camera
-            if ( bCameras ) {
-                // save camera
-                Camera camera1    = home.getCamera();
-                for ( Camera camera : home.getStoredCameras() ) {
-                    home.setCamera(camera);
-                    HomeComponent3D comp  = new HomeComponent3D(home);
-                    BufferedImage   image = comp.getOffScreenImage(width,height);
-                    String          path  = directory + camera.getName() + ".png";
-                    message += saveImage(image,path,type) ? String.format("%s\n", path) : "";
-                }
-                // restore camera
-                home.setCamera(camera1);
-            }
-            
-            // paint every level
-            if ( bLevels ) {
-                UserPreferences prefs = getUserPreferences();
-                Level level1 = home.getSelectedLevel();
-                for ( Level level : home.getLevels() ) {
-                    home.setSelectedLevel(level);
-                    String        path  = directory + level.getName() + ".png";
-                    BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D    g     = image.createGraphics();
-                    PlanComponent plan  = new PlanComponent(home,prefs, null);
-                    plan.setSize(width, height);
-                    plan.paint(g);
-                    message += saveImage(image,path,type) ? String.format("%s\n", path) : "";
-                }
-                home.setSelectedLevel(level1);
-            }
+        	try {
+				DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
+				out.write(("<html><body><table>\n").getBytes("US-ASCII"));
+     
+				// paint with every camera
+				if ( bCameras ) {
+				    // save camera
+				    Camera camera1    = home.getCamera();
+				    for ( Camera camera : home.getStoredCameras() ) {
+				        home.setCamera(camera);
+				        HomeComponent3D comp  = new HomeComponent3D(home);
+				        BufferedImage   image = comp.getOffScreenImage(width,height);
+				        name  = camera.getName();
+				        file  = name + ext      ;
+				        path  = directory + file;
+				        if ( saveImage(image,path,type) ) {
+				            out.write(String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name).getBytes("US-ASCII"));
+				            message += String.format("%s\n", path);
+				        }
+				    }
+				    // restore camera
+				    home.setCamera(camera1);
+				}
+				
+				// paint every level
+				if ( bLevels ) {
+				    UserPreferences prefs = getUserPreferences();
+				    Level level1 = home.getSelectedLevel();
+				    for ( Level level : home.getLevels() ) {
+				        home.setSelectedLevel(level);
+				        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				        Graphics2D    g     = image.createGraphics();
+				        PlanComponent plan  = new PlanComponent(home,prefs, null);
+				        plan.setSize(width, height);
+				        plan.paint(g);
+				        name  = level.getName() ;
+				        file  = name + ext      ;
+				        path  = directory + file;
+				        if ( saveImage(image,path,type) ) {
+				            out.write(String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name).getBytes("US-ASCII"));
+				            message += String.format("%s\n", path);
+				        }
+				    }
+				    home.setSelectedLevel(level1);
+				}
+				out.write(("</table></body></html>\n").getBytes("US-ASCII"));
+				out.close();
+			} catch ( IOException e) {
+				e.printStackTrace();
+			}
             
             // inform user
             if ( message.length() > 0 ) {
