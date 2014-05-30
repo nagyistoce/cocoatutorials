@@ -6,6 +6,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +15,7 @@ import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -41,6 +43,15 @@ public class ToWebPlugin extends Plugin {
     {
         return new PluginAction [] {new ToWebAction()};
     }
+    
+    public class Photo extends Object {
+    	public String file;
+    	public String name;
+    	public Photo(String f,String n) {
+    		this.file = f;
+    		this.name = n;
+    	}
+    }
 
     public class ToWebAction extends PluginAction
     {
@@ -62,6 +73,11 @@ public class ToWebPlugin extends Plugin {
 
         public String pluginDir   ="";
         public String templateDir ="";
+        
+        private String unCamel(String s)
+        {
+        	return s.replaceAll("(.)([A-Z])","$1 $2").replaceAll("\\s+", " ");
+        }
 
         private boolean saveImage(BufferedImage image,String pathName,String fileType)
         {
@@ -89,12 +105,22 @@ public class ToWebPlugin extends Plugin {
             }
             return result;
         }
+        
+        private DataOutputStream openStream(String path)
+        {
+        	DataOutputStream result = null;
+        	try {
+				result = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+        	return result;
+        }
 
         @Override
         public void execute()
         {
             Home    home      = getHome();
-            // String  directory = "/Users/rmills/Documents/SH3D_ToWebPlugin/";
             
             // create directory for output 
             Path    Directory = Paths.get(System.getProperty("user.home")).resolve("Documents").resolve("ToWebPlugin");
@@ -112,8 +138,10 @@ public class ToWebPlugin extends Plugin {
 
             boolean bCameras  = true  ;
             boolean bLevels   = true  ;
+            
+            boolean bWroteHTML= false ;
 
-            String  name      = "index.html";
+            String  name      = ""    ;
             String  path      = Directory.resolve(name).toString();
             
             System.out.println("directory = " + directory );
@@ -131,7 +159,6 @@ public class ToWebPlugin extends Plugin {
 				try {
 					zip = new ZipInputStream(jarCode.openStream());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 	            while( zip != null ) {
@@ -167,20 +194,9 @@ public class ToWebPlugin extends Plugin {
             for ( File stFile : stFiles ) System.out.println(stFile);
             System.out.println("------------------------");
             
-            STRawGroupDir ts  = new STRawGroupDir(templateDir,'$','$');
-            ST            t2  = ts.getInstanceOf("page"); // load page.st
-            
-            String[] users = { "Robin", "Mills" };
-
-            t2.add("name", "World");
-            t2.add("title", "I am the Hello World Title");
-            t2.add("users",users);
-            System.out.print(t2.render());
+            ArrayList<Photo> photos = new ArrayList<Photo>();
 
             try {
-                DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
-                writeOut(out,"<html><body><table>\n");
-
                 // paint with every camera
                 if ( bCameras ) {
                     // save camera
@@ -193,8 +209,8 @@ public class ToWebPlugin extends Plugin {
                         file  = name + ext      ;
                         path  = Directory.resolve(file).toString();
                         if ( saveImage(image,path,type) ) {
-                            writeOut(out,String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name));
-                            message += String.format("%s\n", path);
+                            message    += String.format("%s\n", path);
+                            photos.add(new Photo(file,unCamel(name)));
                         }
                     }
                     // restore camera
@@ -216,22 +232,40 @@ public class ToWebPlugin extends Plugin {
                         file  = name + ext      ;
                         path  = Directory.resolve(file).toString();
                         if ( saveImage(image,path,type) ) {
-                            writeOut(out,String.format("<tr><td><center><img src=\"%s\"><br>%s</center></td></tr>\n",file, name));
-                            message += String.format("%s\n", path);
+                            message    += String.format("%s\n", path);
+                            photos.add(new Photo(file,unCamel(name)));
                         }
                     }
                     home.setSelectedLevel(level1);
                 }
-                writeOut(out,"</table></body></html>\n");
-                out.close();
+
+                if ( !photos.isEmpty() ) {
+	                // use the template to generate the code
+	                STRawGroupDir ts = new STRawGroupDir(templateDir,'$','$');
+	                ST            t2 = ts.getInstanceOf("page"); // load page.st
+	                t2.add("title", "Generated by ToWebPlugin");
+	                t2.add("photos",photos);
+	                name      = "index.html";
+	                
+	                path      = Directory.resolve(name).toString();
+	                DataOutputStream out = openStream(path) ;
+	                if ( out != null ) {
+	                	writeOut(out,t2.render());
+	                	out.close();
+	                	bWroteHTML = true;
+	                } else {
+	                	message += "unable to write to " + path;
+	                }
+                }
             } catch ( IOException e) {
                 e.printStackTrace();
             }
 
+
             // inform user
-            if ( message.length() > 0 ) {
+            if ( bWroteHTML ) {
                 message = "images:\n" + message;
-            } else {
+            } else if ( message.length() == 0 ) {
                 message = "no images have been written!";
             }
             JOptionPane.showMessageDialog(null, message);
