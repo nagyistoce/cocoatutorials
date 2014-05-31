@@ -176,10 +176,8 @@ public class ToWebPlugin extends Plugin {
             BufferedImage   image = comp.getOffScreenImage(width,height);
             String          file  = camera.getName() + ext;
             String          path  = directory.resolve(file).toString();
-            Camera          camera1 = home.getCamera();
             home.setCamera (camera);
             boolean     result = saveImage(image,path,type);
-            home.setCamera (camera1);
             return          result;
         }
 
