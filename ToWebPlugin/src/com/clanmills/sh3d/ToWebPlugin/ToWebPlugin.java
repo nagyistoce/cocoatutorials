@@ -1,11 +1,11 @@
 package com.clanmills.sh3d.ToWebPlugin;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -140,6 +140,50 @@ public class ToWebPlugin extends Plugin {
             return result;
         }
 
+        private ZipInputStream openJar(URL jar)
+        {
+            ZipInputStream result=null;
+            try {
+                result = new ZipInputStream(jar.openStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        private boolean paintPlan(PlanComponent plan,int width,int height,String name,Path directory,String ext,String type)
+        {
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D    g     = image.createGraphics();
+            Rectangle2D   bounds= plan.getPlanBounds();
+            String        file  = name + ext;
+            String        path  = directory.resolve(file).toString();
+
+            double scalex       = (double) width  / bounds.getWidth() ;
+            double scaley       = (double) height / bounds.getHeight();
+            float  scale1       = plan.getScale();
+            plan.setScale( scalex < scaley ? (float) scalex : (float) scaley);
+            plan.setSize(width, height);
+            plan.paint(g);
+            plan.setScale(scale1);
+            return saveImage(image,path,type);
+        }
+
+        private boolean paintCamera(Camera camera,int width,int height,Path directory,String ext,String type)
+        {
+            Home            home  = getHome();
+            HomeComponent3D comp  = new HomeComponent3D(home);
+            BufferedImage   image = comp.getOffScreenImage(width,height);
+            String          file  = camera.getName() + ext;
+            String          path  = directory.resolve(file).toString();
+            Camera          camera1 = home.getCamera();
+            home.setCamera (camera);
+            boolean     result = saveImage(image,path,type);
+            home.setCamera (camera1);
+            return          result;
+        }
+
+
         @Override
         public void execute()
         {
@@ -147,20 +191,18 @@ public class ToWebPlugin extends Plugin {
 
             // create directory for output 
             Path    Directory = Paths.get(System.getProperty("user.home")).resolve("Documents").resolve("ToWebPlugin");
-            String  directory = Directory.toString();        (new File(Directory.toString())).mkdirs();
-            Path    Images    = Directory.resolve("Images"); (new File(Images.   toString())).mkdirs();
-            Path    Thumbs    = Directory.resolve("Thumbs"); (new File(Thumbs.   toString())).mkdirs();
+            Path    Images    = Directory.resolve("Images"); (new File(Images.toString())).mkdirs();
+            Path    Thumbs    = Directory.resolve("Thumbs"); (new File(Thumbs.toString())).mkdirs();
 
             String  message   = ""    ;
 
-            int     twidth    = 300   ;
-            int     theight   = 200   ;
-            int     iwidth    = 900   ;
-            int     iheight   = 600   ;
+            int     twidth    = 240   ;
+            int     theight   = 160   ;
+            int     iwidth    = 720   ;
+            int     iheight   = 480   ;
 
             String  type      = "PNG" ;
             String  ext       = ".png";
-            String  file      = ""    ;
 
             boolean bCameras  = true  ;
             boolean bLevels   = true  ;
@@ -169,79 +211,60 @@ public class ToWebPlugin extends Plugin {
 
             String  template  = "page"; 
 
-            String  name      = ""    ;
-            String  path      = Directory.resolve(name).toString();
-
             try {
                 // find templates in the jar
                 // http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
-                // List<String> list = new ArrayList<String>();
-                // File[] webimages =  
-                // BufferedImage image = ImageIO.read(this.getClass().getResource(webimages[nextIndex].getName() ));
+                String         pageString = "";
+                CodeSource     src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
+                ZipInputStream zip = null;
+                if (src != null) 
+                    zip = openJar(src.getLocation());
 
-                String     pageString = "";
-                CodeSource src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
-                if (src != null) {
-                    URL            jar = src.getLocation();
-                    ZipInputStream zip = null;
+                while( zip != null ) {
+                    ZipEntry entry = null;
                     try {
-                        zip = new ZipInputStream(jar.openStream());
+                        entry = zip.getNextEntry();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    while( zip != null ) {
-                        ZipEntry entry = null;
-                        try {
-                            entry = zip.getNextEntry();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if (entry != null) {
-                            String entryName = entry.getName();
-                            int    size      = 80000 ; // (int) entry.getSize() is usually -1 !
-                            if ( pageString.length() == 0 && entryName.endsWith(template + ".st") ) {
-                                while ( size > 0 ) {
-                                    byte[] bytes = new byte[size];
-                                    size = zip.read(bytes, 0,size);
-                                    if ( size > 0 ) pageString += new String( bytes,0, size, "UTF-8" );                             
-                                }
+                    if (entry != null) {
+                        String entryName = entry.getName();
+                        int    size      = 80000 ; // (int) entry.getSize() is usually -1 !
+                        if ( pageString.length() == 0 && entryName.endsWith(template + ".st") ) {
+                            while ( size > 0 ) {
+                                byte[] bytes = new byte[size];
+                                size = zip.read(bytes, 0,size);
+                                if ( size > 0 ) pageString += new String( bytes,0, size, "UTF-8" );                             
                             }
-                        } else {
-                            zip = null;
                         }
+                    } else {
+                        zip.close();
+                        zip = null;
                     }
-                } 
-                System.out.println("------------------------");
+                }
 
                 // enumerate files in templateDir (overwrite templates in the jar)
-                File   textFolder = new File(templateDir);
-                File[] stFiles    = textFolder.listFiles( new FileFilter() {
-                       public boolean accept( File file ) {
-                           return file.getName().endsWith(".st");
-                       }
-                });
-                for ( File stFile : stFiles ) System.out.println(stFile);
-                System.out.println("------------------------");
+//              File   textFolder = new File(templateDir);
+//              File[] stFiles    = textFolder.listFiles( new FileFilter() {
+//                     public boolean accept( File file ) {
+//                         return file.getName().endsWith(".st");
+//                     }
+//              });
 
                 ArrayList<Photo> photos = new ArrayList<Photo>();
 
                 // paint with every camera
                 if ( bCameras ) {
                     // save camera
-                    Camera camera1    = home.getCamera();
-                    for ( Camera camera : home.getStoredCameras() ) {
-                        home.setCamera(camera);
-                        HomeComponent3D comp  = new HomeComponent3D(home);
-                        BufferedImage   image = comp.getOffScreenImage(iwidth,iheight);
-                        name  = camera.getName();
-                        file  = name + ext      ;
-                        path  = Images.resolve(file).toString();
-                        if ( saveImage(image,path,type) ) {
-                            message    += String.format("%s\n", path);
+                    Camera       camera1= getHome().getCamera();
+                    for ( Camera camera : getHome().getStoredCameras() ) {
+                        if ( paintCamera(camera,iwidth,iheight,Images,ext,type)
+                        &&   paintCamera(camera,twidth,theight,Thumbs,ext,type)
+                        ) {
+                            String name = camera.getName();
+                            String file = name + ext;
+                            message    += String.format("%s\n",unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
-                            image = comp.getOffScreenImage(twidth, theight);
-                            path = Thumbs.resolve(file).toString();
-                            saveImage(image,path,type);
                         }
                     }
                     // restore camera
@@ -254,23 +277,14 @@ public class ToWebPlugin extends Plugin {
                     Level level1 = home.getSelectedLevel();
                     for ( Level level : home.getLevels() ) {
                         home.setSelectedLevel(level);
-                        BufferedImage image = new BufferedImage(iwidth, iheight, BufferedImage.TYPE_INT_ARGB);
-                        Graphics2D    g     = image.createGraphics();
                         PlanComponent plan  = new PlanComponent(home,prefs, null);
-                        plan.setSize(iwidth, iheight);
-                        plan.paint(g);
-                        name  = level.getName() ;
-                        file  = name + ext      ;
-                        path  = Images.resolve(file).toString();
-                        if ( saveImage(image,path,type) ) {
-                            message    += String.format("%s\n", path);
+                        String name = level.getName() ;
+                        String file = name + ext;
+                        if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)
+                        &&   paintPlan(plan,twidth,theight,name,Thumbs,ext,type)
+                        ) {
+                            message += String.format("%s\n", unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
-                            image = new BufferedImage(twidth, theight, BufferedImage.TYPE_INT_ARGB);
-                            g     = image.createGraphics();
-                            plan.setSize(twidth, theight);
-                            plan.paint(g);
-                            path  = Thumbs.resolve(file).toString();
-                            saveImage(image,path,type);
                         }
                     }
                     home.setSelectedLevel(level1);
@@ -282,17 +296,17 @@ public class ToWebPlugin extends Plugin {
                     ST            t2 = ts.getInstanceOf(template); // load page.st
                     // if template is not on the disk, write it from zip file to the output directory
                     if ( t2 == null ) {
-                        path = Directory.resolve(template).toString() + ".st";
+                        String path = Directory.resolve(template).toString() + ".st";
                         writeOut(path,pageString,true);
-                        ts = new STRawGroupDir(directory,'$','$');
+                        ts = new STRawGroupDir(Directory.toString(),'$','$');
                         t2 = ts.getInstanceOf(template); // load page.st
                     }
                     t2.add("title", "Generated by ToWebPlugin");
                     t2.add("photos",photos);
 
-                    name      = "index.html";
-                    path      = Directory.resolve(name).toString();
-                    bWroteHTML= writeOut(path,t2.render(),true);
+                    String name = "index.html";
+                    String path = Directory.resolve(name).toString();
+                    bWroteHTML  = writeOut(path,t2.render(),true);
                     if ( !bWroteHTML ) message = "unable to write HTML " + path;
                 }
             } catch ( IOException e) {
