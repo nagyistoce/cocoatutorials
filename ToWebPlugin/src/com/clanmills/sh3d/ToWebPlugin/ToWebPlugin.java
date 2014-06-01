@@ -20,7 +20,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionListener;
 
 import org.stringtemplate.v4.*;
 
@@ -32,6 +34,267 @@ import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.swing.HomeComponent3D;
 import com.eteks.sweethome3d.swing.PlanComponent;
+
+
+
+
+
+
+
+
+import com.eteks.sweethome3d.viewcontroller.HomeController;
+
+import com.eteks.sweethome3d.viewcontroller.HomeController3D;
+
+/* ListDemo.java requires no other files. */
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.*;
+import javax.swing.event.*;
+
+@SuppressWarnings("serial")
+class ListDemo extends JPanel
+                      implements ListSelectionListener {
+    @SuppressWarnings("rawtypes")
+	private JList list;
+    @SuppressWarnings("rawtypes")
+	private DefaultListModel listModel;
+ 
+    private static final String hireString = "Hire";
+    private static final String fireString = "Fire";
+    private JButton fireButton;
+    private JTextField employeeName;
+ 
+    public ListDemo() {
+        super(new BorderLayout());
+ 
+        listModel = new DefaultListModel();
+        listModel.addElement("Jane Doe");
+        listModel.addElement("John Smith");
+        listModel.addElement("Kathy Green");
+ 
+        //Create the list and put it in a scroll pane.
+        list = new JList(listModel);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setSelectedIndex(0);
+        list.addListSelectionListener(this);
+        list.setVisibleRowCount(5);
+        JScrollPane listScrollPane = new JScrollPane(list);
+ 
+        JButton hireButton = new JButton(hireString);
+        HireListener hireListener = new HireListener(hireButton);
+        hireButton.setActionCommand(hireString);
+        hireButton.addActionListener(hireListener);
+        hireButton.setEnabled(false);
+ 
+        fireButton = new JButton(fireString);
+        fireButton.setActionCommand(fireString);
+        fireButton.addActionListener(new FireListener());
+ 
+        employeeName = new JTextField(10);
+        employeeName.addActionListener(hireListener);
+        employeeName.getDocument().addDocumentListener(hireListener);
+        String name = listModel.getElementAt(
+                              list.getSelectedIndex()).toString();
+ 
+        //Create a panel that uses BoxLayout.
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane,
+                                           BoxLayout.LINE_AXIS));
+        buttonPane.add(fireButton);
+        buttonPane.add(Box.createHorizontalStrut(5));
+        buttonPane.add(new JSeparator(SwingConstants.VERTICAL));
+        buttonPane.add(Box.createHorizontalStrut(5));
+        buttonPane.add(employeeName);
+        buttonPane.add(hireButton);
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+ 
+        add(listScrollPane, BorderLayout.CENTER);
+        add(buttonPane, BorderLayout.PAGE_END);
+    }
+ 
+    class FireListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            //This method can be called only if
+            //there's a valid selection
+            //so go ahead and remove whatever's selected.
+            int index = list.getSelectedIndex();
+            listModel.remove(index);
+ 
+            int size = listModel.getSize();
+ 
+            if (size == 0) { //Nobody's left, disable firing.
+                fireButton.setEnabled(false);
+ 
+            } else { //Select an index.
+                if (index == listModel.getSize()) {
+                    //removed item in last position
+                    index--;
+                }
+ 
+                list.setSelectedIndex(index);
+                list.ensureIndexIsVisible(index);
+            }
+        }
+    }
+ 
+    //This listener is shared by the text field and the hire button.
+    class HireListener implements ActionListener, DocumentListener {
+        private boolean alreadyEnabled = false;
+        private JButton button;
+ 
+        public HireListener(JButton button) {
+            this.button = button;
+        }
+ 
+        //Required by ActionListener.
+        public void actionPerformed(ActionEvent e) {
+            String name = employeeName.getText();
+ 
+            //User didn't type in a unique name...
+            if (name.equals("") || alreadyInList(name)) {
+                Toolkit.getDefaultToolkit().beep();
+                employeeName.requestFocusInWindow();
+                employeeName.selectAll();
+                return;
+            }
+ 
+            int index = list.getSelectedIndex(); //get selected index
+            if (index == -1) { //no selection, so insert at beginning
+                index = 0;
+            } else {           //add after the selected item
+                index++;
+            }
+ 
+            listModel.insertElementAt(employeeName.getText(), index);
+            //If we just wanted to add to the end, we'd do this:
+            //listModel.addElement(employeeName.getText());
+ 
+            //Reset the text field.
+            employeeName.requestFocusInWindow();
+            employeeName.setText("");
+ 
+            //Select the new item and make it visible.
+            list.setSelectedIndex(index);
+            list.ensureIndexIsVisible(index);
+        }
+ 
+        //This method tests for string equality. You could certainly
+        //get more sophisticated about the algorithm.  For example,
+        //you might want to ignore white space and capitalization.
+        protected boolean alreadyInList(String name) {
+            return listModel.contains(name);
+        }
+ 
+        //Required by DocumentListener.
+        public void insertUpdate(DocumentEvent e) {
+            enableButton();
+        }
+ 
+        //Required by DocumentListener.
+        public void removeUpdate(DocumentEvent e) {
+            handleEmptyTextField(e);
+        }
+ 
+        //Required by DocumentListener.
+        public void changedUpdate(DocumentEvent e) {
+            if (!handleEmptyTextField(e)) {
+                enableButton();
+            }
+        }
+ 
+        private void enableButton() {
+            if (!alreadyEnabled) {
+                button.setEnabled(true);
+            }
+        }
+ 
+        private boolean handleEmptyTextField(DocumentEvent e) {
+            if (e.getDocument().getLength() <= 0) {
+                button.setEnabled(false);
+                alreadyEnabled = false;
+                return true;
+            }
+            return false;
+        }
+    }
+ 
+    //This method is required by ListSelectionListener.
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting() == false) {
+ 
+            if (list.getSelectedIndex() == -1) {
+            //No selection, disable fire button.
+                fireButton.setEnabled(false);
+ 
+            } else {
+            //Selection, enable the fire button.
+                fireButton.setEnabled(true);
+            }
+        }
+    }
+ 
+    private static JFrame  frame     = null;
+    private static JDialog d3        = null;
+    private static boolean bModal    = false;
+    private static boolean bModeless = !bModal;
+
+    /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private static void createAndShowGUI() {
+        //Create and set up the window.
+    	if ( frame == null ) {
+    		frame = new JFrame("ListDemo");
+	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	 
+	        //Create and set up the content pane.
+	        JComponent newContentPane = new ListDemo();
+	        newContentPane.setOpaque(true); //content panes must be opaque
+	        frame.setContentPane(newContentPane);
+	        
+	        if ( bModal ) {
+		        //The modeless dialog box
+		        JDialog d2 = new JDialog(frame);
+		        //The document-modal dialog box
+		        d3 = new JDialog(d2, "", Dialog.ModalityType.DOCUMENT_MODAL);
+		        d3.setContentPane(newContentPane);
+		        d3.pack();
+	        } else {
+		        //Display the window.
+		        frame.pack();
+	        }
+    	}
+    	if (  bModal    && d3    != null ) d3.setVisible(true);
+    	if (  bModeless && frame != null ) frame.setVisible(true);
+    }
+    
+    public static void killGUI()
+    {
+	    if (  bModal    && d3    != null ) d3.setVisible(false);
+	    if (  bModeless && frame != null ) frame.setVisible(false);
+	    frame=null;
+	    d3=null;
+    }
+ 
+    public static void main(String[] args) {
+        // Schedule a job for the event-dispatching thread:
+        // creating and showing this application's GUI.
+        createAndShowGUI();
+//        EventQueue.invokeLater(
+//    		new Runnable() { 
+//    			public void run() {
+//    				createAndShowGUI();
+//    			}
+//    		}
+//        );
+    }
+}
 
 /**
  * ToWebPlugin
@@ -172,20 +435,89 @@ public class ToWebPlugin extends Plugin {
         private boolean paintCamera(Camera camera,int width,int height,Path directory,String ext,String type)
         {
             Home            home  = getHome();
+            home.setCamera (camera);
             HomeComponent3D comp  = new HomeComponent3D(home);
             BufferedImage   image = comp.getOffScreenImage(width,height);
             String          file  = camera.getName() + ext;
             String          path  = directory.resolve(file).toString();
-            home.setCamera (camera);
-            boolean     result = saveImage(image,path,type);
-            return          result;
+            return saveImage(image,path,type);
         }
 
+        public String myLabel = "";
+		void setLabel(String string) {
+			myLabel = string;
+		}
 
         @Override
         public void execute()
         {
-            Home    home      = getHome();
+        	final JOptionPane optionPane = new JOptionPane(
+                    "The only way to close this dialog is by\n"
+                    + "pressing one of the following buttons.\n"
+                    + "Do you understand?",
+                    JOptionPane.QUESTION_MESSAGE,
+                    JOptionPane.YES_NO_OPTION);
+
+    		Frame frame = null;
+			final JDialog dialog = new JDialog(frame , 
+		                                 "Click a button",
+		                                 true);
+		    dialog.setContentPane(optionPane);
+		    dialog.setDefaultCloseOperation(
+		        JDialog.DO_NOTHING_ON_CLOSE);
+		    dialog.addWindowListener(new WindowAdapter() {
+		        public void windowClosing(WindowEvent we) {
+		            setLabel("Thwarted user attempt to close window.");
+		        }
+		    });
+		    optionPane.addPropertyChangeListener(
+		        new PropertyChangeListener() {
+		            public void propertyChange(PropertyChangeEvent e) {
+		                String prop = e.getPropertyName();
+		
+		                if (dialog.isVisible() 
+		                 && (e.getSource() == optionPane)
+		                 && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+		                    //If you were going to check something
+		                    //before closing the window, you'd do
+		                    //it here.
+		                    dialog.setVisible(false);
+		                }
+		            }
+
+					@SuppressWarnings("unused")
+					public void propertyChange1(PropertyChangeEvent evt)
+					{
+						String x= String.format("propertyChange1 %d",this.counter++);
+			            System.out.println(x);
+					}
+				    public int counter = 0;
+		        });
+		    dialog.pack();
+		    dialog.setVisible(true);
+		
+		    int value = ((Integer)optionPane.getValue()).intValue();
+		    if (value == JOptionPane.YES_OPTION) {
+		        setLabel("Good.");
+		    } else if (value == JOptionPane.NO_OPTION) {
+		        setLabel("Try using the window decorations "
+		                 + "to close the non-auto-closing dialog. "
+		                 + "You can't!");
+		    }
+            // JOptionPane.showMessageDialog(null, "myLabel = " + this.myLabel);
+        
+            Home             home  = getHome();
+            UserPreferences  prefs = getUserPreferences();
+            
+            // HomeController   hc    = getHomeController();
+            // HomeController3D hc3d  = hc.getHomeController3D();
+            // hc3d.getView().setProjectionPolicy(javax.media.j3d.View.PARALLEL_PROJECTION);
+            // hc3d.getView().setProjectionPolicy(javax.media.j3d.View.PARALLEL_PROJECTION);
+            // hc3d.getViewer().getView().setProjectionPolicy(PARALLEL_PROJECTION);
+        	//  
+        	//ToWebPluginPanel panel = new ToWebPluginPanel(home,prefs,new PhotosController());
+            String[] args = { "how","now"};
+            ListDemo.main(args);
 
             // create directory for output 
             Path    Directory = Paths.get(System.getProperty("user.home")).resolve("Documents").resolve("ToWebPlugin");
@@ -271,7 +603,6 @@ public class ToWebPlugin extends Plugin {
 
                 // paint every level
                 if ( bLevels ) {
-                    UserPreferences prefs = getUserPreferences();
                     Level level1 = home.getSelectedLevel();
                     for ( Level level : home.getLevels() ) {
                         home.setSelectedLevel(level);
@@ -318,6 +649,7 @@ public class ToWebPlugin extends Plugin {
                 message = "no images have been written!";
             }
             JOptionPane.showMessageDialog(null, message);
+            ListDemo.killGUI();
         }
     }
 }
