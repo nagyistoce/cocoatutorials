@@ -44,23 +44,21 @@ class ToWebPluginThread extends Thread {
     private Thread t;
     private String threadName;
 
-    ToWebPluginThread( String name){
+    ToWebPluginThread( String name, Home home_, UserPreferences prefs_) {
+    	home       = home_;
+    	prefs      = prefs_;
         threadName = name;
         System.out.println("Creating " +  threadName );
     }
+    private Home            home;
+    private UserPreferences prefs;
 
     public void run() {
         System.out.println("Running " +  threadName );
-        try {
-            for(int i = 4; i > 0; i--) {
-                System.out.println("Thread: " + threadName + ", " + i);
-                // Let the thread sleep for a while.
-                Thread.sleep(50);
-             }
-         } catch (InterruptedException e) {
-             System.out.println("Thread " +  threadName + " interrupted.");
-         }
-         System.out.println("Thread " +  threadName + " exiting.");
+        ToWebPluginWork work = new ToWebPluginWork();
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        work.execute(home, prefs);
+        System.out.println("Thread " +  threadName + " exiting.");
     }
 
     public void start ()
@@ -361,6 +359,7 @@ public class ToWebPlugin extends Plugin {
     {
         return new PluginAction [] {new ToWebPluginAction()};
     }
+    
     public class ToWebPluginAction extends PluginAction
     {
         public ToWebPluginAction()
@@ -375,73 +374,100 @@ public class ToWebPlugin extends Plugin {
         void setLabel(String string) {
             myLabel = string;
         }
+        
+        class ToWebPluginPanel extends JOptionPane
+        {
+        	static final long serialVersionUID = 2887673;
+        	ToWebPluginPanel() {
+        		super("The only way to close this dialog is by\n"
+                     + "pressing one of the following buttons.\n"
+                     + "Do you understand?"
+                     ,  JOptionPane.QUESTION_MESSAGE
+                     ,  JOptionPane.YES_NO_OPTION
+                     );
+        	}
 
-        @Override
+            public Home             home;
+            public UserPreferences  prefs;
+            boolean          r1 = false;
+
+            int displayPanel() {
+                Frame frame          = null;
+                final JDialog dialog = new JDialog(frame , 
+                                             "Click a button",
+                                             true);
+                dialog.setContentPane(this);
+                dialog.setDefaultCloseOperation(
+                    JDialog.DO_NOTHING_ON_CLOSE);
+                dialog.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent we) {
+                        setLabel("Thwarted user attempt to close window.");
+                        dialog.setTitle("I have changed");
+                    }
+                });
+                
+                final ToWebPluginThread t1 = new ToWebPluginThread("ToWebPluginPanel",home,prefs);
+                
+                dialog.setModal(true);
+                this.addPropertyChangeListener(
+                    new PropertyChangeListener() {
+                        public void propertyChange(PropertyChangeEvent e) {
+                            String prop = e.getPropertyName();
+                            System.out.println(prop);
+                            if (dialog.isVisible() && prop.equals(JOptionPane.VALUE_PROPERTY) ) {
+                             // && (e.getSource() == this)
+                             // && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                                //If you were going to check something
+                                //before closing the window, you'd do
+                                //it here.
+
+                            	//int button = JOptionPane.YES_OPTION; // ((Integer)super.getValue()).intValue();
+                            	if ( r1 ) {
+                            		r1=false;
+                            		t1.interrupt();
+                                    dialog.setVisible(false);
+                            	} else {
+                            		r1=true;
+                            		t1.start();
+                            	}
+                            }
+                        }
+
+                        @SuppressWarnings("unused")
+                        public void propertyChange1(PropertyChangeEvent evt)
+                        {
+                            String x= String.format("propertyChange1 %d",this.counter++);
+                            System.out.println(x);
+                        }
+                        public int counter = 0;
+                    });
+                dialog.pack();
+                dialog.setVisible(true);
+                
+                return  ((Integer)this.getValue()).intValue();
+        	}
+        }
+        
+        Home            home  = getHome();
+        UserPreferences prefs = getUserPreferences();
+        
+		@Override
         public void execute()
         {
-            final JOptionPane optionPane = new JOptionPane(
-                    "The only way to close this dialog is by\n"
-                    + "pressing one of the following buttons.\n"
-                    + "Do you understand?",
-                    JOptionPane.QUESTION_MESSAGE,
-                    JOptionPane.YES_NO_OPTION);
 
-            Frame frame          = null;
-            final JDialog dialog = new JDialog(frame , 
-                                         "Click a button",
-                                         true);
-            dialog.setContentPane(optionPane);
-            dialog.setDefaultCloseOperation(
-                JDialog.DO_NOTHING_ON_CLOSE);
-            dialog.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent we) {
-                    setLabel("Thwarted user attempt to close window.");
-                    dialog.setTitle("I have changed");
-                    // caller.generateWebPages();
-                }
-            });
-            optionPane.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent e) {
-                        String prop = e.getPropertyName();
-
-                        if (dialog.isVisible() 
-                         && (e.getSource() == optionPane)
-                         && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-                            //If you were going to check something
-                            //before closing the window, you'd do
-                            //it here.
-                            dialog.setVisible(false);
-                        }
-                    }
-
-                    @SuppressWarnings("unused")
-                    public void propertyChange1(PropertyChangeEvent evt)
-                    {
-                        String x= String.format("propertyChange1 %d",this.counter++);
-                        System.out.println(x);
-                    }
-                    public int counter = 0;
-                });
-            dialog.pack();
-            dialog.setVisible(true);
-
-            int value = ((Integer)optionPane.getValue()).intValue();
-            if (value == JOptionPane.YES_OPTION) {
-                setLabel("Good.");
-            } else if (value == JOptionPane.NO_OPTION) {
-                setLabel("Try using the window decorations "
-                         + "to close the non-auto-closing dialog. "
-                         + "You can't!");
-            }
+            ToWebPluginPanel panel = new ToWebPluginPanel();
+            panel.home  = home;
+            panel.prefs = prefs;
+            // int value              = 
+            		panel.displayPanel();
 
             //ToWebPluginAction caller;
             //this.caller = this;
 
-            if ( value == JOptionPane.YES_OPTION ) {
-                ToWebPluginWork work = new ToWebPluginWork();
-                work.execute(getHome(),getUserPreferences());
-            }
+//            if ( value == JOptionPane.YES_OPTION ) {
+//                ToWebPluginWork work = new ToWebPluginWork();
+//                work.execute(getHome(),getUserPreferences());
+//            }
         }
     }
 }
