@@ -566,6 +566,7 @@ if [ "$PLATFORM" == "linux" ]; then
 	if [ -e /usr/local/bin/svn ]; then
   		alias svn='/usr/local/bin/svn'
   	fi
+  	export "LDFLAGS=-W1,—no-keep-memory"
 fi
 
 themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+find . -type f | wc -l
+
+# That's all Folks!
+##
