@@ -569,6 +569,7 @@ if [ "$PLATFORM" == "linux" ]; then
   	fi
   	# export "LDFLAGS=-W1,—no-keep-memory"
   	alias locate_update="sudo /usr/bin/updatedb &"
+  	PATH="$PATH:~/Software"
 fi
 
 CS_HOME=~/gnu/copperspice/trunk/copperspice
