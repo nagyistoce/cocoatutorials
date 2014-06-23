@@ -560,14 +560,19 @@ if [ "$PLATFORM" == "macosx" ]; then
     #   export EASYANT_HOME=/Users/rmills/gnu/ant/easyant/easyant-core-0.9-src
     #	export PATH=$PATH:$EASYANT_HOME/bin
     # fi
+  	alias locate_update="sudo /usr/libexec/locate.updatedb &"
 fi
 
 if [ "$PLATFORM" == "linux" ]; then
 	if [ -e /usr/local/bin/svn ]; then
   		alias svn='/usr/local/bin/svn'
   	fi
-  	export "LDFLAGS=-W1,—no-keep-memory"
+  	# export "LDFLAGS=-W1,—no-keep-memory"
+  	alias locate_update="sudo /usr/bin/updatedb &"
 fi
+
+CS_HOME=~/gnu/copperspice/trunk/copperspice
+
 
 themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
 if [ -e $themes ]; then
