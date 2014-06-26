@@ -572,7 +572,7 @@ if [ "$PLATFORM" == "linux" ]; then
   	PATH="$PATH:$HOME/Software"
 fi
 
-CS_HOME=~/gnu/copperspice/trunk/copperspice
+export CS_HOME=$HOME/copperspice/
 
 
 themes=/cygdrive/c/Users/rmills/AppData/Local/Microsoft/BingDesktop/themes/
