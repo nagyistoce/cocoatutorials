@@ -38,8 +38,8 @@ EXIV2_RCSID("@(#) $Id: version.cpp 3223 2013-12-29 06:54:28Z robinwmills $")
 #endif
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
-# ifndef  __MINGW__
-#  define __MINGW__
+# ifndef   __MINGW__
+#  define  __MINGW__
 # endif
 #endif
 
