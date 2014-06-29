@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "*** no cmd on this platform ***"
+
+# That's all Folks!
+##
