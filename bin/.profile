@@ -44,6 +44,8 @@ if [ `uname` == Darwin  ]; then
     PLATFORM=macosx
 elif [ `uname -o` == Cygwin ]; then
     PLATFORM=cygwin
+elif [ `uname -o` == Msys ]; then
+    PLATFORM=mingw
 else
     PLATFORM=linux
 fi
@@ -561,6 +563,10 @@ if [ "$PLATFORM" == "macosx" ]; then
     #	export PATH=$PATH:$EASYANT_HOME/bin
     # fi
   	alias locate_update="sudo /usr/libexec/locate.updatedb &"
+fi
+
+if [ "$PLATFORM" == "mingw" ]; then
+	PATH="/mingw/bin:$PATH"
 fi
 
 if [ "$PLATFORM" == "linux" ]; then
