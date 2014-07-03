@@ -566,7 +566,8 @@ if [ "$PLATFORM" == "macosx" ]; then
 fi
 
 if [ "$PLATFORM" == "mingw" ]; then
-	PATH="/mingw/bin:$PATH"
+	PATH="/mingw/bin:$PATH:/c/Users/rmills/com:/c/Users/rmills/bin
+	alias kate=ce
 fi
 
 if [ "$PLATFORM" == "linux" ]; then
