@@ -250,7 +250,7 @@ EXIV2API void dumpLibraryInfo(std::ostream& os)
     }
 #endif
 
-    os << "exiv2="    << Exiv2::versionString() << endl;
+    os << "exiv2="    << Exiv2::versionString() <<  endl;
     os << "platform=" << platform               << endl;
     os << "compiler=" << compiler               << endl;
     os << "bits="     << bits                   << endl;
