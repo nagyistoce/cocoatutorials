@@ -1017,93 +1017,60 @@ void QuickTimeVideo::doWriteMetadata()
     m_decodeMetadata = false;
     m_modifyMetadata = true;
 
-    std::vector< pair<uint32_t,uint32_t> > ftypPositions = findAtomPositions("ftyp");
-    uint32_t i;
-    for(i=0; i<ftypPositions.size(); i++)
-    {
-        io_->seek(ftypPositions[i].first,BasicIo::beg);
-        fileTypeDecoder(ftypPositions[i].second);
-    }
+    std::vector<std::string> atomFlags;
 
-    std::vector< pair<uint32_t,uint32_t> > mvhdPositions = findAtomPositions("mvhd");
-    for(i=0; i<mvhdPositions.size(); i++)
-    {
-        io_->seek(mvhdPositions[i].first,BasicIo::beg);
-        movieHeaderDecoder(mvhdPositions[i].second);
-    }
+    //Add new tags to the beginning of the container prmitiveFlags and handle conditions to the end of case statements.
 
+    atomFlags.push_back("stsd");
+    atomFlags.push_back("keys");
+    atomFlags.push_back("tapt");
+    atomFlags.push_back("pnot");
+    atomFlags.push_back("udta");
+    atomFlags.push_back("vmhd");
+    atomFlags.push_back("hdlr");
+    atomFlags.push_back("mdhd");
+    atomFlags.push_back("tkhd");
+    atomFlags.push_back("mvhd");
+    atomFlags.push_back("ftyp");
+
+    int32_t iMaxCount, i, j;
+    iMaxCount = (uint32_t) atomFlags.size();
     std::vector< pair<uint32_t,uint32_t> > trakPositions = findAtomPositions("trak");
-    std::vector< pair<uint32_t,uint32_t> > tkhdPositions = findAtomPositions("tkhd");
 
-    for(i=0; i<tkhdPositions.size(); i++)
+    for (j=0; j<iMaxCount; j++)
     {
-        io_->seek(trakPositions[i].first,BasicIo::beg);
-        setMediaStream();
-        io_->seek(tkhdPositions[i].first,BasicIo::beg);
-        trackHeaderDecoder(tkhdPositions[i].second);
-    }
+        std::vector<pair<uint32_t,uint32_t> > atomPositions = findAtomPositions(atomFlags.back().c_str());
+        atomFlags.pop_back();
 
-    std::vector< pair<uint32_t,uint32_t> > mdhdPositions = findAtomPositions("mdhd");
-    for(i=0; i<mdhdPositions.size(); i++)
-    {
-        io_->seek(trakPositions[i].first,BasicIo::beg);
-        setMediaStream();
-        io_->seek(mdhdPositions[i].first,BasicIo::beg);
-        mediaHeaderDecoder(mdhdPositions[i].second);
-    }
+        for (i=0; i<(uint32_t)atomPositions.size(); i++)
+        {
+            if(j == 2 || j == 3 || j == 4 || j == 10)
+            {
+                io_->seek(trakPositions[i].first,BasicIo::beg);
+                setMediaStream();
+            }
+            io_->seek(atomPositions[i].first,BasicIo::beg);
 
-    std::vector< pair<uint32_t,uint32_t> > hdlrPositions = findAtomPositions("hdlr");
-    for(i=0; i<hdlrPositions.size(); i++)
-    {
-        io_->seek(trakPositions[i].first-4,BasicIo::beg);
-        setMediaStream();
-        io_->seek(hdlrPositions[i].first,BasicIo::beg);
-        //        Fixme:Editing dandler data is known to corrupt file data
-        //        handlerDecoder(hdlrPositions[i].second);
-    }
-
-    std::vector< pair<uint32_t,uint32_t> > vmhdPositions = findAtomPositions("vmhd");
-    for(i=0; i<vmhdPositions.size(); i++)
-    {
-        io_->seek(vmhdPositions[i].first,BasicIo::beg);
-        videoHeaderDecoder(vmhdPositions[i].second);
-    }
-
-    std::vector< pair<uint32_t,uint32_t> > udtaPositions = findAtomPositions("udta");
-    for(i=0; i<udtaPositions.size(); i++)
-    {
-        io_->seek(udtaPositions[i].first,BasicIo::beg);
-        userDataDecoder(udtaPositions[i].second);
-    }
-
-    std::vector< pair<uint32_t,uint32_t> > pnotPositions = findAtomPositions("pnot");
-    for(i=0; i<pnotPositions.size(); i++)
-    {
-        io_->seek(pnotPositions[i].first,BasicIo::beg);
-        previewTagDecoder(pnotPositions[i].second);
-    }
-
-    std::vector< pair<uint32_t,uint32_t> > taptPositions = findAtomPositions("tapt");
-    for(i=0; i<taptPositions.size(); i++)
-    {
-        io_->seek(taptPositions[i].first,BasicIo::beg);
-        trackApertureTagDecoder(taptPositions[i].second);
-    }
-
-    std::vector< pair<uint32_t,uint32_t> > keysPositions = findAtomPositions("keys");
-    for(i=0; i<keysPositions.size(); i++)
-    {
-        io_->seek(keysPositions[i].first,BasicIo::beg);
-        keysTagDecoder(keysPositions[i].second);
-    }
-
-    std::vector< pair<uint32_t,uint32_t> > stsdPositions = findAtomPositions("stsd");
-    for(i=0; i<stsdPositions.size(); i++)
-    {
-        io_->seek(trakPositions[i].first,BasicIo::beg);
-        setMediaStream();
-        io_->seek(stsdPositions[i].first,BasicIo::beg);
-        sampleDesc(stsdPositions[i].second);
+            u_int32_t uiAtomPosition = (u_int32_t)atomPositions[i].second;
+            switch (j)
+            {
+            case 0: fileTypeDecoder(uiAtomPosition); break;
+            case 1: movieHeaderDecoder(uiAtomPosition); break;
+            case 2: trackHeaderDecoder(uiAtomPosition); break;
+            case 3: mediaHeaderDecoder(uiAtomPosition); break;
+            case 4: break;
+                //        Fixme:Editing dandler data is known to corrupt file data
+                //        handlerDecoder(hdlrPositions[i].second);
+            case 5: videoHeaderDecoder(uiAtomPosition); break;
+            case 6: userDataDecoder(uiAtomPosition); break;
+            case 7: previewTagDecoder(uiAtomPosition); break;
+            case 8: trackApertureTagDecoder(uiAtomPosition); break;
+            case 9:keysTagDecoder(uiAtomPosition); break;
+            case 10: sampleDesc(uiAtomPosition); break;
+            default:  break;
+            }
+        }
+        atomPositions.clear();
     }
     return;
 }
