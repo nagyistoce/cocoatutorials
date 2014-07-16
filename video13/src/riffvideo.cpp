@@ -502,7 +502,7 @@ namespace Exiv2
 
     /*!
      * \brief simpleBytesComparision bitwise comparition of string and and buffer.
-     * \param buf
+     * \param buf Buffer
      * \param str
      * \param size
      * \return
@@ -516,11 +516,12 @@ namespace Exiv2
     }
 
     /*!
-     * \brief equalsRiffTag overloade function to handle tag Array.
-     * \param buf
-     * \param arr
-     * \param arraysize
-     * \return
+     * \brief equalsRiffTag overloaded function to handle tag Array
+     *                      It will compare all the tags in a array.
+     * \param buf Data buffer that will contain Tag to compare.
+     * \param arr Contains multiple tags to compare from.
+     * \param arraysize Number of tags in arr.
+     * \return true if buf matches any one tag in arr.
      */
     bool equalsRiffTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
     {
@@ -536,9 +537,7 @@ namespace Exiv2
                 }
             }
             if(matched)
-            {
                 return true;
-            }
         }
         return false;
     }
@@ -759,7 +758,7 @@ void RiffVideo::doWriteMetadata()
             case 1: odmlTagsHandler(); break;
             case 2: nikonTagsHandler(); break;
             case 3: infoTagsHandler(); break;
-            //TODO :implement write functionality for header chunks and exif and iptc metadata
+                //TODO :implement write functionality for header chunks and exif and iptc metadata
             default: break;
             }
         }
@@ -1492,7 +1491,7 @@ void RiffVideo::infoTagsHandler()
             const std::string infoTagData = xmpData_[infoTags[i].label_].toString();
             const std::string infoTagFlag = (std::string)infoTags[i].voc_;
             if((xmpData_[infoTags[i].label_].count() > 0) &&
-                ((findChunkPositions(infoTags[i].voc_)).size() == 0)
+                    ((findChunkPositions(infoTags[i].voc_)).size() == 0)
                     && !(std::find(existingInfoTags.begin(), existingInfoTags.end(), infoTagFlag) != existingInfoTags.end()))
             {
                 writethis.push_back(make_pair(infoTagData,infoTagFlag));
