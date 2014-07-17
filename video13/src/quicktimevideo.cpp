@@ -693,37 +693,6 @@ namespace Exiv2
     }
 
     /*!
- * \brief equalsQTimeTag Overloaded method to handle array of tags.
- * \param buf
- * \param arr
- * \param arraysize
- * \return
- */
-/*
-    bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
-    {
-        bool result = arraysize > 0 ;
-        if(result)
-        {
-            for (int32_t i=0; i < arraysize; i++)
-            {
-                result = true;
-                for(int32_t j=0; j < 4; j++ )
-                {
-                    if(tolower(buf.pData_[j]) != arr[i][j])
-                    {
-                        result = false;
-                        break;
-                    }
-                }
-                if(result)
-                    return result;
-            }
-        }
-        return result;
-    }*/
-
-    /*!
      * \brief equalsQTimeTag overloaded function to handle tag Array
      *                      It will compare all the tags in a array.
      * \param buf Data buffer that will contain Tag to compare.
