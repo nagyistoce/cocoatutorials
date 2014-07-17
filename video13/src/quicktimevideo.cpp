@@ -40,6 +40,9 @@ EXIV2_RCSID("@(#) $Id$")
 #include <cmath>
 #include <iostream>
 
+#ifndef   _MSC_VER
+#define stricmp strcasecmp
+#endif
 // *****************************************************************************
 // class member definitions
 namespace Exiv2
@@ -696,7 +699,7 @@ namespace Exiv2
  * \param arraysize
  * \return
  */
-
+/*
     bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
     {
         bool result = arraysize > 0 ;
@@ -717,6 +720,22 @@ namespace Exiv2
                     return result;
             }
         }
+        return result;
+    }*/
+
+    /*!
+     * \brief equalsQTimeTag overloaded function to handle tag Array
+     *                      It will compare all the tags in a array.
+     * \param buf Data buffer that will contain Tag to compare.
+     * \param arr Contains multiple tags to compare from.
+     * \param arraysize Number of tags in arr.
+     * \return true if buf matches any one tag in arr.
+     */
+    bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
+    {
+        bool  result = false;
+        for ( int32_t i=0; !result && i< arraysize; i++)
+            result  = (bool)(stricmp((const char*)buf.pData_,arr[i+1])==0);
         return result;
     }
 

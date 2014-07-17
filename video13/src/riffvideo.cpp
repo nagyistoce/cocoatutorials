@@ -39,9 +39,13 @@ EXIV2_RCSID("@(#) $Id$")
 #include "tags_int.hpp"
 #include "types.hpp"
 #include "tiffimage_int.hpp"
+#include "string.h"
 // + standard includes
 #include <cmath>
 
+#ifndef   _MSC_VER
+#define stricmp strcasecmp
+#endif
 // *****************************************************************************
 // class member definitions
 namespace Exiv2
@@ -525,21 +529,10 @@ namespace Exiv2
      */
     bool equalsRiffTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
     {
-        for ( i=0; i< arraysize; i++)
-        {
-            bool matched = true;
-            for( j = 0; j < 4; j++ )
-            {
-                if(toupper(buf.pData_[j]) != arr[i][j])
-                {
-                    matched = false;
-                    break;
-                }
-            }
-            if(matched)
-                return true;
-        }
-        return false;
+        bool  result = false;
+        for ( int32_t i=0; !result && i< arraysize; i++)
+            result  = (bool)(stricmp((const char*)buf.pData_,arr[i])==0);
+        return result;
     }
 
     //! To select specific bytes with in a chunk.
