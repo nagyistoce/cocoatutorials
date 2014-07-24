@@ -571,10 +571,37 @@ namespace Exiv2
 
 using namespace Exiv2::Internal;
 
+class MatroskaVideo::Private
+{
+public:
+    Private()
+    {
+        continueTraversing_ = true;
+        height_ = 1;
+        width_ = 1;
+        m_modifyMetadata = false;
+        mtLocation = 1;
+    }
+
+public:
+    //! Variable to check the end of metadata traversing.
+    bool continueTraversing_;
+    //! Variable to store height and width of a video frame.
+    uint64_t height_, width_;
+    //! Variable to decide whether to modify the metada
+    bool m_modifyMetadata;
+    int32_t mtLocation;
+};
+
 MatroskaVideo::MatroskaVideo(BasicIo::AutoPtr io)
-    : Image(ImageType::mkv, mdNone, io)
+    : Image(ImageType::mkv, mdNone, io),d(new Private)
 {
 } // MatroskaVideo::MatroskaVideo
+
+MatroskaVideo::~MatroskaVideo()
+{
+    delete d;
+}
 
 std::string MatroskaVideo::mimeType() const
 {
@@ -605,9 +632,9 @@ void MatroskaVideo::doWriteMetadata()
         if (io_->error() || io_->eof()) throw Error(14);
         throw Error(3, "Matroska");
     }
-    m_modifyMetadata = true;
-    continueTraversing_ = true;
-    while (continueTraversing_) decodeBlock();
+    d->m_modifyMetadata = true;
+    d->continueTraversing_ = true;
+    while (d->continueTraversing_) decodeBlock();
 }
 
 void MatroskaVideo::readMetadata()
@@ -623,14 +650,14 @@ void MatroskaVideo::readMetadata()
 
     IoCloser closer(*io_);
     clearMetadata();
-    continueTraversing_ = true;
-    height_ = width_ = 1;
+    d->continueTraversing_ = true;
+    d->height_ = d->width_ = 1;
 
     xmpData_["Xmp.video.FileName"] = io_->path();
     xmpData_["Xmp.video.FileSize"] = (double)io_->size()/(double)1048576;
     xmpData_["Xmp.video.MimeType"] = mimeType();
 
-    while (continueTraversing_) decodeBlock();
+    while (d->continueTraversing_) decodeBlock();
 
     aspectRatio();
 } // MatroskaVideo::readMetadata
@@ -638,12 +665,12 @@ void MatroskaVideo::readMetadata()
 void MatroskaVideo::decodeBlock()
 {
     Exiv2::byte buf[8];
-    mtLocation = io_->tell();
+    d->mtLocation = io_->tell();
     io_->read(buf, 1);
 
     if(io_->eof())
     {
-        continueTraversing_ = false;
+        d->continueTraversing_ = false;
         return;
     }
 
@@ -655,7 +682,7 @@ void MatroskaVideo::decodeBlock()
 
     if(mt->val_ == 0xc53bb6b || mt->val_ == 0xf43b675)
     {
-        continueTraversing_ = false;
+        d->continueTraversing_ = false;
         return;
     }
 
@@ -703,7 +730,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
     const MatroskaTags* internalMt = 0;
     const RevMatroskaTags* revTagStructure = 0;
 
-    if(m_modifyMetadata)
+    if(d->m_modifyMetadata)
     {
 
     }
@@ -712,7 +739,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
     case 0x0282: case 0x0d80: case 0x1741: case 0x3ba9: case 0x066e: case 0x0660:
     case 0x065c: case 0x067e: case 0x047a: case 0x0487: case 0x05a3: case 0x136e:
     case 0x23ca: case 0xeb524:
-        if(!m_modifyMetadata)
+        if(!d->m_modifyMetadata)
         {
             xmpData_[mt->label_] = buf;
         }
@@ -743,7 +770,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
     case 0x0030: case 0x003a: case 0x0287: case 0x14b0: case 0x14ba: case 0x285:
     case 0x06ae: case 0x0286: case 0x02f7: case 0x2264: case 0x14aa: case 0x14bb:
     case 0x14cc: case 0x14dd:
-        if(!m_modifyMetadata)
+        if(!d->m_modifyMetadata)
         {
             xmpData_[mt->label_] = returnValue(buf, size);
         }
@@ -759,11 +786,11 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         }
         if (mt->val_ == 0x0030 || mt->val_ == 0x14b0)
         {
-            width_ = returnValue(buf, size);
+            d->width_ = returnValue(buf, size);
         }
         else if (mt->val_ == 0x003a || mt->val_ == 0x14ba)
         {
-            height_ = returnValue(buf, size);
+            d->height_ = returnValue(buf, size);
         }
         break;
 
@@ -786,7 +813,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         case 0x23c3: internalMt = find(chapterPhysicalEquivalent, returnValue(buf, size));     break;
         case 0x29bf: internalMt = find(chapterTranslateCodec, returnValue(buf, size));         break;
         }
-        if(!m_modifyMetadata)
+        if(!d->m_modifyMetadata)
         {
             if (internalMt) xmpData_[mt->label_] = internalMt->label_;
         }
@@ -868,7 +895,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         }
         break;
     case 0x0035: case 0x38b5:
-        if(!m_modifyMetadata)
+        if(!d->m_modifyMetadata)
         {
             xmpData_[mt->label_] = getFloat(buf, bigEndian);
         }
@@ -914,7 +941,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         break;
 
     case 0x0489: case 0x0461:
-        if(!m_modifyMetadata)
+        if(!d->m_modifyMetadata)
         {
             switch (mt->val_)
             {
@@ -961,7 +988,7 @@ void MatroskaVideo::contentManagement(const MatroskaTags* mt, const Exiv2::byte*
         break;
 
     case 0xad7b1:
-        if(!m_modifyMetadata)
+        if(!d->m_modifyMetadata)
         {
             time_code_scale = (double)returnValue(buf, size)/(double)1000000000;
             xmpData_["Xmp.video.TimecodeScale"] = time_code_scale;
@@ -1005,7 +1032,7 @@ void MatroskaVideo::aspectRatio()
 {
     //TODO - Make a better unified method to handle all cases of Aspect Ratio
 
-    double aspectRatio = (double)width_ / (double)height_;
+    double aspectRatio = (double)d->width_ / (double)d->height_;
     aspectRatio = floor(aspectRatio*10) / 10;
     xmpData_["Xmp.video.AspectRatio"] = aspectRatio;
 

@@ -295,10 +295,36 @@ namespace Exiv2 {
 
     using namespace Exiv2::Internal;
 
+    class AsfVideo::Private
+    {
+    public:
+        Private()
+        {
+            continueTraversing_ = true;
+            localPosition_ = 1;
+            streamNumber_ = 0;
+            height_ = 1;
+            width_ = 1;
+        }
+        //! Variable to check the end of metadata traversing.
+        bool continueTraversing_;
+        //! Variable which stores current position of the read pointer.
+        uint64_t localPosition_;
+        //! Variable which stores current stream being processsed.
+        int streamNumber_;
+        //! Variable to store height and width of a video frame.
+        uint64_t height_, width_;
+    };
+
     AsfVideo::AsfVideo(BasicIo::AutoPtr io)
-        : Image(ImageType::asf, mdNone, io)
+        : Image(ImageType::asf, mdNone, io),d(new Private)
     {
     } // AsfVideo::AsfVideo
+
+    AsfVideo::~AsfVideo()
+    {
+        delete d;
+    }
 
     std::string AsfVideo::mimeType() const
     {
@@ -321,15 +347,15 @@ namespace Exiv2 {
 
         IoCloser closer(*io_);
         clearMetadata();
-        continueTraversing_ = true;
+        d->continueTraversing_ = true;
         io_->seek(0, BasicIo::beg);
-        height_ = width_ = 1;
+        d->height_ = d->width_ = 1;
 
         xmpData_["Xmp.video.FileSize"] = (double)io_->size()/(double)1048576;
         xmpData_["Xmp.video.FileName"] = io_->path();
         xmpData_["Xmp.video.MimeType"] = mimeType();
 
-        while (continueTraversing_) decodeBlock();
+        while (d->continueTraversing_) decodeBlock();
 
         aspectRatio();
     } // AsfVideo::readMetadata
@@ -347,7 +373,7 @@ namespace Exiv2 {
         io_->read(guidBuf, 16);
 
         if(io_->eof()) {
-            continueTraversing_ = false;
+            d->continueTraversing_ = false;
             return;
         }
 
@@ -366,7 +392,7 @@ namespace Exiv2 {
         else
             io_->seek(cur_pos + size, BasicIo::beg);
 
-        localPosition_ = io_->tell();
+        d->localPosition_ = io_->tell();
     } // AsfVideo::decodeBlock
 
     void AsfVideo::tagDecoder(const TagVocabulary *tv, uint64_t size)
@@ -378,11 +404,11 @@ namespace Exiv2 {
         Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpSeq);
 
         if(compareTag( exvGettext(tv->label_), "Header")) {
-            localPosition_ = 0;
+            d->localPosition_ = 0;
             io_->read(buf.pData_, 4);
             io_->read(buf.pData_, 2);
 
-            while(localPosition_ < cur_pos + size) decodeBlock();
+            while(d->localPosition_ < cur_pos + size) decodeBlock();
         }
 
         else if(compareTag( exvGettext(tv->label_), "File_Properties"))
@@ -410,7 +436,7 @@ namespace Exiv2 {
             extendedStreamProperties(size);
 
         else if(compareTag( exvGettext(tv->label_), "Header_Extension")) {
-            localPosition_ = 0;
+            d->localPosition_ = 0;
             headerExtension(size);
         }
 
@@ -430,7 +456,7 @@ namespace Exiv2 {
         }
 
         io_->seek(cur_pos + size, BasicIo::beg);
-        localPosition_ = io_->tell();
+        d->localPosition_ = io_->tell();
     } // AsfVideo::tagDecoder
 
     void AsfVideo::extendedStreamProperties(uint64_t size)
@@ -442,16 +468,16 @@ namespace Exiv2 {
 
         std::memset(buf.pData_, 0x0, buf.size_);
         io_->read(buf.pData_, 2);
-        streamNumber_ = Exiv2::getUShort(buf.pData_, littleEndian);
+        d->streamNumber_ = Exiv2::getUShort(buf.pData_, littleEndian);
 
         io_->read(buf.pData_, 2);
         io_->read(buf.pData_, 8);
         avgTimePerFrame = getUint64_t(buf);
 
-        if(previousStream < streamNumber_  &&  avgTimePerFrame != 0)
+        if(previousStream < d->streamNumber_  &&  avgTimePerFrame != 0)
             xmpData_["Xmp.video.FrameRate"] = (double)10000000/(double)avgTimePerFrame;
 
-        previousStream = streamNumber_;
+        previousStream = d->streamNumber_;
         io_->seek(cur_pos + size, BasicIo::beg);
     } // AsfVideo::extendedStreamProperties
 
@@ -512,7 +538,7 @@ namespace Exiv2 {
         io_->read(buf.pData_, 8);
         std::memset(buf.pData_, 0x0, buf.size_);
         io_->read(buf.pData_, 1);
-        streamNumber_ = (int)buf.pData_[0] & 127;
+        d->streamNumber_ = (int)buf.pData_[0] & 127;
 
         io_->read(buf.pData_, 5);
         std::memset(buf.pData_, 0x0, buf.size_);
@@ -521,7 +547,7 @@ namespace Exiv2 {
 
         if(stream == 2) {
             xmpData_["Xmp.video.Width"] = temp;
-            width_ = temp;
+            d->width_ = temp;
         }
         else if(stream == 1) {
             xmpData_["Xmp.audio.Codec"] = test->printAudioEncoding(temp);
@@ -537,7 +563,7 @@ namespace Exiv2 {
 
         if(stream == 2) {
             xmpData_["Xmp.video.Height"] = temp;
-            height_ = temp;
+            d->height_ = temp;
         }
         else if(stream == 1) {
             xmpData_["Xmp.audio.SampleRate"] = temp;
@@ -617,7 +643,7 @@ namespace Exiv2 {
         buf.pData_[4] = '\0' ;
         io_->read(buf.pData_, 4);
 
-        while(localPosition_ < cur_pos + size) decodeBlock();
+        while(d->localPosition_ < cur_pos + size) decodeBlock();
 
         io_->seek(cur_pos + size, BasicIo::beg);
     } // AsfVideo::headerExtension
@@ -770,7 +796,7 @@ namespace Exiv2 {
     {
         //TODO - Make a better unified method to handle all cases of Aspect Ratio
 
-        double aspectRatio = (double)width_ / (double)height_;
+        double aspectRatio = (double)d->width_ / (double)d->height_;
         aspectRatio = floor(aspectRatio*10) / 10;
         xmpData_["Xmp.video.AspectRatio"] = aspectRatio;
 

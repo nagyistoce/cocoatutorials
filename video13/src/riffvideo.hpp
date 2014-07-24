@@ -130,6 +130,8 @@ public:
     RiffVideo(BasicIo::AutoPtr io);
     //@}
 
+    ~RiffVideo();
+
     //! @name Manipulators
     //@{
     void readMetadata();
@@ -325,16 +327,10 @@ private:
     void writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size=2, int32_t skipOffset=0);
 
 private:
-    //! Variable to check the end of metadata traversing.
-    bool continueTraversing_;
-    //! Variable which stores current stream being processsed.
-    int streamType_;
-    //! Variable to decide whether to decode the metadata or just reveal file structure (Lists inside RIFF)
-    bool m_decodeMetaData;
-    //!variable to decide whether write metadata is possible or not (by default false)
-    bool m_modifyMetadata;
-    //!abstract metadata holding variable (its data about data about data!)
-    RiffMetaSkeleton m_riffFileSkeleton;
+
+    // Good idea to use private(Refer KDE documentaion https://techbase.kde.org/Policies/Binary_Compatibility_Issues_With_C++ )
+    class Private;
+    Private* const d;
 
 }; //Class RiffVideo
 

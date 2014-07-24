@@ -142,6 +142,7 @@ private:
     MatroskaVideo(const MatroskaVideo& rhs);
     //! Assignment operator
     MatroskaVideo& operator=(const MatroskaVideo& rhs);
+    ~MatroskaVideo();
     //@}
     /*!
               @brief Provides the main implementation of writeMetadata() by
@@ -168,13 +169,9 @@ private:
     void writeMatroskaKey(const RevMatroskaTags *revInternalMt, int32_t size);
 
 private:
-    //! Variable to check the end of metadata traversing.
-    bool continueTraversing_;
-    //! Variable to store height and width of a video frame.
-    uint64_t height_, width_;
-    //! Variable to decide whether to modify the metada
-    bool m_modifyMetadata;
-    int32_t mtLocation;
+
+    class Private;
+    Private * const d;
 
 }; // class MatroskaVideo
 

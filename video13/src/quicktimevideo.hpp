@@ -88,6 +88,7 @@ public:
     QuickTimeVideo(BasicIo::AutoPtr io);
     //@}
 
+    ~QuickTimeVideo();
     //! @name Manipulators
     //@{
     void readMetadata();
@@ -295,25 +296,9 @@ private:
     void writeApertureData(Exiv2::Xmpdatum xmpIntData, int16_t size, int32_t skipOffset=0);
 
 private:
-    //! Variable which stores Time Scale unit, used to calculate time.
-    uint64_t timeScale_;
-    //! Variable which stores current stream being processsed.
-    int currentStream_;
-    //! Variable to check the end of metadata traversing.
-    bool continueTraversing_;
-    //! Variable to store height and width of a video frame.
-    uint64_t height_, width_;
-    //! Variable to decide write(True)/read(False) metadata
-    bool m_modifyMetadata;
-    //! Variable to decide decode/skip metadata
-    bool m_decodeMetadata;
 
-    /*!
-         * \brief m_QuickSkeleton
-         * A container which hold the entire information about all premitive atoms inside quicktime
-         * structure
-         */
-    std::vector<QuickAtom*> m_QuickSkeleton;
+    class Private;
+    Private * const d;
 
 }; //QuickTimeVideo End
 
