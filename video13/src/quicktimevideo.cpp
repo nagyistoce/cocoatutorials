@@ -2360,6 +2360,7 @@ void QuickTimeVideo::audioDescDecoder()
         int32_t i;
         for (i = 0; size/4 != 0 ; size -= 4, i++)
         {
+            bool bDataWriten = false;
             switch(i)
             {
             case AudioFormat:
@@ -2370,23 +2371,13 @@ void QuickTimeVideo::audioDescDecoder()
                     if(td)
                     {
                         const char* compressor = td->label_;
-                        int32_t j;
-                        for(j=0; j<4; j++)
-                        {
+                        for(int32_t j=0; j<4; j++)
                             rawCompressor[j] = compressor[j];
-                        }
-                        io_->write(rawCompressor,4);
+                        bDataWriten = writeMultibyte(rawCompressor, 4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
+
             case AudioVendorID:
                 if(xmpData_["Xmp.audio.VendorID"].count() >0)
                 {
@@ -2395,45 +2386,35 @@ void QuickTimeVideo::audioDescDecoder()
                     if(td)
                     {
                         const char* vendorID = td->label_;
-                        int32_t j;
-                        for(j=0; j<4; j++)
-                        {
+                        for(int32_t j=0; j<4; j++)
                             rawVendorID[j] = vendorID[j];
-                        }
-                        io_->write(rawVendorID,4);
+                        bDataWriten = writeMultibyte(rawVendorID, 4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
+
             case AudioChannels:
                 if(xmpData_["Xmp.audio.ChannelType"].count() >0)
                 {
                     DataBuf rawBuf(2);
                     rawBuf = returnBuf((int64_t)xmpData_["Xmp.audio.ChannelType"].toLong(),2);
-                    io_->write(rawBuf.pData_,2);
+                    bDataWriten = writeMultibyte(rawBuf.pData_, 2);
                 }
-                else
-                {
-                    io_->seek(2,BasicIo::cur);
-                }
+                if(!bDataWriten)
+                    io_->seek(2, BasicIo::cur);
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.audio.BitsPerSample"].count() >0)
                 {
                     DataBuf rawBuf(2);
                     rawBuf = returnBuf((int64_t)xmpData_["Xmp.audio.BitsPerSample"].toLong(),2);
-                    io_->write(rawBuf.pData_,2);
+                    bDataWriten = writeMultibyte(rawBuf.pData_,2);
                 }
-                else
-                {
-                    io_->seek(2,BasicIo::cur);
-                }
+                if(!bDataWriten)
+                    io_->seek(2, BasicIo::cur);
+                bDataWriten = true;
                 break;
+
             case AudioSampleRate:
                 if(xmpData_["Xmp.audio.SampleRate"].count() >0)
                 {
@@ -2442,18 +2423,18 @@ void QuickTimeVideo::audioDescDecoder()
                     const int64_t sampleRate = (int64_t)xmpData_["Xmp.audio.SampleRate"].toLong();
                     rawSampleRate = returnBuf(sampleRate,4);
 
-                    io_->write(rawSampleRate.pData_+2,2);
-                    io_->write(rawSampleRate.pData_,2);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWriten = writeMultibyte(rawSampleRate.pData_+2,2);
+                    bDataWriten = writeMultibyte(rawSampleRate.pData_,2);
                 }
                 break;
+
             default:
                 io_->seek(4,BasicIo::cur);
+                bDataWriten = true;
                 break;
             }
+            if(!bDataWriten)
+                io_->seek(4, BasicIo::cur);
         }
         io_->seek(static_cast<int32_t>(size % 4),BasicIo::cur);
     }
