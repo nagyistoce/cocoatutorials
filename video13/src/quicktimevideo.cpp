@@ -1513,9 +1513,7 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
                 io_->write((Exiv2::byte*)&tmpValue,4);
             }
             else
-            {
                 io_->seek(4,BasicIo::cur);
-            }
 
             //Variation
             if(xmpData_["Xmp.video.FNumber"].count() >0)
@@ -1526,13 +1524,11 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
                 const int32_t fNumber =(int32_t)
                         ((double)xmpData_["Xmp.video.FNumber"].toLong()
                         *(double)getULong(buf2.pData_, littleEndian));
-                io_->write((Exiv2::byte*)&fNumber,4);
-                io_->seek(4,BasicIo::cur);
+                writeMultibyte((Exiv2::byte*)&fNumber, 4, 4);
             }
             else
-            {
                 io_->seek(8,BasicIo::cur);
-            }
+
             if(xmpData_["Xmp.video.ExposureCompensation"].count() >0)
             {
                 io_->seek(4,BasicIo::cur);
@@ -1541,30 +1537,25 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
                 const int32_t exposureCompensation =(int32_t)
                         ((double)xmpData_["Xmp.video.ExposureCompensation"].toLong()
                         *(double)getULong(buf2.pData_, littleEndian));
-                io_->write((Exiv2::byte*)&exposureCompensation,4);
-                io_->seek(14,BasicIo::cur);
+                writeMultibyte((Exiv2::byte*)&exposureCompensation, 4, 14);
             }
             else
-            {
                 io_->seek(18,BasicIo::cur);
-            }
+
             if(xmpData_["Xmp.video.WhiteBalance"].count() >0)
             {
                 rtd = find(revTagDetails,xmpData_["Xmp.video.WhiteBalance"].toString());
                 if(rtd)
                 {
                     const int32_t sWhiteBalance = (int32_t)rtd->val_;
-                    io_->write((Exiv2::byte*)&sWhiteBalance,4);
+                    writeMultibyte((Exiv2::byte*)&sWhiteBalance,4);
                 }
                 else
-                {
                     io_->seek(4,BasicIo::cur);
-                }
             }
             else
-            {
                 io_->seek(4,BasicIo::cur);
-            }
+
             if(xmpData_["Xmp.video.FocalLength"].count() >0)
             {
                 io_->seek(4,BasicIo::cur);
@@ -1572,13 +1563,10 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
                 io_->seek(-8,BasicIo::cur);
                 const int32_t focalLength =(int32_t)((double)xmpData_["Xmp.video.FocalLength"].toLong()
                         *(double)getULong(buf2.pData_, littleEndian));
-                io_->write((Exiv2::byte*)&focalLength,4);
-                io_->seek(99,BasicIo::cur);
+                writeMultibyte((Exiv2::byte*)&focalLength, 4, 99);
             }
             else
-            {
                 io_->seek(103,BasicIo::cur);
-            }
 
             writeStringData(xmpData_["Xmp.video.Software"],48);
             writeLongData(xmpData_["Xmp.video.ISO"]);
@@ -4218,11 +4206,19 @@ void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, in
     }
 }
 
-void QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData,int32_t iSize)
+//
+void QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int32_t iSize, int32_t iOffset)
 {
     int32_t iCurrPos = io_->tell();
-    if(io_->write(bRawData, iSize) <= 0)
-        io_->seek(iCurrPos+iSize, BasicIo::beg);
+    if (iSize != 0 && bRawData != NULL)
+    {
+        if ((io_->write(bRawData, iSize) > 0))
+            io_->seek(iOffset , BasicIo::cur);
+        else
+            io_->seek(iCurrPos + iSize + iOffset, BasicIo::beg);
+    }
+    else
+        io_->seek(iCurrPos + iOffset, BasicIo::beg);
 }
 
 void QuickTimeVideo::writeApertureData(Exiv2::Xmpdatum xmpApertureData, int16_t size, int32_t skipOffset)
