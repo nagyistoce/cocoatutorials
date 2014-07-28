@@ -1684,19 +1684,14 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
             else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
                     || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
                     || equalsQTimeTag(buf, "FFMV"))
-            {
+
                 writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
-            }
 
             else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo"))
-            {
                 io_->seek(2,BasicIo::cur);
-            }
 
             else if(tv)
-            {
                 writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
-            }
         }
         io_->seek(cur_pos + size_external, BasicIo::beg);
     }
@@ -1937,6 +1932,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
         reverseTagDetails(NikonNCTGTags,revNikonNCTGTags,((sizeof(NikonNCTGTags)/sizeof(NikonNCTGTags[0]))));
 
         int32_t i;
+        bool bDataWriten = false;
         for(i = 0 ; i < 100 ; i++)
         {
             io_->read(buf.pData_, 4);
@@ -1968,17 +1964,12 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawPictureControlAdjust = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawPictureControlAdjust,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawPictureControlAdjust, 1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
 
                 if(xmpData_["Xmp.video.PictureControlQuickAdjust"].count() >0)
                 {
@@ -1989,17 +1980,13 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawPictureControlQuickAdjust = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawPictureControlQuickAdjust,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawPictureControlQuickAdjust,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.Sharpness"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
@@ -2009,17 +1996,13 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawSharpness = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawSharpness,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawSharpness,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.Contrast"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
@@ -2029,17 +2012,13 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawContrast = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawContrast,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawContrast,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.Brightness"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(NormalSoftHard)/sizeof(NormalSoftHard[0]))];
@@ -2049,17 +2028,13 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawBrightness = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawBrightness,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawBrightness,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.Saturation"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(Saturation)/sizeof(Saturation[0]))];
@@ -2069,26 +2044,22 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawSaturation = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawSaturation,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawSaturation,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.HueAdjustment"].count() >0)
                 {
                     Exiv2::byte rawHueAdjustment = (Exiv2::byte)xmpData_["Xmp.video.HueAdjustment"].toString()[0];
-                    io_->write(&rawHueAdjustment,1);
+                    bDataWriten = writeMultibyte(&rawHueAdjustment,1);
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.FilterEffect"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(FilterEffect)/sizeof(FilterEffect[0]))];
@@ -2098,17 +2069,13 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawFilterEffect = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawFilterEffect,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawFilterEffect,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.ToningEffect"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(ToningEffect)/sizeof(ToningEffect[0]))];
@@ -2118,21 +2085,17 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawToningEffect = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawToningEffect,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawToningEffect,1);
                     }
                 }
-                else
-                {
+                if(!bDataWriten)
                     io_->seek(1,BasicIo::cur);
-                }
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.ToningSaturation"].count() >0)
                 {
                     Exiv2::byte rawToningSaturation = (Exiv2::byte)xmpData_["Xmp.video.ToningSaturation"].toString()[0];
-                    io_->write(&rawToningSaturation,1);
+                    bDataWriten = writeMultibyte(&rawToningSaturation,1);
                 }
                 io_->seek(local_pos + dataLength, BasicIo::beg);
             }
@@ -2154,13 +2117,13 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawDayLightSavings = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawDayLightSavings,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawDayLightSavings,1);
                     }
                 }
+                if(!bDataWriten)
+                    io_->seek(1,BasicIo::cur);
+                bDataWriten = false;
+
                 if(xmpData_["Xmp.video.DateDisplayFormat"].count() >0)
                 {
                     RevTagDetails revTagDetails[(sizeof(DateDisplayFormat)/sizeof(DateDisplayFormat[0]))];
@@ -2170,11 +2133,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     if(rtd2)
                     {
                         Exiv2::byte rawDateDisplayFormat = (Exiv2::byte)rtd2->val_;
-                        io_->write(&rawDateDisplayFormat,1);
-                    }
-                    else
-                    {
-                        io_->seek(1,BasicIo::cur);
+                        bDataWriten = writeMultibyte(&rawDateDisplayFormat,1);
                     }
                 }
                 io_->seek(local_pos + dataLength, BasicIo::beg);
@@ -4207,7 +4166,7 @@ void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, in
 }
 
 //
-void QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int32_t iSize, int32_t iOffset)
+bool QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int32_t iSize, int32_t iOffset)
 {
     int32_t iCurrPos = io_->tell();
     if (iSize != 0 && bRawData != NULL)
@@ -4219,6 +4178,9 @@ void QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int32_t iSize, int32
     }
     else
         io_->seek(iCurrPos + iOffset, BasicIo::beg);
+
+    //Return value is just for assignment to a variable at calling location.
+    return true;
 }
 
 void QuickTimeVideo::writeApertureData(Exiv2::Xmpdatum xmpApertureData, int16_t size, int32_t skipOffset)

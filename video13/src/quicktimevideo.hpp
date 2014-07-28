@@ -292,7 +292,7 @@ private:
      * \param bRawData
      * \param size
      */
-    void writeMultibyte(Exiv2::byte * bRawData = NULL ,int32_t iSize = 0, int32_t iOffset = 0);
+    bool writeMultibyte(Exiv2::byte * bRawData = NULL ,int32_t iSize = 0, int32_t iOffset = 0);
 
     /*!
            * \brief writeApertureData
