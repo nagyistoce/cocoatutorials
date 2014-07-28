@@ -2505,6 +2505,7 @@ void QuickTimeVideo::imageDescDecoder()
         int32_t i;
         for (i = 0; size/4 != 0 ; size -= 4, i++)
         {
+            bool bDataWritten = false;
             switch(i)
             {
             case codec:
@@ -2516,27 +2517,16 @@ void QuickTimeVideo::imageDescDecoder()
                     if(td)
                     {
                         const char* codecNameTag = td->label_;
-                        int32_t j;
-                        for(j=0; j<4 ;j++)
-                        {
+                        for(int32_t j=0; j<4 ;j++)
                             rawCodec[j] = (Exiv2::byte)codecNameTag[j];
-                        }
                     }
                     else
-                    {
-                        int32_t j;
-                        for(j=0; j<4 ;j++)
-                        {
+                        for(int32_t j=0; j<4 ;j++)
                             rawCodec[j] = (Exiv2::byte)codecName[j];
-                        }
-                    }
-                    io_->write(rawCodec,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(rawCodec, 4);
                 }
                 break;
+
             case VendorID:
                 if(xmpData_["Xmp.video.VendorID"].count() >0)
                 {
@@ -2545,75 +2535,65 @@ void QuickTimeVideo::imageDescDecoder()
                     {
                         Exiv2::byte rawVendorID[4];
                         const char* vendorID = td->label_;
-                        int32_t j;
-                        for(j=0; j<4 ;j++)
-                        {
+                        for(int32_t j=0; j<4 ;j++)
                             rawVendorID[j] = vendorID[j];
-                        }
-                        io_->write(rawVendorID,4);
+                        bDataWritten = writeMultibyte(rawVendorID,4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
+
             case SourceImageWidth_Height:
                 if(xmpData_["Xmp.video.SourceImageWidth"].count() >0)
                 {
                     DataBuf imageWidth = returnBuf((int64_t)xmpData_["Xmp.video.SourceImageWidth"].toLong(),2);
-                    io_->write(imageWidth.pData_,2);
+                    bDataWritten = writeMultibyte(imageWidth.pData_,2);
                 }
-                else
-                {
+                if(!bDataWritten)
                     io_->seek(2,BasicIo::cur);
-                }
+                bDataWritten = false;
+
                 if(xmpData_["Xmp.video.SourceImageHeight"].count() >0)
                 {
                     DataBuf imageHeight = returnBuf(((int64_t)(xmpData_["Xmp.video.SourceImageHeight"].toLong() -
                                                      xmpData_["Xmp.video.SourceImageHeight"].toLong()/65536)*65536));
-                    io_->write(imageHeight.pData_,2);
+                    bDataWritten = writeMultibyte(imageHeight.pData_,2);
                 }
-                else
-                {
+                if(!bDataWritten)
                     io_->seek(2,BasicIo::cur);
-                }
+                bDataWritten = true;
                 break;
+
             case XResolution:
                 //This field should not be edited
-                io_->seek(4,BasicIo::cur);
                 break;
+
             case YResolution:
                 io_->seek(7,BasicIo::cur);
                 size -= 3;
+                bDataWritten = true;
                 break;
+
             case CompressorName:
                 if(xmpData_["Xmp.video.Compressor"].count() >0)
                 {
                     Exiv2::byte rawCompressor[32] = {};
                     const std::string compressor = xmpData_["Xmp.video.Compressor"].toString();
-                    int32_t j;
-                    for(j=0;j<min((int32_t)32,(int32_t)compressor.size()); j++)
-                    {
+                    for(int32_t j=0;j<min((int32_t)32,(int32_t)compressor.size()); j++)
                         rawCompressor[j] = (Exiv2::byte)compressor[j];
-                    }
                     io_->seek(4,BasicIo::cur);
-                    io_->write(rawCompressor,32);
+                    bDataWritten = writeMultibyte(rawCompressor,32);
                 }
                 else
-                {
                     io_->seek(36,BasicIo::cur);
-                }
                 size -= 32;
+                bDataWritten = true;
                 break;
+
             default:
-                io_->seek(4,BasicIo::cur);
                 break;
             }
+            if(!bDataWritten)
+                io_->seek(4,BasicIo::cur);
         }
         if(xmpData_["Xmp.video.BitDepth"].count() > 0)
         {
