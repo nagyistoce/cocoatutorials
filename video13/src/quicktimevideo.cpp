@@ -2662,6 +2662,7 @@ void QuickTimeVideo::videoHeaderDecoder(uint32_t size)
         int32_t i;
         for (i = 0; size/2 != 0 ; size -= 2, i++)
         {
+            bool bDataWritten = false;
             switch(i)
             {
             case GraphicsMode:
@@ -2672,18 +2673,11 @@ void QuickTimeVideo::videoHeaderDecoder(uint32_t size)
                     if(rtd)
                     {
                         rawGraphicsMode = returnBuf((int64_t)rtd->val_,2);
-                        io_->write(rawGraphicsMode.pData_,2);
+                        bDataWritten = writeMultibyte(rawGraphicsMode.pData_,2);
                     }
-                    else
-                    {
-                        io_->seek(2,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(2,BasicIo::cur);
                 }
                 break;
+
             case OpColor:
                 if(xmpData_["Xmp.video.OpColor"].count() >0)
                 {
@@ -2691,17 +2685,15 @@ void QuickTimeVideo::videoHeaderDecoder(uint32_t size)
                     rawOpColor.pData_[2] = '\0';
                     const int64_t opColor = xmpData_["Xmp.video.OpColor"].toLong();
                     rawOpColor = returnBuf(opColor,2);
-                    io_->write(rawOpColor.pData_,2);
-                }
-                else
-                {
-                    io_->seek(2,BasicIo::cur);
+                    bDataWritten = writeMultibyte(rawOpColor.pData_,2);
                 }
                 break;
+
             default:
-                io_->seek(2,BasicIo::cur);
                 break;
             }
+            if(!bDataWritten)
+                io_->seek(2,BasicIo::cur);
         }
         io_->seek(size % 2,BasicIo::cur);
     }
@@ -2776,6 +2768,7 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
         int32_t i;
         for (i = 0; i < 5 ; i++)
         {
+            bool bDataWritten = false;
             switch(i)
             {
             case HandlerClass:
@@ -2789,21 +2782,10 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         if(tv)
                         {
                             const std::string handlerClass = tv->label_;
-                            int32_t j;
-                            for(j=0; j<4; j++)
-                            {
+                            for(int32_t j=0; j<4; j++)
                                 rawHandlerClass[j] = handlerClass[j];
-                            }
-                            io_->write(rawHandlerClass,4);
+                            bDataWritten = writeMultibyte(rawHandlerClass,4);
                         }
-                        else
-                        {
-                            io_->seek(4,BasicIo::cur);
-                        }
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
                     }
                 }
                 else if (d->currentStream_ == Audio)
@@ -2815,28 +2797,14 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         if(tv)
                         {
                             const std::string handlerClass = tv->label_;
-                            int32_t j;
-                            for(j=0; j<4; j++)
-                            {
+                            for(int32_t j=0; j<4; j++)
                                 rawHandlerClass[j] = handlerClass[j];
-                            }
-                            io_->write(rawHandlerClass,4);
-                        }
-                        else
-                        {
-                            io_->seek(4,BasicIo::cur);
+                            bDataWritten = writeMultibyte(rawHandlerClass,4);
                         }
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
+
             case HandlerType:
                 if (d->currentStream_ == Video)
                 {
@@ -2847,21 +2815,10 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         if(tv)
                         {
                             const std::string handlerType = tv->label_;
-                            int32_t j;
-                            for(j=0; j<4; j++)
-                            {
+                            for(int32_t j=0; j<4; j++)
                                 rawHandlerType[j] = handlerType[j];
-                            }
-                            io_->write(rawHandlerType,4);
+                            bDataWritten = writeMultibyte(rawHandlerType,4);
                         }
-                        else
-                        {
-                            io_->seek(4,BasicIo::cur);
-                        }
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
                     }
                 }
                 else if (d->currentStream_ == Audio)
@@ -2873,28 +2830,14 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         if(tv)
                         {
                             const std::string handlerType = tv->label_;
-                            int32_t j;
-                            for(j=0; j<4; j++)
-                            {
+                            for(int32_t j=0; j<4; j++)
                                 rawHandlerType[j] = handlerType[j];
-                            }
-                            io_->write(rawHandlerType,4);
-                        }
-                        else
-                        {
-                            io_->seek(4,BasicIo::cur);
+                            bDataWritten = writeMultibyte(rawHandlerType,4);
                         }
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
+
             case HandlerVendorID:
                 if (d->currentStream_ == Video)
                 {
@@ -2905,21 +2848,10 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         if(tv)
                         {
                             const std::string handlerVendorID = tv->label_;
-                            int32_t j;
-                            for(j=0; j<4; j++)
-                            {
+                            for(int32_t j=0; j<4; j++)
                                 rawHandlerVendorID[j] = handlerVendorID[j];
-                            }
-                            io_->write(rawHandlerVendorID,4);
+                            bDataWritten = writeMultibyte(rawHandlerVendorID,4);
                         }
-                        else
-                        {
-                            io_->seek(4,BasicIo::cur);
-                        }
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
                     }
                 }
                 else if (d->currentStream_ == Audio)
@@ -2931,32 +2863,19 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         if(tv)
                         {
                             const std::string handlerVendorID = tv->label_;
-                            int32_t j;
-                            for(j=0; j<4; j++)
-                            {
+                            for(int32_t j=0; j<4; j++)
                                 rawHandlerVendorID[j] = handlerVendorID[j];
-                            }
-                            io_->write(rawHandlerVendorID,4);
-                        }
-                        else
-                        {
-                            io_->seek(4,BasicIo::cur);
+                            bDataWritten = writeMultibyte(rawHandlerVendorID,4);
                         }
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
+
             default:
-                io_->seek(4,BasicIo::cur);
                 break;
             }
+            if(!bDataWritten)
+                io_->seek(4, BasicIo::cur);
         }
         io_->seek(cur_pos + size, BasicIo::beg);
     }
