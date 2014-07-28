@@ -1330,26 +1330,13 @@ void QuickTimeVideo::previewTagDecoder(uint32_t size)
         //Variation
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
         {
-            DataBuf buf((uint32_t)5);
             Exiv2::byte rawPreviewAtomType[4] = {'P','I','C','T'};
             const std::string previewAtomType = xmpData_["Xmp.video.PreviewAtomType"].toString();
-            if(!equalsQTimeTag(buf, "PICT"))
-            {
-                int32_t j;
-                for( j=0; j<4; j++)
-                {
-                    buf.pData_[j] = previewAtomType[j];
-                }
-                io_->write(buf.pData_,4);
-            }
-            else
-            {
-                io_->write(rawPreviewAtomType,4);
-            }
-        }
-        else
-        {
-            io_->seek(4,BasicIo::cur);
+            if(!(previewAtomType.compare("QuickDraw Picture") == 0))
+                for(int32_t j=0; j<4; j++)
+                    rawPreviewAtomType[j] = previewAtomType[j];
+
+            writeMultibyte(rawPreviewAtomType, 4);
         }
         io_->seek(cur_pos + size, BasicIo::beg);
     }
@@ -1384,26 +1371,13 @@ void QuickTimeVideo::keysTagDecoder(uint32_t size)
         //Variation
         if(xmpData_["Xmp.video.PreviewAtomType"].count() >0)
         {
-            DataBuf buf((uint32_t)5);
             Exiv2::byte rawPreviewAtomType[4] = {'P','I','C','T'};
             const std::string previewAtomType = xmpData_["Xmp.video.PreviewAtomType"].toString();
-            int32_t j;
-            for( j=0; j<4; j++)
-            {
-                buf.pData_[j] = previewAtomType[j];
-            }
-            if(!equalsQTimeTag(buf, "PICT"))
-            {
-                io_->write(buf.pData_,4);
-            }
-            else
-            {
-                io_->write(rawPreviewAtomType,4);
-            }
-        }
-        else
-        {
-            io_->seek(4,BasicIo::cur);
+            if(!(previewAtomType.compare("QuickDraw Picture") == 0))
+                for(int32_t j=0; j<4; j++)
+                    rawPreviewAtomType[j] = previewAtomType[j];
+
+            writeMultibyte(rawPreviewAtomType, 4);
         }
         io_->seek(cur_pos + size, BasicIo::beg);
     }
@@ -4242,6 +4216,13 @@ void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, in
     {
         io_->seek((size+skipOffset),BasicIo::cur);
     }
+}
+
+void QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData,int32_t iSize)
+{
+    int32_t iCurrPos = io_->tell();
+    if(io_->write(bRawData, iSize) <= 0)
+        io_->seek(iCurrPos+iSize, BasicIo::beg);
 }
 
 void QuickTimeVideo::writeApertureData(Exiv2::Xmpdatum xmpApertureData, int16_t size, int32_t skipOffset)

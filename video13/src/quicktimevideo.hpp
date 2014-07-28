@@ -288,6 +288,13 @@ private:
     void writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size=2, int32_t skipOffset=0);
 
     /*!
+     * \brief writeMultibyte
+     * \param bRawData
+     * \param size
+     */
+    void writeMultibyte(Exiv2::byte * bRawData, int32_t iSize);
+
+    /*!
            * \brief writeApertureData
            * \param xmpIntData
            * \param size
