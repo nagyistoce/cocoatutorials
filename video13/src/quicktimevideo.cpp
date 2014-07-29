@@ -867,8 +867,8 @@ bool isQuickTimeType (char a, char b, char c, char d){
         if(a == qTimeTags[i][0] && b == qTimeTags[i][1] && c == qTimeTags[i][2] && d == qTimeTags[i][3])
             return true;
     return false;
-}
-}
+}//isQuickTimeType
+}//namespace Internal
 
 }// namespace Internal, Exiv2
 
@@ -924,7 +924,7 @@ public:
          * structure
          */
     std::vector<QuickAtom*> m_QuickSkeleton;
-};
+};//class QuickTimeVideo::Private
 
 QuickTimeVideo::QuickTimeVideo(BasicIo::AutoPtr io)
     : Image(ImageType::qtime, mdNone, io), d(new Private){
@@ -934,7 +934,7 @@ QuickTimeVideo::QuickTimeVideo(BasicIo::AutoPtr io)
 
 QuickTimeVideo::~QuickTimeVideo(){
     delete d;
-}
+}//QuickTimeVideo::~QuickTimeVideo
 
 /*!
  * \brief QuickTimeVideo::findAtomPositions:
@@ -957,7 +957,7 @@ std::vector< pair<uint32_t,uint32_t> > QuickTimeVideo::findAtomPositions(const c
                                              (uint32_t)(d->m_QuickSkeleton[i]->m_AtomSize)));
     }
     return atomsDetails;
-}
+}//QuickTimeVideo::findAtomPositions
 
 std::string QuickTimeVideo::mimeType() const{
     return "video/quicktime";
@@ -971,7 +971,7 @@ void QuickTimeVideo::writeMetadata(){
 
     io_->close();
     return;
-}
+}//QuickTimeVideo::writeMetadata
 
 /*!
  * \brief QuickTimeVideo::doWriteMetadata
@@ -1043,7 +1043,7 @@ void QuickTimeVideo::doWriteMetadata(){
         atomPositions.clear();
     }
     return;
-}
+}//QuickTimeVideo::doWriteMetadata
 
 void QuickTimeVideo::readMetadata(){
     if (io_->open() != 0) throw Error(9, io_->path(), strError());
@@ -1204,8 +1204,7 @@ void QuickTimeVideo::previewTagDecoder(uint32_t size){
     return;
 } // QuickTimeVideo::previewTagDecoder
 
-void QuickTimeVideo::keysTagDecoder(uint32_t size)
-{
+void QuickTimeVideo::keysTagDecoder(uint32_t size){
     DataBuf buf(4);
     uint64_t cur_pos = io_->tell();
 
@@ -1305,8 +1304,7 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size){
     return;
 } // QuickTimeVideo::trackApertureTagDecoder
 
-void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
-{
+void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external){
     uint64_t cur_pos = io_->tell();
     DataBuf buf(50), buf2(4);
     const TagDetails* td;
@@ -3058,7 +3056,7 @@ Image::AutoPtr newQTimeInstance(BasicIo::AutoPtr io, bool /*create*/){
     Image::AutoPtr image(new QuickTimeVideo(io));
     if (!image->good()) image.reset();
     return image;
-}
+}//newQTimeInstance
 
 void QuickTimeVideo::writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size, int32_t skipOffset){
     if(xmpStringData.count() > 0){
@@ -3072,7 +3070,7 @@ void QuickTimeVideo::writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size
         delete[] rawData;
     }
     else io_->seek((size+skipOffset),BasicIo::cur);
-}
+}//writeStringData
 
 void QuickTimeVideo::writeLongData(Exiv2::Xmpdatum xmpIntData, int32_t size, int32_t skipOffset){
     if(xmpIntData.count() > 0){
@@ -3092,7 +3090,14 @@ void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, in
     else io_->seek((size+skipOffset),BasicIo::cur);
 }
 
-//
+/*!
+ * \brief QuickTimeVideo::writeMultibyte Write data directly from acurrent position of basicIo poiter with the bRawData upto size number of bytes
+ *                        and then skips iOffset bytes.
+ * \param bRawData
+ * \param iSize
+ * \param iOffset
+ * \return
+ */
 bool QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int32_t iSize, int32_t iOffset){
     int32_t iCurrPos = io_->tell();
     if (iSize != 0 && bRawData != NULL){
