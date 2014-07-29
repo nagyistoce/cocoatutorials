@@ -857,9 +857,7 @@ namespace Exiv2
         buf.pData_[n] = '\0';
         int32_t i;
         for(i = n - 1; i >= 0; i--)
-        {
             buf.pData_[i] = (Exiv2::byte)(int16_t) ((int32_t)(intValue / (int32_t)pow(256.0,n-i-1)) % 256);
-        }
         return buf;
     }
     /*!
@@ -895,9 +893,7 @@ namespace Exiv2
         DataBuf buf((uint32_t)(n+1));
         buf.pData_[n] = '\0';
         for(int32_t i = n - 1; i >= 0; i--)
-        {
             buf.pData_[i] = (Exiv2::byte)(uint16_t) ((int32_t)(intValue / (int32_t)pow(256.0,n-i-1)) % 256);
-        }
         return buf;
     }
     /*!
@@ -998,10 +994,8 @@ std::vector< pair<uint32_t,uint32_t> > QuickTimeVideo::findAtomPositions(const c
         io_->seek((d->m_QuickSkeleton[i]->m_AtomLocation - 4),BasicIo::beg);
         io_->read(hdrId.pData_,4);
         if(equalsQTimeTag(hdrId,atomId))
-        {
             atomsDetails.push_back(make_pair((uint32_t)io_->tell(),
                                              (uint32_t)(d->m_QuickSkeleton[i]->m_AtomSize)));
-        }
     }
     return atomsDetails;
 }
@@ -1014,9 +1008,7 @@ std::string QuickTimeVideo::mimeType() const
 void QuickTimeVideo::writeMetadata()
 {
     if (io_->open() != 0)
-    {
         throw Error(9, io_->path(), strError());
-    }
     IoCloser closer(*io_);
     doWriteMetadata();
 
@@ -1033,9 +1025,7 @@ void QuickTimeVideo::writeMetadata()
 void QuickTimeVideo::doWriteMetadata()
 {
     if (!io_->isopen())
-    {
         throw Error(20);
-    }
     // Ensure that this is the correct image type
     if (!isQTimeType(*io_, false))
     {
@@ -1125,9 +1115,7 @@ void QuickTimeVideo::readMetadata()
     xmpData_["Xmp.video.MimeType"] = mimeType();
 
     while (d->continueTraversing_)
-    {
         decodeBlock();
-    }
     aspectRatio();
     return;
 } // QuickTimeVideo::readMetadata
@@ -1967,8 +1955,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawPictureControlAdjust, 1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.PictureControlQuickAdjust"].count() >0)
@@ -1983,8 +1970,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawPictureControlQuickAdjust,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.Sharpness"].count() >0)
@@ -1999,8 +1985,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawSharpness,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.Contrast"].count() >0)
@@ -2015,8 +2000,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawContrast,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.Brightness"].count() >0)
@@ -2031,8 +2015,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawBrightness,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.Saturation"].count() >0)
@@ -2047,8 +2030,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawSaturation,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.HueAdjustment"].count() >0)
@@ -2056,8 +2038,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     Exiv2::byte rawHueAdjustment = (Exiv2::byte)xmpData_["Xmp.video.HueAdjustment"].toString()[0];
                     bDataWriten = writeMultibyte(&rawHueAdjustment,1);
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.FilterEffect"].count() >0)
@@ -2072,8 +2053,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawFilterEffect,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.ToningEffect"].count() >0)
@@ -2088,8 +2068,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawToningEffect,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.ToningSaturation"].count() >0)
@@ -2120,8 +2099,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                         bDataWriten = writeMultibyte(&rawDayLightSavings,1);
                     }
                 }
-                if(!bDataWriten)
-                    io_->seek(1,BasicIo::cur);
+                if(!bDataWriten) io_->seek(1,BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.video.DateDisplayFormat"].count() >0)
@@ -2155,37 +2133,23 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                 }
                 else
                 {
-                    if(td && (xmpData_[exvGettext(td->label_)].count() >0))
-                        writeStringData(xmpData_[exvGettext(td->label_)],dataLength);
-                    else
-                        io_->seek(dataLength,BasicIo::cur);
+                    if(td && (xmpData_[exvGettext(td->label_)].count() >0)) writeStringData(xmpData_[exvGettext(td->label_)],dataLength);
+                    else io_->seek(dataLength,BasicIo::cur);
                 }
             }
             else if(dataType == 4) // what is 4?  would it be better to have an enum with a name for each dataType?
             {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 4;
-                if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
-                {
-                    writeLongData(xmpData_[exvGettext(td->label_)],4,dataLength-4);
-                }
-                else
-                {
-                    io_->seek(dataLength,BasicIo::cur);
-                }
+                if(td && (xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200)) writeLongData(xmpData_[exvGettext(td->label_)],4,dataLength-4);
+                else io_->seek(dataLength,BasicIo::cur);
             }
             else if(dataType == 3)
             {
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 2);
-                if(td &&(xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200))
-                {
-                    writeShortData(xmpData_[exvGettext(td->label_)],2,dataLength-2);
-                }
-                else
-                {
-                    io_->seek(dataLength,BasicIo::cur);
-                }
+                if(td &&(xmpData_[exvGettext(td->label_)].count() >0) && (dataLength < 200)) writeShortData(xmpData_[exvGettext(td->label_)],2,dataLength-2);
+                else io_->seek(dataLength,BasicIo::cur);
             }
             else if(dataType == 5)
             {
@@ -2201,10 +2165,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     io_->write((Exiv2::byte*)&tagData,4);
                     io_->seek((dataLength-4),BasicIo::cur);
                 }
-                else
-                {
-                    io_->seek(dataLength,BasicIo::cur);
-                }
+                else io_->seek(dataLength,BasicIo::cur);
             }
             else if(dataType == 8)
             {
@@ -2217,10 +2178,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external)
                     io_->write((Exiv2::byte*)&dataEight[1],2);
                     io_->seek(dataLength - 4,BasicIo::cur);
                 }
-                else
-                {
-                    io_->seek(dataLength - 4,BasicIo::cur);
-                }
+                else io_->seek(dataLength - 4,BasicIo::cur);
             }
         }
         io_->seek(cur_pos + size_external, BasicIo::beg);
@@ -2241,14 +2199,10 @@ void QuickTimeVideo::setMediaStream()
             io_->seek(8,BasicIo::cur);
             io_->read(buf.pData_, 4);
 
-            if (equalsQTimeTag(buf, "vide"))
-                d->currentStream_ = Video;
-            else if(equalsQTimeTag(buf, "soun"))
-                d->currentStream_ = Audio;
-            else if (equalsQTimeTag(buf, "hint"))
-                d->currentStream_ = Hint;
-            else
-                d->currentStream_ = GenMediaHeader;
+            if (equalsQTimeTag(buf, "vide")) d->currentStream_ = Video;
+            else if(equalsQTimeTag(buf, "soun")) d->currentStream_ = Audio;
+            else if (equalsQTimeTag(buf, "hint")) d->currentStream_ = Hint;
+            else d->currentStream_ = GenMediaHeader;
             break;
         }
     }
@@ -2273,16 +2227,11 @@ void QuickTimeVideo::timeToSampleDecoder()
         timeOfFrames += temp * returnBufValue(buf);
     }
     if(!d->m_modifyMetadata)
-    {
-        if (d->currentStream_ == Video)
-            xmpData_["Xmp.video.FrameRate"] = (double)totalframes * (double)d->timeScale_ / (double)timeOfFrames;
-    }
-    else
-    {
-        if(xmpData_["Xmp.video.FrameRate"].count() >0)
-        {//TODO:implement write
-        }
-    }
+        if (d->currentStream_ == Video) xmpData_["Xmp.video.FrameRate"] = (double)totalframes * (double)d->timeScale_ / (double)timeOfFrames;
+        else
+            if(xmpData_["Xmp.video.FrameRate"].count() >0)
+            {//TODO:implement write
+            }
     return;
 } // QuickTimeVideo::timeToSampleDecoder
 
@@ -2297,10 +2246,8 @@ void QuickTimeVideo::sampleDesc(uint32_t  size)
     uint32_t i;
     for(i = 1; i <= noOfEntries; i++)
     {
-        if (d->currentStream_ == Video)
-            imageDescDecoder();
-        else if (d->currentStream_ == Audio)
-            audioDescDecoder();
+        if (d->currentStream_ == Video) imageDescDecoder();
+        else if (d->currentStream_ == Audio) audioDescDecoder();
     }
     io_->seek(cur_pos + size, BasicIo::beg);
     return;
@@ -2326,23 +2273,24 @@ void QuickTimeVideo::audioDescDecoder()
             {
             case AudioFormat:
                 td = find(qTimeFileType, Exiv2::toString( buf.pData_));
-                if(td)
-                    xmpData_["Xmp.audio.Compressor"] = exvGettext(td->label_);
-                else
-                    xmpData_["Xmp.audio.Compressor"] = Exiv2::toString( buf.pData_);
+                if(td) xmpData_["Xmp.audio.Compressor"] = exvGettext(td->label_);
+                else xmpData_["Xmp.audio.Compressor"] = Exiv2::toString( buf.pData_);
                 break;
+
             case AudioVendorID:
                 td = find(vendorIDTags, Exiv2::toString( buf.pData_));
-                if(td)
-                    xmpData_["Xmp.audio.VendorID"] = exvGettext(td->label_);
+                if(td) xmpData_["Xmp.audio.VendorID"] = exvGettext(td->label_);
                 break;
+
             case AudioChannels:
                 xmpData_["Xmp.audio.ChannelType"] = returnBufValue(buf, 2);
                 xmpData_["Xmp.audio.BitsPerSample"] = (buf.pData_[2] * 256 + buf.pData_[3]);
                 break;
+
             case AudioSampleRate:
                 xmpData_["Xmp.audio.SampleRate"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
                 break;
+
             default:
                 break;
             }
@@ -2400,8 +2348,7 @@ void QuickTimeVideo::audioDescDecoder()
                     rawBuf = returnBuf((int64_t)xmpData_["Xmp.audio.ChannelType"].toLong(),2);
                     bDataWriten = writeMultibyte(rawBuf.pData_, 2);
                 }
-                if(!bDataWriten)
-                    io_->seek(2, BasicIo::cur);
+                if(!bDataWriten) io_->seek(2, BasicIo::cur);
                 bDataWriten = false;
 
                 if(xmpData_["Xmp.audio.BitsPerSample"].count() >0)
@@ -2410,8 +2357,7 @@ void QuickTimeVideo::audioDescDecoder()
                     rawBuf = returnBuf((int64_t)xmpData_["Xmp.audio.BitsPerSample"].toLong(),2);
                     bDataWriten = writeMultibyte(rawBuf.pData_,2);
                 }
-                if(!bDataWriten)
-                    io_->seek(2, BasicIo::cur);
+                if(!bDataWriten) io_->seek(2, BasicIo::cur);
                 bDataWriten = true;
                 break;
 
@@ -2428,13 +2374,11 @@ void QuickTimeVideo::audioDescDecoder()
                 }
                 break;
 
-            default:
-                io_->seek(4,BasicIo::cur);
+            default: io_->seek(4,BasicIo::cur);
                 bDataWriten = true;
                 break;
             }
-            if(!bDataWriten)
-                io_->seek(4, BasicIo::cur);
+            if(!bDataWriten) io_->seek(4, BasicIo::cur);
         }
         io_->seek(static_cast<int32_t>(size % 4),BasicIo::cur);
     }
@@ -2460,35 +2404,21 @@ void QuickTimeVideo::imageDescDecoder()
 
             switch(i)
             {
-            case codec:
-                td = find(qTimeFileType, Exiv2::toString( buf.pData_));
-                if(td)
-                    xmpData_["Xmp.video.Codec"] = exvGettext(td->label_);
-                else
-                    xmpData_["Xmp.video.Codec"] = Exiv2::toString( buf.pData_);
+            case codec: td = find(qTimeFileType, Exiv2::toString( buf.pData_));
+                if(td) xmpData_["Xmp.video.Codec"] = exvGettext(td->label_);
+                else xmpData_["Xmp.video.Codec"] = Exiv2::toString( buf.pData_);
                 break;
-            case VendorID:
-                td = find(vendorIDTags, Exiv2::toString( buf.pData_));
-                if(td)
-                    xmpData_["Xmp.video.VendorID"] = exvGettext(td->label_);
+            case VendorID: td = find(vendorIDTags, Exiv2::toString( buf.pData_));
+                if(td) xmpData_["Xmp.video.VendorID"] = exvGettext(td->label_);
                 break;
-            case SourceImageWidth_Height:
-                xmpData_["Xmp.video.SourceImageWidth"] = returnBufValue(buf, 2);
-                xmpData_["Xmp.video.SourceImageHeight"] = (buf.pData_[2] * 256 + buf.pData_[3]);
-                break;
-            case XResolution:
-                xmpData_["Xmp.video.XResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-                break;
-            case YResolution:
-                xmpData_["Xmp.video.YResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
-                io_->read(buf.pData_, 3); size -= 3;
-                break;
-            case CompressorName:
-                io_->read(buf.pData_, 32); size -= 32;
-                xmpData_["Xmp.video.Compressor"] = Exiv2::toString( buf.pData_);
-                break;
-            default:
-                break;
+            case SourceImageWidth_Height: xmpData_["Xmp.video.SourceImageWidth"] = returnBufValue(buf, 2);
+                xmpData_["Xmp.video.SourceImageHeight"] = (buf.pData_[2] * 256 + buf.pData_[3]); break;
+            case XResolution: xmpData_["Xmp.video.XResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01); break;
+            case YResolution: xmpData_["Xmp.video.YResolution"] = returnBufValue(buf, 2) + ((buf.pData_[2] * 256 + buf.pData_[3]) * 0.01);
+                io_->read(buf.pData_, 3); size -= 3; break;
+            case CompressorName: io_->read(buf.pData_, 32); size -= 32;
+                xmpData_["Xmp.video.Compressor"] = Exiv2::toString( buf.pData_); break;
+            default: break;
             }
         }
         io_->read(buf.pData_, static_cast<int32_t>(size % 4));
@@ -2548,8 +2478,7 @@ void QuickTimeVideo::imageDescDecoder()
                     DataBuf imageWidth = returnBuf((int64_t)xmpData_["Xmp.video.SourceImageWidth"].toLong(),2);
                     bDataWritten = writeMultibyte(imageWidth.pData_,2);
                 }
-                if(!bDataWritten)
-                    io_->seek(2,BasicIo::cur);
+                if(!bDataWritten) io_->seek(2,BasicIo::cur);
                 bDataWritten = false;
 
                 if(xmpData_["Xmp.video.SourceImageHeight"].count() >0)
@@ -2558,8 +2487,7 @@ void QuickTimeVideo::imageDescDecoder()
                                                      xmpData_["Xmp.video.SourceImageHeight"].toLong()/65536)*65536));
                     bDataWritten = writeMultibyte(imageHeight.pData_,2);
                 }
-                if(!bDataWritten)
-                    io_->seek(2,BasicIo::cur);
+                if(!bDataWritten) io_->seek(2,BasicIo::cur);
                 bDataWritten = true;
                 break;
 
@@ -2583,8 +2511,7 @@ void QuickTimeVideo::imageDescDecoder()
                     io_->seek(4,BasicIo::cur);
                     bDataWritten = writeMultibyte(rawCompressor,32);
                 }
-                else
-                    io_->seek(36,BasicIo::cur);
+                else io_->seek(36,BasicIo::cur);
                 size -= 32;
                 bDataWritten = true;
                 break;
@@ -2592,8 +2519,7 @@ void QuickTimeVideo::imageDescDecoder()
             default:
                 break;
             }
-            if(!bDataWritten)
-                io_->seek(4,BasicIo::cur);
+            if(!bDataWritten) io_->seek(4,BasicIo::cur);
         }
         if(xmpData_["Xmp.video.BitDepth"].count() > 0)
         {
@@ -2616,8 +2542,7 @@ void QuickTimeVideo::multipleEntriesDecoder()
     noOfEntries = returnUnsignedBufValue(buf);
 
     uint32_t i;
-    for( i = 1; i <= noOfEntries; i++)
-        decodeBlock();
+    for( i = 1; i <= noOfEntries; i++) decodeBlock();
     return;
 } // QuickTimeVideo::multipleEntriesDecoder
 
@@ -2642,14 +2567,9 @@ void QuickTimeVideo::videoHeaderDecoder(uint32_t size)
             {
             case GraphicsMode:
                 td = find(graphicsModetags, returnBufValue(buf,2));
-                if(td)
-                    xmpData_["Xmp.video.GraphicsMode"] = exvGettext(td->label_);
-                break;
-            case OpColor:
-                xmpData_["Xmp.video.OpColor"] = returnBufValue(buf,2);
-                break;
-            default:
-                break;
+                if(td) xmpData_["Xmp.video.GraphicsMode"] = exvGettext(td->label_); break;
+            case OpColor: xmpData_["Xmp.video.OpColor"] = returnBufValue(buf,2); break;
+            default: break;
             }
         }
         io_->read(buf.pData_, size % 2);
@@ -2677,7 +2597,6 @@ void QuickTimeVideo::videoHeaderDecoder(uint32_t size)
                     }
                 }
                 break;
-
             case OpColor:
                 if(xmpData_["Xmp.video.OpColor"].count() >0)
                 {
@@ -2688,12 +2607,9 @@ void QuickTimeVideo::videoHeaderDecoder(uint32_t size)
                     bDataWritten = writeMultibyte(rawOpColor.pData_,2);
                 }
                 break;
-
-            default:
-                break;
+            default: break;
             }
-            if(!bDataWritten)
-                io_->seek(2,BasicIo::cur);
+            if(!bDataWritten) io_->seek(2,BasicIo::cur);
         }
         io_->seek(size % 2,BasicIo::cur);
     }
@@ -2748,8 +2664,7 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                         xmpData_["Xmp.audio.HandlerVendorID"] = exvGettext(tv->label_);
                 }
                 break;
-            default:
-                break;
+            default: break;
             }
         }
         io_->seek(cur_pos + size, BasicIo::beg);
@@ -2804,7 +2719,6 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                     }
                 }
                 break;
-
             case HandlerType:
                 if (d->currentStream_ == Video)
                 {
@@ -2837,7 +2751,6 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                     }
                 }
                 break;
-
             case HandlerVendorID:
                 if (d->currentStream_ == Video)
                 {
@@ -2870,12 +2783,9 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
                     }
                 }
                 break;
-
-            default:
-                break;
+            default: break;
             }
-            if(!bDataWritten)
-                io_->seek(4, BasicIo::cur);
+            if(!bDataWritten) io_->seek(4, BasicIo::cur);
         }
         io_->seek(cur_pos + size, BasicIo::beg);
     }
@@ -2899,18 +2809,10 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
             td = find(qTimeFileType, Exiv2::toString( buf.pData_));
             switch(i)
             {
-            case 0:
-                if(td)
-                    xmpData_["Xmp.video.MajorBrand"] = exvGettext(td->label_);
-                break;
-            case 1:
-                xmpData_["Xmp.video.MinorVersion"] = returnBufValue(buf);
-                break;
-            default:
-                if(td)
-                    v->read(exvGettext(td->label_));
-                else
-                    v->read(Exiv2::toString(buf.pData_));
+            case 0: if(td) xmpData_["Xmp.video.MajorBrand"] = exvGettext(td->label_); break;
+            case 1: xmpData_["Xmp.video.MinorVersion"] = returnBufValue(buf); break;
+            default: if(td) v->read(exvGettext(td->label_));
+                else v->read(Exiv2::toString(buf.pData_));
                 break;
             }
             xmpData_.add(Exiv2::XmpKey("Xmp.video.CompatibleBrands"), v.get());
@@ -2939,7 +2841,6 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
                     bDataWritten = writeMultibyte(rawMajorBrand,4);
                 }
                 break;
-
             case 1:
                 if(xmpData_["Xmp.video.MinorVersion"].count() >0)
                 {
@@ -2947,7 +2848,6 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
                     bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
-
             default:
                 if(xmpData_["Xmp.video.CompatibleBrands"].count() >0)
                 {
@@ -2969,8 +2869,7 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
                 }
                 break;
             }
-            if(!bDataWritten)
-                io_->seek(4, BasicIo::cur);
+            if(!bDataWritten) io_->seek(4, BasicIo::cur);
             io_->seek(size%4,BasicIo::cur);
         }
     }
@@ -3053,8 +2952,7 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                 }
                 break;
 
-            default:
-                break;
+            default: break;
             }
         }
         io_->read(buf.pData_, size%4);
@@ -3087,7 +2985,6 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                     }
                 }
                 break;
-
             case MediaCreateDate:
                 //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
                 if(d->currentStream_ == Video)
@@ -3107,7 +3004,6 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                     }
                 }
                 break;
-
             case MediaModifyDate:
                 //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
                 if(d->currentStream_ == Video)
@@ -3127,7 +3023,6 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                     }
                 }
                 break;
-
             case MediaTimeScale:
                 if(d->currentStream_ == Video)
                 {
@@ -3135,7 +3030,7 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                     {
                         buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaTimeScale"].toLong());
                         bDataWritten = writeMultibyte(buf.pData_, 4, -4);
-                     }
+                    }
                     bDataWritten = true;
                 }
                 else if (d->currentStream_ == Audio)
@@ -3148,7 +3043,6 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                     bDataWritten = true;
                 }
                 break;
-
             case MediaDuration:
                 if(d->currentStream_ == Video)
                 {
@@ -3186,7 +3080,6 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                     time_scale = returnBufValue(buf);
                 }
                 break;
-
             case MediaLanguageCode:
                 if(d->currentStream_ == Video)
                 {
@@ -3199,18 +3092,15 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                             bDataWritten = writeMultibyte(buf.pData_,2);
                         }
                     }
-                    if(!bDataWritten)
-                        io_->seek(2,BasicIo::cur);
+                    if(!bDataWritten) io_->seek(2,BasicIo::cur);
                     bDataWritten = false;
-
                     if(xmpData_["Xmp.video.Quality"].count() >0)
                     {
                         buf = returnBuf((uint64_t)xmpData_["Xmp.video.Quality"].toLong(),2);
                         bDataWritten = writeMultibyte(&buf.pData_[1],1);
                         bDataWritten = writeMultibyte(&buf.pData_[0],1);
                     }
-                    if(!bDataWritten)
-                        io_->seek(2,BasicIo::cur);
+                    if(!bDataWritten) io_->seek(2,BasicIo::cur);
                     bDataWritten = true;
                 }
                 else if (d->currentStream_ == Audio)
@@ -3224,8 +3114,7 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                             bDataWritten = writeMultibyte(buf.pData_,2);
                         }
                     }
-                    if(!bDataWritten)
-                        io_->seek(2,BasicIo::cur);
+                    if(!bDataWritten) io_->seek(2,BasicIo::cur);
                     bDataWritten = false;
 
                     if(xmpData_["Xmp.audio.Quality"].count() >0)
@@ -3235,16 +3124,12 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size)
                         bDataWritten = writeMultibyte(&buf.pData_[0],1);
                     }
                 }
-                if(!bDataWritten)
-                    io_->seek(2,BasicIo::cur);
+                if(!bDataWritten) io_->seek(2,BasicIo::cur);
                 bDataWritten = true;
                 break;
-
-            default:
-                break;
+            default: break;
             }
-            if(!bDataWritten)
-                io_->seek(4, BasicIo::cur);
+            if(!bDataWritten) io_->seek(4, BasicIo::cur);
         }
         io_->seek(size%4,BasicIo::cur);
     }
@@ -3294,24 +3179,18 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     xmpData_["Xmp.audio.TrackID"] = returnBufValue(buf);
                 break;
             case TrackDuration:
-                if(d->currentStream_ == Video)
-                    xmpData_["Xmp.video.TrackDuration"] = (int64_t)((double)returnBufValue(buf)
-                                                                    *1000/(double)d->timeScale_);
-                else if(d->currentStream_ == Audio)
-                    xmpData_["Xmp.audio.TrackDuration"] = (int64_t)((double)returnBufValue(buf)
-                                                                    *1000/(double)d->timeScale_);
+                if(d->currentStream_ == Video) xmpData_["Xmp.video.TrackDuration"] = (int64_t)((double)returnBufValue(buf)
+                                                                                               *1000/(double)d->timeScale_);
+                else if(d->currentStream_ == Audio) xmpData_["Xmp.audio.TrackDuration"] = (int64_t)((double)returnBufValue(buf)
+                                                                                                    *1000/(double)d->timeScale_);
                 break;
             case TrackLayer:
-                if(d->currentStream_ == Video)
-                    xmpData_["Xmp.video.TrackLayer"] = returnBufValue(buf, 2);
-                else if(d->currentStream_ == Audio)
-                    xmpData_["Xmp.audio.TrackLayer"] = returnBufValue(buf, 2);
+                if(d->currentStream_ == Video) xmpData_["Xmp.video.TrackLayer"] = returnBufValue(buf, 2);
+                else if(d->currentStream_ == Audio) xmpData_["Xmp.audio.TrackLayer"] = returnBufValue(buf, 2);
                 break;
             case TrackVolume:
-                if(d->currentStream_ == Video)
-                    xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 2)/2);//128=100%;
-                else if(d->currentStream_ == Audio)
-                    xmpData_["Xmp.audio.TrackVolume"] = (returnBufValue(buf, 2)/2);//;
+                if(d->currentStream_ == Video) xmpData_["Xmp.video.TrackVolume"] = (returnBufValue(buf, 2)/2);//128=100%;
+                else if(d->currentStream_ == Audio) xmpData_["Xmp.audio.TrackVolume"] = (returnBufValue(buf, 2)/2);//;
                 break;
             case ImageWidth:
                 if(d->currentStream_ == Video)
@@ -3329,17 +3208,16 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     d->height_ = temp;
                 }
                 break;
-            default:
-                break;
+            default: break;
             }
         }
         io_->read(buf.pData_, size%4);
     }
     else
     {
-        int32_t i;
-        for (i = 0; size/4 != 0  ; size -=4, i++)
+        for (int32_t i = 0; size/4 != 0  ; size -=4, i++)
         {
+            bool bDataWritten = false;
             switch(i)
             {
             case TrackHeaderVersion:
@@ -3349,12 +3227,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackHeaderVersion = xmpData_["Xmp.video.TrackHeaderVersion"].toLong();
                         buf = returnBuf(trackHeaderVersion);
-                        io_->write(&buf.pData_[3],1);
-                        io_->seek(3,BasicIo::cur);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(&buf.pData_[3], 1, 3);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3363,17 +3236,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackHeaderVersion = xmpData_["Xmp.audio.TrackHeaderVersion"].toLong();
                         buf = returnBuf(trackHeaderVersion,1);
-                        io_->write(buf.pData_,1);
-                        io_->seek(3,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_, 1, 3);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackCreateDate:
@@ -3384,11 +3248,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackCreateDate = xmpData_["Xmp.video.TrackCreateDate"].toLong();
                         buf = returnUnsignedBuf(trackCreateDate);
-                        io_->write(buf.pData_,4);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3397,16 +3257,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackCreateDate = xmpData_["Xmp.audio.TrackCreateDate"].toLong();
                         buf = returnUnsignedBuf(trackCreateDate);
-                        io_->write(buf.pData_,4);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackModifyDate:
@@ -3417,11 +3269,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackModifyDate = xmpData_["Xmp.video.TrackModifyDate"].toLong();
                         buf = returnUnsignedBuf(trackModifyDate);
-                        io_->write(buf.pData_,4);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3430,16 +3278,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackModifyDate = xmpData_["Xmp.audio.TrackModifyDate"].toLong();
                         buf = returnUnsignedBuf(trackModifyDate);
-                        io_->write(buf.pData_,4);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackID:
@@ -3449,11 +3289,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackID = xmpData_["Xmp.video.TrackID"].toLong();
                         buf = returnBuf(trackID);
-                        io_->write(buf.pData_,4);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3462,16 +3298,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackID = xmpData_["Xmp.audio.TrackID"].toLong();
                         buf = returnBuf(trackID);
-                        io_->write(buf.pData_,4);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackDuration:
@@ -3482,11 +3310,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                         int64_t trackDuration= (int64_t)((double)xmpData_["Xmp.video.TrackDuration"].
                                 toLong()*(double)d->timeScale_/1000);
                         buf = returnBuf(trackDuration);
-                        io_->write(buf.pData_,4);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3496,16 +3320,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                         int64_t trackDuration= (int64_t)((double)xmpData_["Xmp.audio.TrackDuration"].
                                 toLong()*(double)d->timeScale_/1000);
                         buf = returnBuf(trackDuration);
-                        io_->write(buf.pData_,4);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackLayer:
@@ -3515,12 +3331,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackLayer = xmpData_["Xmp.video.TrackLayer"].toLong();
                         buf = returnBuf(trackLayer,2);
-                        io_->write(buf.pData_,2);
-                        io_->seek(2,BasicIo::cur);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3529,17 +3340,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackLayer = xmpData_["Xmp.audio.TrackLayer"].toLong();
                         buf = returnBuf(trackLayer,2);
-                        io_->write(buf.pData_,2);
-                        io_->seek(2,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case TrackVolume:
@@ -3549,12 +3351,7 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackVolume = (int64_t)(xmpData_["Xmp.video.TrackVolume"].toLong()*2);
                         buf = returnBuf(trackVolume,2);
-                        io_->write(buf.pData_,2);
-                        io_->seek(2,BasicIo::cur);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
                     }
                 }
                 else if(d->currentStream_ == Audio)
@@ -3563,17 +3360,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t trackVolume = (int64_t)(xmpData_["Xmp.audio.TrackVolume"].toLong()*2);
                         buf = returnBuf(trackVolume,2);
-                        io_->write(buf.pData_,2);
-                        io_->seek(2,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case ImageWidth:
@@ -3583,16 +3371,8 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t width = xmpData_["Xmp.video.Width"].toLong()*(256*256);
                         buf = returnBuf(width);
-                        io_->write(buf.pData_,4);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
-                    }
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
                 }
                 break;
             case ImageHeight:
@@ -3602,22 +3382,13 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
                     {
                         int64_t Height = xmpData_["Xmp.video.Height"].toLong()*(256*256);
                         buf = returnBuf(Height);
-                        io_->write(buf.pData_,4);
-                    }
-                    else
-                    {
-                        io_->seek(4,BasicIo::cur);
+                        bDataWritten = writeMultibyte(buf.pData_,4);
                     }
                 }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
-                }
                 break;
-            default:
-                io_->seek(4,BasicIo::cur);
-                break;
+            default: break;
             }
+            if(!bDataWritten) io_->seek(4,BasicIo::cur);
         }
         io_->read(buf.pData_, size%4);
     }
@@ -3638,51 +3409,36 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
             io_->read(buf.pData_, 4);
             switch(i)
             {
-            case MovieHeaderVersion:
-                xmpData_["Xmp.video.MovieHeaderVersion"] = returnBufValue(buf,1); break;
-            case CreateDate:
-                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+            case MovieHeaderVersion: xmpData_["Xmp.video.MovieHeaderVersion"] = returnBufValue(buf,1); break;
+            case CreateDate: //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
                 xmpData_["Xmp.video.DateUTC"] = returnUnsignedBufValue(buf); break;
-            case ModifyDate:
-                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+            case ModifyDate: //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
                 xmpData_["Xmp.video.ModificationDate"] = returnUnsignedBufValue(buf); break;
-            case TimeScale:
-                xmpData_["Xmp.video.TimeScale"] = returnBufValue(buf);
+            case TimeScale: xmpData_["Xmp.video.TimeScale"] = returnBufValue(buf);
                 d->timeScale_ = returnBufValue(buf); break;
-            case Duration:
-                xmpData_["Xmp.video.Duration"] = (int64_t)((double)returnBufValue(buf)*
-                                                           (double)1000/ (double)d->timeScale_); break;
-            case PreferredRate:
-                xmpData_["Xmp.video.PreferredRate"] = returnBufValue(buf, 4)/(256*256); break;
-            case PreferredVolume:
-                xmpData_["Xmp.video.PreferredVolume"] = (returnUnsignedBufValue(buf, 2)/2); break;
-            case PreviewTime:
-                xmpData_["Xmp.video.PreviewTime"] = (int64_t)((double)returnBufValue(buf)*
-                                                              (double)1000/ (double)d->timeScale_); break;
-            case PreviewDuration:
-                xmpData_["Xmp.video.PreviewDuration"] = (int64_t)((double)returnBufValue(buf)
-                                                                  *(double)1000/ (double)d->timeScale_); break;
-            case PosterTime:
-                xmpData_["Xmp.video.PosterTime"] = returnBufValue(buf); break;
-            case SelectionTime:
-                xmpData_["Xmp.video.SelectionTime"] = returnBufValue(buf); break;
-            case SelectionDuration:
-                xmpData_["Xmp.video.SelectionDuration"] = returnBufValue(buf)*1000/ d->timeScale_; break;
-            case CurrentTime:
-                xmpData_["Xmp.video.CurrentTime"] = returnBufValue(buf); break;
-            case NextTrackID:
-                xmpData_["Xmp.video.NextTrackID"] = returnBufValue(buf); break;
-            default:
-                break;
+            case Duration: xmpData_["Xmp.video.Duration"] = (int64_t)((double)returnBufValue(buf)*
+                                                                      (double)1000/ (double)d->timeScale_); break;
+            case PreferredRate: xmpData_["Xmp.video.PreferredRate"] = returnBufValue(buf, 4)/(256*256); break;
+            case PreferredVolume: xmpData_["Xmp.video.PreferredVolume"] = (returnUnsignedBufValue(buf, 2)/2); break;
+            case PreviewTime: xmpData_["Xmp.video.PreviewTime"] = (int64_t)((double)returnBufValue(buf)*
+                                                                            (double)1000/ (double)d->timeScale_); break;
+            case PreviewDuration: xmpData_["Xmp.video.PreviewDuration"] = (int64_t)((double)returnBufValue(buf)
+                                                                                    *(double)1000/ (double)d->timeScale_); break;
+            case PosterTime: xmpData_["Xmp.video.PosterTime"] = returnBufValue(buf); break;
+            case SelectionTime: xmpData_["Xmp.video.SelectionTime"] = returnBufValue(buf); break;
+            case SelectionDuration: xmpData_["Xmp.video.SelectionDuration"] = returnBufValue(buf)*1000/ d->timeScale_; break;
+            case CurrentTime: xmpData_["Xmp.video.CurrentTime"] = returnBufValue(buf); break;
+            case NextTrackID: xmpData_["Xmp.video.NextTrackID"] = returnBufValue(buf); break;
+            default: break;
             }
         }
         io_->read(buf.pData_, size%4);
     }
     else
     {
-        int32_t i;
-        for (i = 0; size/4 != 0 ; size -=4, i++)
+        for (int32_t i = 0; size/4 != 0 ; size -=4, i++)
         {
+            bool bDataWritten = false;
             std::memset(buf.pData_, 0x0, buf.size_);
             switch(i)
             {
@@ -3693,12 +3449,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     int64_t movieHeaderVersion  = (int64_t)xmpData_["Xmp.video.MovieHeaderVersion"].toLong();
                     buf = returnBuf(movieHeaderVersion,1);
-                    io_->write(&buf.pData_[0],1);
-                    io_->seek(3,BasicIo::cur);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(&buf.pData_[0], 1, 3);
                 }
                 break;
             case CreateDate:
@@ -3706,11 +3457,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     uint64_t dateUTC  = (uint64_t)xmpData_["Xmp.video.DateUTC"].toLong();
                     buf = returnUnsignedBuf(dateUTC);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case ModifyDate:
@@ -3718,11 +3465,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     uint64_t modificationDate  = (uint64_t)xmpData_["Xmp.video.ModificationDate"].toLong();
                     buf = returnUnsignedBuf(modificationDate);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case TimeScale:
@@ -3733,12 +3476,13 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                     io_->seek(-4,BasicIo::cur);
                     int64_t tmpTimeScale  = (int64_t)xmpData_["Xmp.video.TimeScale"].toLong();
                     buf = returnBuf(tmpTimeScale);
-                    io_->write(buf.pData_,4);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 else
                 {
                     io_->read(buf.pData_,4);
                     d->timeScale_ = returnBufValue(buf);
+                    bDataWritten = true;
                 }
                 break;
             case Duration:
@@ -3747,11 +3491,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                     int64_t duration  = (int64_t)((double)xmpData_["Xmp.video.Duration"].
                             toLong()*(double)d->timeScale_/(double)1000);
                     buf = returnBuf(duration);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case PreferredRate:
@@ -3759,11 +3499,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     buf = returnBuf((int64_t)xmpData_["Xmp.video.PreferredRate"].toLong()
                             *(256*256),4);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case PreferredVolume:
@@ -3772,12 +3508,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                     uint64_t preferredVolume  = (uint64_t)(xmpData_["Xmp.video.PreferredVolume"]
                             .toLong()*2);//128 = 100%
                     buf = returnBuf(preferredVolume,2);
-                    io_->write(buf.pData_,2);
-                    io_->seek(2,BasicIo::cur);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_, 2, 2);
                 }
                 break;
             case PreviewTime:
@@ -3786,11 +3517,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                     int64_t previewTime  = (int64_t)((double)xmpData_["Xmp.video.PreviewTime"].toLong()
                             *(double)d->timeScale_/(double)1000);//1024=  1 second
                     buf = returnBuf(previewTime);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case PreviewDuration:
@@ -3799,11 +3526,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                     int64_t previewDuration  = (int64_t)((double)xmpData_["Xmp.video.PreviewDuration"]
                             .toLong()*(double)d->timeScale_/(double)1000);
                     buf = returnBuf(previewDuration);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case PosterTime:
@@ -3811,11 +3534,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     int64_t posterTime  = (int64_t)xmpData_["Xmp.video.PosterTime"].toLong();
                     buf = returnBuf(posterTime);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case SelectionTime:
@@ -3823,11 +3542,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     int64_t selectionTime  = (int64_t)xmpData_["Xmp.video.SelectionTime"].toLong();
                     buf = returnBuf(selectionTime);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case SelectionDuration:
@@ -3836,11 +3551,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                     int64_t selectionDuration  = (int64_t)((double)xmpData_["Xmp.video.SelectionDuration"]
                             .toLong()*(double)d->timeScale_/(double)1000);
                     buf = returnBuf(selectionDuration);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case CurrentTime:
@@ -3848,11 +3559,7 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     int64_t currentTime  = (int64_t)xmpData_["Xmp.video.CurrentTime"].toLong();
                     buf = returnBuf(currentTime);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
             case NextTrackID:
@@ -3860,17 +3567,12 @@ void QuickTimeVideo::movieHeaderDecoder(uint32_t size)
                 {
                     int64_t nextTrackID  = (int64_t)xmpData_["Xmp.video.NextTrackID"].toLong();
                     buf = returnBuf(nextTrackID);
-                    io_->write(buf.pData_,4);
-                }
-                else
-                {
-                    io_->seek(4,BasicIo::cur);
+                    bDataWritten = writeMultibyte(buf.pData_,4);
                 }
                 break;
-            default:
-                io_->seek(4,BasicIo::cur);
-                break;
+            default: break;
             }
+            if(!bDataWritten) io_->seek(4, BasicIo::cur);
         }
         io_->seek(size%4,BasicIo::cur);
     }
@@ -3916,9 +3618,7 @@ Image::AutoPtr newQTimeInstance(BasicIo::AutoPtr io, bool /*create*/)
 {
     Image::AutoPtr image(new QuickTimeVideo(io));
     if (!image->good())
-    {
         image.reset();
-    }
     return image;
 }
 
@@ -3930,24 +3630,16 @@ void QuickTimeVideo::writeStringData(Exiv2::Xmpdatum xmpStringData, int32_t size
         Exiv2::byte* rawData = new byte[(uint8_t)size];
         int32_t newSize = (int32_t)dataString.size();
         for(int32_t i=0; i<min(newSize,size); i++)
-        {
             rawData[i] = (Exiv2::byte)dataString[i];
-        }
         if(size > newSize)
-        {
             for(int32_t i=newSize; i<size; i++)
-            {
                 rawData[i] = (Exiv2::byte)0;
-            }
-        }
         io_->write(rawData,size);
         io_->seek((int)skipOffset,BasicIo::cur);
         delete[] rawData;
     }
     else
-    {
         io_->seek((size+skipOffset),BasicIo::cur);
-    }
 }
 
 void QuickTimeVideo::writeLongData(Exiv2::Xmpdatum xmpIntData, int32_t size, int32_t skipOffset)
@@ -3959,9 +3651,7 @@ void QuickTimeVideo::writeLongData(Exiv2::Xmpdatum xmpIntData, int32_t size, int
         io_->seek(skipOffset,BasicIo::cur);
     }
     else
-    {
         io_->seek((size+skipOffset),BasicIo::cur);
-    }
 }
 
 void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, int32_t skipOffset)
@@ -3973,9 +3663,7 @@ void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, in
         io_->seek(skipOffset,BasicIo::cur);
     }
     else
-    {
         io_->seek((size+skipOffset),BasicIo::cur);
-    }
 }
 
 //
@@ -4014,9 +3702,7 @@ void QuickTimeVideo::writeApertureData(Exiv2::Xmpdatum xmpApertureData, int16_t 
         io_->seek(skipOffset,BasicIo::cur);
     }
     else
-    {
         io_->seek((size+skipOffset),BasicIo::cur);
-    }
 }
 
 bool isQTimeType(BasicIo& iIo, bool advance)
@@ -4034,9 +3720,7 @@ bool isQTimeType(BasicIo& iIo, bool advance)
 
     bool matched = isQuickTimeType(buf[0], buf[1], buf[2], buf[3]);
     if (!advance || !matched)
-    {
         iIo.seek(static_cast<int32_t>(0), BasicIo::beg);
-    }
     delete[] buf;
     return matched;
 }
