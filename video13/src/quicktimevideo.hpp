@@ -157,7 +157,7 @@ private:
           @brief Interpret Tag which contain other sub-tags,
               and save it in the respective XMP container.
          */
-    void multipleEntriesDecoder();
+    void multipleEntriesDecoder(uint32_t iDummySize);
     /*!
           @brief Interpret Sample Description Tag, and save it
               in the respective XMP container.
@@ -214,12 +214,12 @@ private:
           @brief Helps to calculate Frame Rate from timeToSample chunk,
               and save it in the respective XMP container.
          */
-    void timeToSampleDecoder();
+    void timeToSampleDecoder(uint32_t iDummySize);
     /*!
           @brief Recognizes which stream is currently under processing,
               and save its information in currentStream_ .
          */
-    void setMediaStream();
+    void setMediaStream(uint32_t iDummySize);
     /*!
           @brief Used to discard a tag along with its data. The Tag will
               be skipped and not decoded.
