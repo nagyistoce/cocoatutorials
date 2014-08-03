@@ -70,7 +70,7 @@ namespace Exiv2
         //! @name Manipulators
         //@{
         //! Dummy read function. Does nothing and returns true.
-        bool read(const byte* pData, uint32_t size);
+        bool read(const byte* pData, uint64_t size);
         //@}
 
     }; // class TiffHeader
@@ -84,7 +84,7 @@ namespace Exiv2
     {
     }
 
-    bool DummyTiffHeader::read(const byte* /*pData*/, uint32_t /*size*/)
+    bool DummyTiffHeader::read(const byte* /*pData*/, uint64_t /*size*/)
     {
         return true;
     }
@@ -615,9 +615,9 @@ std::string RiffVideo::mimeType() const
  */
 std::vector<int32_t> RiffVideo::findChunkPositions(const char* chunkId)
 {
-    DataBuf chkId((uint32_t)5);
+    DataBuf chkId((uint64_t)5);
     chkId.pData_[4] = '\0';
-    uint32_t i;
+    uint64_t i;
 
     std::vector<int32_t> positions;
     for ( i=0; i<d->m_riffFileSkeleton.m_primitiveChunks.size(); i++)
@@ -635,9 +635,9 @@ std::vector<int32_t> RiffVideo::findChunkPositions(const char* chunkId)
 //Same as above but returns only header locations
 std::vector<int32_t> RiffVideo::findHeaderPositions(const char* headerId)
 {
-    DataBuf hdrId((uint32_t)5);
+    DataBuf hdrId((uint64_t)5);
     hdrId.pData_[4] = '\0';
-    uint32_t i;
+    uint64_t i;
 
     std::vector<int32_t> positions;
     for (i=0;i<d->m_riffFileSkeleton.m_headerChunks.size();i++)
@@ -684,7 +684,7 @@ void RiffVideo::doWriteMetadata()
         throw Error(3, "RIFF");
     }
 
-    uint32_t bufMinSize = 4;
+    uint64_t bufMinSize = 4;
 
     //some initial variable declarations and initialization before traversing through chunks
     DataBuf chkId(bufMinSize+1);
@@ -705,7 +705,7 @@ void RiffVideo::doWriteMetadata()
 
     //find and move to avih position
     int32_t dummyLong = 0;
-    uint32_t i,j,maxCount;
+    uint64_t i,j,maxCount;
 
     std::vector<int32_t> strhChunkPositions = findChunkPositions("STRH");
 
@@ -717,12 +717,12 @@ void RiffVideo::doWriteMetadata()
     primitiveFlags.push_back("STRH");
     primitiveFlags.push_back("AVIH");
 
-    maxCount = (uint32_t) primitiveFlags.size();
+    maxCount = (uint64_t) primitiveFlags.size();
     for (j=0; j<maxCount; j++)
     {
         std::vector<int32_t> primitivePositions = findChunkPositions(primitiveFlags.back().c_str());
         primitiveFlags.pop_back();
-        for (i=0; i<(uint32_t)primitivePositions.size(); i++)
+        for (i=0; i<(uint64_t)primitivePositions.size(); i++)
         {
             io_->seek(primitivePositions[i]+4,BasicIo::beg);
             switch (j)
@@ -756,13 +756,13 @@ void RiffVideo::doWriteMetadata()
     headerFlags.push_back("ODML");
     headerFlags.push_back("IDIT");
 
-    maxCount = (uint32_t) headerFlags.size();
+    maxCount = (uint64_t) headerFlags.size();
     for (j=0; j<maxCount; j++)
     {
         std::vector<int32_t> headerPositions = findHeaderPositions(headerFlags.back().c_str());
         headerFlags.pop_back();
 
-        for (i=0; i<(uint32_t)headerPositions.size(); i++)
+        for (i=0; i<(uint64_t)headerPositions.size(); i++)
         {
             io_->seek(headerPositions[i],BasicIo::beg);
             switch (j)
@@ -860,7 +860,7 @@ void RiffVideo::tagDecoder()
         chkHeader.pData_[4] = '\0';
 
         io_->read(listSize.pData_, 4);
-        uint32_t listsize = Exiv2::getULong(listSize.pData_, littleEndian);
+        uint64_t listsize = Exiv2::getULong(listSize.pData_, littleEndian);
         io_->read(chkHeader.pData_, 4);
 
         HeaderChunk* tmpHeaderChunk = new HeaderChunk();
@@ -879,7 +879,7 @@ void RiffVideo::tagDecoder()
             io_->read(chkId.pData_, 4);
             io_->read(chkSize.pData_, 4);
 
-            uint32_t size = Exiv2::getULong(chkSize.pData_, littleEndian);
+            uint64_t size = Exiv2::getULong(chkSize.pData_, littleEndian);
 
             const char allPrimitiveFlags[][5]={"JUNK","AVIH","FMT ",
                                                "STRH","STRF","STRN","STRD"};
@@ -1005,7 +1005,7 @@ void RiffVideo::tagDecoder()
         DataBuf junkSize((const int32_t)5);
         junkSize.pData_[4] = '\0';
         io_->read(junkSize.pData_, 4);
-        uint32_t size = Exiv2::getULong(junkSize.pData_, littleEndian);
+        uint64_t size = Exiv2::getULong(junkSize.pData_, littleEndian);
         if(!d->m_decodeMetaData)
         {
             HeaderChunk* tmpHeaderChunk = new HeaderChunk();
@@ -1024,7 +1024,7 @@ void RiffVideo::tagDecoder()
         DataBuf dataSize((const int32_t)5);
         dataSize.pData_[4] = '\0';
         io_->read(dataSize.pData_, 4);
-        uint32_t size = Exiv2::getULong(dataSize.pData_, littleEndian);
+        uint64_t size = Exiv2::getULong(dataSize.pData_, littleEndian);
         if(!d->m_decodeMetaData)
         {
             HeaderChunk* tmpHeaderChunk = new HeaderChunk();
@@ -1105,8 +1105,8 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
         dataLength.pData_[1] = '\0';
 
         io_->read(dataLength.pData_,1);
-        uint32_t bufMinSize = (uint32_t)Exiv2::getShort(dataLength.pData_, littleEndian);
-        DataBuf buf((uint32_t)bufMinSize);
+        uint64_t bufMinSize = (uint64_t)Exiv2::getShort(dataLength.pData_, littleEndian);
+        DataBuf buf((uint64_t)bufMinSize);
         io_->seek(3,BasicIo::cur);
         io_->read(buf.pData_, bufMinSize);
 
@@ -1122,7 +1122,7 @@ void RiffVideo::dateTimeOriginal(int32_t size, int32_t i)
         dataLength.pData_[1] = '\0';
         io_->read(dataLength.pData_,1);
         io_->seek(3,BasicIo::cur);
-        int32_t bufMinSize = (uint32_t)Exiv2::getShort(dataLength.pData_, littleEndian);
+        int32_t bufMinSize = (uint64_t)Exiv2::getShort(dataLength.pData_, littleEndian);
 
         if(xmpData_["Xmp.video.DateUT"].count() > 0)
             writeStringData(xmpData_["Xmp.video.DateUT"],bufMinSize);
@@ -1142,8 +1142,8 @@ void RiffVideo::odmlTagsHandler()
 
     if(!d->m_modifyMetadata)
     {
-        uint32_t size = Exiv2::getULong(buf.pData_, littleEndian);
-        uint32_t size2 = size;
+        uint64_t size = Exiv2::getULong(buf.pData_, littleEndian);
+        uint64_t size2 = size;
 
         uint64_t cur_pos = io_->tell();
         io_->read(buf.pData_, 4); size -= 4;
@@ -1164,7 +1164,7 @@ void RiffVideo::odmlTagsHandler()
     {
         if(xmpData_["Xmp.video.TotalFrameCount"].count() > 0)
         {
-            uint32_t tmpSize = Exiv2::getULong(buf.pData_, littleEndian);
+            uint64_t tmpSize = Exiv2::getULong(buf.pData_, littleEndian);
             while(tmpSize > 0)
             {
                 io_->read(buf.pData_,4); tmpSize -= 4;
@@ -1187,7 +1187,7 @@ void RiffVideo::skipListData()
     buf.pData_[4] = '\0';
     io_->seek(-12, BasicIo::cur);
     io_->read(buf.pData_, 4);
-    uint32_t size = Exiv2::getULong(buf.pData_, littleEndian);
+    uint64_t size = Exiv2::getULong(buf.pData_, littleEndian);
 
     uint64_t cur_pos = io_->tell();
     io_->seek(cur_pos + size, BasicIo::beg);
@@ -1469,7 +1469,7 @@ void RiffVideo::infoTagsHandler()
             dataLenght -= infoSize;
             if(tv && infoSize >  4)
             {
-                DataBuf tmpBuf((uint32_t)infoSize+1);
+                DataBuf tmpBuf((uint64_t)infoSize+1);
                 tmpBuf.pData_[infoSize] = '\0';
                 io_->read(tmpBuf.pData_,infoSize);
                 xmpData_[exvGettext(tv->label_)] = tmpBuf.pData_;
@@ -1716,8 +1716,8 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size)
 
 void RiffVideo::setStreamType()
 {
-    DataBuf chkId((uint32_t)5);
-    io_->read(chkId.pData_,(uint32_t)4);
+    DataBuf chkId((uint64_t)5);
+    io_->read(chkId.pData_,(uint64_t)4);
     if(equalsRiffTag(chkId, "VIDS"))
         d->streamType_ = Video;
     else if (equalsRiffTag(chkId, "AUDS"))
@@ -1729,7 +1729,7 @@ void RiffVideo::streamHandler(int32_t size)
 {
     if (!d->m_modifyMetadata)
     {
-        uint32_t bufMinSize = 4;
+        uint64_t bufMinSize = 4;
         DataBuf buf(bufMinSize+1);
         buf.pData_[4] =  '\0';
         int32_t divisor = 1;
@@ -1795,7 +1795,7 @@ void RiffVideo::streamHandler(int32_t size)
 
     else
     {
-        DataBuf chkId((uint32_t)5);
+        DataBuf chkId((uint64_t)5);
         chkId.pData_[4] = '\0';
         const int32_t bufMinSize = 4;
 
@@ -1987,7 +1987,7 @@ void RiffVideo::streamFormatHandler(int32_t size)
     {
         if(d->streamType_ == Video)
         {
-            DataBuf chkId((uint32_t) 5);
+            DataBuf chkId((uint64_t) 5);
             chkId.pData_[4] = '\0';
             io_->read(chkId.pData_,4);
 
@@ -2221,7 +2221,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         addSize += addSize%2;
     }
     const int32_t cur_pos = io_->tell();
-    DataBuf buf((uint32_t)5);
+    DataBuf buf((uint64_t)5);
     buf.pData_[4] = '\0';
     io_->seek(4,BasicIo::beg);
     io_->read(buf.pData_,4);
@@ -2241,7 +2241,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
 
     io_->read(buf.pData_,4);
     std::vector<DataBuf> previousData;
-    uint32_t i;
+    uint64_t i;
 
     for (vector<std::pair<std::string,std::string> >::iterator it = chunkData.begin();
          it != chunkData.end(); it++)
@@ -2249,7 +2249,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         std::pair<std::string,std::string> unitChunk = (*it);
         std::string chunkId = unitChunk.second;
         std::string tmpChunkData = unitChunk.first;
-        uint32_t chunkSize = tmpChunkData.size();
+        uint64_t chunkSize = tmpChunkData.size();
         chunkSize += chunkSize%2;
 
         DataBuf copiedData((int32_t)(chunkSize+8));
@@ -2283,7 +2283,7 @@ bool RiffVideo::writeNewSubChunks(std::vector<std::pair<std::string,std::string>
         netNewMetadataSize += previousData[i].size_;
     }
 
-    DataBuf metadataPacket((uint32_t)netNewMetadataSize);
+    DataBuf metadataPacket((uint64_t)netNewMetadataSize);
     for (i=0; i < previousData.size(); i++)
     {
         for(int32_t assignIndex=0; assignIndex<previousData[i].size_; assignIndex++)
