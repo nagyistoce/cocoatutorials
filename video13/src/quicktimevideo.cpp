@@ -2349,8 +2349,8 @@ bool QuickTimeVideo::writeAudVidData(int64_t iTagType){
     if(d->currentStream_ == Video){
         switch (iTagType) {
         case 0: tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString()); break;
-            case 1: tv = find(revHandlerType, xmpData_["Xmp.video.HandlerType"].toString()); break;
-            case 2: tv = find(revVendorIDTags, xmpData_["Xmp.video.HandlerVendorID"].toString()); break;
+        case 1: tv = find(revHandlerType, xmpData_["Xmp.video.HandlerType"].toString()); break;
+        case 2: tv = find(revVendorIDTags, xmpData_["Xmp.video.HandlerVendorID"].toString()); break;
         default:
             break;
         }
@@ -2358,8 +2358,8 @@ bool QuickTimeVideo::writeAudVidData(int64_t iTagType){
     if(d->currentStream_ == Audio){
         switch (iTagType) {
         case 0: tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerClass"].toString()); break;
-            case 1: tv = find(revHandlerType, xmpData_["Xmp.audio.HandlerType"].toString()); break;
-            case 2: tv = find(revVendorIDTags, xmpData_["Xmp.audio.HandlerVendorID"].toString()); break;
+        case 1: tv = find(revHandlerType, xmpData_["Xmp.audio.HandlerType"].toString()); break;
+        case 2: tv = find(revVendorIDTags, xmpData_["Xmp.audio.HandlerVendorID"].toString()); break;
         default:
             break;
         }
@@ -2497,74 +2497,22 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size){
     else{
         RevTagDetails revTagDetails[(sizeof(mediaLanguageCode)/sizeof(mediaLanguageCode[0]))];
         reverseTagDetails(mediaLanguageCode,revTagDetails,((sizeof(mediaLanguageCode)/sizeof(mediaLanguageCode[0]))));
+
         for (int32_t i = 0; size/4 != 0 ; size -=4, i++){
             bool bDataWritten = false;
             switch(i){
-            case MediaHeaderVersion:
-                if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.MediaHeaderVersion"].count() > 0){
-                        buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaHeaderVersion"].toLong());
-                        bDataWritten = writeMultibyte(&buf.pData_[3], 1, 3);
-                    }
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.MediaHeaderVersion"].count() > 0){
-                        buf = returnBuf((int64_t)xmpData_["Xmp.audio.MediaHeaderVersion"].toLong());
-                        bDataWritten = writeMultibyte(&buf.pData_[3], 1, 3);
-                    }
-                }
-                break;
-            case MediaCreateDate:
+            case MediaHeaderVersion: bDataWritten = writeAudVidData("MediaHeaderVersion", 1, 1, 3, 0); break;
                 //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-                if(d->currentStream_ == Video) {
-                    if(xmpData_["Xmp.video.MediaCreateDate"].count() > 0){
-                        buf = returnUnsignedBuf((uint64_t)xmpData_["Xmp.video.MediaCreateDate"].toLong());
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.MediaCreateDate"].count() > 0){
-                        buf = returnUnsignedBuf((uint64_t)xmpData_["Xmp.audio.MediaCreateDate"].toLong());
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case MediaModifyDate://A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-                if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.MediaModifyDate"].count() > 0){
-                        buf = returnUnsignedBuf((uint64_t)xmpData_["Xmp.video.MediaModifyDate"].toLong());
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.MediaModifyDate"].count() > 0){
-                        buf = returnUnsignedBuf((uint64_t)xmpData_["Xmp.audio.MediaModifyDate"].toLong());
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case MediaTimeScale: if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.MediaTimeScale"].count() > 0){
-                        buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaTimeScale"].toLong());
-                        bDataWritten = writeMultibyte(buf.pData_, 4, -4);
-                    }
-                    bDataWritten = true;
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.MediaTimeScale"].count() > 0){
-                        buf = returnBuf((int64_t)xmpData_["Xmp.audio.MediaTimeScale"].toLong());
-                        bDataWritten = writeMultibyte(buf.pData_, 4, -4);
-                    }
-                    bDataWritten = true;
-                }
-                break;
-            case MediaDuration:
-                if(d->currentStream_ == Video){
+            case MediaCreateDate: bDataWritten = writeAudVidData("MediaCreateDate", 1, 4, 0, 1); break;
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+            case MediaModifyDate: bDataWritten = writeAudVidData("MediaModifyDate", 1, 4, 0, 1); break;
+            case MediaTimeScale: bDataWritten = writeAudVidData("MediaTimeScale", 1, 4, -4, 0);
+                bDataWritten = true; break;
+            case MediaDuration:if(d->currentStream_ == Video){
                     if(xmpData_["Xmp.video.MediaDuration"].count() > 0){
                         io_->read(buf.pData_,4);
                         time_scale = returnBufValue(buf);
-                        buf = returnBuf((int64_t)xmpData_["Xmp.video.MediaDuration"].toLong()*time_scale);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
+                        bDataWritten = writeAudVidData("MediaDuration", time_scale, 4, 0, 0);
                     }
                     else{
                         io_->read(buf.pData_,4);
@@ -2575,8 +2523,7 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size){
                     if(xmpData_["Xmp.audio.MediaDuration"].count() > 0){
                         io_->read(buf.pData_,4);
                         time_scale = returnBufValue(buf);
-                        buf = returnBuf((int64_t)xmpData_["Xmp.audio.MediaDuration"].toLong()*time_scale);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
+                        bDataWritten = writeAudVidData("MediaDuration", time_scale, 4, 0, 0);
                     }
                     else{
                         io_->read(buf.pData_,4);
@@ -2588,8 +2535,7 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size){
                     time_scale = returnBufValue(buf);
                 }
                 break;
-            case MediaLanguageCode:
-                if(d->currentStream_ == Video){
+            case MediaLanguageCode: if(d->currentStream_ == Video){
                     if(xmpData_["Xmp.video.MediaLanguage"].count() > 0){
                         rtd = find(revTagDetails,xmpData_["Xmp.video.MediaLanguage"].toString());
                         if(rtd){
@@ -2694,134 +2640,17 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
         for (int32_t i = 0; size/4 != 0  ; size -=4, i++){
             bool bDataWritten = false;
             switch(i){
-            case TrackHeaderVersion:
-                if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackHeaderVersion"].count() >0){
-                        int64_t trackHeaderVersion = xmpData_["Xmp.video.TrackHeaderVersion"].toLong();
-                        buf = returnBuf(trackHeaderVersion);
-                        bDataWritten = writeMultibyte(&buf.pData_[3], 1, 3);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackHeaderVersion"].count() >0){
-                        int64_t trackHeaderVersion = xmpData_["Xmp.audio.TrackHeaderVersion"].toLong();
-                        buf = returnBuf(trackHeaderVersion,1);
-                        bDataWritten = writeMultibyte(buf.pData_, 1, 3);
-                    }
-                }
-                break;
-            case TrackCreateDate:
+            case TrackHeaderVersion: bDataWritten = writeAudVidData("TrackHeaderVersion", 1, 1, 3, 0); break;
                 //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-                if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackCreateDate"].count() >0){
-                        int64_t trackCreateDate = xmpData_["Xmp.video.TrackCreateDate"].toLong();
-                        buf = returnUnsignedBuf(trackCreateDate);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackCreateDate"].count() >0){
-                        int64_t trackCreateDate = xmpData_["Xmp.audio.TrackCreateDate"].toLong();
-                        buf = returnUnsignedBuf(trackCreateDate);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case TrackModifyDate: //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
-                if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackModifyDate"].count() >0){
-                        int64_t trackModifyDate = xmpData_["Xmp.video.TrackModifyDate"].toLong();
-                        buf = returnUnsignedBuf(trackModifyDate);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackModifyDate"].count() >0){
-                        int64_t trackModifyDate = xmpData_["Xmp.audio.TrackModifyDate"].toLong();
-                        buf = returnUnsignedBuf(trackModifyDate);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case TrackID: if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackID"].count() >0){
-                        int64_t trackID = xmpData_["Xmp.video.TrackID"].toLong();
-                        buf = returnBuf(trackID);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackID"].count() >0){
-                        int64_t trackID = xmpData_["Xmp.audio.TrackID"].toLong();
-                        buf = returnBuf(trackID);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case TrackDuration:if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackDuration"].count() >0){
-                        int64_t trackDuration= (int64_t)((double)xmpData_["Xmp.video.TrackDuration"].
-                                toLong()*(double)d->timeScale_/1000);
-                        buf = returnBuf(trackDuration);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackDuration"].count() >0){
-                        int64_t trackDuration= (int64_t)((double)xmpData_["Xmp.audio.TrackDuration"].
-                                toLong()*(double)d->timeScale_/1000);
-                        buf = returnBuf(trackDuration);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case TrackLayer: if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackLayer"].count() >0){
-                        int64_t trackLayer = xmpData_["Xmp.video.TrackLayer"].toLong();
-                        buf = returnBuf(trackLayer,2);
-                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackLayer"].count() >0)
-                    {
-                        int64_t trackLayer = xmpData_["Xmp.audio.TrackLayer"].toLong();
-                        buf = returnBuf(trackLayer,2);
-                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
-                    }
-                }
-                break;
-            case TrackVolume: if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.TrackVolume"].count() >0){
-                        int64_t trackVolume = (int64_t)(xmpData_["Xmp.video.TrackVolume"].toLong()*2);
-                        buf = returnBuf(trackVolume,2);
-                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
-                    }
-                }
-                else if(d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.TrackVolume"].count() >0){
-                        int64_t trackVolume = (int64_t)(xmpData_["Xmp.audio.TrackVolume"].toLong()*2);
-                        buf = returnBuf(trackVolume,2);
-                        bDataWritten = writeMultibyte(buf.pData_, 2, 2);
-                    }
-                }
-                break;
-            case ImageWidth:if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.Width"].count() >0){
-                        int64_t width = xmpData_["Xmp.video.Width"].toLong()*(256*256);
-                        buf = returnBuf(width);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
-            case ImageHeight:if(d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.Height"].count() >0){
-                        int64_t Height = xmpData_["Xmp.video.Height"].toLong()*(256*256);
-                        buf = returnBuf(Height);
-                        bDataWritten = writeMultibyte(buf.pData_,4);
-                    }
-                }
-                break;
+            case TrackCreateDate: bDataWritten = writeAudVidData("TrackCreateDate", 1, 4, 0, 1); break;
+                //A 32-bit integer that specifies (in seconds since midnight, January 1, 1904) when the movie atom was created.
+            case TrackModifyDate: bDataWritten = writeAudVidData("TrackModifyDate", 1, 4, 0, 1); break;
+            case TrackID: bDataWritten = writeAudVidData("TrackID", 1, 4, 0, 0); break;
+            case TrackDuration: bDataWritten = writeAudVidData("TrackDuration", (double)(d->timeScale_/1000), 4, 0, 0); break;
+            case TrackLayer: bDataWritten = writeAudVidData("TrackLayer", 11, 2, 2, 0); break;
+            case TrackVolume: bDataWritten = writeAudVidData("TrackVolume", 2, 2, 2, 0); break;
+            case ImageWidth:if(d->currentStream_ == Video)  bDataWritten = writeAudVidData("Width", (256*256), 4, 0, 0); break;
+            case ImageHeight:if(d->currentStream_ == Video)  bDataWritten = writeAudVidData("Height", (256*256), 4, 0, 0); break;
             default: break;
             }
             if(!bDataWritten) io_->seek(4,BasicIo::cur);
@@ -2830,13 +2659,32 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
     }
     return;
 } // QuickTimeVideo::trackHeaderDecoder
-/*
-bool writeAudVidData( std::string sXmpTag, int64_t iMulFactor, int64_t iBytCnt, int64_t iOffset){
-    int64_t iXmpTagVal = 0;
-    if(d->currentStream_ == Video) iXmpTagVal = xmpData_["Xmp.video." +
 
+bool QuickTimeVideo::writeAudVidData( std::string sXmpTag, double iMulFactor, int64_t iBytCnt, int64_t iOffset, int64_t iRetFuncCall){
+    DataBuf buf(5);
+    std::memset(buf.pData_, 0x0, buf.size_);
+    buf.pData_[4] = '\0';
+    bool bRetVal = false;
+    int64_t iXmpTagVal = 0;
+    if(d->currentStream_ == Video){
+        if(xmpData_["Xmp.video." + sXmpTag].count() > 0){
+            iXmpTagVal = xmpData_["Xmp.video." + sXmpTag].toLong()*iMulFactor;
+            if(iRetFuncCall == 0) buf = returnBuf(iXmpTagVal, iBytCnt);
+            else buf = returnUnsignedBuf(iXmpTagVal);
+            bRetVal = writeMultibyte(buf.pData_, iBytCnt ,iOffset);
+        }
+    }
+    else if(d->currentStream_ == Audio){
+        if(xmpData_["Xmp.audio." + sXmpTag].count() > 0){
+            iXmpTagVal = xmpData_["Xmp.audio." + sXmpTag].toLong()*iMulFactor;
+            if(iRetFuncCall == 0) buf = returnBuf(iXmpTagVal, iBytCnt);
+            else buf = returnUnsignedBuf(iXmpTagVal);
+            bRetVal = writeMultibyte(buf.pData_, iBytCnt ,iOffset);
+        }
+    }
+    return bRetVal;
 }
-*/
+
 void QuickTimeVideo::movieHeaderDecoder(uint32_t size){
     DataBuf buf(5);
     std::memset(buf.pData_, 0x0, buf.size_);
@@ -3062,7 +2910,7 @@ void QuickTimeVideo::writeShortData(Exiv2::Xmpdatum xmpIntData, int16_t size, in
  * \param iOffset
  * \return
  */
-bool QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int32_t iSize, int32_t iOffset){
+bool QuickTimeVideo::writeMultibyte(Exiv2::byte * bRawData ,int64_t iSize, int64_t iOffset){
     int32_t iCurrPos = io_->tell();
     if (iSize != 0 && bRawData != NULL){
         if ((io_->write(bRawData, iSize) > 0)) io_->seek(iOffset , BasicIo::cur);

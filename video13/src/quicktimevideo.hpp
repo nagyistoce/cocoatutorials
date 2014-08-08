@@ -292,7 +292,7 @@ private:
      * \param bRawData
      * \param size
      */
-    bool writeMultibyte(Exiv2::byte * bRawData = NULL ,int32_t iSize = 0, int32_t iOffset = 0);
+    bool writeMultibyte(Exiv2::byte * bRawData = NULL , int64_t iSize = 0, int64_t iOffset = 0);
 
     /*!
            * \brief writeApertureData
@@ -315,7 +315,7 @@ private:
      * \param iOffset
      * \return
      */
-    //bool writeAudVidData( std::string sXmpTag, int64_t iOffset);
+    bool writeAudVidData( std::string sXmpTag, double iMulFactor, int64_t iBytCnt, int64_t iOffset, int64_t iRetFuncCall);
 
 private:
 
