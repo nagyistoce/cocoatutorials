@@ -1337,6 +1337,7 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external){
             io_->seek(cur_pos + size_external, BasicIo::beg);
         }
         else{
+            bool bDataWritten = false;
             RevTagDetails revTagDetails[(sizeof(whiteBalance)/sizeof(whiteBalance[0]))];
             reverseTagDetails(whiteBalance,revTagDetails,((sizeof(whiteBalance)/sizeof(whiteBalance[0]))));
 
@@ -1350,8 +1351,7 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external){
                 const int32_t tmpValue = (d_exposureTime.at(1)*10);
                 io_->write((Exiv2::byte*)&tmpValue,4);
             }
-            else
-                io_->seek(4,BasicIo::cur);
+            else io_->seek(4,BasicIo::cur);
 
             //Variation
             if(xmpData_["Xmp.video.FNumber"].count() >0){
@@ -1363,8 +1363,7 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external){
                         *(double)getULong(buf2.pData_, littleEndian));
                 writeMultibyte((Exiv2::byte*)&fNumber, 4, 4);
             }
-            else
-                io_->seek(8,BasicIo::cur);
+            else io_->seek(8,BasicIo::cur);
 
             if(xmpData_["Xmp.video.ExposureCompensation"].count() >0){
                 io_->seek(4,BasicIo::cur);
@@ -1375,20 +1374,16 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external){
                         *(double)getULong(buf2.pData_, littleEndian));
                 writeMultibyte((Exiv2::byte*)&exposureCompensation, 4, 14);
             }
-            else
-                io_->seek(18,BasicIo::cur);
+            else io_->seek(18,BasicIo::cur);
 
             if(xmpData_["Xmp.video.WhiteBalance"].count() >0){
                 rtd = find(revTagDetails,xmpData_["Xmp.video.WhiteBalance"].toString());
                 if(rtd){
                     const int32_t sWhiteBalance = (int32_t)rtd->val_;
-                    writeMultibyte((Exiv2::byte*)&sWhiteBalance,4);
+                    bDataWritten = writeMultibyte((Exiv2::byte*)&sWhiteBalance,4);
                 }
-                else
-                    io_->seek(4,BasicIo::cur);
             }
-            else
-                io_->seek(4,BasicIo::cur);
+            if(!bDataWritten) io_->seek(4,BasicIo::cur);
 
             if(xmpData_["Xmp.video.FocalLength"].count() >0){
                 io_->seek(4,BasicIo::cur);
@@ -1398,8 +1393,7 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external){
                         *(double)getULong(buf2.pData_, littleEndian));
                 writeMultibyte((Exiv2::byte*)&focalLength, 4, 99);
             }
-            else
-                io_->seek(103,BasicIo::cur);
+            else io_->seek(103,BasicIo::cur);
 
             writeStringData(xmpData_["Xmp.video.Software"],48);
             writeLongData(xmpData_["Xmp.video.ISO"]);
@@ -1625,8 +1619,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external){
                 }
                 else io_->read(buf.pData_, dataLength - 4);
             }
-            else if(dataType == 3)
-            {
+            else if(dataType == 3){
                 dataLength = Exiv2::getUShort(buf.pData_, bigEndian) * 2;
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 2);
@@ -1891,8 +1884,7 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external){
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 4);
                 io_->read(buf2.pData_, 4);
-                if(td && (xmpData_[exvGettext(td->label_)].count() >0) &&(dataLength < 200))
-                {
+                if(td && (xmpData_[exvGettext(td->label_)].count() >0) &&(dataLength < 200)){
                     io_->seek(-8,BasicIo::cur);
                     const int32_t tagData = (int32_t)((double)xmpData_[exvGettext(td->label_)].toLong()*
                             (double)Exiv2::getULong( buf2.pData_, bigEndian));
@@ -1953,12 +1945,13 @@ void QuickTimeVideo::timeToSampleDecoder(uint32_t iDummySize){
         io_->read(buf.pData_, 4);
         timeOfFrames += temp * returnBufValue(buf);
     }
-    if(!d->m_modifyMetadata)
+    if(!d->m_modifyMetadata){
         if (d->currentStream_ == Video) xmpData_["Xmp.video.FrameRate"] = (double)totalframes * (double)d->timeScale_ / (double)timeOfFrames;
         else
             if(xmpData_["Xmp.video.FrameRate"].count() >0)
             {//TODO:implement write
             }
+    }
     return;
 } // QuickTimeVideo::timeToSampleDecoder
 
@@ -2286,7 +2279,6 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
     DataBuf buf(100);
     std::memset(buf.pData_, 0x0, buf.size_);
     buf.pData_[4] = '\0';
-
     const TagVocabulary* tv;
 
     if(!d->m_modifyMetadata){
@@ -2322,90 +2314,14 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
         io_->seek(cur_pos + size, BasicIo::beg);
     }
     else{
-        TagVocabulary revTagVocabulary[(sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))];
-        reverseTagVocabulary(handlerClassTags,revTagVocabulary,((sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))));
 
-        TagVocabulary revVendorIDTags[(sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))];
-        reverseTagVocabulary(vendorIDTags,revVendorIDTags,((sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))));
-
-        TagVocabulary revHandlerType[(sizeof(handlerTypeTags)/sizeof(handlerTypeTags[0]))];
-        reverseTagVocabulary(handlerTypeTags,revHandlerType,((sizeof(handlerTypeTags)/sizeof(handlerTypeTags[0]))));
 
         for (int32_t i = 0; i < 5 ; i++){
             bool bDataWritten = false;
             switch(i){
-            case HandlerClass:
-                if (d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.HandlerClass"].count() >0){
-                        Exiv2::byte rawHandlerClass[4];
-                        tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString());
-                        if(tv){
-                            const std::string handlerClass = tv->label_;
-                            for(int32_t j=0; j<4; j++) rawHandlerClass[j] = handlerClass[j];
-                            bDataWritten = writeMultibyte(rawHandlerClass,4);
-                        }
-                    }
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.HandlerClass"].count() >0){
-                        Exiv2::byte rawHandlerClass[4];
-                        tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerClass"].toString());
-                        if(tv){
-                            const std::string handlerClass = tv->label_;
-                            for(int32_t j=0; j<4; j++) rawHandlerClass[j] = handlerClass[j];
-                            bDataWritten = writeMultibyte(rawHandlerClass,4);
-                        }
-                    }
-                }
-                break;
-            case HandlerType:
-                if (d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.HandlerType"].count() >0){
-                        Exiv2::byte rawHandlerType[4];
-                        tv = find(revHandlerType, xmpData_["Xmp.video.HandlerType"].toString());
-                        if(tv){
-                            const std::string handlerType = tv->label_;
-                            for(int32_t j=0; j<4; j++) rawHandlerType[j] = handlerType[j];
-                            bDataWritten = writeMultibyte(rawHandlerType,4);
-                        }
-                    }
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.HandlerType"].count() >0){
-                        Exiv2::byte rawHandlerType[4];
-                        tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerType"].toString());
-                        if(tv){
-                            const std::string handlerType = tv->label_;
-                            for(int32_t j=0; j<4; j++) rawHandlerType[j] = handlerType[j];
-                            bDataWritten = writeMultibyte(rawHandlerType,4);
-                        }
-                    }
-                }
-                break;
-            case HandlerVendorID:
-                if (d->currentStream_ == Video){
-                    if(xmpData_["Xmp.video.HandlerVendorID"].count() >0){
-                        Exiv2::byte rawHandlerVendorID[4];
-                        tv = find(revVendorIDTags, xmpData_["Xmp.video.HandlerVendorID"].toString());
-                        if(tv){
-                            const std::string handlerVendorID = tv->label_;
-                            for(int32_t j=0; j<4; j++) rawHandlerVendorID[j] = handlerVendorID[j];
-                            bDataWritten = writeMultibyte(rawHandlerVendorID,4);
-                        }
-                    }
-                }
-                else if (d->currentStream_ == Audio){
-                    if(xmpData_["Xmp.audio.HandlerVendorID"].count() >0){
-                        Exiv2::byte rawHandlerVendorID[4];
-                        tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerVendorID"].toString());
-                        if(tv){
-                            const std::string handlerVendorID = tv->label_;
-                            for(int32_t j=0; j<4; j++) rawHandlerVendorID[j] = handlerVendorID[j];
-                            bDataWritten = writeMultibyte(rawHandlerVendorID,4);
-                        }
-                    }
-                }
-                break;
+            case HandlerClass: bDataWritten = writeAudVidData(0); break;
+            case HandlerType: bDataWritten = writeAudVidData(1); break;
+            case HandlerVendorID: bDataWritten = writeAudVidData(2); break;
             default: break;
             }
             if(!bDataWritten) io_->seek(4, BasicIo::cur);
@@ -2413,7 +2329,49 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
         io_->seek(cur_pos + size, BasicIo::beg);
     }
     return;
+
 } // QuickTimeVideo::handlerDecoder
+
+bool QuickTimeVideo::writeAudVidData(int64_t iTagType){
+
+    bool bReturnVal;
+    const TagVocabulary* tv;
+
+    TagVocabulary revTagVocabulary[(sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))];
+    reverseTagVocabulary(handlerClassTags,revTagVocabulary,((sizeof(handlerClassTags)/sizeof(handlerClassTags[0]))));
+
+    TagVocabulary revHandlerType[(sizeof(handlerTypeTags)/sizeof(handlerTypeTags[0]))];
+    reverseTagVocabulary(handlerTypeTags,revHandlerType,((sizeof(handlerTypeTags)/sizeof(handlerTypeTags[0]))));
+
+    TagVocabulary revVendorIDTags[(sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))];
+    reverseTagVocabulary(vendorIDTags,revVendorIDTags,((sizeof(vendorIDTags)/sizeof(vendorIDTags[0]))));
+
+    if(d->currentStream_ == Video){
+        switch (iTagType) {
+        case 0: tv = find(revTagVocabulary, xmpData_["Xmp.video.HandlerClass"].toString()); break;
+            case 1: tv = find(revHandlerType, xmpData_["Xmp.video.HandlerType"].toString()); break;
+            case 2: tv = find(revVendorIDTags, xmpData_["Xmp.video.HandlerVendorID"].toString()); break;
+        default:
+            break;
+        }
+    }
+    if(d->currentStream_ == Audio){
+        switch (iTagType) {
+        case 0: tv = find(revTagVocabulary, xmpData_["Xmp.audio.HandlerClass"].toString()); break;
+            case 1: tv = find(revHandlerType, xmpData_["Xmp.audio.HandlerType"].toString()); break;
+            case 2: tv = find(revVendorIDTags, xmpData_["Xmp.audio.HandlerVendorID"].toString()); break;
+        default:
+            break;
+        }
+    }
+    if(tv){
+        Exiv2::byte sRawXmpTagVal[4];
+        const std::string sXmpTagVal = tv->label_;
+        for(int32_t j=0; j<4; j++) sRawXmpTagVal[j] = sXmpTagVal[j];
+        bReturnVal = writeMultibyte(sRawXmpTagVal,4);
+    }
+    return bReturnVal;
+}
 
 void QuickTimeVideo::fileTypeDecoder(uint32_t size)
 {
@@ -2872,7 +2830,13 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
     }
     return;
 } // QuickTimeVideo::trackHeaderDecoder
+/*
+bool writeAudVidData( std::string sXmpTag, int64_t iMulFactor, int64_t iBytCnt, int64_t iOffset){
+    int64_t iXmpTagVal = 0;
+    if(d->currentStream_ == Video) iXmpTagVal = xmpData_["Xmp.video." +
 
+}
+*/
 void QuickTimeVideo::movieHeaderDecoder(uint32_t size){
     DataBuf buf(5);
     std::memset(buf.pData_, 0x0, buf.size_);

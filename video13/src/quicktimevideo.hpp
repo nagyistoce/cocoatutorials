@@ -302,6 +302,21 @@ private:
            */
     void writeApertureData(Exiv2::Xmpdatum xmpIntData, int16_t size, int32_t skipOffset=0);
 
+    /*!
+     * \brief writeAudVidData
+     * \param iTagType
+     * \return
+     */
+    bool writeAudVidData(int64_t iTagType);
+
+    /*!
+     * \brief writeAudVidData
+     * \param sXmpTag
+     * \param iOffset
+     * \return
+     */
+    //bool writeAudVidData( std::string sXmpTag, int64_t iOffset);
+
 private:
 
     class Private;
