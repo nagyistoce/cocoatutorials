@@ -97,7 +97,7 @@ fi
 
 ##
 # clanmills support
-export REMOTEHOST=clanmills.homedns.org
+export REMOTEHOST=exiv2.dyndns.org # clanmills.homedns.org
 export GPGKEY=CF1649DA
 
 ##
