@@ -4,10 +4,13 @@
 # change the extension
 renamer JPG jpg "*.JPG"
 
+d=$1
+if [ -z "$d" ]; then d=. ;fi
+
 ##
 # get "raw" filenames (raw = IMG_1234.JPG - as it arrives from the camera)
 IFS=$'\n'
-FILES="$(find . -maxdepth 1 -iname \"*.jpg\")"
+FILES="$(find "$d" -maxdepth 1 -iname \"*.jpg\")"
 
 ##
 # rename them in lower case, one at a time
@@ -15,6 +18,15 @@ for F in $FILES ; do
     f="$(echo "$F"|perl -e 'print lc <>;')"
     if [ "$f" != "$F" ]; then
         mv "$F" "$f"
+    fi
+done
+
+##
+# cleanup picasa hidden files
+for pic in .picasa.ini Thumbs.db; do
+    pic="$d/$pic"
+    if [ -e "$pic" ]; then
+        rm -rf "$pic"
     fi
 done
 
