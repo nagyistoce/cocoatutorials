@@ -1078,8 +1078,8 @@ void QuickTimeVideo::decodeBlock(){
         return;
     }
 
-    io_->read(buf.pData_, 4);
     uint32_t size = Exiv2::getULong(buf.pData_, bigEndian);
+    io_->read(buf.pData_, 4);
     if(size < 8) return;
 
     //      std::cerr<<"\nTag=>"<<buf.pData_<<"     size=>"<<size-8;
