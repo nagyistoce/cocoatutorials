@@ -714,7 +714,6 @@ void MatroskaVideo::decodeBlock()
     }
 
     DataBuf buf2(bufMinSize+1);
-    std::memset(buf2.pData_, 0x0, buf2.size_);
     int32_t s = static_cast<int32_t>(size) ;
     io_->read(buf2.pData_,s);
     contentManagement(mt, buf2.pData_,s);

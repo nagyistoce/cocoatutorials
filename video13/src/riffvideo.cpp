@@ -1331,8 +1331,6 @@ void RiffVideo::junkHandler(int32_t size){
 
     else{
         DataBuf buf(bufMinSize+1), buf2(4+1);
-        std::memset(buf.pData_, 0x0, buf.size_);
-        buf2.pData_[4] = '\0';
         uint64_t cur_pos = io_->tell();
 
         io_->read(buf.pData_, 4);

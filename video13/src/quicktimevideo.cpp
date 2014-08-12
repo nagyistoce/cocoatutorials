@@ -1071,10 +1071,6 @@ void QuickTimeVideo::readMetadata(){
 void QuickTimeVideo::decodeBlock(){
     const int32_t bufMinSize = 4;
     DataBuf buf(bufMinSize+1);
-    uint32_t size = 0;
-    buf.pData_[4] = '\0' ;
-
-    std::memset(buf.pData_, 0x0, buf.size_);
 
     io_->read(buf.pData_, 4);
     if(io_->eof()){
@@ -1082,8 +1078,8 @@ void QuickTimeVideo::decodeBlock(){
         return;
     }
 
-    size = Exiv2::getULong(buf.pData_, bigEndian);
     io_->read(buf.pData_, 4);
+    uint32_t size = Exiv2::getULong(buf.pData_, bigEndian);
     if(size < 8) return;
 
     //      std::cerr<<"\nTag=>"<<buf.pData_<<"     size=>"<<size-8;
@@ -1415,8 +1411,6 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
     uint32_t             size = 0;
     uint32_t             size_internal = size_external;
 
-    std::memset(buf.pData_, 0x0, buf.size_);
-
     if(!d->m_modifyMetadata){
         while((size_internal/4 != 0) && (size_internal > 0)){
             buf.pData_[4] = '\0' ;
@@ -1511,7 +1505,6 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external){
             io_->read(buf.pData_, 2);
             dataType = Exiv2::getUShort(buf.pData_, bigEndian);
 
-            std::memset(buf.pData_, 0x0, buf.size_);
             io_->read(buf.pData_, 2);
 
             if(TagID == 0x2000023){
@@ -1522,7 +1515,8 @@ void QuickTimeVideo::NikonTagsDecoder(uint32_t size_external){
                 io_->read(buf.pData_, 4);   xmpData_["Xmp.video.PictureControlVersion"]  = Exiv2::toString(buf.pData_);
                 io_->read(buf.pData_, 20);  xmpData_["Xmp.video.PictureControlName"]     = Exiv2::toString(buf.pData_);
                 io_->read(buf.pData_, 20);  xmpData_["Xmp.video.PictureControlBase"]     = Exiv2::toString(buf.pData_);
-                io_->read(buf.pData_, 4);   std::memset(buf.pData_, 0x0, buf.size_);
+                io_->read(buf.pData_, 4); 
+                std::memset(buf.pData_, 0x0, buf.size_);
 
                 io_->read(buf.pData_, 1);
                 td2 = find(PictureControlAdjust, (int)buf.pData_[0] & 7 );
@@ -1973,8 +1967,6 @@ void QuickTimeVideo::sampleDesc(uint32_t  size){
 
 void QuickTimeVideo::audioDescDecoder(){
     DataBuf buf(40);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     io_->read(buf.pData_, 4);
     uint64_t size = 82;
 
@@ -2083,8 +2075,6 @@ void QuickTimeVideo::audioDescDecoder(){
 void QuickTimeVideo::imageDescDecoder()
 {
     DataBuf buf(40);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     io_->read(buf.pData_, 4);
     uint64_t size = 82;
 
@@ -2216,8 +2206,6 @@ void QuickTimeVideo::multipleEntriesDecoder(uint32_t iDummySize){
 
 void QuickTimeVideo::videoHeaderDecoder(uint32_t size){
     DataBuf buf(3);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[2] = '\0';
     d->currentStream_ = Video;
 
     const RevTagDetails* rtd;
@@ -2277,8 +2265,6 @@ void QuickTimeVideo::handlerDecoder(uint32_t size)
 {
     uint64_t cur_pos = io_->tell();
     DataBuf buf(100);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     const TagVocabulary* tv;
 
     if(!d->m_modifyMetadata){
@@ -2376,8 +2362,6 @@ bool QuickTimeVideo::writeAudVidData(int64_t iTagType){
 void QuickTimeVideo::fileTypeDecoder(uint32_t size)
 {
     DataBuf     buf(5);
-    buf.pData_[4] = '\0';
-    std::memset(buf.pData_, 0x0, buf.size_);
     Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpSeq);
     const TagVocabulary* td;
 
@@ -2440,8 +2424,6 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
 
 void QuickTimeVideo::mediaHeaderDecoder(uint32_t size){
     DataBuf buf(5);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     int64_t time_scale = 1;
     const TagDetails* td;
     const RevTagDetails* rtd;
@@ -2585,8 +2567,6 @@ void QuickTimeVideo::mediaHeaderDecoder(uint32_t size){
 void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
 {
     DataBuf buf(5);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     int64_t temp = 0;
 
     if(!d->m_modifyMetadata){
@@ -2662,8 +2642,6 @@ void QuickTimeVideo::trackHeaderDecoder(uint32_t size)
 
 bool QuickTimeVideo::writeAudVidData( std::string sXmpTag, double iMulFactor, int64_t iBytCnt, int64_t iOffset, int64_t iRetFuncCall){
     DataBuf buf(5);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
     bool bRetVal = false;
     int64_t iXmpTagVal = 0;
     if(d->currentStream_ == Video){
@@ -2687,8 +2665,6 @@ bool QuickTimeVideo::writeAudVidData( std::string sXmpTag, double iMulFactor, in
 
 void QuickTimeVideo::movieHeaderDecoder(uint32_t size){
     DataBuf buf(5);
-    std::memset(buf.pData_, 0x0, buf.size_);
-    buf.pData_[4] = '\0';
 
     if(!d->m_modifyMetadata){
         for (int32_t i = 0; size/4 != 0 ; size -=4, i++){

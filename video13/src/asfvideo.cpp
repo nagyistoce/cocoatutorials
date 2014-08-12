@@ -365,7 +365,6 @@ namespace Exiv2 {
         const long bufMinSize = 9;
         DataBuf buf(bufMinSize);
         unsigned long size = 0;
-        buf.pData_[8] = '\0' ;
         const TagVocabulary* tv;
         uint64_t cur_pos = io_->tell();
 
@@ -382,7 +381,6 @@ namespace Exiv2 {
         getGUID(guidBuf, GUID);
         tv = find( GUIDReferenceTags, GUID);
 
-        std::memset(buf.pData_, 0x0, buf.size_);
         io_->read(buf.pData_, 8);
         size = static_cast<unsigned long>(getUint64_t(buf));
 
@@ -494,7 +492,6 @@ namespace Exiv2 {
         }
         for (int i = 0 ; i < 5 ; ++i) {
             DataBuf buf(length[i]);
-            std::memset(buf.pData_, 0x0, buf.size_);
             io_->read(buf.pData_, length[i]);
             if (io_->error() || io_->eof()) throw Error(14);
             const TagDetails* td = find(contentDescriptionTags, i);
