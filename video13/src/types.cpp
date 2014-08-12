@@ -158,6 +158,7 @@ namespace Exiv2 {
             size_ = 0;
             pData_ = new byte[size];
             size_ = size;
+            std::memset(pData_, 0x0, size_);
         }
     }
 
