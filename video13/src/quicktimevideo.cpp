@@ -1034,7 +1034,7 @@ void QuickTimeVideo::doWriteMetadata()
 			}
 			io_->seek(atomPositions[i].first,BasicIo::beg);
 
-			u_int32_t uiAtomPosition = atomPositions[i].second;
+			uint32_t uiAtomPosition = atomPositions[i].second;
 			switch (j){
 				case 0: fileTypeDecoder(uiAtomPosition)		   ; break;
 				case 1: movieHeaderDecoder(uiAtomPosition)	   ; break;
