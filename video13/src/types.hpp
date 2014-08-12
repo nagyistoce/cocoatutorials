@@ -48,6 +48,7 @@
 #include <utility>
 #include <algorithm>
 #include <sstream>
+#include <cstring>
 
 #ifdef EXV_HAVE_STDINT_H
 # include <stdint.h>
