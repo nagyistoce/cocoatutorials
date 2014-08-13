@@ -118,9 +118,7 @@ LINK.cc += -rpath $(PREFIX) -L$(PREFIX)
 samples: $(BINARY) $(OTHERBIN)
 
 $(BINOBJ): %.o: %.cpp
-	@if [ -z `which $(PKGCONFIG)`  ]; then echo $(BAR) $'\\n***' utility $(PKGCONFIG) not available $'***\n'$(BAR) ; export PKGCONFIG=pkg-config ; fi
-	@if [ -z `which $(PKGCONFIG)`  ]; then echo $(BAR) $'\\n***' utility $(PKGCONFIG) not available $'***\n'$(BAR) ; export PKGCONFIG=/usr/bin/pkg-config ; fi
-	@if [ -z `which $(PKGCONFIG)`  ]; then echo $(BAR) $'\\n***' utility $(PKGCONFIG) not available $'***\n'$(BAR) ; exit 42 ; fi
+	@if [ -z `which $(PKGCONFIG)`  ]; then echo $(BAR) $'\\n***' utility $(PKGCONFIG) not available $'***\n'$(BAR) ; echo exit 42 ; fi
 	$(COMPILE.cc) -o $@ $<
 	@$(MAKEDEPEND)
 	@$(POSTDEPEND)
