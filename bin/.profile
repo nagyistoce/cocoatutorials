@@ -361,7 +361,7 @@ path() {
 alias rename=mv
 alias move=mv
 alias del='sudo rm -rf'
-alias dirod='ls -alt'
+alias dirod='ls -altr'
 alias xcopy='ditto'
 alias finder='find . -depth -iname'
 alias shellx=open

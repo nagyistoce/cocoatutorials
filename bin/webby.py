@@ -50,6 +50,7 @@ import string
 import glob
 import re
 import urllib
+import shutil
 from PIL import Image
 
 import cmLib
@@ -80,9 +81,11 @@ author       = 'Robin'
 cols         = 3
 cwd          = os.getcwd()
 now          = string.lower(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S%Z')) # ctime()
+year         = string.lower(datetime.datetime.now().strftime('%Y')) # ctime()
 width        = 750
 capDir       = 0
 geotag       = False
+bReplace     = False
 
 fcount       = 0
 vcount       = 0
@@ -107,7 +110,7 @@ filedict = {}      # pathname : [ filename,xmlDate,datetime,image,aspect,ignore,
 # 
 def syntax():
     """syntax - print syntax of webby.py """
-    print "syntax: webby [[-photos] <photoDirectory>] [-config config] [-webdir <webdir>] [-title <title>] [-geotag]+ [-capdir <capdir>]]+ "
+    print "syntax: webby [[-photos] <photoDirectory>] [-config config] [-webdir <webdir>] [-title <title>] [-geotag]+ [-replace]+ [-capdir <capdir>]]+ "
 
 
 ##
@@ -506,6 +509,9 @@ def writeImages(webDir,filename,pathname,width,aspect,rotate,cols,bGeotagIcon):
 #
 def writeWebPage(webDir,filename,pathname,webPageString,subs,width,aspect,rotate,cols,bGeotagIcon):
     """writeWebPage - write out a photo page"""
+    global bReplace
+    if os.path.exists(webDir) and bReplace:
+        shutil.rmtree(webDir)
     if not os.path.isdir(webDir):
         os.mkdir(webDir)
 
@@ -642,15 +648,21 @@ def main(argv):
     global subs
     global capDir
     global geotag
+    global bReplace
 
     photoDir = cmLib.getOpt(opts,'photos',os.path.expanduser('~/Pictures'))
     title    = cmLib.getOpt(opts,'title' ,fixCaps(os.path.basename(os.path.expanduser(photoDir))))
     webDir   = cmLib.getOpt(opts,'webdir',os.path.join(cwd,"temp"))
+    webDir   = cmLib.getOpt(opts,'webdir',os.path.join(cwd,year))
     capDir   = cmLib.getOpt(opts,"capdir",False)
     config   = cmLib.getOpt(opts,'config','webby')
     geotag   = cmLib.getOpt(opts,'geotag',False)
+    bReplace = cmLib.getOpt(opts,'replace',False)
     cols     = eval(cmLib.getOpt(opts,'cols','3'))
     width    = eval(cmLib.getOpt(opts,'width','750'))
+    dirs     = os.path.split(photoDir)
+    base     = os.path.basename(dirs[0]) if dirs[1] == '' else dirs[1]
+    webDir   = os.path.join(webDir,base)
 
     mepath   = sys.argv[0]
     me       = os.path.splitext(os.path.basename(mepath))[0] #'webby'
@@ -665,7 +677,7 @@ def main(argv):
     sys.path.insert(0,config)
 
     print "config = ", config
-#   print sys.path 
+#   print sys.path
 
     configModule = __import__(me)
     configs = dir(configModule)
