@@ -36,6 +36,8 @@ EXIV2_RCSID("@(#) $Id$")
 #include "futils.hpp"
 #include "basicio.hpp"
 #include "tags.hpp"
+#include "utilsvideo.hpp"
+
 // + standard includes
 #include <cmath>
 #include <iostream>
@@ -648,22 +650,6 @@ enum audioDescTags{
 };
 
 /*!
-	  @brief Function used to check equality of a Tags with a
-		  particular string (ignores case while comparing).
-	  @param buf Data buffer that will contain Tag to compare
-	  @param str char* Pointer to string
-	  @return Returns true if the buffer value is equal to string.
-	 */
-bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
-{
-	bool	result = true ;
-	for(int32_t i = 0; result && i < 4; ++i)
-		if(tolower(buf.pData_[i]) != tolower(str[i]))
-			result = false;
-	return result;
-}
-
-/*!
  * \brief equalsQTimeTag overloaded function to handle tag Array
  *						It will compare all the tags in a array.
  * \param buf Data buffer that will contain Tag to compare.
@@ -673,10 +659,10 @@ bool equalsQTimeTag(Exiv2::DataBuf& buf ,const char* str)
  */
 bool equalsQTimeTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize)
 {
-	bool  result = false;
-	for ( int32_t i=0; !result && i< arraysize; i++)
-		result	= (bool)(stricmp((const char*)buf.pData_,arr[i+1])==0);
-	return result;
+    bool  result = false;
+    for ( int32_t i=0; !result && i< arraysize; i++)
+        result	= (bool)(stricmp((const char*)buf.pData_,arr[i+1])==0);
+    return result;
 }
 
 /*!
@@ -694,7 +680,7 @@ bool ignoreList (Exiv2::DataBuf& buf)
 
 	int32_t i;
 	for(i = 0 ; i < 13 ; ++i)
-		if(equalsQTimeTag(buf, ignoreList[i]))
+        if(UtilsVideo::compareTagValue(buf, ignoreList[i]))
 			return true;
 
 	return false;
@@ -716,7 +702,7 @@ bool dataIgnoreList (Exiv2::DataBuf& buf)
 
 	int32_t i;
 	for(i = 0 ; i < 8 ; ++i)
-		if(equalsQTimeTag(buf, ignoreList[i]))
+        if(UtilsVideo::compareTagValue(buf, ignoreList[i]))
 			return true;
 
 	return false;
@@ -964,7 +950,7 @@ std::vector< pair<uint32_t,uint32_t> > QuickTimeVideo::findAtomPositions(const c
 	for (uint32_t i=0; i < d->m_QuickSkeleton.size();i++){
 		io_->seek((d->m_QuickSkeleton[i]->m_AtomLocation - 4),BasicIo::beg);
 		io_->read(hdrId.pData_,4);
-		if(equalsQTimeTag(hdrId,atomId))
+        if(UtilsVideo::compareTagValue(hdrId,atomId))
 			atomsDetails.push_back(make_pair((uint32_t)io_->tell(),
 											 (uint32_t)(d->m_QuickSkeleton[i]->m_AtomSize)));
 	}
@@ -1100,7 +1086,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
 {
 	const char allAtomFlags[][5]={"ftyp","mvhd","trak","tkhd","mdhd","hdlr","vmhd","udta","dref","stsd","stts","pnot",
 								  "tapt","keys","url ","urn ","dcom","smhd"};
-	if(equalsQTimeTag(buf,allAtomFlags,(int)(sizeof(allAtomFlags)/5))){
+    if(equalsQTimeTag(buf,allAtomFlags,(int)(sizeof(allAtomFlags)/5))){
 		QuickAtom* tmpAtom = new QuickAtom();
 		tmpAtom->m_AtomLocation = io_->tell();
 		tmpAtom->m_AtomSize = size;
@@ -1115,7 +1101,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
 	else if (decodetIter		) (this->*decodetIter)(size);
 
 	// Decoders with lesser metadata
-	else if (equalsQTimeTag(buf, "url ")){
+    else if (UtilsVideo::compareTagValue(buf, "url ")){
 		if(!d->m_modifyMetadata){
 			io_->read(buf.pData_, size);
 			if (d->currentStream_ == Video)
@@ -1131,7 +1117,7 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
 				io_->seek(size,BasicIo::cur);
 		}
 	}
-	else if (equalsQTimeTag(buf, "urn ")){
+    else if (UtilsVideo::compareTagValue(buf, "urn ")){
 		if(!d->m_modifyMetadata){
 			io_->read(buf.pData_, size);
 			if      (d->currentStream_ == Video) xmpData_["Xmp.video.URN"] = Exiv2::toString(buf.pData_);
@@ -1142,14 +1128,14 @@ void QuickTimeVideo::tagDecoder(Exiv2::DataBuf &buf, uint32_t size)
 			else     io_->seek(size,BasicIo::cur);
 		}
 	}
-	else if (equalsQTimeTag(buf, "dcom")){
+    else if (UtilsVideo::compareTagValue(buf, "dcom")){
 		if(!d->m_modifyMetadata){
 			io_->read(buf.pData_, size);
 			xmpData_["Xmp.video.Compressor"] = Exiv2::toString(buf.pData_);
 		}
 		else writeStringData(xmpData_["Xmp.video.Compressor"],size);
 	}
-	else if (equalsQTimeTag(buf, "smhd")){
+    else if (UtilsVideo::compareTagValue(buf, "smhd")){
 		io_->seek(4,BasicIo::cur);
 		if(!d->m_modifyMetadata){
 			io_->read(buf.pData_, 4);
@@ -1179,7 +1165,7 @@ void QuickTimeVideo::previewTagDecoder(uint32_t size)
 		xmpData_["Xmp.video.PreviewVersion"] = getShort(buf.pData_, bigEndian);
 
 		io_->read(buf.pData_, 4);
-		if(equalsQTimeTag(buf, "PICT"))
+        if(UtilsVideo::compareTagValue(buf, "PICT"))
 			xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
 		else
 			xmpData_["Xmp.video.PreviewAtomType"] = Exiv2::toString(buf.pData_);
@@ -1215,7 +1201,7 @@ void QuickTimeVideo::keysTagDecoder(uint32_t size)
 		xmpData_["Xmp.video.PreviewVersion"] = getShort(buf.pData_, bigEndian);
 
 		io_->read(buf.pData_, 4);
-		if(equalsQTimeTag(buf, "PICT")) xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
+        if(UtilsVideo::compareTagValue(buf, "PICT")) xmpData_["Xmp.video.PreviewAtomType"] = "QuickDraw Picture";
 		else xmpData_["Xmp.video.PreviewAtomType"] = Exiv2::toString(buf.pData_);
 		io_->seek(cur_pos + size, BasicIo::beg);
 	} else {
@@ -1245,7 +1231,7 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size)
 		while(n--){
 			io_->seek(static_cast<int32_t>(4), BasicIo::cur); io_->read(buf.pData_, 4);
 
-			if(equalsQTimeTag(buf, "clef")){
+            if(UtilsVideo::compareTagValue(buf, "clef")){
 				io_->seek(static_cast<int32_t>(4), BasicIo::cur);
 				io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
 				xmpData_["Xmp.video.CleanApertureWidth"]	=	Exiv2::toString(getUShort(buf.pData_, bigEndian))
@@ -1254,7 +1240,7 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size)
 				xmpData_["Xmp.video.CleanApertureHeight"]	=	Exiv2::toString(getUShort(buf.pData_, bigEndian))
 						+ "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
 			}
-			else if(equalsQTimeTag(buf, "prof")){
+            else if(UtilsVideo::compareTagValue(buf, "prof")){
 				io_->seek(static_cast<int32_t>(4), BasicIo::cur);
 				io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
 				xmpData_["Xmp.video.ProductionApertureWidth"]	 =	 Exiv2::toString(getUShort(buf.pData_, bigEndian))
@@ -1263,7 +1249,7 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size)
 				xmpData_["Xmp.video.ProductionApertureHeight"]	 =	 Exiv2::toString(getUShort(buf.pData_, bigEndian))
 						+ "." + Exiv2::toString(getUShort(buf2.pData_, bigEndian));
 			}
-			else if(equalsQTimeTag(buf, "enof")){
+            else if(UtilsVideo::compareTagValue(buf, "enof")){
 				io_->seek(static_cast<int32_t>(4), BasicIo::cur);
 				io_->read(buf.pData_, 2); io_->read(buf2.pData_, 2);
 				xmpData_["Xmp.video.EncodedPixelsWidth"]	=	Exiv2::toString(getUShort(buf.pData_, bigEndian))
@@ -1279,17 +1265,17 @@ void QuickTimeVideo::trackApertureTagDecoder(uint32_t size)
 		while(n--){
 			io_->seek(static_cast<int32_t>(4), BasicIo::cur); io_->read(buf.pData_, 4);
 
-			if(equalsQTimeTag(buf, "clef")){
+            if(UtilsVideo::compareTagValue(buf, "clef")){
 				io_->seek(static_cast<int32_t>(4), BasicIo::cur);
 				writeApertureData(xmpData_["Xmp.video.CleanApertureWidth"],4);
 				writeApertureData(xmpData_["Xmp.video.CleanApertureHeight"],4);
 			}
-			else if(equalsQTimeTag(buf, "prof")){
+            else if(UtilsVideo::compareTagValue(buf, "prof")){
 				io_->seek(static_cast<int32_t>(4), BasicIo::cur);
 				writeApertureData(xmpData_["Xmp.video.ProductionApertureWidth"],4);
 				writeApertureData(xmpData_["Xmp.video.ProductionApertureHeight"],4);
 			}
-			else if(equalsQTimeTag(buf, "enof")){
+            else if(UtilsVideo::compareTagValue(buf, "enof")){
 				io_->seek(static_cast<int32_t>(4), BasicIo::cur);
 				writeApertureData(xmpData_["Xmp.video.EncodedPixelsWidth"],4);
 				writeApertureData(xmpData_["Xmp.video.EncodedPixelsHeight"],4);
@@ -1306,7 +1292,7 @@ void QuickTimeVideo::CameraTagsDecoder(uint32_t size_external)
 	const TagDetails* td;
 	const RevTagDetails* rtd;
 	io_->read(buf.pData_, 4);
-	if(equalsQTimeTag(buf, "NIKO")){
+    if(UtilsVideo::compareTagValue(buf, "NIKO")){
 		io_->seek(cur_pos, BasicIo::beg);
 		if(!d->m_modifyMetadata){
 			io_->read(buf.pData_, 24);
@@ -1423,16 +1409,16 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
 			tv = find(userDataReferencetags, Exiv2::toString( buf.pData_));
 
 			if     (size == 0 || (size - 12) <= 0) break;
-			else if(equalsQTimeTag(buf, "DcMD")	 || equalsQTimeTag(buf, "NCDT")) userDataDecoder(size - 8);
-			else if(equalsQTimeTag(buf, "NCTG"))                                 NikonTagsDecoder(size - 8);
-			else if(equalsQTimeTag(buf, "TAGS"))                                 CameraTagsDecoder(size - 8);
-			else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
-					|| equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
-					|| equalsQTimeTag(buf, "FFMV")){
+            else if(UtilsVideo::compareTagValue(buf, "DcMD")	 || UtilsVideo::compareTagValue(buf, "NCDT")) userDataDecoder(size - 8);
+            else if(UtilsVideo::compareTagValue(buf, "NCTG"))                                 NikonTagsDecoder(size - 8);
+            else if(UtilsVideo::compareTagValue(buf, "TAGS"))                                 CameraTagsDecoder(size - 8);
+            else if(UtilsVideo::compareTagValue(buf, "CNCV") || UtilsVideo::compareTagValue(buf, "CNFV")
+                    || UtilsVideo::compareTagValue(buf, "CNMN") || UtilsVideo::compareTagValue(buf, "NCHD")
+                    || UtilsVideo::compareTagValue(buf, "FFMV")){
 				io_->read(buf.pData_, size - 8);
 				xmpData_[exvGettext(tv->label_)] = Exiv2::toString(buf.pData_);
 			}
-			else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo")){
+            else if(UtilsVideo::compareTagValue(buf, "CMbo") || UtilsVideo::compareTagValue(buf, "Cmbo")){
 				io_->read(buf.pData_, 2);
 				buf.pData_[2] = '\0' ;
 				tv_internal = find(cameraByteOrderTags, Exiv2::toString( buf.pData_));
@@ -1459,14 +1445,14 @@ void QuickTimeVideo::userDataDecoder(uint32_t size_external)
 			td = find(userDatatags, Exiv2::toString( buf.pData_));
 			tv = find(userDataReferencetags, Exiv2::toString( buf.pData_));
 			if     (size == 0 || (size - 12) <= 0) break;  // size <= 12?
-			else if(equalsQTimeTag(buf, "DcMD")	 || equalsQTimeTag(buf, "NCDT")) userDataDecoder(size - 8);
-			else if(equalsQTimeTag(buf, "NCTG")) NikonTagsDecoder(size - 8);
-			else if(equalsQTimeTag(buf, "TAGS")) CameraTagsDecoder(size - 8);
-			else if(equalsQTimeTag(buf, "CNCV") || equalsQTimeTag(buf, "CNFV")
-				 || equalsQTimeTag(buf, "CNMN") || equalsQTimeTag(buf, "NCHD")
-			     || equalsQTimeTag(buf, "FFMV")
+            else if(UtilsVideo::compareTagValue(buf, "DcMD")	 || UtilsVideo::compareTagValue(buf, "NCDT")) userDataDecoder(size - 8);
+            else if(UtilsVideo::compareTagValue(buf, "NCTG")) NikonTagsDecoder(size - 8);
+            else if(UtilsVideo::compareTagValue(buf, "TAGS")) CameraTagsDecoder(size - 8);
+            else if(UtilsVideo::compareTagValue(buf, "CNCV") || UtilsVideo::compareTagValue(buf, "CNFV")
+                 || UtilsVideo::compareTagValue(buf, "CNMN") || UtilsVideo::compareTagValue(buf, "NCHD")
+                 || UtilsVideo::compareTagValue(buf, "FFMV")
 			     ) 	writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
-			else if(equalsQTimeTag(buf, "CMbo") || equalsQTimeTag(buf, "Cmbo")) io_->seek(2,BasicIo::cur);
+            else if(UtilsVideo::compareTagValue(buf, "CMbo") || UtilsVideo::compareTagValue(buf, "Cmbo")) io_->seek(2,BasicIo::cur);
 			else if(tv) writeShortData(xmpData_[exvGettext(tv->label_)],(size-8));
 		}
 		io_->seek(cur_pos + size_external, BasicIo::beg);
@@ -1893,13 +1879,13 @@ void QuickTimeVideo::setMediaStream(uint32_t /* iDummySize*/)
 
 	while( !io_->eof() ) {
 		io_->read(buf.pData_, 4);
-		if (equalsQTimeTag(buf, "hdlr")) {
+        if (UtilsVideo::compareTagValue(buf, "hdlr")) {
 			io_->seek(8,BasicIo::cur);
 			io_->read(buf.pData_, 4);
 
-			if		(equalsQTimeTag(buf, "vide")) d->currentStream_ = Video;
-			else if (equalsQTimeTag(buf, "soun")) d->currentStream_ = Audio;
-			else if (equalsQTimeTag(buf, "hint")) d->currentStream_ = Hint;
+            if		(UtilsVideo::compareTagValue(buf, "vide")) d->currentStream_ = Video;
+            else if (UtilsVideo::compareTagValue(buf, "soun")) d->currentStream_ = Audio;
+            else if (UtilsVideo::compareTagValue(buf, "hint")) d->currentStream_ = Hint;
 			else								  d->currentStream_ = GenMediaHeader;
 			break;
 		}
@@ -2380,9 +2366,9 @@ void QuickTimeVideo::fileTypeDecoder(uint32_t size)
 				case 0:
 					 if(xmpData_["Xmp.video.MajorBrand"].count() > 0){
 						Exiv2::byte rawMajorBrand[4];
-						td = find(revTagVocabulary, xmpData_["Xmp.video.MajorBrand"].toString());
+                        td = find(revTagVocabulary, xmpData_["Xmp.video.MajorBrand"].toString());
 						const char* majorBrandVoc = td->label_;
-						for(int32_t j=0; j<4 ;j++)rawMajorBrand[j] = majorBrandVoc[i];
+                        for(int32_t j=0; j<4 ;j++)rawMajorBrand[j] = majorBrandVoc[i];
 						bDataWritten = writeMultibyte(rawMajorBrand,4);
 					 }
 				break;
