@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
  */
 /*
-  File:      version.cpp 
+  File:      version.cpp
   Version:   $Rev: 3223 $
   Author(s): Andreas Huggel (ahu) <ahuggel@gmx.net>
   History:   06-Mar-07, ahu: created
