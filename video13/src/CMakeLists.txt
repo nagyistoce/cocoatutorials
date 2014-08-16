@@ -74,6 +74,7 @@ SET( LIBEXIV2_HDR         asfvideo.hpp
                           version.hpp
                           xmp.hpp
                           xmpsidecar.hpp
+                          utilsvideo.hpp
    )
 
 # Add library C++ source files to this list
@@ -128,6 +129,7 @@ SET( LIBEXIV2_SRC         asfvideo.cpp
                           version.cpp
                           xmp.cpp
                           xmpsidecar.cpp
+                          utilsvideo.cpp
    )
 
 ##
