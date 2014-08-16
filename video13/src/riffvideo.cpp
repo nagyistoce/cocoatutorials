@@ -40,12 +40,11 @@ EXIV2_RCSID("@(#) $Id$")
 #include "types.hpp"
 #include "tiffimage_int.hpp"
 #include "string.h"
+#include "utilsvideo.hpp"
+
 // + standard includes
 #include <cmath>
 
-#ifndef   _MSC_VER
-#define stricmp strcasecmp
-#endif
 // *****************************************************************************
 // class member definitions
 namespace Exiv2{
@@ -478,48 +477,6 @@ namespace Exiv2{
 
     int64_t i;     //!< temporary variable.
     int64_t j;     //!< temporary variable.
-    /*!
-      @brief Function used to check equality of a Tags with a
-          particular string (ignores case while comparing).
-      @param buf Data buffer that will contain Tag to compare
-      @param str char* Pointer to string
-      @return Returns true if the buffer value is equal to string.
-     */
-    bool equalsRiffTag(Exiv2::DataBuf& buf ,const char* str){
-        for( i=0; i<4; i++ )
-            if(toupper(buf.pData_[i]) != str[i])
-                return false;
-        return true;
-    }
-
-    /*!
-     * \brief simpleBytesComparision bitwise comparition of string and and buffer.
-     * \param buf Buffer
-     * \param str
-     * \param size
-     * \return
-     */
-    bool simpleBytesComparision(Exiv2::DataBuf& buf ,const char* str,int32_t size){
-        for( i=0; i<size; i++ )
-            if(toupper(buf.pData_[i]) != str[i])
-                return false;
-        return true;
-    }
-
-    /*!
-     * \brief equalsRiffTag overloaded function to handle tag Array
-     *                      It will compare all the tags in a array.
-     * \param buf Data buffer that will contain Tag to compare.
-     * \param arr Contains multiple tags to compare from.
-     * \param arraysize Number of tags in arr.
-     * \return true if buf matches any one tag in arr.
-     */
-    bool equalsRiffTag(Exiv2::DataBuf& buf,const char arr[][5],int32_t arraysize){
-        bool  result = false;
-        for ( int32_t i=0; !result && i< arraysize; i++)
-            result  = (bool)(stricmp((const char*)buf.pData_,arr[i])==0);
-        return result;
-    }
 
     //! To select specific bytes with in a chunk.
     enum streamTypeInfo{
@@ -597,7 +554,7 @@ std::vector<int32_t> RiffVideo::findChunkPositions(const char* chunkId){
     for ( i=0; i<d->m_riffFileSkeleton.m_primitiveChunks.size(); i++){
         io_->seek(d->m_riffFileSkeleton.m_primitiveChunks[i]->m_chunkLocation,BasicIo::beg);
         io_->read(chkId.pData_,4);
-        if(equalsRiffTag(chkId,chunkId)) positions.push_back((int32_t)io_->tell());
+        if(UtilsVideo::compareTagValue(chkId,chunkId)) positions.push_back((int32_t)io_->tell());
     }
     return positions;
 }
@@ -612,7 +569,7 @@ std::vector<int32_t> RiffVideo::findHeaderPositions(const char* headerId){
     for (i=0;i<d->m_riffFileSkeleton.m_headerChunks.size();i++){
         io_->seek((d->m_riffFileSkeleton.m_headerChunks[i]->m_headerLocation + 4),BasicIo::beg);
         io_->read(hdrId.pData_,4);
-        if(equalsRiffTag(hdrId,headerId)) positions.push_back((int32_t)io_->tell() - 8);
+        if(UtilsVideo::compareTagValue(hdrId,headerId)) positions.push_back((int32_t)io_->tell() - 8);
     }
     return positions;
 }
@@ -770,7 +727,7 @@ void RiffVideo::decodeBlock(){
     io_->read(chkId.pData_, 4);
 
     if(io_->eof()) return;
-    else if(equalsRiffTag(chkId, "LIST") || equalsRiffTag(chkId, "JUNK")){
+    else if(UtilsVideo::compareTagValue(chkId, "LIST") || UtilsVideo::compareTagValue(chkId, "JUNK")){
         io_->seek(-4,BasicIo::cur);
         tagDecoder();
     }
@@ -784,7 +741,7 @@ void RiffVideo::tagDecoder(){
 
     if(io_->eof()) return;
 
-    if (equalsRiffTag(chkMainId, "LIST")){
+    if (UtilsVideo::compareTagValue(chkMainId, "LIST")){
         DataBuf listSize((const int32_t)5);
         DataBuf chkHeader((const int32_t)5);
 
@@ -816,7 +773,7 @@ void RiffVideo::tagDecoder(){
                                                "STRH","STRF","STRN","STRD"};
             const char allHeaderFlags[][5]={"NCDT","ODML","MOVI","INFO"};
 
-            if(equalsRiffTag(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5))){
+            if(UtilsVideo::compareTagValue(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5))){
                 PrimitiveChunk* tmpPremitiveChunk = new PrimitiveChunk();
                 memcpy((Exiv2::byte* )tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)chkId.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 8;
@@ -824,55 +781,55 @@ void RiffVideo::tagDecoder(){
                 d->m_riffFileSkeleton.m_primitiveChunks.push_back(tmpPremitiveChunk);
             }
 
-            if(equalsRiffTag(chkHeader,allHeaderFlags,(int32_t)(sizeof(allHeaderFlags)/5))){
+            if(UtilsVideo::compareTagValue(chkHeader,allHeaderFlags,(int32_t)(sizeof(allHeaderFlags)/5))){
                 tmpHeaderChunk->m_headerLocation = io_->tell() - 16;
                 tmpHeaderChunk->m_headerSize = listsize ;
                 d->m_riffFileSkeleton.m_headerChunks.push_back(tmpHeaderChunk);
                 position = RiffVideo::TraversingChunk;
             }
             //to handle AVI file formats
-            if(!d->m_decodeMetaData && equalsRiffTag(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5))) io_->seek(size,BasicIo::cur);
+            if(!d->m_decodeMetaData && UtilsVideo::compareTagValue(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5))) io_->seek(size,BasicIo::cur);
 
-            else if(!d->m_decodeMetaData && equalsRiffTag(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5))) io_->seek((listsize - 12),BasicIo::cur);
+            else if(!d->m_decodeMetaData && UtilsVideo::compareTagValue(chkHeader,allHeaderFlags,(int)(sizeof(allHeaderFlags)/5))) io_->seek((listsize - 12),BasicIo::cur);
 
-            else if(equalsRiffTag(chkId, "JUNK")) junkHandler(size);
+            else if(UtilsVideo::compareTagValue(chkId, "JUNK")) junkHandler(size);
             //primitive chunks note:compare chkId
-            else if(equalsRiffTag(chkId, "AVIH")) aviHeaderTagsHandler(size);
-            else if(equalsRiffTag(chkId, "STRH")){
+            else if(UtilsVideo::compareTagValue(chkId, "AVIH")) aviHeaderTagsHandler(size);
+            else if(UtilsVideo::compareTagValue(chkId, "STRH")){
                 //since strh and strf exist sequential stream type can be set once
                 setStreamType();
                 streamHandler(size);
             }
-            else if(equalsRiffTag(chkId,"STRF") || equalsRiffTag(chkId, "FMT ")){
-                if(equalsRiffTag(chkId,"FMT ")) d->streamType_ = Audio;
+            else if(UtilsVideo::compareTagValue(chkId,"STRF") || UtilsVideo::compareTagValue(chkId, "FMT ")){
+                if(UtilsVideo::compareTagValue(chkId,"FMT ")) d->streamType_ = Audio;
                 streamFormatHandler(size);
             }
-            else if(equalsRiffTag(chkId, "STRN")) dateTimeOriginal(size, 1);
-            else if(equalsRiffTag(chkId, "STRD")) streamDataTagHandler(size);
+            else if(UtilsVideo::compareTagValue(chkId, "STRN")) dateTimeOriginal(size, 1);
+            else if(UtilsVideo::compareTagValue(chkId, "STRD")) streamDataTagHandler(size);
             //add more else if to support more primitive chunks below if any
             //TODO:add indx support
 
             //recursive call to decode LIST by breaking out of the loop
-            else if(equalsRiffTag(chkId, "LIST")){
+            else if(UtilsVideo::compareTagValue(chkId, "LIST")){
                 position = RiffVideo::TraversingChunk;
                 io_->seek(-8,BasicIo::cur);
             }
 
             //header chunks note:compare chkHeader
-            else if(equalsRiffTag(chkHeader, "INFO")){
+            else if(UtilsVideo::compareTagValue(chkHeader, "INFO")){
                 io_->seek(-16,BasicIo::cur);
                 infoTagsHandler();
             }
-            else if(equalsRiffTag(chkHeader, "NCDT")){
+            else if(UtilsVideo::compareTagValue(chkHeader, "NCDT")){
                 io_->seek(-16,BasicIo::cur);
                 nikonTagsHandler();
             }
-            else if(equalsRiffTag(chkHeader, "ODML")){
+            else if(UtilsVideo::compareTagValue(chkHeader, "ODML")){
                 io_->seek(-16,BasicIo::cur);
                 odmlTagsHandler();
             }
             //only way to exit from readMetadata()
-            else if(equalsRiffTag(chkHeader, "MOVI") || equalsRiffTag(chkMainId, "DATA")) io_->seek(listsize-12,BasicIo::cur);
+            else if(UtilsVideo::compareTagValue(chkHeader, "MOVI") || UtilsVideo::compareTagValue(chkMainId, "DATA")) io_->seek(listsize-12,BasicIo::cur);
             //Add read functionality for custom chunk headers or user created tags here with more (else if) before else.
 
             //skip block with unknown chunk ID (primitive chunk)
@@ -884,14 +841,14 @@ void RiffVideo::tagDecoder(){
             //skip chunk with unknown headerId
             else io_->seek(io_->tell()+size, BasicIo::cur);
 
-            if(equalsRiffTag(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5)) && (size % 2 != 0)) io_->seek(1,BasicIo::cur);
+            if(UtilsVideo::compareTagValue(chkId,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5)) && (size % 2 != 0)) io_->seek(1,BasicIo::cur);
 
-            if(equalsRiffTag(chkId,allHeaderFlags,(int32_t)(sizeof(allHeaderFlags)/5)) && (listsize % 2 != 0)) io_->seek(1,BasicIo::cur);
+            if(UtilsVideo::compareTagValue(chkId,allHeaderFlags,(int32_t)(sizeof(allHeaderFlags)/5)) && (listsize % 2 != 0)) io_->seek(1,BasicIo::cur);
         }
     }
 
     //AVIX can have JUNK chunk directly inside RIFF chunk
-    else if(equalsRiffTag(chkMainId, "JUNK")){
+    else if(UtilsVideo::compareTagValue(chkMainId, "JUNK")){
         DataBuf junkSize((const int32_t)5);
         junkSize.pData_[4] = '\0';
         io_->read(junkSize.pData_, 4);
@@ -905,7 +862,7 @@ void RiffVideo::tagDecoder(){
         }
         else junkHandler(size);
     }
-    else if(equalsRiffTag(chkMainId, "IDIT")){
+    else if(UtilsVideo::compareTagValue(chkMainId, "IDIT")){
         DataBuf dataSize((const int32_t)5);
         dataSize.pData_[4] = '\0';
         io_->read(dataSize.pData_, 4);
@@ -933,7 +890,7 @@ void RiffVideo::streamDataTagHandler(int32_t size){
 
     io_->read(buf.pData_, 8);
 
-    if(equalsRiffTag(buf, "AVIF")){
+    if(UtilsVideo::compareTagValue(buf, "AVIF")){
 
         if (size - 4 < 0){
 #ifndef SUPPRESS_WARNINGS
@@ -1013,7 +970,7 @@ void RiffVideo::odmlTagsHandler(){
 
         while(size > 0){
             io_->read(buf.pData_, 4); size -= 4;
-            if(equalsRiffTag(buf,"DMLH")){
+            if(UtilsVideo::compareTagValue(buf,"DMLH")){
                 io_->read(buf.pData_, 4); size -= 4;
                 io_->read(buf.pData_, 4); size -= 4;
                 xmpData_["Xmp.video.TotalFrameCount"] = Exiv2::getULong(buf.pData_, littleEndian);
@@ -1026,7 +983,7 @@ void RiffVideo::odmlTagsHandler(){
             uint64_t tmpSize = Exiv2::getULong(buf.pData_, littleEndian);
             while(tmpSize > 0){
                 io_->read(buf.pData_,4); tmpSize -= 4;
-                if(equalsRiffTag(buf,"DMLH")){
+                if(UtilsVideo::compareTagValue(buf,"DMLH")){
                     io_->seek(4,BasicIo::cur);
                     writeLongData(xmpData_["Xmp.video.TotalFrameCount"]);
                     return;
@@ -1071,7 +1028,7 @@ void RiffVideo::nikonTagsHandler(){
         int32_t temp = internal_size = Exiv2::getULong(buf2.pData_, littleEndian);
         internal_pos = io_->tell(); tempSize -= (internal_size + 8);
 
-        if(equalsRiffTag(buf, "NCVR")){
+        if(UtilsVideo::compareTagValue(buf, "NCVR")){
             while((int32_t)temp > 3){
                 std::memset(buf.pData_, 0x0, buf.size_);
                 io_->read(buf.pData_, 2);
@@ -1126,7 +1083,7 @@ void RiffVideo::nikonTagsHandler(){
                 }
             }
         }
-        else if(equalsRiffTag(buf, "NCTG")){
+        else if(UtilsVideo::compareTagValue(buf, "NCTG")){
             if(!d->m_modifyMetadata){
                 while((int32_t)temp > 3){
                     std::memset(buf.pData_, 0x0, buf.size_);
@@ -1225,10 +1182,10 @@ void RiffVideo::nikonTagsHandler(){
 
         }
 
-        else if(equalsRiffTag(buf, "NCTH")){//TODO Nikon Thumbnail Image
+        else if(UtilsVideo::compareTagValue(buf, "NCTH")){//TODO Nikon Thumbnail Image
         }
 
-        else if(equalsRiffTag(buf, "NCVW")){//TODO Nikon Preview Image
+        else if(UtilsVideo::compareTagValue(buf, "NCVW")){//TODO Nikon Preview Image
         }
 
         io_->seek(internal_pos + internal_size, BasicIo::beg);
@@ -1258,7 +1215,7 @@ void RiffVideo::infoTagsHandler(){
                                            "TAPE","YEAR","IPRD","IKEY","ICOP","ICNT","CMNT"};
         while(dataLenght > 12){
             io_->read(buf.pData_, 4);
-            if(equalsRiffTag(buf,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5))){
+            if(UtilsVideo::compareTagValue(buf,allPrimitiveFlags,(int32_t)(sizeof(allPrimitiveFlags)/5))){
                 PrimitiveChunk* tmpPremitiveChunk = new PrimitiveChunk();
                 memcpy((Exiv2::byte*)tmpPremitiveChunk->m_chunkId,(const Exiv2::byte*)buf.pData_,5);
                 tmpPremitiveChunk->m_chunkLocation = io_->tell() - 4;
@@ -1335,7 +1292,7 @@ void RiffVideo::junkHandler(int32_t size){
 
         io_->read(buf.pData_, 4);
         //! Pentax Metadata and Tags
-        if(equalsRiffTag(buf, "PENT")){
+        if(UtilsVideo::compareTagValue(buf, "PENT")){
             io_->seek(cur_pos + 18, BasicIo::beg);
             io_->read(buf.pData_, 26);
             xmpData_["Xmp.video.Make"] = buf.pData_;
@@ -1455,9 +1412,9 @@ void RiffVideo::aviHeaderTagsHandler(int32_t size){
 void RiffVideo::setStreamType(){
     DataBuf chkId((uint64_t)5);
     io_->read(chkId.pData_,(uint64_t)4);
-    if(equalsRiffTag(chkId, "VIDS"))
+    if(UtilsVideo::compareTagValue(chkId, "VIDS"))
         d->streamType_ = Video;
-    else if (equalsRiffTag(chkId, "AUDS"))
+    else if (UtilsVideo::compareTagValue(chkId, "AUDS"))
         d->streamType_ = Audio;
     return;
 }//RiffVideo::setStreamType
@@ -1677,10 +1634,10 @@ void RiffVideo::streamFormatHandler(int32_t size){
                 int32_t i;
                 for( i=0; i<=sizeChan;i++) tmpBuf.pData_[i] = (Exiv2::byte)audioChannealType[i];
                 uint16_t channelType = 0;
-                if(simpleBytesComparision(tmpBuf,"MONO",sizeChan)) channelType = 1;
-                else if(simpleBytesComparision(tmpBuf,"STEREO",sizeChan)) channelType = 2;
-                else if(simpleBytesComparision(tmpBuf,"5.1 SURROUND SOUND",sizeChan)) channelType = 5;
-                else if(simpleBytesComparision(tmpBuf,"7.1 SURROUND SOUND",sizeChan)) channelType = 7;
+                if(UtilsVideo::simpleBytesComparision(tmpBuf,"MONO",sizeChan)) channelType = 1;
+                else if(UtilsVideo::simpleBytesComparision(tmpBuf,"STEREO",sizeChan)) channelType = 2;
+                else if(UtilsVideo::simpleBytesComparision(tmpBuf,"5.1 SURROUND SOUND",sizeChan)) channelType = 5;
+                else if(UtilsVideo::simpleBytesComparision(tmpBuf,"7.1 SURROUND SOUND",sizeChan)) channelType = 7;
                 io_->write((Exiv2::byte*)&channelType,2);
             }
             else io_->seek(2,BasicIo::cur);
