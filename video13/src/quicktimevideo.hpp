@@ -221,12 +221,6 @@ private:
          */
     void setMediaStream(uint32_t iDummySize);
     /*!
-          @brief Used to discard a tag along with its data. The Tag will
-              be skipped and not decoded.
-          @param size Size of the data block that is to skipped.
-         */
-    void discard(uint32_t size);
-    /*!
           @brief Calculates Aspect Ratio of a video, and stores it in the
               respective XMP container.
          */
@@ -325,6 +319,9 @@ private:
      * \param iFunc2Call
      */
     void readAudVidData(std::string sTag, int32_t iNumRdBytes, double dMulFact ,int32_t iFunc2Call);
+
+    void readAudVidStrData(std::string sTag, int32_t iNumRdBytes);
+    void readStrData(std::string sTag, int32_t iNumRdBytes);
 
 private:
 
