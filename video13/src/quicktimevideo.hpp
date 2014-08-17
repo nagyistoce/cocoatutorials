@@ -317,6 +317,15 @@ private:
      */
     bool writeAudVidData( std::string sXmpTag, double iMulFactor, int64_t iBytCnt, int64_t iOffset, int64_t iRetFuncCall);
 
+    /*!
+     * \brief readAudVidData
+     * \param sTag
+     * \param iNumRdBytes
+     * \param dMulFact
+     * \param iFunc2Call
+     */
+    void readAudVidData(std::string sTag, int32_t iNumRdBytes, double dMulFact ,int32_t iFunc2Call);
+
 private:
 
     class Private;
