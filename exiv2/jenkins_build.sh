@@ -28,7 +28,7 @@ make config
 ./configure --prefix=$PWD/usr
 make LDFLAGS=-L${PWD}/usr/lib
 make install
-make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs"
+make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs  -lexiv2"
 if [ "$tests" == true ]; then
 	make tests
 fi
