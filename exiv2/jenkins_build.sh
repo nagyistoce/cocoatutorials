@@ -7,6 +7,8 @@ if [ "$HOME" == "/Users/rmills" ]; then
 fi
 cd "$DIR"
 
+if [ -z "$tests" ]; tests=true; fi
+
 export PATH=$PATH:/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/bin:/usr/lib/pkgconfig:/opt/local/bin:$PWD/usr/bin:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig:bin
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PWD/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
 ##
