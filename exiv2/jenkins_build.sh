@@ -2,9 +2,9 @@
 
 set +v
 DIR="$PWD"
-if [ "$HOME" == "/Users/rmills" ]; then 
+#if [ "$HOME" == "/Users/rmills" ]; then 
   source ~/bin/.profile
-fi
+#fi
 cd "$DIR"
 
 if [ -z "$tests" ]; then tests=false; fi
