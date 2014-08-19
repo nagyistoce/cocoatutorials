@@ -18,12 +18,6 @@ if [ -e config/config.mk ]; then
     make distclean
 fi
 
-##
-# remove anything left from previous build
-#for ext in .a .la .exe ; do
-#   find . -name "\"*$ext\"" -exec rm -rf {} ";"
-#done
-
 make config
 
 if [ "$PLATFORM" == "cygwin" ]; then 
@@ -31,36 +25,38 @@ if [ "$PLATFORM" == "cygwin" ]; then
     # I've given up:
     # 1 trying to get Cygwin to build with gettext and friends
     # 2 trying to get Cygwin to install into a local directory
-#	./configure --disable-nls
-#	make install
-#	make
-#	make samples
+	./configure --disable-nls
+	make install
+	make
+	make samples
 
 	##
 	# Daisy chain to msvc Build
-	export ACTION=/rebuild
-	export BuildEnv=native
-	export Builder=2005
-	export COMPILER=G++
-	export debug=false
-	export dll=true
-	export expat=true
-	export libssh=false
-	export Linux=true
-	export MSVC=true
-	export openssl=false
-	export release=true
-	export static=false
-	export teste=false
-	export testr=false
-	export tests=true
-	export testv=false
-	export Win32=false
-	export x64=true
-	export zlib=true	
+#	export ACTION=/rebuild
+#	export BuildEnv=native
+#	export Builder=2005
+#	export COMPILER=G++
+#	export debug=false
+#	export dll=true
+#	export expat=true
+#	export libssh=false
+#	export Linux=true
+#	export MSVC=true
+#	export openssl=false
+#	export release=true
+#	export static=false
+#	export teste=false
+#	export testr=false
+#	export tests=true
+#	export testv=false
+#	export Win32=false
+#	export x64=true
+#	export zlib=true#
+#	rm -rf $PWD/bin
+#	mkdir $PWD/bind	
 
-	PATH=$PATH:/cygdrive/c/Windows/System32
-	cmd.exe /c "cd $(cygpath -aw .) && call jenkins_build.bat"
+#	PATH=$PATH:/cygdrive/c/Windows/System32
+#	cmd.exe /c "cd $(cygpath -aw .) && call jenkins_build.bat"
 else
 	./configure --prefix=$PWD/usr
 	make "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs"
