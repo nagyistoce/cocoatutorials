@@ -33,12 +33,14 @@ make config
 
 if [ "$PLATFORM" == "cygwin" ]; then 
 #	export LIBS=-lintl
-	./configure --prefix=$PWD/usr --disable-nls
+    # I've given up trying to build with gettext and friends on Cygwin
+    # And trying to get Cygwin to install into a local directory
+	./configure --disable-nls
 else
 	./configure --prefix=$PWD/usr
 fi
 
-make LDFLAGS=-L${PWD}/usr/lib
+make "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs"
 make install
 make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs -lexiv2"
 if [ "$tests" == true ]; then
