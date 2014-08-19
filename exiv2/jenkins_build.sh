@@ -7,7 +7,7 @@ if [ "$HOME" == "/Users/rmills" ]; then
 fi
 cd "$DIR"
 
-if [ -z "$tests" ]; then tests=true; fi
+if [ -z "$tests" ]; then tests=false; fi
 
 export PATH=$PATH:/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/bin:/usr/lib/pkgconfig:/opt/local/bin:$PWD/usr/bin:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig:bin
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PWD/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/pkgconfig
@@ -36,13 +36,14 @@ if [ "$PLATFORM" == "cygwin" ]; then
     # I've given up trying to build with gettext and friends on Cygwin
     # And trying to get Cygwin to install into a local directory
 	./configure --disable-nls
+	make
 else
 	./configure --prefix=$PWD/usr
+	make "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs"
 fi
 
-make "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs"
-make install
-make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs -lexiv2"
+# make install
+# make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs -lexiv2"
 if [ "$tests" == true ]; then
 	make tests
 fi
