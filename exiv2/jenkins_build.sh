@@ -27,14 +27,23 @@ fi
 #done
 
 make config
-./configure --prefix=$PWD/usr
+# if [ "$PLATFORM" == "cygwin" ]; then 
+#	export LIBS=-lintl
+#fi
+
+if [ "$PLATFORM" == "cygwin" ]; then 
+#	export LIBS=-lintl
+	./configure --prefix=$PWD/usr --disable-nls
+else
+	./configure --prefix=$PWD/usr
+fi
+
 make LDFLAGS=-L${PWD}/usr/lib
 make install
-make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs  -lexiv2"
+make samples CXXFLAGS=-I${PWD}/usr/include "LDFLAGS=-L${PWD}/usr/lib -L${PWD}/xmpsdk/src/.libs -lexiv2"
 if [ "$tests" == true ]; then
 	make tests
 fi
-
 
 # That's all Folks!
 ##
