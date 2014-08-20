@@ -526,9 +526,6 @@ fi
 
 if [ "$PLATFORM" == "macosx" ]; then
   	alias xce='open -a /Applications/Xcode.app'
-  	if [ -e /opt/local/bin/svn ]; then
-  		alias svn='/opt/local/bin/svn'
-  	fi
 
 	pushd / >/dev/null
 		# turn off local backup in time machine
