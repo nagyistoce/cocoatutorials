@@ -33,17 +33,7 @@ fi
 
 make config
 
-build=0
-if [ $PLATFORM == "linux"  -a "$linux"  == "true" ]; then build=1; fi
-if [ $PLATFORM == "macosx" -a "$macosx" == "true" ]; then build=1; fi
-
-
 if [ "$PLATFORM" == "cygwin" ]; then 
-#	export LIBS=-lintl
-    # I've given up:
-    # 1 trying to get Cygwin to build with gettext and friends
-    # 2 trying to get Cygwin to install into a local directory
-    
     if [ "$label" == "MSVC" ] ; then
 		##
 		# Invoke MSVC build
@@ -75,12 +65,23 @@ if [ "$PLATFORM" == "cygwin" ]; then
 	 	cmd.exe /c "cd $(cygpath -aw .) && call jenkins_build.bat"
 	 	exit $?
     else
+		# export LIBS=-lintl
+		# I've given up:
+		# 1. trying to get Cygwin to build with gettext and friends
+		# 2. trying to get Cygwin to install into a local directory
 		./configure --disable-nls
 		make
 		make install
 		make samples
+		if [ "$tests" == true ]; then
+			make tests
+		fi
 	fi
 fi
+
+build=0
+if [ $PLATFORM == "linux"  -a "$linux"  == "true" ]; then build=1; fi
+if [ $PLATFORM == "macosx" -a "$macosx" == "true" ]; then build=1; fi
 
 if [ $build == 1 ]; then
 	./configure --prefix=$PWD/usr
