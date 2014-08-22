@@ -752,8 +752,7 @@ def main(argv):
             filename = filedict[k][0]
             bIgnore  = False
             for ig in ignore:
-                if not bIgnore and re.search(ig,filename): 
-                    bIgnore = True 
+                bIgnore = bIgnore or filename.find(ig) != -1 
             if bIgnore:
                 nIgnored+=1
             filedict[k].append(bIgnore)
@@ -797,7 +796,7 @@ def main(argv):
             pathname   = k
             filename   = filedict[k][0]
             timestring = filedict[k][1]
-            bIgnore    = filedict[k][5]
+            bIgnore    = filedict[k][7]
             if bIgnore:
                 continue
                 
@@ -840,7 +839,7 @@ def main(argv):
             timestamp  = filedict[k][2]
             image      = filedict[k][3]
             aspect     = filedict[k][4]
-            bIgnore    = filedict[k][5]
+            bIgnore    = filedict[k][7]
             sequence   = filedict[k][seq]
             pname      = os.path.splitext(filename)[0]
             
