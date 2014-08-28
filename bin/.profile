@@ -51,13 +51,6 @@ else
 fi
 
 export FACTORY=$(hostname)
-if [ $((echo $FACTORY| grep novariant 2>&1 >/dev/null);echo $?) == 0 ]; then
-    FACTORY=novariant
-fi
-
-if [ "$FACTORY" == "rmillsmbp.corp.adobe.com" -o  "$FACTORY" == "rmillsmbp.local" ]; then
-	FACTORY=adobe
-fi
 
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
@@ -66,15 +59,6 @@ export MANPATH="/usr/local/share/man:/opt/local/share/man:/usr/share/man:/usr/sh
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/opt/local/lib/pkgconfig
-
-## 
-# SCM support
-export P4USER=rmills
-export P4PORT=home:1666
-export P4CLIENT=imac
-
-export  FLEET="clanmills.com"
-export  PINGS="$FLEET"
 
 ## 
 # scripting support
@@ -171,6 +155,15 @@ thepath() {
     else
     	(cd $(dirname $1) ;echo $(pwd)/$(basename $1))
     fi
+}
+
+cronlog() {
+	f=~/temp/cron.log
+	if [ -e $f ]; then
+		tail -f $f
+	else 
+		echo file: $f does not exist!
+	fi
 }
 
 export HISTTIMEFORMAT="%T "
@@ -490,38 +483,10 @@ if [ "$FACTORY" == "rmills-ubuntu" ]; then
     unset dir
 fi
 
-export EXIV2_AWSUBUNTU_USERNAME=ubuntu
-export EXIV2_AWSUBUNTU_PASSWORD=p%40ssw0rd
-export EXIV2_AWSUBUNTU_HOST=54.251.248.216
-
 ##
 # last minute adjustments for different machines
-if [ "$FACTORY" == "novariant" ]; then
-    export DISPLAY=:4.0
-    export "PATH=~/local/bin/:$PATH"
-    alias ll=dir
-    export UUT=192.168.116
-fi
-
 if [ "$FACTORY" == "rmills-imac" ]; then
     export "PATH=/opt/subversion/bin:$PATH"
-fi
-
-if [ "$FACTORY" == "rmills-w7" -a "$PLATFORM" == "cygwin" ]; then
-	FACTORY="adobe"
-fi
-
-if [ "$FACTORY" == "adobe" ]; then
-    P4CLIENT=rmills-mbp-X5d2
-    P4PORT=ssl:scm003.corp.adobe.com:3070
-    if [ $PLATFORM == "cygwin" ]; then 	P4CLIENT="rmills-w7" ; fi
-	
-	if [ $PLATFORM == "macosx" ]; then
-		 docs () {
-			cd /Langley/rmills-mbp/PE/12X/Main/Tools/ReaderNextBuild/Documents
-			export P4CLIENT=rmills-mbp
-		}
-	fi
 fi
 
 if [ "$PLATFORM" == "macosx" ]; then
@@ -538,27 +503,7 @@ if [ "$PLATFORM" == "macosx" ]; then
   		# tmutil = Time Machine Util ; pmset = Power Management Settings ;
   		sudo tmutil disablelocal
   	popd >/dev/null
-  	if [ $FACTORY == rmills-mbp.local -o $FACTORY == rmillsmbp13.local -o $FACTORY == rmillsmbp.local ]; then
-    	P4CLIENT=rmills-mpb13-7Xd2
-    	P4PORT=ssl:scm003.corp.adobe.com:3070
-    fi
-  	if [ $FACTORY == rmillsmbp.local ]; then
-    	P4CLIENT=rmills-mpb-X5d2
-    fi
     
-    ##
-    # add ANT if it's on the machine
-    if [ -e /Users/rmills/gnu/ant/trunk/core/dist/bin/ant ]; then
-        export ANT_HOME=/Users/rmills/gnu/ant/trunk/core/dist
-    	export PATH=$PATH:$ANT_HOME/bin
-    fi
-    
-    ##
-    # add EASYANT if it's on the machine
-    # if [ -e /Users/rmills/gnu/ant/easyant/easyant-core-0.9-src/bin/easyant ]; then
-    #   export EASYANT_HOME=/Users/rmills/gnu/ant/easyant/easyant-core-0.9-src
-    #	export PATH=$PATH:$EASYANT_HOME/bin
-    # fi
   	alias locate_update="sudo /usr/libexec/locate.updatedb &"
 fi
 
