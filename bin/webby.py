@@ -512,6 +512,7 @@ def writeWebPage(webDir,filename,pathname,webPageString,subs,width,aspect,rotate
     global bReplace
     if os.path.exists(webDir) and bReplace:
         shutil.rmtree(webDir)
+        bReplace=False
     if not os.path.isdir(webDir):
         os.mkdir(webDir)
 
@@ -652,7 +653,6 @@ def main(argv):
 
     photoDir = cmLib.getOpt(opts,'photos',os.path.expanduser('~/Pictures'))
     title    = cmLib.getOpt(opts,'title' ,fixCaps(os.path.basename(os.path.expanduser(photoDir))))
-    webDir   = cmLib.getOpt(opts,'webdir',os.path.join(cwd,"temp"))
     webDir   = cmLib.getOpt(opts,'webdir',os.path.join(cwd,year))
     capDir   = cmLib.getOpt(opts,"capdir",False)
     config   = cmLib.getOpt(opts,'config','webby')
@@ -661,8 +661,9 @@ def main(argv):
     cols     = eval(cmLib.getOpt(opts,'cols','3'))
     width    = eval(cmLib.getOpt(opts,'width','750'))
     dirs     = os.path.split(photoDir)
-    base     = os.path.basename(dirs[0]) if dirs[1] == '' else dirs[1]
-    webDir   = os.path.join(webDir,base)
+    if webDir == os.path.join(cwd,year):
+        base     = os.path.basename(dirs[0]) if dirs[1] == '' else dirs[1]
+        webDir   = os.path.join(webDir,base)
 
     mepath   = sys.argv[0]
     me       = os.path.splitext(os.path.basename(mepath))[0] #'webby'
@@ -716,6 +717,8 @@ def main(argv):
     print "photoDir = "   ,photoDir
     print "webDir = "     ,webDir
     print "resourceDir = ",resourceDir
+    
+    # sys.exit(0)
 
     subs['default'  ]  = cmLib.getOpt(opts,'default'  ,default  )
     subs['ext'      ]  = cmLib.getOpt(opts,'ext'      ,ext      )
