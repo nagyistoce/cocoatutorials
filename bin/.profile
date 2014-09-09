@@ -361,6 +361,9 @@ alias shellx=open
 alias start=open
 alias get=git
 alias p4s='. p4.so'
+if [ -e /opt/local/bin/svn ]; then
+	alias svn18=/opt/local/bin/svn
+fi
 
 if [ $PLATFORM == linux ]; then 
     alias open=xdg-open
