@@ -1,41 +1,43 @@
 #!/bin/bash
 
-Syntax() {
-	echo "$0 [ status | start | stop | restart ]"
-	exit 1
-}
+java -jar /Users/Shared/Jenkins/Home/war/WEB-INF/jenkins-cli.jar -s http://rmillsmm:8080/ $*
 
-Launch() {
-	sudo launchctl "$1" /Library/LaunchDaemons/org.jenkins-ci.plist
-}
-Status() {
-	echo "$status"
-}
-Stopped() {
-	echo jenkins not running
-}
-
-Running() {
-	echo jenkins already running
-	Status
-}
-
-if [ $# -ne 1 ]; then Syntax ; fi
-
-status=$(ps ax | grep -e "jenkins" | grep -v -e grep -v -e bash)
-running=1
-if [ "$status" == "" ]; then
-	running=0
-    status="Not Running"
-fi
-
-case "$1" in
-	-h|--help|-\?) Syntax ;;
-	status)        Status ;;
-	stop)          if [ $running == "1" ]; then Launch unload ;else Stopped; fi ;;
-	start)         if [ $running == "0" ]; then Launch  load  ;else Running; fi ;;
-	restart)       if [ $running == "1" ]; then Launch unload ;fi ; Launch load  ;;
-esac
+# Syntax() {
+# 	echo "$0 [ status | start | stop | restart ]"
+# 	exit 1
+# }
+# 
+# Launch() {
+# 	sudo launchctl "$1" /Library/LaunchDaemons/org.jenkins-ci.plist
+# }
+# Status() {
+# 	echo "$status"
+# }
+# Stopped() {
+# 	echo jenkins not running
+# }
+# 
+# Running() {
+# 	echo jenkins already running
+# 	Status
+# }
+# 
+# if [ $# -ne 1 ]; then Syntax ; fi
+# 
+# status=$(ps ax | grep -e "jenkins" | grep -v -e grep -v -e bash)
+# running=1
+# if [ "$status" == "" ]; then
+# 	running=0
+#     status="Not Running"
+# fi
+# 
+# case "$1" in
+# 	-h|--help|-\?) Syntax ;;
+# 	status)        Status ;;
+# 	stop)          if [ $running == "1" ]; then Launch unload ;else Stopped; fi ;;
+# 	start)         if [ $running == "0" ]; then Launch  load  ;else Running; fi ;;
+# 	restart)       if [ $running == "1" ]; then Launch unload ;fi ; Launch load  ;;
+# esac
 
 # That's all Folks!
 ##
