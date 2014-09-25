@@ -508,6 +508,14 @@ if [ "$PLATFORM" == "macosx" ]; then
   	popd >/dev/null
     
   	alias locate_update="sudo /usr/libexec/locate.updatedb &"
+
+    # http://alvinalexander.com/mac-os-x/mac-os-x-10.9-wont-shut-down-slow-shutdown-solution
+    sudo defaults write /System/Library/LaunchDaemons/com.apple.securityd ExitTimeOut -int 5
+    sudo defaults write /System/Library/LaunchDaemons/com.apple.mDNSResponder ExitTimeOut -int 5
+    sudo defaults write /System/Library/LaunchDaemons/com.apple.diskarbitrationd ExitTimeOut -int 5
+    sudo defaults write /System/Library/LaunchDaemons/com.apple.coreservices.appleevents ExitTimeOut -int 5
+    sudo defaults write /System/Library/LaunchAgents/com.apple.coreservices.appleid.authentication ExitTimeOut -int 5
+
 fi
 
 if [ "$PLATFORM" == "mingw" ]; then

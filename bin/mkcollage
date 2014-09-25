@@ -23,10 +23,10 @@ use Collage;
 
 ##
 # globals
-my $name ; # name of collage
-my $title; # title of collage (initially the name)
-my $w    ; # width of collage (on the web page)
-my $h    ; # height of collage (on the web page)
+my $name       ; # name of collage
+my $title = '' ; # title of collage (initially the name)
+my $w          ; # width of collage (on the web page)
+my $h          ; # height of collage (on the web page)
 
 ##
 # fixup: template -> instance conversion
@@ -52,17 +52,18 @@ sub fixup
     my $WIDth = $w - $width;
     
 	# http://sunsite.ualberta.ca/Documentation/Misc/perl-5.6.1/pod/perllol.html
-	my @P  = ( ['__YEAR__' 				,"$year" ]
-	         , ['__DATE__' 				,"$date" ]
-	         , ['__DAY__'  				,"$wday" ]
-	         , ['__WIDTH__'				,"$w"    ]
-	         , ['__WIDth__'				,"$WIDth"]
-	         , ['__width__'				,"$width"]
-	         , ['__NAME__'              ,"$name" ]
-	         , ['__TITLE__'             ,"$title"]
+	my @P  = ( ['__YEAR__' 				,"$year"  ]
+	         , ['__DATE__' 				,"$date"  ]
+	         , ['__DAY__'  				,"$wday"  ]
+	         , ['__WIDTH__'				,"$w"     ]
+	         , ['__WIDth__'				,"$WIDth" ]
+	         , ['__width__'				,"$width" ]
+	         , ['__NAME__'              ,"$name"  ]
+	         , ['__TITLE__'             ,"$title" ]
 	         , ['/2012/NewYearsDay'    	, '/2011/Christmas/NewYearsDay'] # New Year 2011 correction
-	         , ['AppleOffice/IMG_3502' 	, 'Apple']                       # New Year 2011 correction
-	         , ["$ENV{PHOTOS}/"        	, '/'    ]
+	         , ['AppleOffice/IMG_3502' 	, 'Apple' ]                       # New Year 2011 correction
+	         , ["$ENV{PHOTOS}/"        	, '/'     ]
+	         , ['$Pictures'             , "/$year"]
 	         );
 	for my $i (0 .. $#P) {
 		my $p=$P[$i][0];
@@ -88,24 +89,25 @@ sub println
 
 ##
 # parse command line options
-my $title   = '' ;
-my $width   = 550;
-my $force   =   0;
-my $verbose =   0;
-my $version =   0;
-my $run     =   1;
-my $quality =  90;
-my $help    =   0;
+my $width     = 550;
+my $force     =   0;
+my $verbose   =   0;
+my $version   =   0;
+my $run       =   1;
+my $quality   =  90;
+my $help      =   0;
+my $localhost = 'localhost';
 
 my $options = GetOptions(
-	"help|?"    => \$help,       # numeric
-	"width=i"   => \$width,      # numeric
-	"quality=i" => \$quality,    # numeric
-	"title=s"   => \$title,      # string
-	"force"     => \$force,  	 # flag
-	"verbose!"  => \$verbose,    # flag
-	"version!"  => \$version,    # flag
-	"run!"      => \$run,	     # flag
+	"help|?"       => \$help,       # numeric
+	"width=i"      => \$width,      # numeric
+	"quality=i"    => \$quality,    # numeric
+	"title=s"      => \$title,      # string
+	"localhost=s"  => \$localhost,  # string
+	"force"        => \$force,  	# flag
+	"verbose!"     => \$verbose,    # flag
+	"version!"     => \$version,    # flag
+	"run!"         => \$run,	    # flag
 );
 
 if ( $version ) {
@@ -202,7 +204,7 @@ close(FILE) ;
 ##
 # and show it
 if ( $run ) {
-	my $url = fixup("http://localhost/Homepages/__YEAR__/$html");
+	my $url  = fixup("http://" . $localhost . "/Homepages/__YEAR__/$html");
 	println("run \"$url\"") if $verbose;
 	system          ("run \"$url\"") if $run;
 }

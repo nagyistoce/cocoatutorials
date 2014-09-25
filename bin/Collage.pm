@@ -274,13 +274,20 @@ return <<ENDOFFILE;
     </table>
     </td><td width="50%" align="right">
       <table><tr>
-          <td><img src="/3dflagsdotcom_usa_2fawm.gif" style="border:none;"><img src="/lionflag.gif" style="border:none;"><img src="/scotflag.gif" style="border:none;"></td>
-      </tr><tr>
-        <td><table><tr><td style="color:yellow">Current<br>Weather<br>San Jose<br>California</td><td align="center">
-			<a href="http://www.wunderground.com/US/CA/San_Jose.html?bannertypeclick=miniTarget2">
-			<img src="http://banners.wunderground.com/weathersticker/miniTarget2_both/language/www/US/CA/San_Jose.gif" border=0
-			alt="Click for San Jose, California Forecast" height=50 width=150></a>
-	  </td></tr></table>
+          <td><img src="/unionjack.gif" style="border:none;" height="50"><br>
+          <!-- <img src="/3dflagsdotcom_usa_2fawm.gif" style="border:none;"><br>-->
+          <!-- <img src="/lionflag.gif" style="border:none;"><br>-->
+          <img src="/england-flag.gif" style="border:none;" height="40"><br>
+          <img src="/scotflag.gif" style="border:none;"  height="40"><br>
+          <img src="/3dflagsdotcom_usa_2fawm.gif" style="border:none;" height="40">
+        </td><td>
+
+<div id="c_a1aa8a4e127ee4f9910570c1d8f1136e" class="normal"><h2 style="color: #ffffff; margin: 0 0 3px; padding: 2px; font: bold 13px/1.2 Tahoma; text-align: center; width=100%"><a href="http://www.forecast.co.uk/camberley.html" style="color: #ffffff; text-decoration: none; font: bold 13px/1.2 Tahoma;">Weather in Camberley</a></h2><div id="w_a1aa8a4e127ee4f9910570c1d8f1136e" class="normal" style="height:100%"></div></div><script type="text/javascript" src="http://www.forecast.co.uk/widget/loader/a1aa8a4e127ee4f9910570c1d8f1136e"></script>
+        <!--
+        <script type="text/javascript" src="http://voap.weather.com/weather/oap/USGA0028?template=HOMEH&par=3000000007&unit=1&key=twciweatherwidget"></script>
+		<span style="display: block !important; width: 320px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:94114.1.99999&bannertypeclick=wu_clean2day" title="San Francisco, California Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_clean2day_metric_cond&airportcode=KSFO&ForcedCity=San Francisco&ForcedState=CA&zip=94114&language=EN" alt="Find more about Weather in San Francisco, CA" width="300" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:94114.1.99999&bannertypeclick=wu_clean2day" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank"></a></span>
+		-->
+        </td></tr></table>
     </td></tr></table>
   </td></tr></table>
 ENDOFFILE
