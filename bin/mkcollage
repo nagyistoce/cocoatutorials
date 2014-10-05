@@ -61,7 +61,7 @@ sub fixup
 	         , ['__NAME__'              ,"$name"  ]
 	         , ['__TITLE__'             ,"$title" ]
 	         , ['/2012/NewYearsDay'    	, '/2011/Christmas/NewYearsDay'] # New Year 2011 correction
-	         , ['AppleOffice/IMG_3502' 	, 'Apple' ]                       # New Year 2011 correction
+	         , ['AppleOffice/IMG_3502' 	, 'Apple' ]                      # New Year 2011 correction
 	         , ["$ENV{PHOTOS}/"        	, '/'     ]
 	         , ['$Pictures'             , "/$year"]
 	         );
@@ -230,7 +230,7 @@ mkcollage - create html from a collage
 =head1 SYNOPSIS
 
  mkcollage [ collage-name | --OPT value | --FLAG ]+
- OPT : --title str | --width int | --quality 95
+ OPT : --title str | --width int | --quality 95 | --localhost localhost
  FLAG: help | version | [no]verbose | [no]run  
 
 =head1 DESCRIPTION

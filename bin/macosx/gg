@@ -1,0 +1,39 @@
+#!/bin/bash
+
+months=(January February March April May June July August September October November December)
+month=$(( $(date +"%m") -1 ))
+month=${months[$month]}
+month=~/Pictures/$month
+if [ ! -e $month ]; then
+	mkdir -p $month
+fi
+if [ ! -e $month ]; then
+	echo "***" directory $month does not exist "***"
+	exit
+else
+	cd $month
+	month=$PWD
+fi
+
+Gg=~/Pictures/Gg
+
+if [ -e $Gg ]; then
+    cd $Gg
+    Gg=$PWD
+	new=$(ls -alt | wc -l)
+	old=0
+	while [ $old != $new ]; do
+		echo old = $old new = $new
+		old=$new
+		sleep 1
+        new=$(ls -alt | wc -l)
+	done
+	tojpg
+	mv  *.jpg $month
+	cd  ..
+	rm  -rf   $Gg
+fi
+
+# That's all Folks
+##
+	
