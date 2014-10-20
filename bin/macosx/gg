@@ -1,5 +1,20 @@
 #!/bin/bash
 
+tojpg()
+{
+	##
+	# get "raw" filenames (raw = IMG_1234.JPG - as it arrives from the camera)
+	##
+	# rename them in lower case, one at a time
+	for F in *.JPG ; do
+		f="$(echo "$F"|perl -e 'print lc <>;')"
+		if [ "$f" != "$F" ]; then
+			echo mv "$F" "$f"
+			     mv "$F" "$f"
+		fi
+	done
+}
+
 months=(January February March April May June July August September October November December)
 month=$(( $(date +"%m") -1 ))
 month=${months[$month]}
@@ -16,10 +31,10 @@ else
 fi
 
 Gg=~/Pictures/Gg
-
 if [ -e $Gg ]; then
     cd $Gg
     Gg=$PWD
+    echo ---- $Gg ----
 	new=$(ls -alt | wc -l)
 	old=0
 	while [ $old != $new ]; do
@@ -30,7 +45,7 @@ if [ -e $Gg ]; then
 	done
 	tojpg
 	mv  *.jpg $month
-	cd  ..
+	cd  ~
 	rm  -rf   $Gg
 fi
 
