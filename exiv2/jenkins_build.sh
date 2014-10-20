@@ -13,10 +13,22 @@
 #  environment variables (all optional)
 #    JENKINS   : URL of jenkins server. Default http://exiv2.dyndns.org:8080
 ##
+mkdir -p /tmp
+if [ -z "$JENKINS" ]; then export JENKINS=http://exiv2.dyndns.org:8080; fi
 result=0
 base=$(basename $0)
+if [ -z "$base" ]; then base=jenkins_build ; fi
 tmp=/tmp/$base.tmp
-if [ -z "$JENKINS"]; then JENKINS=http://exiv2.dyndns.org:8080; fi
+start=$(date)
+starts=$(date +%s)
+
+##
+# are we recursively building mingw?
+buildmingw=0
+if [ "$1" == "buildmingw" ]; then
+	buildmingw=1
+	shift
+fi
 
 ##
 # functions
@@ -47,7 +59,15 @@ if [ "$1" == "status" ]; then
 	declare -A expects=( [linux]=900 [macosx]=900 [cygwin]=1000 [mingw]=100 [msvc]=1200 )
 	for b in linux macosx cygwin mingw msvc ; do
 		echo $build/$b
-		curl --silent $JENKINS/job/Exiv2-$build/label=$b/lastBuild/consoleText | tee $tmp | grep -E -e SVN_[A-Z]+= -e JOB_NAME -e BUILD_ID -e Finished $@ ;
+		curl --silent $JENKINS/job/Exiv2-$build/label=$b/lastBuild/consoleText \
+		   | tee $tmp \
+		   | grep -E -e SVN_[A-Z]+= \
+		             -e JOB_NAME    \
+		             -e BUILD_ID    \
+		             -e Finished    \
+		             -e seconds     \
+		             -e succeeded   \
+		             $@
 		declare -i lines=$(wc -l $tmp | cut -d/ -f 1)
 		declare -i expect=${expects[$b]}
 		diff=$(( lines-expect>0?lines-expect:expect-lines ))
@@ -59,6 +79,7 @@ if [ "$1" == "status" ]; then
 	done
 	exit $result
 fi
+
 
 ##
 # Quick dodge, use rmills ~/bin/.profile to set some environment variables
@@ -93,7 +114,7 @@ fi
 echo "1 target = $target platform = $PLATFORM WORKSPACE = $WORKSPACE"
 if [ $PLATFORM == "macosx" -a -z "$macosx" ]; then export macosx=true ; export target=macosx    ; fi
 if [ $PLATFORM == "linux"  -a -z "$linux"  ]; then export linux=true  ; export target=linux	    ; fi
-if [ -z "$cygwin"  -a ! -z $CYGWIN         ]; then export cygwin=$CYGWIN                        ; fi                   
+if [ -z "$cygwin"          -a ! -z $CYGWIN ]; then export cygwin=$CYGWIN                        ; fi                   
 if [ -z "$tests"     ]; then export tests=true                                                  ; fi
 if [ -z "$WORKSPACE" ]; then export WORKSPACE="$0/$PLATFORM"                                    ; fi
 
@@ -148,6 +169,7 @@ if [ $PLATFORM == "macosx" -a "$target" == "macosx" -a "$macosx" == "true"  ]; t
 if [ $PLATFORM == "cygwin" -a "$target" == "cygwin" -a "$cygwin" == "true"  ]; then build=CYGW ; fi
 if [ $PLATFORM == "cygwin" -a "$target" == "mingw"  -a "$mingw"	 == "true"  ]; then build=MING ; fi
 if [ $PLATFORM == "cygwin" -a "$target" == "msvc"   -a "$msvc"	 == "true"  ]; then build=MSVC ; fi
+if [ $PLATFORM == "mingw"  -a "$target" == "mingw"                          ]; then build=MING ; fi
 
 echo "3 target = $target platform = $PLATFORM build = $build"
 
@@ -178,9 +200,16 @@ case "$build" in
   ;;
 
   MING) 
-		echo "**************************************"
-		echo " MinGW build not implemented yet.  ***"
-		echo "**************************************"
+		if [ "$buildmingw" == "1" ]; then
+		    ./configure --disable-nls  $withcurl $withssh
+			make -j4
+			make install
+			make -j4 samples
+			run_tests
+		else
+			make distclean
+			/c/Users/rmills/com/mingw64.sh "-c jenkins_build.sh buildmingw"
+		fi
   ;;
 
   MSVC) 
@@ -200,6 +229,7 @@ case "$build" in
   ;; 
 esac
 
+echo target "$target" start: "$start" finish: $(date) diff: $(( $(date +%s) - starts )) seconds
 set -v
 # That's all Folks!
 ##
