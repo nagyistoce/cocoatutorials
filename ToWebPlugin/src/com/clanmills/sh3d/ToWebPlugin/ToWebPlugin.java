@@ -4,6 +4,7 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,14 +12,22 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.security.CodeSource;
+
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.List;
+
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.swing.JDialog;
@@ -36,8 +45,17 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.swing.HomeComponent3D;
 import com.eteks.sweethome3d.swing.PlanComponent;
 
-/* ListDemo.java requires no other files. */
+import java.awt.*;
 import java.awt.event.*;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+
+// import java.beans.*;
+import java.util.Random;
+
+/* ListDemo.java requires no other files. */
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -47,6 +65,149 @@ import java.beans.PropertyChangeListener;
  */
 
 public class ToWebPlugin extends Plugin {
+	public class ToWebPluginMonitor extends JPanel
+	implements ActionListener,
+	PropertyChangeListener {
+
+		/**
+		 * 
+		 */
+		 private static final long serialVersionUID = 276503287;
+		 private ProgressMonitor progressMonitor;
+		 private JButton startButton;
+		 private JTextArea taskOutput;
+		 private JTextArea taskHelp;
+		 private Task task;
+
+		 class Task extends SwingWorker<Void, Void> {
+			 @Override
+			 public Void doInBackground() {
+				 Random random = new Random();
+				 int progress = 0;
+				 setProgress(0);
+				 try {
+					 Thread.sleep(1000);
+
+					 while (progress < 100 && !isCancelled()) {
+						 //Sleep for up to one second.
+						 Thread.sleep(random.nextInt(1000));
+						 //Make random progress.
+						 progress += random.nextInt(10);
+						 setProgress(Math.min(progress, 100));
+					 }
+				 } catch (InterruptedException ignore) {}
+				 return null;
+			 }
+
+			 @Override
+			 public void done() {
+				 Toolkit.getDefaultToolkit().beep();
+				 startButton.setEnabled(true);
+				 progressMonitor.setProgress(0);
+			 }
+		 }
+
+		 public String story;
+
+		 public ToWebPluginMonitor() {
+			 super(new BorderLayout());
+			 // story = _story;
+
+			 //Create the demo's UI.
+			 startButton = new JButton("Start");
+			 startButton.setActionCommand("start");
+			 startButton.addActionListener(this);
+
+			 taskOutput = new JTextArea(5, 60);
+			 // taskOutput.setMargin(new Insets(5,5,5,5));
+			 taskOutput.setEditable(true);
+
+			 taskHelp  = new JTextArea();
+			 // taskHelp.setMargin(new Insets(5,5,5,5));
+			 taskHelp.setEditable(false);
+			 taskHelp.setEditable(false);
+			 taskHelp.setText("What a load of bollocks\nGoing on and on\nfor a few lines!");
+			 taskOutput.setText(story);
+
+			 add(new JScrollPane(taskHelp), BorderLayout.PAGE_START);
+			 add(new JScrollPane(taskOutput), BorderLayout.CENTER);
+			 add(startButton, BorderLayout.PAGE_END);
+			 setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		 }
+
+
+		 /**
+		  * Invoked when the user presses the start button.
+		  */
+		 public void actionPerformed(ActionEvent evt) {
+			 progressMonitor = new ProgressMonitor(ToWebPluginMonitor.this,
+					 "Running a Long Task",
+					 "", 0, 100);
+
+			 try {
+				 Document doc = taskOutput.getDocument();
+				 int      l   = doc.getLength();
+				 String   s   = doc.getText(0, l);
+				 ToWebPluginMonitor.this.story = s;
+				 // JOptionPane.showMessageDialog(null,s);
+				 doc.remove(0, l);
+			 } catch (HeadlessException | BadLocationException e) {
+				 e.printStackTrace();
+			 }
+			 progressMonitor.setProgress(0);
+			 task = new Task();
+			 task.addPropertyChangeListener(this);
+			 task.execute();
+			 startButton.setEnabled(false);
+		 }
+
+		 /**
+		  * Invoked when task's progress property changes.
+		  */
+		 public void propertyChange(PropertyChangeEvent evt) {
+			 if ("progress" == evt.getPropertyName() ) {
+				 int progress = (Integer) evt.getNewValue();
+				 progressMonitor.setProgress(progress);
+				 String message =
+						 String.format("Completed %d%%.\n", progress);
+				 progressMonitor.setNote(message);
+				 taskOutput.append(message);
+				 if (progressMonitor.isCanceled() || task.isDone()) {
+					 Toolkit.getDefaultToolkit().beep();
+					 if (progressMonitor.isCanceled()) {
+						 task.cancel(true);
+						 taskOutput.append("Task canceled.\n");
+					 } else {
+						 taskOutput.append("Task completed.\n");
+					 }
+					 startButton.setEnabled(true);
+				 }
+			 }
+
+		 }
+	}
+	
+	/**
+	 * Create the GUI and show it.  For thread safety,
+	 * this method should be invoked from the
+	 * event-dispatching thread.
+	 */
+//	private static void createAndShowGUI() {
+//		//Create and set up the window.
+//		JFrame frame = new JFrame("ProgressMonitorDemo");
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//		//Create and set up the content pane.
+//		JComponent newContentPane = new ToWebPlugin::ToWebPluginMonitor();
+//		newContentPane.setOpaque(true); //content panes must be opaque
+//		frame.setContentPane(newContentPane);
+//
+//		//Display the window.
+//		frame.pack();
+//		frame.setVisible(true);
+//	}
+	
+
     @Override
     public PluginAction[] getActions()
     {
@@ -82,7 +243,9 @@ public class ToWebPlugin extends Plugin {
 
             public Home             home;
             public UserPreferences  prefs;
-            boolean          r1 = false;
+            public String           story;
+            public List<String>     lines;
+            boolean            r1 = false;
             
             class ToWebPluginWorker extends SwingWorker<String, Void>{
                 @Override
@@ -166,20 +329,48 @@ public class ToWebPlugin extends Plugin {
 		@Override
         public void execute()
         {
+			String       name = home.getName();
+			Path         path = FileSystems.getDefault().getPath(name.substring(0, name.lastIndexOf('.')) + ".ToWebPlugin");
+			String       story=""; 
+			List<String> lines= null;
+			
+			try {
+				lines = Files.readAllLines(path,Charset.forName("UTF-8"));
+				name  = path.toRealPath().toString();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			int     line  = 0 ;
+			while ( lines != null && line  < lines.size() ) {
+				story = story + lines.get(line).toString() + '\n';
+				line  += 1;
+			}
+			System.out.println("name = " + name + "\nstory = " + story);
+	  	    ToWebPluginPanel panel = new ToWebPluginPanel();
+	   	    panel.home  = home;
+	       	panel.prefs = prefs;
+	       	panel.story = story;
+	       	
+// 	        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+//	            public void run() {
+//	                createAndShowGUI();
+//	            }
+//	        });
 
-            ToWebPluginPanel panel = new ToWebPluginPanel();
-            panel.home  = home;
-            panel.prefs = prefs;
-            // int value              = 
-            		panel.displayPanel();
+			int value   // 
+	                    = panel.displayPanel();
+       		int no  = JOptionPane.NO_OPTION;
+      		int yes = JOptionPane.YES_OPTION;
+      		System.out.format("value = %d NO,YES = %d,%d\n",value,no,yes);
+//      		if ( value == JOptionPane.YES_OPTION ) {
+//        		ToWebPluginWork work = new ToWebPluginWork();
+//        		work.execute(home, prefs);
+//        	}
 
-            //ToWebPluginAction caller;
-            //this.caller = this;
-
-//            if ( value == JOptionPane.YES_OPTION ) {
+//              if ( value == JOptionPane.YES_OPTION ) {
 //                ToWebPluginWork work = new ToWebPluginWork();
 //                work.execute(getHome(),getUserPreferences());
-//            }
+//              }
         }
     }
     
@@ -278,9 +469,12 @@ public class ToWebPlugin extends Plugin {
         {
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D    g     = image.createGraphics();
-            Rectangle2D   bounds= plan.getPlanBounds();
+            
+            Rectangle2D.Double   bounds = new Rectangle2D.Double(0,0,100,100) ; // plan.getPlanBounds();
+            
             String        file  = name + ext;
             String        path  = directory.resolve(file).toString();
+            System.out.println("plan image saved to " + directory.resolve(file).toAbsolutePath().toString());
 
             double scalex       = (double) width  / bounds.getWidth() ;
             double scaley       = (double) height / bounds.getHeight();
@@ -294,12 +488,19 @@ public class ToWebPlugin extends Plugin {
 
         private boolean paintCamera(Home home,Camera camera,int width,int height,Path directory,String ext,String type)
         {
-            home.setCamera (camera);
-            HomeComponent3D comp  = new HomeComponent3D(home);
-            BufferedImage   image = comp.getOffScreenImage(width,height);
-            String          file  = camera.getName() + ext;
-            String          path  = directory.resolve(file).toString();
-            return saveImage(image,path,type);
+        	boolean result = false;
+        	try {
+	            home.setCamera (camera);
+	            HomeComponent3D comp  = new HomeComponent3D(home);
+	            BufferedImage   image = comp.getOffScreenImage(width,height);
+	            String          file  = camera.getName() + ext;
+	            String          path  = directory.resolve(file).toString();
+	            System.out.println("camera image saved to " + directory.resolve(file).toAbsolutePath().toString());
+	            result                = saveImage(image,path,type);
+        	} catch ( Exception e) {
+        		System.err.println("Exception in paintCamera " + camera.getName() + " " + e.toString());
+        	}
+            return result;
         }
 
         public void execute(Home home, UserPreferences prefs)
@@ -320,11 +521,13 @@ public class ToWebPlugin extends Plugin {
             Path    Thumbs    = Directory.resolve("Thumbs"); (new File(Thumbs.toString())).mkdirs();
 
             String  message   = ""    ;
+            
+            int	    x         = 2     ; // multiply up the size of images
 
-            int     twidth    = 240   ;
-            int     theight   = 160   ;
-            int     iwidth    = 720   ;
-            int     iheight   = 480   ;
+            int     twidth    = 240*x ;
+            int     theight   = 160*x ;
+            int     iwidth    = 720*x ;
+            int     iheight   = 480*x ;
 
             String  type      = "PNG" ;
             String  ext       = ".png";
@@ -341,9 +544,7 @@ public class ToWebPlugin extends Plugin {
                 // http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
                 String         pageString = "";
                 CodeSource     src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
-                ZipInputStream zip = null;
-                if (src != null) 
-                    zip = openJar(src.getLocation());
+                ZipInputStream zip = openJar(src.getLocation());
 
                 while( zip != null ) {
                     ZipEntry entry = null;
@@ -391,7 +592,7 @@ public class ToWebPlugin extends Plugin {
                             message    += String.format("%s\n",unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
                             System.out.println("Camera " + name);
-
+                            break;
                         }
                     }
                     // restore camera
@@ -412,6 +613,7 @@ public class ToWebPlugin extends Plugin {
                             message += String.format("%s\n", unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
                             System.out.println("Level " + name);
+                            break;
                         }
                     }
                     home.setSelectedLevel(level1);
@@ -451,5 +653,4 @@ public class ToWebPlugin extends Plugin {
             // ListDemo.killGUI();
         }
     }
-    
 }

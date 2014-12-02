@@ -17,6 +17,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>SweetHome3D-4.5.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/trunk/SweetHome3D-4.5.jar</locationURI>
+		</link>
+		<link>
 			<name>page.st</name>
 			<type>1</type>
 			<locationURI>PROJECT_LOC/templates/page.st</locationURI>
