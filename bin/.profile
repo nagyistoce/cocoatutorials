@@ -370,9 +370,10 @@ if [ $PLATFORM == linux ]; then
     alias shellx=open
     alias start=open
     
-    J=jdk1.7.0_51
-    if [ -d /usr/local/java/jdk.1.7.0_21 ]; then J=jdk1.7.0_21 ; fi
-    export JAVA_HOME=/usr/local/java/$J
+    J=/usr/local/java/jdk1.7.0_51
+    if [ -d /usr/local/java/jdk.1.7.0_21    ]; then J=/usr/local/java/jdk1.7.0_21 ; fi
+    if [ -d ~/Software/Java/jre1.8.0_25     ]; then J=~/Software/Java/jre1.8.0_25 ; fi
+    export JAVA_HOME=$J
     export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
     
     # JRE_HOME=/usr/local/java/jre1.7.0_21
