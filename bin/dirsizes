@@ -1,6 +1,15 @@
 #!/bin/bash
 
-for i in *; do (du -m "$i"|tail -1); done | sort --numeric
+d="."
+if [ $# -ne 0 ]; then d="$1"; fi
+
+if [ -d "$d" ]; then
+	pushd "$d" >/dev/null
+	for i in *; do (du -m "$i" 2>/dev/null |tail -1); done | sort --numeric
+	popd >/dev/null
+else
+	echo "$d" is not a directory
+fi
 
 # That's all Folks!
 ##

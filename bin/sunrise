@@ -18,7 +18,7 @@ tmp=/tmp/sunrise.xml
 # set up the defaults (San Jose, CA)
 a=37.33
 o=-121.88
-z=-8
+z=0
 d=0
 v=0
 m=0
@@ -85,12 +85,11 @@ if [ "$c" != "" ]; then
 		echo "*** too many cities ***"
 		grep "$c" "$cities"
 		exit 1
-	else
-		curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" > $tmp
-		z=$(grep offset "$tmp" | cut -d">" -f2 | cut -d"<" -f 1)
-		echo -n ${x[@]} "$z"
+	# else
+		# curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" > $tmp
+		# z=$(grep offset "$tmp" | cut -d">" -f2 | cut -d"<" -f 1)
+		# echo -n ${x[@]} "$z"
 		# don't use offset from the web service.  Set z=99
-		z=99 
 	fi
 fi
 
@@ -118,18 +117,6 @@ case $m in
 esac
 
 ##
-# report to user
-if [ "$v" -eq 1 ]; then
-	echo "--month" "$m"
-	echo "--lat  " "$a"
-	echo "--long " "$o"
-	echo "--zone"  "$z"
-	echo "--from"  "$f"
-	echo "--to"    "$t"
-	echo "--year"  "$y"
-fi
-
-##
 # determine the result
 let c=0
 if [[ "$t" == "$f" && "$m" != "*" ]]; then let c=99 ; fi
@@ -144,16 +131,63 @@ for m in $(seq $m1 $m2); do
 			*)                x=0;;
 		esac
 	fi
+	
+	# Get the timezone offset (-hrs = West of Greenwich)
+	l=$(echo $l  | sed -e 's/--/-/g')
+	a=$(echo $a  | sed -e 's/--/-/g')
+	l="+$l"
+	a="+$a"
+	l=$(echo $l  | sed -e 's/+-/-/g')
+	a=$(echo $a  | sed -e 's/+-/-/g')
+	l=$(echo $l  | sed -e 's/+//g')
+	a=$(echo $a  | sed -e 's/+//g')
+	     curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" > $tmp
+	z=$(grep offset "$tmp" | cut -d">" -f2 | cut -d"<" -f 1)
+    if [ $(expr "$l" '>' 0) == 1 ]; then z=$(echo $z | sed -e 's/-//g') ; fi
+	if [ -z "$z" ]; then z=0 ; fi
+		
+	##
+	# report to user
+	if [ "$v" -eq 1 ]; then
+		echo curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" 
+		cat $tmp
+		
+		echo "--month" "$m"
+		echo "--lat  " "$a"
+		echo "--long " "$l"
+		echo "--zone"  "$z"
+		echo "--from"  "$f"
+		echo "--to"    "$t"
+		echo "--year"  "$y"
+	fi
+	
 	for d in $(seq $f $t) ; do
+		echo |  python >$tmp <(cat <<HERE
+import sys
+import ephem
+sun       = ephem.Sun()
+here      = ephem.Observer()
+here.lat  = ephem.degrees('$a').norm
+here.long = ephem.degrees('$l').norm
+here.date = '$y/$m/$d'
+r=ephem.date(here.next_rising (sun) + ($z*ephem.hour)).tuple()
+s=ephem.date(here.next_setting(sun) + ($z*ephem.hour)).tuple()
+print 'sunrise>%02d:%02d:%02d<' % (r[3],r[4],r[5])
+print  'sunset>%02d:%02d:%02d<' % (s[3],s[4],s[5])
+print  'date>%04d-%02d-%02d<'   % (s[0],s[1],s[2])
+HERE
+)
+
 		if [ $(( c+=1 )) == 1 ]; then echo $'\nDate      -sunrise- -sunset-' ;fi
-		curl --silent http://www.earthtools.org/sun/$a/$o/$d/$m/$z/$x > $tmp
-		if [ $? != 0 ]; then
-			echo '*** unable to use curl - are you on the internet? ***'
-			exit 1
-		fi
+#		curl --silent http://www.earthtools.org/sun/$a/$o/$d/$m/$z/$x > $tmp
+#		if [ $? != 0 ]; then
+#			echo '*** unable to use curl - are you on the internet? ***'
+#			exit 1
+#		fi
 		sunrise=$(grep sunrise $tmp | cut -d">" -f2 | cut -d"<" -f 1)
 		sunset=$(grep  sunset  $tmp | cut -d">" -f2 | cut -d"<" -f 1)
-		printf "%04d-%02d-%02d %s %s\n" $y $m $d $sunrise $sunset
+		date=$(grep    date    $tmp | cut -d">" -f2 | cut -d"<" -f 1)
+		echo $date $sunrise $sunset
 	done
 done
 

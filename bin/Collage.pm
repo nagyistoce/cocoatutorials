@@ -260,9 +260,9 @@ sub getHead
 {
 return <<ENDOFFILE;
 <div id = "Content">
-<div class=boxshadow><div class=boxmain style="width:__WIDTH__px;">
+<div class=boxshadow><div class=boxmain style="width:550px;background:-webkit-radial-gradient(50% 3%, circle closest-corner, skyblue, blue, navy );">
   <table width="__WIDTH__"><tr><td width="50%">
-    <h1>Mills Family<br>WebSite</h1>
+    <h1>Mills Family<br>Web Site</h1>
     <h4>__DATE__</h4>
     <table class="Content">
       <tr>
@@ -272,6 +272,7 @@ return <<ENDOFFILE;
        <td valign=bottom><a href="/default.shtml"><img class="button" src="/home.gif"></a><br></td>
       </tr>
     </table>
+    <h2 style="margin-top:10px;">__TITLE__</h2>
     </td><td width="50%" align="right">
       <table><tr>
           <td><img src="/unionjack.gif" style="border:none;" height="50"><br>

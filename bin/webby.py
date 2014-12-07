@@ -945,9 +945,11 @@ def main(argv):
 
             # if no caption and name =~ /xxx_nnnn/ use blank
             if caption==0:
-                if re.compile(r"[A-Z][A-Z][A-Z]_[0-9][0-9][0-9][0-9]").match(pname):
+                if re.compile(r"[A-Z]+_[0-9]+").match(pname):
                     caption='&nbsp;'
-                if re.compile(r"[a-z][a-z][a-z]_[0-9][0-9][0-9][0-9]").match(pname):
+                if re.compile(r"[a-z]+_[0-9]+").match(pname):
+                    caption='&nbsp;'
+                if re.compile(r"[A-Z]+[0-9]+").match(pname):
                     caption='&nbsp;'
 
             subs['pname' ]  = fixCaps(pname)
