@@ -177,7 +177,7 @@ r=ephem.date(here.next_rising (sun) + ($z*ephem.hour)).tuple()
 s=ephem.date(here.next_setting(sun) + ($z*ephem.hour)).tuple()
 print 'sunrise>%02d:%02d:%02d<' % (r[3],r[4],r[5])
 print  'sunset>%02d:%02d:%02d<' % (s[3],s[4],s[5])
-print  'date>%04d-%02d-%02d<'   % (s[0],s[1],s[2])
+print   'date>%04d-%02d-%02d<'  % (s[0],s[1],s[2])
 HERE
 )
 
