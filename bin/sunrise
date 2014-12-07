@@ -31,7 +31,7 @@ m=0
 f=0
 t=0
 y=0
-s=-1
+s=0
 c=''
 
 if [ "$#" == "0" ]; then syntaxError; fi
@@ -49,7 +49,7 @@ while true; do
       -z|--zone)     if [ $# -gt 1 ]; then z=$2; shift 2 ; else bomb $1 ; fi ;;
       -y|--year)     if [ $# -gt 1 ]; then y=$2; shift 2 ; else bomb $1 ; fi ;;
       -d|--day)      if [ $# -gt 1 ]; then d=$2; shift 2 ; else bomb $1 ; fi ;;
-      -s|--daylight) if [ $# -gt 1 ]; then s=$2; shift 2 ; else bomb $1 ; fi ;;
+      -s|--daylight) s=1; shift ;;
       -c|--city)     if [ $# -gt 1 ]; then c=$2; shift 2 ; else bomb $1 ; fi ;;
       --)            shift; break;;
       -*)            echo "invalid option: $1" 1>&2; syntaxError; exit 1;;
@@ -133,10 +133,10 @@ if [ -z $m2 ]; then m2=$m; fi
 
 for m in $(seq $m1 $m2); do
 	x=$s
-	if [ "$s" -eq -1 ]; then
+	if [ "$s" == "0" ]; then
 		case "$m" in # adjust daylight saving (would be better to use a web-service to determine this)
-			3|4|5|6|7|8|9|10) x=1;;
-			*)                x=0;;
+			3|4|5|6|7|8|9|10) s=1;;
+			*)                s=0;;
 		esac
 	fi
 	
@@ -148,6 +148,7 @@ for m in $(seq $m1 $m2); do
 	z=$(grep offset "$tmp" | cut -d">" -f2 | cut -d"<" -f 1)
     if [ $(expr "$l" '>' 0) == 1 ]; then z=$(fixsign $z) ; fi
 	if [ -z "$z" ]; then z=0 ; fi
+	z=$(expr $z + $s)
 		
 	##
 	# report to user
@@ -155,13 +156,14 @@ for m in $(seq $m1 $m2); do
 		echo curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" 
 		cat $tmp
 		
-		echo "--month" "$m"
-		echo "--lat  " "$a"
-		echo "--long " "$l"
-		echo "--zone"  "$z"
-		echo "--from"  "$f"
-		echo "--to"    "$t"
-		echo "--year"  "$y"
+		echo "--month    " "$m"
+		echo "--lat      " "$a"
+		echo "--long     " "$l"
+		echo "--zone     " "$z"
+		echo "--from     " "$f"
+		echo "--to       " "$t"
+		echo "--year     " "$y"
+		echo "--daylight " "$s"
 	fi
 	
 	for d in $(seq $f $t) ; do
