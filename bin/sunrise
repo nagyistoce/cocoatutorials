@@ -12,13 +12,19 @@ bomb() {
 	exit 1
 }
 
+fixsign() {
+	local l_="$1"
+	l_=$(echo "$l_"  | sed -e 's/--/-/g')
+	echo $l_
+}
+
 tmp=/tmp/sunrise.xml
 
 ##
 # set up the defaults (San Jose, CA)
 a=37.33
 o=-121.88
-z=0
+z=-8
 d=0
 v=0
 m=0
@@ -27,6 +33,8 @@ t=0
 y=0
 s=-1
 c=''
+
+if [ "$#" == "0" ]; then syntaxError; fi
  
 # http://mywiki.wooledge.org/BashFAQ/035
 while true; do
@@ -133,17 +141,12 @@ for m in $(seq $m1 $m2); do
 	fi
 	
 	# Get the timezone offset (-hrs = West of Greenwich)
-	l=$(echo $l  | sed -e 's/--/-/g')
-	a=$(echo $a  | sed -e 's/--/-/g')
-	l="+$l"
-	a="+$a"
-	l=$(echo $l  | sed -e 's/+-/-/g')
-	a=$(echo $a  | sed -e 's/+-/-/g')
-	l=$(echo $l  | sed -e 's/+//g')
-	a=$(echo $a  | sed -e 's/+//g')
-	     curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" > $tmp
+	l=$(fixsign $l)
+	a=$(fixsign $a)
+	
+	curl --silent "http://www.earthtools.org/timezone-1.1/$a/$l" > $tmp
 	z=$(grep offset "$tmp" | cut -d">" -f2 | cut -d"<" -f 1)
-    if [ $(expr "$l" '>' 0) == 1 ]; then z=$(echo $z | sed -e 's/-//g') ; fi
+    if [ $(expr "$l" '>' 0) == 1 ]; then z=$(fixsign $z) ; fi
 	if [ -z "$z" ]; then z=0 ; fi
 		
 	##
@@ -206,7 +209,6 @@ done
 #	s='' if len(d[a])==4 else ' ' # spacer
 #	N = ns * ( float(d[n]) + float(d[n+1])/60.0 )
 #	E = ew * ( float(d[e]) + float(d[e+1])/60.0 )
-	
 #	if N != 0.0 and E != 0.0:
 #		print '[%s]%s %6.2f %6.2f %s,%s' % (d[a],s,N ,E ,d[3].title(),d[4].title())
 
@@ -216,6 +218,7 @@ done
 wc -l 2>&1 >> /dev/null << EOF
 // http://www.realestate3d.com/gps/latlong.htm
 ID     LAT    LON     Location
+	
 
 [GKA]   -6.07 145.38 Goroka,Papua New Guinea
 [MAG]   -5.20 145.78 Madang,Papua New Guinea
