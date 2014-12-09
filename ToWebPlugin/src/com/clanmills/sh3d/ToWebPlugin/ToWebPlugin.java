@@ -1,6 +1,6 @@
 package com.clanmills.sh3d.ToWebPlugin;
 
-import java.awt.Frame;
+// import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -30,8 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+//import javax.swing.JDialog;
+// import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.stringtemplate.v4.*;
@@ -53,7 +53,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 // import java.beans.*;
-import java.util.Random;
+// import java.util.Random;
 
 /* ListDemo.java requires no other files. */
 import java.beans.PropertyChangeEvent;
@@ -65,7 +65,7 @@ import java.beans.PropertyChangeListener;
  */
 
 public class ToWebPlugin extends Plugin {
-	public class ToWebPluginMonitor extends JPanel
+	public static class ToWebPluginMonitor extends JPanel
 	implements ActionListener,
 	PropertyChangeListener {
 
@@ -74,28 +74,42 @@ public class ToWebPlugin extends Plugin {
 		 */
 		 private static final long serialVersionUID = 276503287;
 		 private ProgressMonitor progressMonitor;
-		 private JButton startButton;
-		 private JTextArea taskOutput;
-		 private JTextArea taskHelp;
-		 private Task task;
+		 private JButton         startButton;
+		 private JTextArea       taskOutput;
+		 private JTextArea       taskHelp;
+		 private Task            task;
+		 private UserPreferences prefs;
+		 private Home            home;
+		 private ToWebPluginWork work;
 
 		 class Task extends SwingWorker<Void, Void> {
 			 @Override
 			 public Void doInBackground() {
-				 Random random = new Random();
+				 // save camera
+                 Camera       camera1= home.getCamera();
+
+                 int max      = home.getStoredCameras().size();
 				 int progress = 0;
 				 setProgress(0);
 				 try {
-					 Thread.sleep(1000);
+				      while (progress < max  && !isCancelled()) {
+	                    Camera camera = home.getStoredCameras().get(progress);
+	                    String name   = camera.getName();
+	   				    int percent   = progress*100/max;
+	   		   			String message = String.format("View: %d%% Current: %s\n", percent,name);
+	   		   			progressMonitor.setNote(message);
+	   		   			progressMonitor.setProgress(percent);
+						setProgress(percent);
+	                    System.out.println("doInBackground() Camera: " + name);
+						work.execute(home,prefs,progress);
+						progress++;
+	                    Thread.sleep(100);
+	                  }
+				 } catch (InterruptedException ignore) { progress = max + 100 ; }
+				 if ( progress == max ) work.execute(home, prefs, -1);
 
-					 while (progress < 100 && !isCancelled()) {
-						 //Sleep for up to one second.
-						 Thread.sleep(random.nextInt(1000));
-						 //Make random progress.
-						 progress += random.nextInt(10);
-						 setProgress(Math.min(progress, 100));
-					 }
-				 } catch (InterruptedException ignore) {}
+				 // restore camera
+                 home.setCamera(camera1);
 				 return null;
 			 }
 
@@ -105,6 +119,12 @@ public class ToWebPlugin extends Plugin {
 				 startButton.setEnabled(true);
 				 progressMonitor.setProgress(0);
 			 }
+			 // ToWebPluginMonitor.this.work,ToWebPluginMonitor.this.home,ToWebPluginMonitor.this.prefs
+			 // ToWebPluginWork work;
+			 Home            home;
+			 UserPreferences prefs;
+			 String          story;
+			 ProgressMonitor progressMonitor;
 		 }
 
 		 public String story;
@@ -144,19 +164,27 @@ public class ToWebPlugin extends Plugin {
 					 "Running a Long Task",
 					 "", 0, 100);
 
+			 task = new Task();
 			 try {
 				 Document doc = taskOutput.getDocument();
 				 int      l   = doc.getLength();
 				 String   s   = doc.getText(0, l);
 				 ToWebPluginMonitor.this.story = s;
+				 task.story   = s;
 				 // JOptionPane.showMessageDialog(null,s);
 				 doc.remove(0, l);
 			 } catch (HeadlessException | BadLocationException e) {
 				 e.printStackTrace();
 			 }
-			 progressMonitor.setProgress(0);
-			 task = new Task();
+			 /// --- start the background task ----
+//			 ToWebPluginMonitor.this.work.execute(ToWebPluginMonitor.this.home,ToWebPluginMonitor.this.prefs);
+
+			 task.home  = this.home ;
+			 task.prefs = this.prefs;
+			 // task.work  = this.work ;
+			 task.progressMonitor = progressMonitor;
 			 task.addPropertyChangeListener(this);
+			 // ToWebPluginMonitor.this.work,ToWebPluginMonitor.this.home,ToWebPluginMonitor.this.prefs
 			 task.execute();
 			 startButton.setEnabled(false);
 		 }
@@ -166,12 +194,7 @@ public class ToWebPlugin extends Plugin {
 		  */
 		 public void propertyChange(PropertyChangeEvent evt) {
 			 if ("progress" == evt.getPropertyName() ) {
-				 int progress = (Integer) evt.getNewValue();
-				 progressMonitor.setProgress(progress);
-				 String message =
-						 String.format("Completed %d%%.\n", progress);
-				 progressMonitor.setNote(message);
-				 taskOutput.append(message);
+				 taskOutput.append(progressMonitor.getNote());
 				 if (progressMonitor.isCanceled() || task.isDone()) {
 					 Toolkit.getDefaultToolkit().beep();
 					 if (progressMonitor.isCanceled()) {
@@ -183,29 +206,33 @@ public class ToWebPlugin extends Plugin {
 					 startButton.setEnabled(true);
 				 }
 			 }
-
 		 }
 	}
+	
 	
 	/**
 	 * Create the GUI and show it.  For thread safety,
 	 * this method should be invoked from the
 	 * event-dispatching thread.
 	 */
-//	private static void createAndShowGUI() {
-//		//Create and set up the window.
-//		JFrame frame = new JFrame("ProgressMonitorDemo");
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//		//Create and set up the content pane.
-//		JComponent newContentPane = new ToWebPlugin::ToWebPluginMonitor();
-//		newContentPane.setOpaque(true); //content panes must be opaque
-//		frame.setContentPane(newContentPane);
-//
-//		//Display the window.
-//		frame.pack();
-//		frame.setVisible(true);
-//	}
+	void createAndShowGUI(ToWebPluginWork work,Home home,UserPreferences prefs) {
+		//Create and set up the window.
+		JFrame frame = new JFrame("ProgressMonitorDemo");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//Create and set up the content pane.
+		ToWebPlugin.ToWebPluginMonitor monitor = new ToWebPlugin.ToWebPluginMonitor();
+		JComponent newContentPane              = monitor ;
+		newContentPane.setOpaque(true); //content panes must be opaque
+		frame.setContentPane(newContentPane);
+
+		//Display the window.
+		frame.pack();
+		frame.setVisible(true);
+		monitor.work = work;
+		monitor.home = home;
+		monitor.prefs = prefs;
+	}
 	
 
     @Override
@@ -229,107 +256,109 @@ public class ToWebPlugin extends Plugin {
             myLabel = string;
         }
         
-        class ToWebPluginPanel extends JOptionPane
-        {
-        	static final long serialVersionUID = 2887673;
-        	ToWebPluginPanel() {
-        		super("The only way to close this dialog is by\n"
-                     + "pressing one of the following buttons.\n"
-                     + "Do you understand?"
-                     ,  JOptionPane.QUESTION_MESSAGE
-                     ,  JOptionPane.YES_NO_OPTION
-                     );
-        	}
-
-            public Home             home;
-            public UserPreferences  prefs;
-            public String           story;
-            public List<String>     lines;
-            boolean            r1 = false;
-            
-            class ToWebPluginWorker extends SwingWorker<String, Void>{
-                @Override
-                public String doInBackground() {
-                    System.out.println("ToWebPluginWorker:doInBackground:starting!");
-    	        	ToWebPluginWork work = new ToWebPluginWork();
-    	        	work.execute(home, prefs);
-    	        	return "success" ;
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        System.out.println("ToWebPluginWorker:done:done!");
-                    } catch (Exception ignore) {
-                        System.out.println("ToWebPluginWorker:done:exception!");
-                    }
-                }            	
-            }
-            
-            int displayPanel() {
-                Frame frame          = null;
-                final JDialog dialog = new JDialog(frame , 
-                                             "Click a button",
-                                             true);
-                dialog.setContentPane(this);
-                dialog.setDefaultCloseOperation(
-                    JDialog.DO_NOTHING_ON_CLOSE);
-                dialog.addWindowListener(new WindowAdapter() {
-                    public void windowClosing(WindowEvent we) {
-                        setLabel("Thwarted user attempt to close window.");
-                        dialog.setTitle("I have changed");
-                    }
-                });
-                
-                final ToWebPluginWorker worker = new ToWebPluginWorker();
-                
-                dialog.setModal(true);
-                this.addPropertyChangeListener(
-                    new PropertyChangeListener() {
-                        public void propertyChange(PropertyChangeEvent e) {
-                            String prop = e.getPropertyName();
-                            System.out.println(prop);
-                            if (dialog.isVisible() && prop.equals(JOptionPane.VALUE_PROPERTY) ) {
-                             // && (e.getSource() == this)
-                             // && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-                                //If you were going to check something
-                                //before closing the window, you'd do
-                                //it here.
-
-                            	//int button = JOptionPane.YES_OPTION; // ((Integer)super.getValue()).intValue();
-                            	if ( r1  ) {
-                            		r1=false;
-                            		worker.cancel(true);
-                                    dialog.setVisible(false);
-                            	} else {
-                            		r1=true;
-                                    worker.execute();
-                            	}
-                            }
-                        }
-
-                        @SuppressWarnings("unused")
-                        public void propertyChange1(PropertyChangeEvent evt)
-                        {
-                            String x= String.format("propertyChange1 %d",this.counter++);
-                            System.out.println(x);
-                        }
-                        public int counter = 0;
-                    });
-                dialog.pack();
-                dialog.setVisible(true);
-                
-                return  ((Integer)this.getValue()).intValue();
-        	}
-        }
+//        class ToWebPluginPanel extends JOptionPane
+//        {
+//        	static final long serialVersionUID = 2887673;
+//        	ToWebPluginPanel() {
+//        		super("The only way to close this dialog is by\n"
+//                     + "pressing one of the following buttons.\n"
+//                     + "Do you understand?"
+//                     ,  JOptionPane.QUESTION_MESSAGE
+//                     ,  JOptionPane.YES_NO_OPTION
+//                     );
+//        	}
+//
+//            public Home             home;
+//            public UserPreferences  prefs;
+//            public String           story;
+//            public List<String>     lines;
+//            boolean            r1 = false;
+//            
+//            class ToWebPluginWorker extends SwingWorker<String, Void>{
+//                @Override
+//                public String doInBackground() {
+//                    System.out.println("ToWebPluginWorker:doInBackground:starting!");
+//    	        	ToWebPluginWork work = new ToWebPluginWork();
+//    	        	work.execute(home, prefs);
+//    	        	return "success" ;
+//                }
+//
+//                @Override
+//                protected void done() {
+//                    try {
+//                        System.out.println("ToWebPluginWorker:done:done!");
+//                    } catch (Exception ignore) {
+//                        System.out.println("ToWebPluginWorker:done:exception!");
+//                    }
+//                }            	
+//            }
+//            
+//            int displayPanel() {
+//                Frame frame          = null;
+//                final JDialog dialog = new JDialog(frame , 
+//                                             "Click a button",
+//                                             true);
+//                dialog.setContentPane(this);
+//                dialog.setDefaultCloseOperation(
+//                    JDialog.DO_NOTHING_ON_CLOSE);
+//                dialog.addWindowListener(new WindowAdapter() {
+//                    public void windowClosing(WindowEvent we) {
+//                        setLabel("Thwarted user attempt to close window.");
+//                        dialog.setTitle("I have changed");
+//                    }
+//                });
+//                
+//                final ToWebPluginWorker worker = new ToWebPluginWorker();
+//                
+//                dialog.setModal(true);
+//                this.addPropertyChangeListener(
+//                    new PropertyChangeListener() {
+//                        public void propertyChange(PropertyChangeEvent e) {
+//                            String prop = e.getPropertyName();
+//                            System.out.println(prop);
+//                            if (dialog.isVisible() && prop.equals(JOptionPane.VALUE_PROPERTY) ) {
+//                             // && (e.getSource() == this)
+//                             // && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+//                                //If you were going to check something
+//                                //before closing the window, you'd do
+//                                //it here.
+//
+//                            	//int button = JOptionPane.YES_OPTION; // ((Integer)super.getValue()).intValue();
+//                            	if ( r1  ) {
+//                            		r1=false;
+//                            		worker.cancel(true);
+//                                    dialog.setVisible(false);
+//                            	} else {
+//                            		r1=true;
+//                                    worker.execute();
+//                            	}
+//                            }
+//                        }
+//
+//                        @SuppressWarnings("unused")
+//                        public void propertyChange1(PropertyChangeEvent evt)
+//                        {
+//                            String x= String.format("propertyChange1 %d",this.counter++);
+//                            System.out.println(x);
+//                        }
+//                        public int counter = 0;
+//                    });
+//                dialog.pack();
+//                dialog.setVisible(true);
+//                
+//                
+//                
+//                return  ((Integer)this.getValue()).intValue();
+//        	}
+//        }
         
-        Home            home  = getHome();
-        UserPreferences prefs = getUserPreferences();
+        //Home            home  = getHome();
+        //UserPreferences prefs = getUserPreferences();
         
 		@Override
         public void execute()
         {
-			String       name = home.getName();
+			String       name = getHome().getName();
 			Path         path = FileSystems.getDefault().getPath(name.substring(0, name.lastIndexOf('.')) + ".ToWebPlugin");
 			String       story=""; 
 			List<String> lines= null;
@@ -346,22 +375,23 @@ public class ToWebPlugin extends Plugin {
 				line  += 1;
 			}
 			System.out.println("name = " + name + "\nstory = " + story);
-	  	    ToWebPluginPanel panel = new ToWebPluginPanel();
-	   	    panel.home  = home;
-	       	panel.prefs = prefs;
-	       	panel.story = story;
-	       	
-// 	        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-//	            public void run() {
-//	                createAndShowGUI();
-//	            }
-//	        });
+ 	        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	            	createAndShowGUI(new ToWebPluginWork(),getHome(),getUserPreferences());
+	            }
+	        });
 
-			int value   // 
-	                    = panel.displayPanel();
-       		int no  = JOptionPane.NO_OPTION;
-      		int yes = JOptionPane.YES_OPTION;
-      		System.out.format("value = %d NO,YES = %d,%d\n",value,no,yes);
+// 	        ToWebPluginPanel panel = new ToWebPluginPanel();
+//	   	    panel.home  = home;
+//	       	panel.prefs = prefs;
+//	       	panel.story = story;
+//
+//			int value   // 
+//	                    = panel.displayPanel();
+//       		int no  = JOptionPane.NO_OPTION;
+//      		int yes = JOptionPane.YES_OPTION;
+//      		System.out.format("value = %d NO,YES = %d,%d\n",value,no,yes);
+
 //      		if ( value == JOptionPane.YES_OPTION ) {
 //        		ToWebPluginWork work = new ToWebPluginWork();
 //        		work.execute(home, prefs);
@@ -384,6 +414,9 @@ public class ToWebPlugin extends Plugin {
                 this.name = n;
             }
         }
+    	
+    	Home            home;
+    	UserPreferences prefs;
     	
         private String pluginDir   ="";
         private String templateDir ="";
@@ -502,8 +535,10 @@ public class ToWebPlugin extends Plugin {
         	}
             return result;
         }
+        
+        ArrayList<Photo> photos = new ArrayList<Photo>();
 
-        public void execute(Home home, UserPreferences prefs)
+        public boolean execute(Home home, UserPreferences prefs,int index)
         {
 
             // create directory for output 
@@ -533,10 +568,10 @@ public class ToWebPlugin extends Plugin {
             String  ext       = ".png";
 
             boolean bCameras  = true  ;
-            boolean bLevels   = true  ;
+            boolean bLevels   = false ;
 
             boolean bWroteHTML= false ;
-            System.out.println("Starting ToWebPluginWork.execute");
+            System.out.printf("ToWebPluginWork.execute %d\n",index);
 
             String  template  = "page";
             try {
@@ -577,26 +612,21 @@ public class ToWebPlugin extends Plugin {
 //                     }
 //              });
 
-                ArrayList<Photo> photos = new ArrayList<Photo>();
+                if ( index == 0 ) photos = new ArrayList<Photo>();
 
-                // paint with every camera
+                // paint camera
                 if ( bCameras ) {
                     // save camera
-                    Camera       camera1= home.getCamera();
-                    for ( Camera camera : home.getStoredCameras() ) {
-                        if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
-                        &&   paintCamera(home,camera,twidth,theight,Thumbs,ext,type)
-                        ) {
+                    Camera camera = home.getStoredCameras().get(index) ;
+                    if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
+                    &&   paintCamera(home,camera,twidth,theight,Thumbs,ext,type)
+                    ) {
                             String name = camera.getName();
                             String file = name + ext;
                             message    += String.format("%s\n",unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
-                            System.out.println("Camera " + name);
-                            break;
-                        }
+                            System.out.println("Camera " + message);
                     }
-                    // restore camera
-                    home.setCamera(camera1);
                 }
 
                 // paint every level
@@ -612,14 +642,13 @@ public class ToWebPlugin extends Plugin {
                         ) {
                             message += String.format("%s\n", unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
-                            System.out.println("Level " + name);
-                            break;
+                            System.out.println("Level " + message);
                         }
                     }
                     home.setSelectedLevel(level1);
                 }
 
-                if ( !photos.isEmpty() ) {
+                if ( !photos.isEmpty() && index == -1 ) {
                     System.out.println("generating code");
                     // use the template to generate the code
                     STRawGroupDir ts = new STRawGroupDir(templateDir,'$','$');
@@ -643,14 +672,15 @@ public class ToWebPlugin extends Plugin {
                 e.printStackTrace();
             }
 
-            // inform user
-            if ( bWroteHTML ) {
-                message = "images:\n" + message;
-            } else if ( message.length() == 0 ) {
-                message = "no images have been written!";
-            }
-            JOptionPane.showMessageDialog(null, message);
+//            // inform user
+//            if ( bWroteHTML ) {
+//                message = "images:\n" + message;
+//            } else if ( message.length() == 0 ) {
+//                message = "no images have been written!";
+//            }
+//            JOptionPane.showMessageDialog(null, message);
             // ListDemo.killGUI();
+        	return true;
         }
     }
 }
