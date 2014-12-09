@@ -7,7 +7,7 @@ body {
     line-height  : 12px;
     margin-top   : 5px;
     margin-bottom: 5px;
-    background-image: url("tartan.gif");
+    background-image: url("/tartan.gif");
     background-attachment : fixed ; /* scroll or fixed */
     background-position: top left;
     background-color: #eeeeee;
@@ -180,7 +180,7 @@ li {
     left :  20px;
     width: 172px;
  /* overflow: auto; */
-    background-image : url("california_tartan.gif") ;
+    background-image : url("/california_tartan.gif") ;
     padding:10px;
     background-color: white ; /* #eee; */
     border:2px solid cyan;
@@ -219,7 +219,7 @@ table.story {
 }
 
 table.tartan {
-	background-image	:	url("california_tartan.gif");
+	background-image	:	url("/california_tartan.gif");
 }
 
 .gradient {
@@ -252,14 +252,14 @@ table.tartan {
   <div id="Menu" style=";z-index:0;">
 
     <p align="center">
-      <img src="robinali.gif" border=0 style="border:none;"
+      <img src="/robinali.gif" border=0 style="border:none;"
         width=150 alt="Robin and Alison Mills at home, Oct 2002">
     </p>
 
   <h3>Recent Photos</h3>
-        <a href ="/2014/MayMornings/"   			  	>May&nbsp;Mornings&nbsp;<img src="new.gif" style="border:0px;"></a></a>
-    <br><a href ="/2014/DiabetesLunch/"   			  	>Diabetes&nbsp;Lunch&nbsp;<img src="new.gif" style="border:0px;"></a></a>
-    <br><a href ="/2014/May/"   			  			>May&nbsp;Photos&nbsp;<img src="new.gif" style="border:0px;"></a></a>
+        <a href ="/2014/MayMornings/"   			  	>May&nbsp;Mornings&nbsp;<img src="/new.gif" style="border:0px;"></a></a>
+    <br><a href ="/2014/DiabetesLunch/"   			  	>Diabetes&nbsp;Lunch&nbsp;<img src="/new.gif" style="border:0px;"></a></a>
+    <br><a href ="/2014/May/"   			  			>May&nbsp;Photos&nbsp;<img src="/new.gif" style="border:0px;"></a></a>
     <br><a href ="/Homepages/2014/Tombstone3.shtml"     >Spring Trip</a></a>
     <br><a href ="/Homepages/2014/NewYearsDay.shtml"    >The Holidays 2013</a>
     <br><a href ="/2013/NewDrive/"                      >New&nbsp;Drive</a>
@@ -285,17 +285,17 @@ table.tartan {
     <a href ="/cats.shtml"                              >Cats</a><br>
     <a href ="/diet.shtml"                              >Diet</a><br>
     <a href ="/duncan.shtml"                            >Duncan</a><br>
-    <a href ="/defaults.shtml"                          >Home Pages&nbsp;<img src="updated.gif" style="border:0px;"></a><br>
+    <a href ="/defaults.shtml"                          >Home Pages&nbsp;<img src="/updated.gif" style="border:0px;"></a><br>
     <a href ="/jamie.shtml"                             >Jamie</a><br>
     <a href ="/k2"                                      >Kulas in Vietnam</a><br>
     <a href ="/links.shtml"                             >Links</a><br>
-    <a href ="/states/parks.shtml"                      >National Parks&nbsp;<img src="updated.gif" style="border:0px;"></a><br>
-    <a href ="/photos.shtml"                            >Photos&nbsp;2014&nbsp;<img src="updated.gif" style="border:0px;"></a><br>
+    <a href ="/states/parks.shtml"                      >National Parks&nbsp;<img src="/updated.gif" style="border:0px;"></a><br>
+    <a href ="/photos.shtml"                            >Photos&nbsp;2014&nbsp;<img src="/updated.gif" style="border:0px;"></a><br>
     <a href ="/photos"                                  >Photos&nbsp;Earlier&nbsp;Years</a><br>
     <a href ="/poems.shtml"                             >Poetry</a><br>
     <a href ="/Posters"                                 >Posters</a><br>
     <a href ="/robin.shtml"                             >Robin</a><br>
-    <a href ="/states/visits.shtml"                     >USA&nbsp;<img src="updated.gif" style="border:0px;"></a><br>
+    <a href ="/states/visits.shtml"                     >USA&nbsp;<img src="/updated.gif" style="border:0px;"></a><br>
     <a href ="/tartan.shtml"                            >Tartan&nbsp;&amp;&nbsp;Kilts</a><br>
     <a href ="/Tinkerbell"                              >Tinkerbell</a><br>
     <a href ="/training.shtml"                          >Training</a><br>
@@ -305,9 +305,9 @@ table.tartan {
 <center>
 
     <a href="http://www.facebook.com/clanmills" target="_TOP"><img src="http://badge.facebook.com/badge/719127922.5983.1415341347.png" style="border: 0px;" /></a><br>
-    <img align="middle" src="robinkilt.gif" border="0" alt="Robin in his kilt." style="border:none;"><br>
+    <img align="middle" src="/robinkilt.gif" border="0" alt="Robin in his kilt." style="border:none;"><br>
 
-    <img align="middle" src="MillsCoa.gif" border="0" alt="Mills Coat of Arms" style="border:none;">
+    <img align="middle" src="/MillsCoa.gif" border="0" alt="Mills Coat of Arms" style="border:none;">
     <p style="text-align:right;">
         <b>Web&nbsp;Master:</b><br>
         Robin&nbsp;Mills<br>
@@ -859,7 +859,7 @@ window.status = "done loading images" ;
 <hr>
 <center>
   <p align="middle">
-    <img src="robinali.gif" width="120" align="right"><br>
+    <img src="/robinali.gif" width="120" align="right"><br>
     <a href="/">Home</a> <a>.........</a> <a href="/about.html">About</a>
   <br><br>
   Page design &copy; 1996-2013 Robin Mills / <a href="mailto:webmaster@clanmills.com">webmaster@clanmills.com</a><br><br>

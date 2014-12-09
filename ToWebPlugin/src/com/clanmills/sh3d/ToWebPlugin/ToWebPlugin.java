@@ -3,7 +3,6 @@ package com.clanmills.sh3d.ToWebPlugin;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,17 +10,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import java.net.URL;
 import java.net.URLDecoder;
-
 import java.security.CodeSource;
-
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.List;
-
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.FileSystems;
@@ -48,6 +43,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+
 
 /* ListDemo.java requires no other files. */
 import java.beans.PropertyChangeEvent;
@@ -93,6 +89,7 @@ public class ToWebPlugin extends Plugin {
 				setProgress(0);
 				// if ( max > 4 ) max = 4; // just to speed things up
 				try {
+	                Thread.sleep(500);
 					while (progress < max  && !isCancelled()) {
 						Camera camera  = home.getStoredCameras().get(progress);
 						String name    = camera.getName();
@@ -106,16 +103,19 @@ public class ToWebPlugin extends Plugin {
 						progress++;
 						Thread.sleep(100);
 					}
+					if ( progress == max ) {
+						percent=100;
+						progressMonitor.setNote("Generating HTML\n");
+						progressMonitor.setProgress(percent);
+						setProgress(percent);
+						Thread.sleep(100);
+						worker.execute(home, prefs, -1);
+						progressMonitor.setNote("Finished!\n");
+						Thread.sleep(500);
+						progressMonitor.close();
+						// done(); - close the progress dialog
+					}
 				} catch (InterruptedException ignore) { progress = max + 100 ; }
-
-				if ( progress == max ) {
-					percent=100;
-					// worker.execute(home, prefs, -1);
-					progressMonitor.setNote("Finished!\n");
-					progressMonitor.setProgress(percent);
-					setProgress(percent);
-					// done();
-				}
 
 				// restore camera
 				home.setCamera(camera1);
@@ -140,19 +140,19 @@ public class ToWebPlugin extends Plugin {
 			startButton.setActionCommand("start");
 			startButton.addActionListener(this);
 
-			taskOutput = new JTextArea(5, 60);
+			taskOutput = new JTextArea(5, 50);
 			// taskOutput.setMargin(new Insets(5,5,5,5));
 			taskOutput.setEditable(true);
 
-			taskHelp  = new JTextArea(10,60);
+			taskHelp  = new JTextArea(25,50);
 			// taskHelp.setMargin(new Insets(5,5,5,5));
 			taskHelp.setEditable(false);
 			taskHelp.setEditable(false);
 			taskHelp.setText("What a load of bollocks\nGoing on and on\nfor a few lines!");
 			taskOutput.setText(story);
 
-			add(new JScrollPane(taskHelp), BorderLayout.PAGE_START);
-			add(new JScrollPane(taskOutput), BorderLayout.CENTER);
+			// add(new JScrollPane(taskOutput), BorderLayout.PAGE_START);
+			add(new JScrollPane(taskHelp), BorderLayout.CENTER);
 			add(startButton, BorderLayout.PAGE_END);
 			setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		}
@@ -294,8 +294,6 @@ public class ToWebPlugin extends Plugin {
 		Home             home;
 		UserPreferences  prefs;
 		ArrayList<Photo> photos    = new ArrayList<Photo>();
-		private String pluginDir   = "";
-		private String templateDir = "";
 
 		private String unCamel(String s)
 		{
@@ -402,13 +400,15 @@ public class ToWebPlugin extends Plugin {
 
 		public boolean execute(Home home, UserPreferences prefs,int index)
 		{
-
 			// create directory for output 
-			String jarPath = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			String jarPath     = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			String pluginDir   = "";
+			String templateDir = "";
+
 			try {
 				pluginDir     = URLDecoder.decode(jarPath, "UTF-8");
 				pluginDir     = Paths.get(pluginDir).getParent().toString();
-				templateDir   = Paths.get(pluginDir).resolve("ToWebPlugin").toString();
+				templateDir   = Paths.get(pluginDir).resolve("templates").toString();
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
@@ -419,7 +419,7 @@ public class ToWebPlugin extends Plugin {
 
 			String  message   = ""    ;
 
-			int	    x         = 2     ; // multiply up the size of images
+			int	    x         = 1     ; // multiply up the size of images
 
 			int     twidth    = 240*x ;
 			int     theight   = 160*x ;
@@ -433,51 +433,15 @@ public class ToWebPlugin extends Plugin {
 			boolean bLevels   = false ;
 
 			boolean bWroteHTML= false ;
+			if ( index == 0 ) photos = new ArrayList<Photo>();
+
 			System.out.printf("ToWebPluginWorker.execute %d\n",index);
 
 			String  template  = "page";
 			try {
-				// find templates in the jar
-				// http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
-				String         pageString = "";
-				CodeSource     src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
-				ZipInputStream zip = openJar(src.getLocation());
-
-				while( zip != null ) {
-					ZipEntry entry = null;
-					try {
-						entry = zip.getNextEntry();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					if (entry != null) {
-						String entryName = entry.getName();
-						int    size      = 80000 ; // (int) entry.getSize() is usually -1 !
-						if ( pageString.length() == 0 && entryName.endsWith(template + ".st") ) {
-							while ( size > 0 ) {
-								byte[] bytes = new byte[size];
-								size = zip.read(bytes, 0,size);
-								if ( size > 0 ) pageString += new String( bytes,0, size, "UTF-8" );
-							}
-						}
-					} else {
-						zip.close();
-						zip = null;
-					}
-				}
-
-				// enumerate files in templateDir (overwrite templates in the jar)
-				//              File   textFolder = new File(templateDir);
-				//              File[] stFiles    = textFolder.listFiles( new FileFilter() {
-				//                     public boolean accept( File file ) {
-				//                         return file.getName().endsWith(".st");
-				//                     }
-				//              });
-
-				if ( index == 0 ) photos = new ArrayList<Photo>();
 
 				// paint camera
-				if ( bCameras ) {
+				if ( bCameras && index >= 0 ) {
 					// save camera
 					Camera camera = home.getStoredCameras().get(index) ;
 					if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
@@ -492,7 +456,7 @@ public class ToWebPlugin extends Plugin {
 				}
 
 				// paint every level
-				if ( bLevels ) {
+				if ( bLevels && index >= 0 ) {
 					Level level1 = home.getSelectedLevel();
 					for ( Level level : home.getLevels() ) {
 						home.setSelectedLevel(level);
@@ -511,6 +475,42 @@ public class ToWebPlugin extends Plugin {
 				}
 
 				if ( !photos.isEmpty() && index == -1 ) {
+					// find templates in the jar
+					// http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
+					String         pageString = "";
+					CodeSource     src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
+					ZipInputStream zip = openJar(src.getLocation());
+
+					while( zip != null ) {
+						ZipEntry entry = null;
+						try {
+							entry = zip.getNextEntry();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						if (entry != null) {
+							String entryName = entry.getName();
+							int    size      = 80000 ; // (int) entry.getSize() is usually -1 !
+							if ( pageString.length() == 0 && entryName.endsWith(template + ".st") ) {
+								while ( size > 0 ) {
+									byte[] bytes = new byte[size];
+									size = zip.read(bytes, 0,size);
+									if ( size > 0 ) pageString += new String( bytes,0, size, "UTF-8" );
+								}
+							}
+						} else {
+							zip.close();
+							zip = null;
+						}
+					}
+
+					// enumerate files in templateDir (overwrite templates in the jar)
+					//              File   textFolder = new File(templateDir);
+					//              File[] stFiles    = textFolder.listFiles( new FileFilter() {
+					//                     public boolean accept( File file ) {
+					//                         return file.getName().endsWith(".st");
+					//                     }
+					//              });
 					System.out.println("generating code");
 					// use the template to generate the code
 					STRawGroupDir ts = new STRawGroupDir(templateDir,'$','$');
