@@ -1,8 +1,5 @@
 package com.clanmills.sh3d.ToWebPlugin;
 
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,7 +21,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.swing.SwingWorker;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 import org.stringtemplate.v4.*;
 
@@ -36,18 +43,6 @@ import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.swing.HomeComponent3D;
 import com.eteks.sweethome3d.swing.PlanComponent;
-
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-
-
-/* ListDemo.java requires no other files. */
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * ToWebPlugin
@@ -65,8 +60,7 @@ public class ToWebPlugin extends Plugin {
         private static final long serialVersionUID = 276503287;
         private ProgressMonitor   progressMonitor;
         private JButton           startButton;
-        private JTextArea         taskOutput;
-        private JTextArea         taskHelp;
+        private JTextArea         taskText;
         private Task              task;
         private UserPreferences   prefs;
         private Home              home;
@@ -118,8 +112,10 @@ public class ToWebPlugin extends Plugin {
                     }
                 } catch (InterruptedException ignore) { progress = max + 100 ; }
 
-                // restore camera
+                // restore camera and story into tastText of the UI
                 home.setCamera(camera1);
+                taskText.setText(story);
+                taskText.setEditable(true);
                 return null;
             }
 
@@ -134,24 +130,19 @@ public class ToWebPlugin extends Plugin {
         public ToWebPluginMonitor() {
             super(new BorderLayout());
 
+            story    = "What a load of bollocks\nGoing on and on\nfor a few lines!";
+            taskText = new JTextArea(25,50);
+            taskText.setText(story);
+            taskText.setEditable(true);
+            taskText.setMargin(new Insets(5,5,5,5));
+            
             //Create the UI.
             startButton = new JButton("Start");
             startButton.setActionCommand("start");
             startButton.addActionListener(this);
 
-            taskOutput  = new JTextArea(5, 50);
-            // taskOutput.setMargin(new Insets(5,5,5,5));
-            taskOutput.setEditable(true);
-
-            taskHelp    = new JTextArea(25,50);
-            // taskHelp.setMargin(new Insets(5,5,5,5));
-            taskHelp.setEditable(false);
-            taskHelp.setEditable(false);
-            taskHelp.setText("What a load of bollocks\nGoing on and on\nfor a few lines!");
-            taskOutput.setText(story);
-
             // add(new JScrollPane(taskOutput), BorderLayout.PAGE_START);
-            add(new JScrollPane(taskHelp), BorderLayout.CENTER);
+            add(new JScrollPane(taskText), BorderLayout.CENTER);
             add(startButton, BorderLayout.PAGE_END);
             setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         }
@@ -160,28 +151,33 @@ public class ToWebPlugin extends Plugin {
          * Invoked when the user presses the start button.
          */
         public void actionPerformed(ActionEvent evt) {
-            progressMonitor = new ProgressMonitor(ToWebPluginMonitor.this,
-                    "ToWebPlugin: Creating Images",
-                    "", 0, 100);
-
-            task = new Task();
-            try {
-                Document doc = taskOutput.getDocument();
-                int      l   = doc.getLength();
-                String   s   = doc.getText(0, l);
-                ToWebPluginMonitor.this.story = s;
-                task.story   = s;
-                doc.remove(0, l);
-            } catch (HeadlessException | BadLocationException e) {
-                e.printStackTrace();
-            }
+            startButton.setEnabled(false);
+            progressMonitor = new ProgressMonitor
+            		(ToWebPluginMonitor.this
+            		,  "ToWebPlugin: Creating Images"
+            		,  "", 0, 100
+            		);
+            story = taskText.getText();
+            task  = new Task();
+            task.story = story; 
+            taskText.setEditable(false);
+            taskText.setText("");
 
             task.home            = home ;
             task.prefs           = prefs;
             task.progressMonitor = progressMonitor;
             task.addPropertyChangeListener(this);
             task.execute();
-            startButton.setEnabled(false);
+        }
+        
+        void sleep(int millisecs)
+        {
+            try {
+				Thread.sleep(millisecs);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 
         /**
@@ -189,16 +185,18 @@ public class ToWebPlugin extends Plugin {
          */
         public void propertyChange(PropertyChangeEvent evt) {
             if ("progress" == evt.getPropertyName() ) {
-                taskOutput.append(progressMonitor.getNote());
+                taskText.append(progressMonitor.getNote());
                 if (progressMonitor.isCanceled() || task.isDone()) {
                     Toolkit.getDefaultToolkit().beep();
                     if (progressMonitor.isCanceled()) {
                         task.cancel(true);
-                        taskOutput.append("Task canceled.\n");
+                        taskText.append("Task canceled.\n");
                     } else {
-                        taskOutput.append("Task completed.\n");
+                        taskText.append("Task completed.\n");
                     }
                     startButton.setEnabled(true);
+                    sleep(1000);
+                    taskText.setText(story);
                 }
             }
         }
@@ -396,7 +394,7 @@ public class ToWebPlugin extends Plugin {
             }
             return result;
         }
-
+        
         public boolean execute(Home home, UserPreferences prefs,int index)
         {
             // create directory for output 
@@ -436,17 +434,16 @@ public class ToWebPlugin extends Plugin {
             boolean bCameras  = false ;
             boolean bLevels   = false ;
             if ( index == -1 && photos.isEmpty() ) {
-            	photos.add(new Photo("",""));
-            	photos.add(new Photo("Landing"          ,"Landing.png")        );
-            	photos.add(new Photo("Entrance"         ,"Entrance.png")       );
-            	photos.add(new Photo("Foot Of Stairs"   ,"FootOfStairs.png")   );
-            	photos.add(new Photo("Bed4"             ,"Bed4.png")           );
-            	photos.add(new Photo("Office From Desk" ,"OfficeFromDesk.png") );
-            	photos.add(new Photo("Lounge"           ,"Lounge.png")         );
-            	photos.add(new Photo("Bonus Room"       ,"BonusRoom.png")      );
-            	photos.add(new Photo("Lobby From Dining","LobbyFromDining.png"));
-            	photos.add(new Photo("Dining Room"      ,"DiningRoom.png")     );
-            	photos.add(new Photo("From Garage"      ,"FromGarage.png")     );
+            	photos.add(new Photo("Landing.png"        ,"Landing"          ));
+            	photos.add(new Photo("Entrance.png"       ,"Entrance"         ));
+            	photos.add(new Photo("FootOfStairs.png"   ,"Foot Of Stairs"   ));
+            	photos.add(new Photo("Bed4.png"           ,"Bed4"             ));
+            	photos.add(new Photo("OfficeFromDesk.png" ,"Office From Desk" ));
+            	photos.add(new Photo("Lounge.png"         ,"Lounge"           ));
+            	photos.add(new Photo("BonusRoom.png"      ,"Bonus Room"       ));
+            	photos.add(new Photo("LobbyFromDining.png","Lobby From Dining"));
+            	photos.add(new Photo("DiningRoom.png"     ,"Dining Room"      ));
+            	photos.add(new Photo("FromGarage.png"     ,"From Garage"      ));
             }
 
             System.out.printf("ToWebPluginWorker.execute %d\n",index);
@@ -547,6 +544,9 @@ public class ToWebPlugin extends Plugin {
 //                    for ( Photo photo : photos ) {
 //                    	System.out.println("name: " + photo.name + " file: + photo.file);
 //                    }
+                    
+                    new ProcessBuilder("ditto","~/Documents/ToWebPlugin/","~/clanmills/ToWebPlugin/").start();
+                    new ProcessBuilder("open" ,"http://klanmills/ToWebPlugin"                       ).start();
                 }
             } catch ( IOException e) {
                 e.printStackTrace();
