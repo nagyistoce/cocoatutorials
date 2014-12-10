@@ -416,23 +416,38 @@ public class ToWebPlugin extends Plugin {
             Path    Images    = Directory.resolve("Images"); (new File(Images.toString())).mkdirs();
             Path    Thumbs    = Directory.resolve("Thumbs"); (new File(Thumbs.toString())).mkdirs();
 
-            String  message   = ""    ;
+            String  message   = ""      ;
 
-            int     x         = 1     ; // multiply up the size of images
+            int     x         = 1       ; // multiply up the size of images
+            int     y         = 1       ; // divide the size of images
 
-            int     twidth    = 240*x ;
-            int     theight   = 160*x ;
-            int     iwidth    = 720*x ;
-            int     iheight   = 480*x ;
+            int     twidth    = 240*x/y ;
+            int     theight   = 160*x/y ;
+            int     iwidth    = 720*x/y ;
+            int     iheight   = 480*x/y ;
 
-            String  type      = "PNG" ;
-            String  ext       = ".png";
+            String  type      = "PNG"   ;
+            String  ext       = ".png"  ;
 
-            boolean bCameras  = true  ;
-            boolean bLevels   = false ;
-
-            boolean bWroteHTML= false ;
+            boolean bWroteHTML= false   ;
             if ( index == 0 ) photos = new ArrayList<Photo>();
+
+            // this is temporary bodgery to speed up template debugging
+            boolean bCameras  = false ;
+            boolean bLevels   = false ;
+            if ( index == -1 && photos.isEmpty() ) {
+            	photos.add(new Photo("",""));
+            	photos.add(new Photo("Landing"          ,"Landing.png")        );
+            	photos.add(new Photo("Entrance"         ,"Entrance.png")       );
+            	photos.add(new Photo("Foot Of Stairs"   ,"FootOfStairs.png")   );
+            	photos.add(new Photo("Bed4"             ,"Bed4.png")           );
+            	photos.add(new Photo("Office From Desk" ,"OfficeFromDesk.png") );
+            	photos.add(new Photo("Lounge"           ,"Lounge.png")         );
+            	photos.add(new Photo("Bonus Room"       ,"BonusRoom.png")      );
+            	photos.add(new Photo("Lobby From Dining","LobbyFromDining.png"));
+            	photos.add(new Photo("Dining Room"      ,"DiningRoom.png")     );
+            	photos.add(new Photo("From Garage"      ,"FromGarage.png")     );
+            }
 
             System.out.printf("ToWebPluginWorker.execute %d\n",index);
 
@@ -444,8 +459,8 @@ public class ToWebPlugin extends Plugin {
                     // save camera
                     Camera camera = home.getStoredCameras().get(index) ;
                     if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
-                            &&   paintCamera(home,camera,twidth,theight,Thumbs,ext,type)
-                            ) {
+                    &&   paintCamera(home,camera,twidth,theight,Thumbs,ext,type)
+                    ) {
                         String name = camera.getName();
                         String file = name + ext;
                         message    += String.format("%s\n",unCamel(name));
@@ -463,8 +478,8 @@ public class ToWebPlugin extends Plugin {
                         String name = level.getName() ;
                         String file = name + ext;
                         if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)
-                                &&   paintPlan(plan,twidth,theight,name,Thumbs,ext,type)
-                                ) {
+                        &&   paintPlan(plan,twidth,theight,name,Thumbs,ext,type)
+                        ) {
                             message += String.format("%s\n", unCamel(name));
                             photos.add(new Photo(file,unCamel(name)));
                             System.out.println("Level " + message);
@@ -472,7 +487,7 @@ public class ToWebPlugin extends Plugin {
                     }
                     home.setSelectedLevel(level1);
                 }
-
+                
                 if ( !photos.isEmpty() && index == -1 ) {
                     // find templates in the jar
                     // http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
@@ -528,6 +543,10 @@ public class ToWebPlugin extends Plugin {
                     String path = Directory.resolve(name).toString();
                     bWroteHTML  = writeOut(path,t2.render(),true);
                     if ( !bWroteHTML ) message = "unable to write HTML " + path;
+                    
+//                    for ( Photo photo : photos ) {
+//                    	System.out.println("name: " + photo.name + " file: + photo.file);
+//                    }
                 }
             } catch ( IOException e) {
                 e.printStackTrace();
