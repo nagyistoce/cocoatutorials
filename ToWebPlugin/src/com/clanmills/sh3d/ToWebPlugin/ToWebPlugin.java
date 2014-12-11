@@ -22,11 +22,9 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.SwingWorker;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.Graphics2D;
@@ -50,9 +48,9 @@ import com.eteks.sweethome3d.swing.PlanComponent;
  */
 
 public class ToWebPlugin extends Plugin {
-    public static class ToWebPluginMonitor extends JPanel
-    implements ActionListener,
-    PropertyChangeListener {
+    public 	static class ToWebPluginMonitor extends JPanel
+    		implements ActionListener,
+    		PropertyChangeListener {
 
         /**
          * 
@@ -67,11 +65,75 @@ public class ToWebPlugin extends Plugin {
         private ToWebPluginWorker worker;
         public  String            story;
 
+        ArrayList<Path> getTemplates()
+        {
+            ArrayList<Path> result = new ArrayList<Path>();
+            try {
+            	String jarPath     = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+                String pluginDir   = URLDecoder.decode(jarPath, "UTF-8");
+                       pluginDir   = Paths.get(pluginDir).getParent().toString();
+            	String templateDir = Paths.get(pluginDir).resolve("templates").toString();
+                File[] files       = new File(templateDir).listFiles();
+                for ( File file : files) {
+                	result.add(file.toPath());
+                	System.out.println("templates/" + file.toString());
+                }
+            } catch (UnsupportedEncodingException e) {
+            	e.printStackTrace();
+            }
+            return result;
+        }
+
+        void sleep(int millisecs) throws InterruptedException
+        {
+			Thread.sleep(millisecs);
+        }
+
+        void sleeps(int millisecs)
+        {
+            try {
+				sleep(millisecs);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+        }
+
+        public class ComboThing extends JPanel
+        {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 4859162860338447901L;
+
+        	JTextField         text      = new JTextField(15);
+        	JComboBox<String>  combo     = new JComboBox<String>();
+        	JButton            addButton = new JButton("Add items");
+
+        	public void init() {
+        		ArrayList<Path> templates = getTemplates();
+        		for (int i = 0; i < templates.size(); i++)
+        			combo.addItem(templates.get(i).getFileName().toString());
+        		text.setEditable(false);
+//        		addButton.addActionListener(new ActionListener() {
+//        			public void actionPerformed(ActionEvent e) {
+//        				if (count < description.length)
+//        					combo.addItem(description[count++]);
+//        			}
+//        		});
+        		combo.addActionListener(new ActionListener() {
+        			@SuppressWarnings("unchecked")
+					public void actionPerformed(ActionEvent e) {
+        				text.setText("index: " + combo.getSelectedIndex() + "   "
+        						+ ((JComboBox<String>) e.getSource()).getSelectedItem());
+        			}
+        		});
+        	}
+        }
+
         class Task extends SwingWorker<Void, Void> {
             Home            home;
             UserPreferences prefs;
             String          story;
-            ProgressMonitor progressMonitor;
 
             @Override
             public Void doInBackground() {
@@ -82,9 +144,8 @@ public class ToWebPlugin extends Plugin {
                 int    progress = 0;
                 int    percent  = 0;
                 setProgress(0);
-                // if ( max > 4 ) max = 4; // just to speed things up
                 try {
-                    Thread.sleep(500);
+                    sleep(500);
                     while (progress < max  && !isCancelled()) {
                         Camera camera  = home.getStoredCameras().get(progress);
                         String name    = camera.getName();
@@ -96,41 +157,55 @@ public class ToWebPlugin extends Plugin {
                         System.out.printf("doInBackground() Camera:%s (%d of %d) ",name,progress,max);
                         worker.execute(home,prefs,progress);
                         progress++;
-                        Thread.sleep(100);
+                        sleep(100);
                     }
                     if ( progress == max ) {
-                        percent=100;
+                        percent=99;
                         progressMonitor.setNote("Generating HTML\n");
                         progressMonitor.setProgress(percent);
                         setProgress(percent);
-                        Thread.sleep(100);
+                        sleep(100);
                         worker.execute(home, prefs, -1);
-                        progressMonitor.setNote("Finished!\n");
-                        Thread.sleep(500);
-                        progressMonitor.close();
-                        // done(); - close the progress dialog
+                        sleep(500);
                     }
                 } catch (InterruptedException ignore) { progress = max + 100 ; }
 
-                // restore camera and story into tastText of the UI
+                // restore camera
                 home.setCamera(camera1);
-                taskText.setText(story);
-                taskText.setEditable(true);
                 return null;
             }
 
             @Override
             public void done() {
-                Toolkit.getDefaultToolkit().beep();
+                taskText.setText(story);
                 startButton.setEnabled(true);
-                progressMonitor.setProgress(0);
+                progressMonitor.setProgress(100);
             }
         }
 
-        public ToWebPluginMonitor() {
+        public ToWebPluginMonitor(Home home_) {
             super(new BorderLayout());
 
-            story    = "What a load of bollocks\nGoing on and on\nfor a few lines!";
+        	home=home_;
+        	String name = home.getName();
+            // read the story from the .ToWebPlugin file in the same directory as the 
+			Path         path = FileSystems.getDefault().getPath(name.substring(0, name.lastIndexOf('.')) + ".ToWebPlugin");
+			List<String> lines= null;
+			
+            story         = "";
+			try {
+				lines = Files.readAllLines(path,Charset.forName("UTF-8"));
+				name  = path.toRealPath().toString();
+				int     line  = 0 ;
+				while ( lines != null && line  < lines.size() ) {
+					story = story + lines.get(line).toString() + '\n';
+					line  += 1;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				story = "now is the time\nfor all good men\nto come to the aid\nof the party";
+			}
+
             taskText = new JTextArea(25,50);
             taskText.setText(story);
             taskText.setEditable(true);
@@ -140,9 +215,15 @@ public class ToWebPlugin extends Plugin {
             startButton = new JButton("Start");
             startButton.setActionCommand("start");
             startButton.addActionListener(this);
+            
+            ComboThing comboThing = new ComboThing();
+            comboThing.setBounds(0, 0, 300, 200);
+            comboThing.init();
 
-            // add(new JScrollPane(taskOutput), BorderLayout.PAGE_START);
+            add(new JScrollPane(comboThing.combo),BorderLayout.PAGE_START);
             add(new JScrollPane(taskText), BorderLayout.CENTER);
+            add(new JScrollPane(comboThing.text), BorderLayout.EAST);
+            add(new JScrollPane(comboThing.addButton), BorderLayout.WEST);
             add(startButton, BorderLayout.PAGE_END);
             setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         }
@@ -165,21 +246,10 @@ public class ToWebPlugin extends Plugin {
 
             task.home            = home ;
             task.prefs           = prefs;
-            task.progressMonitor = progressMonitor;
             task.addPropertyChangeListener(this);
             task.execute();
         }
         
-        void sleep(int millisecs)
-        {
-            try {
-				Thread.sleep(millisecs);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-
         /**
          * Invoked when task's progress property changes.
          */
@@ -195,8 +265,6 @@ public class ToWebPlugin extends Plugin {
                         taskText.append("Task completed.\n");
                     }
                     startButton.setEnabled(true);
-                    sleep(1000);
-                    taskText.setText(story);
                 }
             }
         }
@@ -214,7 +282,7 @@ public class ToWebPlugin extends Plugin {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.
-        ToWebPluginMonitor monitor = new ToWebPluginMonitor();
+        ToWebPluginMonitor monitor = new ToWebPluginMonitor(home);
         monitor.worker = worker;
         monitor.home = home;
         monitor.prefs = prefs;
