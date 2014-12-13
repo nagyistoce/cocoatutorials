@@ -160,7 +160,11 @@ thepath() {
 cronlog() {
 	f=~/temp/cron.log
 	if [ -e $f ]; then
-		tail -f $f
+		if [ $# == 0 ]; then
+			tail -f $f
+		else
+			tail $* $f
+		fi
 	else 
 		echo file: $f does not exist!
 	fi
@@ -518,7 +522,7 @@ if [ "$PLATFORM" == "macosx" ]; then
     sudo defaults write /System/Library/LaunchDaemons/com.apple.coreservices.appleevents ExitTimeOut -int 5
     sudo defaults write /System/Library/LaunchAgents/com.apple.coreservices.appleid.authentication ExitTimeOut -int 5
     
-    if [ "$FACTORY" == "rmillsmm.local ]; then
+    if [ "$FACTORY" == "rmillsmm.local" ]; then
     	sudo chown jenkins /var/log/jenkins/jenk*
     fi
 
