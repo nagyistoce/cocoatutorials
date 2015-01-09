@@ -221,8 +221,8 @@ wc -l 2>&1 >> /dev/null << EOF
 // http://www.realestate3d.com/gps/latlong.htm
 ID     LAT    LON     Location
 	
-[HOME]   51.33  -0.73 Camberley, England
-[LARGS]  55.80  -4.86 Largs, Scotland
+[GU15]   51.33  -0.73 Camberley, England
+[KA30]  55.80  -4.86 Largs, Scotland
 [GKA]   -6.07 145.38 Goroka,Papua New Guinea
 [MAG]   -5.20 145.78 Madang,Papua New Guinea
 [HGU]   -5.82 144.28 Mount Hagen,Papua New Guinea
