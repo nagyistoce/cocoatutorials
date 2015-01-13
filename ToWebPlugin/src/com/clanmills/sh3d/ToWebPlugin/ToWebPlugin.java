@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.List;
@@ -161,18 +162,19 @@ public class ToWebPlugin extends Plugin {
 		private static final Insets EAST_INSETS = new Insets(5, 5, 5, 0);
 		private GridBagConstraints createGbc(int x, int y) {
 			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx = x;
-			gbc.gridy = y;
-			gbc.gridwidth = 1;
+			gbc.gridx      = x;
+			gbc.gridy      = y;
+			gbc.gridwidth  = 1;
 			gbc.gridheight = 1;
 
-			gbc.anchor = (x == 0) ? GridBagConstraints.WEST : GridBagConstraints.EAST;
-			gbc.fill = (x == 0) ? GridBagConstraints.BOTH
-				  : GridBagConstraints.HORIZONTAL;
+			gbc.anchor     = (x == 0) ? GridBagConstraints.WEST : GridBagConstraints.EAST;
+			gbc.fill       = (x == 0) ? GridBagConstraints.BOTH
+				                      : GridBagConstraints.HORIZONTAL
+				                      ;
 
-			gbc.insets	= (x == 0) ? WEST_INSETS : EAST_INSETS;
-			gbc.weightx = (x == 0) ? 0.1 : 1.0;
-			gbc.weighty = 1.0;
+			gbc.insets 	   = (x == 0) ? WEST_INSETS : EAST_INSETS;
+			gbc.weightx    = (x == 0) ? 0.1         : 1.0;
+			gbc.weighty    = 1.0;
 			return gbc;
 		 }
 
@@ -198,8 +200,6 @@ public class ToWebPlugin extends Plugin {
 			 ,	BorderFactory.createEmptyBorder(5, 5, 5, 5)
 			 ));
 
-			 String[] viewStrings = { "Front of House", "Back yard", "Top of Stairs", "Kitchen Entrance", "Bonus Room", "Main Patio", "Kitchen from Patio Door", "Office from Desk" };
-
 			 JPanel viewPanel = new JPanel();
 			 viewPanel.setOpaque(false);
 
@@ -207,17 +207,26 @@ public class ToWebPlugin extends Plugin {
 			 viewButtons.setOpaque(false);
 			 BoxLayout viewButtonsLayout = new BoxLayout(viewButtons, BoxLayout.Y_AXIS);
 			 viewButtons.setLayout(viewButtonsLayout);
-			 viewButtons.add(new JButton("up"	 ));
-			 viewButtons.add(new JButton("ignore"));
-			 viewButtons.add(new JButton("down"	 ));
-
-			 JList<String>	viewList = new JList<String>(viewStrings);
+			 viewButtons.add(new JButton("alpha"  ));
+			 viewButtons.add(new JButton("up"	  ));
+			 viewButtons.add(new JButton("ignore" ));
+			 viewButtons.add(new JButton("down"	  ));
+			 viewButtons.add(new JButton("reverse"));
+			 
+			 Vector<String> views = new Vector<String>();
+			 
+			 for (Camera camera : home.getStoredCameras() ) {
+				 String name = camera.getName();
+				 System.out.println(name);
+				 views.add(name);
+			 }
+			 JList<String>	viewList = new JList<String>(views);
 			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			 viewList.setSelectedIndex(0);
 			 viewList.setLayoutOrientation(JList.VERTICAL);
 			 viewList.setVisibleRowCount(-1);
 			 JScrollPane viewScroller = new JScrollPane(viewList);
-			 viewScroller.setPreferredSize(new Dimension(250, 120));
+			 viewScroller.setPreferredSize(new Dimension(250, 150));
 			 viewPanel.add(viewScroller);
 			 viewPanel.add(viewButtons);
 
@@ -536,9 +545,10 @@ public class ToWebPlugin extends Plugin {
 			if ( index == 0 ) photos = new ArrayList<Photo>();
 
 			// this is temporary bodgery to speed up template debugging
-			boolean bCameras  = false ;
+			boolean bCameras  = true  ;
 			boolean bLevels	  = false ;
-			if ( index == -1 && photos.isEmpty() ) {
+			boolean bDummy    = false ;
+			if ( bDummy && index == -1 && photos.isEmpty() ) {
 				photos.add(new Photo("Landing.png"		  ,"Landing"		  ));
 				photos.add(new Photo("Entrance.png"		  ,"Entrance"		  ));
 				photos.add(new Photo("FootOfStairs.png"	  ,"Foot Of Stairs"	  ));
@@ -650,8 +660,9 @@ public class ToWebPlugin extends Plugin {
 //						System.out.println("name: " + photo.name + " file: + photo.file);
 //					  }
 
-					new ProcessBuilder("ditto","~/Documents/ToWebPlugin/","~/clanmills/ToWebPlugin/").start();
+					new ProcessBuilder("ditto","/Users/rmills/Documents/ToWebPlugin/","/Users/rmills/clanmills/ToWebPlugin/").start();
 					new ProcessBuilder("open" ,"http://klanmills/ToWebPlugin"						).start();
+					System.out.println("ditto and open run");
 				}
 			} catch ( IOException e) {
 				e.printStackTrace();
