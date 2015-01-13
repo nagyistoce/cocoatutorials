@@ -58,7 +58,8 @@ public class ToWebPlugin extends Plugin {
         private static final long serialVersionUID = 276503287;
         private ProgressMonitor   progressMonitor;
         private JButton           startButton;
-        private JTextArea         taskText;
+        private JTextArea         storyArea;
+        private JLabel            storyLabel;
         private Task              task;
         private UserPreferences   prefs;
         private Home              home;
@@ -98,42 +99,11 @@ public class ToWebPlugin extends Plugin {
 			}
         }
 
-        public class ComboThing extends JPanel
-        {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 4859162860338447901L;
-
-        	JTextField         text      = new JTextField(15);
-        	JComboBox<String>  combo     = new JComboBox<String>();
-        	JButton            addButton = new JButton("Add items");
-
-        	public void init() {
-        		ArrayList<Path> templates = getTemplates();
-        		for (int i = 0; i < templates.size(); i++)
-        			combo.addItem(templates.get(i).getFileName().toString());
-        		text.setEditable(false);
-//        		addButton.addActionListener(new ActionListener() {
-//        			public void actionPerformed(ActionEvent e) {
-//        				if (count < description.length)
-//        					combo.addItem(description[count++]);
-//        			}
-//        		});
-        		combo.addActionListener(new ActionListener() {
-        			@SuppressWarnings("unchecked")
-					public void actionPerformed(ActionEvent e) {
-        				text.setText("index: " + combo.getSelectedIndex() + "   "
-        						+ ((JComboBox<String>) e.getSource()).getSelectedItem());
-        			}
-        		});
-        	}
-        }
-
         class Task extends SwingWorker<Void, Void> {
             Home            home;
             UserPreferences prefs;
             String          story;
+            String          storyLabelText;
 
             @Override
             public Void doInBackground() {
@@ -143,6 +113,8 @@ public class ToWebPlugin extends Plugin {
                 int    max      = home.getStoredCameras().size() -1;
                 int    progress = 0;
                 int    percent  = 0;
+                storyLabelText  = storyLabel.getText();
+                storyLabel.setText("Output:");
                 setProgress(0);
                 try {
                     sleep(500);
@@ -177,57 +149,118 @@ public class ToWebPlugin extends Plugin {
 
             @Override
             public void done() {
-                taskText.setText(story);
+                storyArea.setText(story);
+                storyLabel.setText(storyLabelText);
                 startButton.setEnabled(true);
                 progressMonitor.setProgress(100);
             }
         }
+        
+        // http://stackoverflow.com/questions/9851688/how-to-align-left-or-right-inside-gridbaglayout-cell
+        private static final Insets WEST_INSETS = new Insets(5, 0, 5, 5);
+        private static final Insets EAST_INSETS = new Insets(5, 5, 5, 0);
+        private GridBagConstraints createGbc(int x, int y) {
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = x;
+            gbc.gridy = y;
+            gbc.gridwidth = 1;
+            gbc.gridheight = 1;
 
-        public ToWebPluginMonitor(Home home_) {
-            super(new BorderLayout());
+            gbc.anchor = (x == 0) ? GridBagConstraints.WEST : GridBagConstraints.EAST;
+            gbc.fill = (x == 0) ? GridBagConstraints.BOTH
+                  : GridBagConstraints.HORIZONTAL;
 
-        	home=home_;
-        	String name = home.getName();
-            // read the story from the .ToWebPlugin file in the same directory as the 
-			Path         path = FileSystems.getDefault().getPath(name.substring(0, name.lastIndexOf('.')) + ".ToWebPlugin");
-			List<String> lines= null;
-			
-            story         = "";
-			try {
-				lines = Files.readAllLines(path,Charset.forName("UTF-8"));
-				name  = path.toRealPath().toString();
-				int     line  = 0 ;
-				while ( lines != null && line  < lines.size() ) {
-					story = story + lines.get(line).toString() + '\n';
-					line  += 1;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				story = "now is the time\nfor all good men\nto come to the aid\nof the party";
-			}
-
-            taskText = new JTextArea(25,50);
-            taskText.setText(story);
-            taskText.setEditable(true);
-            taskText.setMargin(new Insets(5,5,5,5));
-            
-            //Create the UI.
-            startButton = new JButton("Start");
-            startButton.setActionCommand("start");
-            startButton.addActionListener(this);
-            
-            ComboThing comboThing = new ComboThing();
-            comboThing.setBounds(0, 0, 300, 200);
-            comboThing.init();
-
-            add(new JScrollPane(comboThing.combo),BorderLayout.PAGE_START);
-            add(new JScrollPane(taskText), BorderLayout.CENTER);
-            add(new JScrollPane(comboThing.text), BorderLayout.EAST);
-            add(new JScrollPane(comboThing.addButton), BorderLayout.WEST);
-            add(startButton, BorderLayout.PAGE_END);
-            setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            gbc.insets  = (x == 0) ? WEST_INSETS : EAST_INSETS;
+            gbc.weightx = (x == 0) ? 0.1 : 1.0;
+            gbc.weighty = 1.0;
+            return gbc;
+         }
+        
+        public JLabel addRow(int row,String label,JComponent component)
+        {
+        	 JLabel result = new JLabel(label, JLabel.LEFT);
+        	 GridBagConstraints gbc = createGbc(0,row); add(result, gbc);
+			                    gbc = createGbc(1,row); add(component,gbc);
+			 return result;
         }
 
+
+        public ToWebPluginMonitor(Home home_,Path path)
+        {
+            super(new GridBagLayout());
+            
+        	home=home_;
+        	// String name = home.getName();
+			
+			int row = 0 ;
+			
+			setLayout(new GridBagLayout());
+			 setBorder(BorderFactory.createCompoundBorder
+			 (  BorderFactory.createTitledBorder("")//ToWebPlugin Control Panel")
+			 ,  BorderFactory.createEmptyBorder(5, 5, 5, 5)
+			 ));
+
+			 String[] viewStrings = { "Front of House", "Back yard", "Top of Stairs", "Kitchen Entrance", "Bonus Room", "Main Patio", "Kitchen from Patio Door", "Office from Desk" };
+				
+			 JPanel viewPanel = new JPanel();
+			 viewPanel.setOpaque(true);
+				
+			 JPanel    viewButtons = new JPanel();
+			 BoxLayout viewButtonsLayout = new BoxLayout(viewButtons, BoxLayout.Y_AXIS);
+			 viewButtons.setLayout(viewButtonsLayout);
+			 viewButtons.add(new JButton("up"    ));
+			 viewButtons.add(new JButton("ignore"));
+			 viewButtons.add(new JButton("down"  ));
+				
+			 JList<String>  viewList = new JList<String>(viewStrings);
+			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			 viewList.setSelectedIndex(0);
+			 viewList.setLayoutOrientation(JList.VERTICAL);
+			 viewList.setVisibleRowCount(-1);
+			 JScrollPane viewScroller = new JScrollPane(viewList);
+			 viewScroller.setPreferredSize(new Dimension(250, 120));
+			 viewPanel.add(viewScroller);
+			 viewPanel.add(viewButtons);
+			 
+			 addRow(++row,"Views:",viewPanel);
+						
+			 String story         = "";
+			 try {
+					List<String> lines = Files.readAllLines(path,Charset.forName("UTF-8"));
+					int     line  = 0 ;
+					while ( lines != null && line  < lines.size() ) {
+						story = story + lines.get(line).toString() + '\n';
+						line  += 1;
+					}
+			 } catch (IOException e) {
+					e.printStackTrace();
+					story = "now is the time\nfor all good men\nto come to the aid\nof the party";
+			 }
+				
+			 storyArea = new JTextArea(25,50);
+			 storyArea.setText(story);
+			 storyArea.setEditable(true);
+			 storyArea.setMargin(new Insets(5,5,5,5));
+			 
+			 storyLabel = addRow(++row,"Story:",storyArea);
+				
+			 JPanel templates = new JPanel();
+			 templates.setOpaque(false);
+			 String[]  templateStrings  = { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
+			 JComboBox<String> templateComboBox = new JComboBox<String>(templateStrings);
+			 templateComboBox.setSelectedIndex(4);
+			 templateComboBox.setAutoscrolls(true);
+			 templates.add(templateComboBox);
+
+			 addRow(++row,"Template:",templates);
+
+			 startButton = new JButton("Start");
+			 startButton.setActionCommand("start");
+			 startButton.addActionListener(this);
+			 
+			 addRow(++row,"Start:",startButton);
+        }
+        
         /**
          * Invoked when the user presses the start button.
          */
@@ -238,11 +271,11 @@ public class ToWebPlugin extends Plugin {
             		,  "ToWebPlugin: Creating Images"
             		,  "", 0, 100
             		);
-            story = taskText.getText();
+            story = storyArea.getText();
             task  = new Task();
             task.story = story; 
-            taskText.setEditable(false);
-            taskText.setText("");
+            storyArea.setEditable(false);
+            storyArea.setText("");
 
             task.home            = home ;
             task.prefs           = prefs;
@@ -255,14 +288,14 @@ public class ToWebPlugin extends Plugin {
          */
         public void propertyChange(PropertyChangeEvent evt) {
             if ("progress" == evt.getPropertyName() ) {
-                taskText.append(progressMonitor.getNote());
+                storyArea.append(progressMonitor.getNote());
                 if (progressMonitor.isCanceled() || task.isDone()) {
                     Toolkit.getDefaultToolkit().beep();
                     if (progressMonitor.isCanceled()) {
                         task.cancel(true);
-                        taskText.append("Task canceled.\n");
+                        storyArea.append("Task canceled.\n");
                     } else {
-                        taskText.append("Task completed.\n");
+                        storyArea.append("Task completed.\n");
                     }
                     startButton.setEnabled(true);
                 }
@@ -276,13 +309,16 @@ public class ToWebPlugin extends Plugin {
      * For thread safety, this method should be invoked
      * from the event-dispatching thread.
      */
-    void createAndShowGUI(ToWebPluginWorker worker,Home home,UserPreferences prefs) {
+    void createAndShowGUI(ToWebPluginWorker worker,Home home,UserPreferences prefs)
+    {
         //Create and set up the window.
-        JFrame frame = new JFrame("ToWebPlugin Monitor");
+        JFrame frame = new JFrame("ToWebPlugin"); // ToWebPlugin Control Panel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+		Path  path = FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.')) + ".ToWebPlugin");
 
         //Create and set up the content pane.
-        ToWebPluginMonitor monitor = new ToWebPluginMonitor(home);
+        ToWebPluginMonitor monitor = new ToWebPluginMonitor(home,path);
         monitor.worker = worker;
         monitor.home = home;
         monitor.prefs = prefs;
