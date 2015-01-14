@@ -10,11 +10,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.CodeSource;
+
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.List;
+
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.FileSystems;
@@ -26,6 +28,7 @@ import javax.swing.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.Graphics2D;
@@ -43,12 +46,43 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.swing.HomeComponent3D;
 import com.eteks.sweethome3d.swing.PlanComponent;
 
+
 /**
  * ToWebPlugin
  * @author Robin Mills
  */
 
+// http://stackoverflow.com/questions/4545937/java-splitting-the-filename-into-a-base-and-extension
+class Filename
+{
+	private String fullPath;
+	private char pathSeparator, extensionSeparator;
+
+	public Filename(String str, char sep, char ext) {
+	    fullPath           = str;
+	    pathSeparator      = sep;
+	    extensionSeparator = ext;
+	}
+
+	public String extension() {
+	    int dot = fullPath.lastIndexOf(extensionSeparator);
+	    return fullPath.substring(dot + 1);
+	}
+
+	public String filename() { // gets filename without extension
+	    int dot = fullPath.lastIndexOf(extensionSeparator);
+	    int sep = fullPath.lastIndexOf(pathSeparator);
+	    return fullPath.substring(sep + 1, dot);
+	}
+
+	public String path() {
+		int sep = fullPath.lastIndexOf(pathSeparator);
+		return fullPath.substring(0, sep);
+	}
+}
+
 public class ToWebPlugin extends Plugin {
+	
 	public	static class ToWebPluginMonitor extends JPanel
 			implements ActionListener,
 			PropertyChangeListener {
@@ -61,29 +95,47 @@ public class ToWebPlugin extends Plugin {
 		private JButton			  startButton;
 		private JTextArea		  storyArea;
 		private JLabel			  storyLabel;
+		private Boolean           storyEditable;
 		private Task			  task;
 		private UserPreferences	  prefs;
 		private Home			  home;
 		private ToWebPluginWorker worker;
 		public	String			  story;
 
-		ArrayList<Path> getTemplates()
+		Vector<String> getTemplates()
 		{
-			ArrayList<Path> result = new ArrayList<Path>();
+			Vector<String> result = new Vector<String>();
 			try {
+				char   sep         = FileSystems.getDefault().getSeparator().charAt(0);
+				char   dot         = '.';
+				// String want        = "st";
 				String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				String pluginDir   = URLDecoder.decode(jarPath, "UTF-8");
 					   pluginDir   = Paths.get(pluginDir).getParent().toString();
 				String templateDir = Paths.get(pluginDir).resolve("templates").toString();
 				File[] files	   = new File(templateDir).listFiles();
 				for ( File file : files) {
-					result.add(file.toPath());
-					System.out.println("templates/" + file.toString());
+					Filename filename = new Filename(file.toString(),sep,dot);
+					// if ( filename.extension() == want )
+						result.add(filename.filename());
+				//  System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 			return result;
+		}
+
+		public Vector<String> getViews(Home home)
+		{
+		    Vector<String> views = new Vector<String>();
+		 
+ 		    for (Camera camera : home.getStoredCameras() ) {
+			    String name = camera.getName();
+			    System.out.println(name);
+			    views.add(name);
+		    }
+ 		    return views;
 		}
 
 		void sleep(int millisecs) throws InterruptedException
@@ -151,6 +203,7 @@ public class ToWebPlugin extends Plugin {
 			@Override
 			public void done() {
 				storyArea.setText(story);
+				storyArea.setEditable(storyEditable);
 				storyLabel.setText(storyLabelText);
 				startButton.setEnabled(true);
 				progressMonitor.setProgress(100);
@@ -185,8 +238,7 @@ public class ToWebPlugin extends Plugin {
 			 add(component , createGbc(1,row));
 			 return result;
 		}
-
-
+		
 		public ToWebPluginMonitor(Home home_,Path path)
 		{
 			 super(new GridBagLayout());
@@ -200,27 +252,29 @@ public class ToWebPlugin extends Plugin {
 			 ,	BorderFactory.createEmptyBorder(5, 5, 5, 5)
 			 ));
 
+			 //++++++++++++++++++++++++++++++ 
 			 JPanel viewPanel = new JPanel();
 			 viewPanel.setOpaque(false);
 
-			 JPanel	   viewButtons = new JPanel();
-			 viewButtons.setOpaque(false);
-			 BoxLayout viewButtonsLayout = new BoxLayout(viewButtons, BoxLayout.Y_AXIS);
-			 viewButtons.setLayout(viewButtonsLayout);
-			 viewButtons.add(new JButton("alpha"  ));
-			 viewButtons.add(new JButton("up"	  ));
-			 viewButtons.add(new JButton("ignore" ));
-			 viewButtons.add(new JButton("down"	  ));
-			 viewButtons.add(new JButton("reverse"));
+			 JPanel	   viewOrderButtons = new JPanel();
+			 viewOrderButtons.setOpaque(false);
+			 BoxLayout viewOrderButtonsLayout = new BoxLayout(viewOrderButtons, BoxLayout.Y_AXIS);
+			 viewOrderButtons.setBorder(BorderFactory.createTitledBorder("View order:"));
+			 viewOrderButtons.setLayout(viewOrderButtonsLayout);
+			 viewOrderButtons.add(new JButton("up"	   ));
+			 viewOrderButtons.add(new JButton("ignore" ));
+			 viewOrderButtons.add(new JButton("down"   ));
+
+			 JPanel	   viewSortButtons = new JPanel();
+			 viewSortButtons.setOpaque(false);
+			 BoxLayout viewButtonsLayout = new BoxLayout(viewSortButtons, BoxLayout.Y_AXIS);
+			 viewSortButtons.setBorder(BorderFactory.createTitledBorder("Sort by:"));
+			 viewSortButtons.setLayout(viewButtonsLayout);
+			 viewSortButtons.add(new JButton("alpha"  ));
+			 viewSortButtons.add(new JButton("none"	  ));
+			 viewSortButtons.add(new JButton("reverse"));
 			 
-			 Vector<String> views = new Vector<String>();
-			 
-			 for (Camera camera : home.getStoredCameras() ) {
-				 String name = camera.getName();
-				 System.out.println(name);
-				 views.add(name);
-			 }
-			 JList<String>	viewList = new JList<String>(views);
+			 JList<String>	viewList = new JList<String>(getViews(home));
 			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			 viewList.setSelectedIndex(0);
 			 viewList.setLayoutOrientation(JList.VERTICAL);
@@ -228,10 +282,16 @@ public class ToWebPlugin extends Plugin {
 			 JScrollPane viewScroller = new JScrollPane(viewList);
 			 viewScroller.setPreferredSize(new Dimension(250, 150));
 			 viewPanel.add(viewScroller);
-			 viewPanel.add(viewButtons);
+			 viewPanel.add(viewSortButtons);
 
+			 viewPanel.setOpaque(false);
+			 viewPanel.setLayout(new GridBagLayout() );
+			 viewPanel.add(viewOrderButtons);
+			 viewPanel.add(viewSortButtons);
+			 
 			 addRow(++row,"Views:",viewPanel);
 
+			 //++++++++++++++++++++++++++++++ 
 			 String story		  = "";
 			 try {
 					List<String> lines = Files.readAllLines(path,Charset.forName("UTF-8"));
@@ -252,20 +312,41 @@ public class ToWebPlugin extends Plugin {
 
 			 storyLabel = addRow(++row,"Story:",storyArea);
 
-			 JPanel templates = new JPanel();
-			 templates.setOpaque(false);
-			 String[]  templateStrings	= { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
-			 JComboBox<String> templateComboBox = new JComboBox<String>(templateStrings);
-			 templateComboBox.setSelectedIndex(4);
+			 //++++++++++++++++++++++++++++++ 
+			 JPanel templatePanel = new JPanel();
+			 templatePanel.setOpaque(false);
+			 
+			 JComboBox<String> templateComboBox = new JComboBox<String>(getTemplates());
 			 templateComboBox.setAutoscrolls(true);
-			 templates.add(templateComboBox);
+			 templatePanel.add(templateComboBox);
 
-			 addRow(++row,"Template:",templates);
+			 JPanel optionsPanel = new JPanel();
+			 optionsPanel.setOpaque(false);
+			 optionsPanel.add(new JLabel("Template:"));
+			 optionsPanel.add(templatePanel);
+			 
+			 optionsPanel.add(new JLabel("JSON:"));
+			 JRadioButton json = new JRadioButton();
+			 json.setSelected(false);
+			 optionsPanel.add(json);
+			 
+			 optionsPanel.add(new JLabel("Cheat:"));
+			 optionsPanel.add(new JRadioButton());
+			 
+			 optionsPanel.add(new JLabel("Autosave:"));
+			 JRadioButton autoSave = new JRadioButton();
+			 autoSave.setSelected(true);
+			 optionsPanel.add(autoSave);
 
+			 optionsPanel.add(new JButton("Save now"));
+
+			 addRow(++row,"Options:",optionsPanel);
+
+			 //++++++++++++++++++++++++++++++ 
 			 startButton = new JButton("Start");
 			 startButton.setActionCommand("start");
 			 startButton.addActionListener(this);
-
+			 
 			 addRow(++row,"Start:",startButton);
 		}
 
@@ -282,7 +363,8 @@ public class ToWebPlugin extends Plugin {
 					);
 			story = storyArea.getText();
 			task  = new Task();
-			task.story = story; 
+			task.story = story;
+			storyEditable = storyArea.isEditable();
 			storyArea.setEditable(false);
 			storyArea.setText("");
 
@@ -303,9 +385,6 @@ public class ToWebPlugin extends Plugin {
 					Toolkit.getDefaultToolkit().beep();
 					if (progressMonitor.isCanceled()) {
 						task.cancel(true);
-						storyArea.append("Task canceled.\n");
-					} else {
-						storyArea.append("Task completed.\n");
 					}
 					startButton.setEnabled(true);
 				}
