@@ -7,8 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
 import java.net.URL;
 import java.net.URLDecoder;
+
 import java.security.CodeSource;
 
 import java.util.ArrayList;
@@ -101,6 +103,7 @@ public class ToWebPlugin extends Plugin {
 		private Home			  home;
 		private ToWebPluginWorker worker;
 		public	String			  story;
+		public  JRadioButton      dummyButton;
 
 		Vector<String> getTemplates()
 		{
@@ -157,6 +160,7 @@ public class ToWebPlugin extends Plugin {
 			UserPreferences prefs;
 			String			story;
 			String			storyLabelText;
+			Boolean         bDummy;
 
 			@Override
 			public Void doInBackground() {
@@ -168,6 +172,7 @@ public class ToWebPlugin extends Plugin {
 				int	   percent	= 0;
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
+				worker.bDummy   = bDummy;
 				setProgress(0);
 				try {
 					sleep(500);
@@ -330,8 +335,10 @@ public class ToWebPlugin extends Plugin {
 			 json.setSelected(false);
 			 optionsPanel.add(json);
 			 
-			 optionsPanel.add(new JLabel("Cheat:"));
-			 optionsPanel.add(new JRadioButton());
+			 optionsPanel.add(new JLabel("bDummy:"));
+			 dummyButton = new JRadioButton();
+			 optionsPanel.add(dummyButton);
+			 dummyButton.setSelected(true);
 			 
 			 optionsPanel.add(new JLabel("Autosave:"));
 			 JRadioButton autoSave = new JRadioButton();
@@ -370,6 +377,7 @@ public class ToWebPlugin extends Plugin {
 
 			task.home			 = home ;
 			task.prefs			 = prefs;
+			task.bDummy          = dummyButton.isSelected();
 			task.addPropertyChangeListener(this);
 			task.execute();
 		}
@@ -483,7 +491,8 @@ public class ToWebPlugin extends Plugin {
 
 		Home			 home;
 		UserPreferences	 prefs;
-		ArrayList<Photo> photos	   = new ArrayList<Photo>();
+		boolean          bDummy  = false ;
+		ArrayList<Photo> photos	 = new ArrayList<Photo>();
 
 		private String unCamel(String s)
 		{
@@ -626,8 +635,7 @@ public class ToWebPlugin extends Plugin {
 			// this is temporary bodgery to speed up template debugging
 			boolean bCameras  = true  ;
 			boolean bLevels	  = false ;
-			boolean bDummy    = false ;
-			if ( bDummy && index == -1 && photos.isEmpty() ) {
+			if ( bDummy && photos.isEmpty()  && index == -1 ) {
 				photos.add(new Photo("Landing.png"		  ,"Landing"		  ));
 				photos.add(new Photo("Entrance.png"		  ,"Entrance"		  ));
 				photos.add(new Photo("FootOfStairs.png"	  ,"Foot Of Stairs"	  ));
@@ -646,7 +654,7 @@ public class ToWebPlugin extends Plugin {
 			try {
 
 				// paint camera
-				if ( bCameras && index >= 0 ) {
+				if ( !bDummy && bCameras && index >= 0 ) {
 					// save camera
 					Camera camera = home.getStoredCameras().get(index) ;
 					if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
@@ -661,7 +669,7 @@ public class ToWebPlugin extends Plugin {
 				}
 
 				// paint every level
-				if ( bLevels && index >= 0 ) {
+				if ( !bDummy && bLevels && index >= 0 ) {
 					Level level1 = home.getSelectedLevel();
 					for ( Level level : home.getLevels() ) {
 						home.setSelectedLevel(level);
@@ -709,13 +717,6 @@ public class ToWebPlugin extends Plugin {
 						}
 					}
 
-					// enumerate files in templateDir (overwrite templates in the jar)
-					//				File   textFolder = new File(templateDir);
-					//				File[] stFiles	  = textFolder.listFiles( new FileFilter() {
-					//					   public boolean accept( File file ) {
-					//						   return file.getName().endsWith(".st");
-					//					   }
-					//				});
 					System.out.println("generating code");
 					// use the template to generate the code
 					STRawGroupDir ts = new STRawGroupDir(templateDir,'$','$');
