@@ -58,10 +58,18 @@ import com.eteks.sweethome3d.swing.PlanComponent;
 class Filename
 {
 	private String fullPath;
-	private char pathSeparator, extensionSeparator;
+	private char   pathSeparator;
+	private char   extensionSeparator;
 
 	public Filename(String str, char sep, char ext) {
 	    fullPath           = str;
+	    pathSeparator      = sep;
+	    extensionSeparator = ext;
+	}
+	
+	public Filename(File file,char sep, char ext)
+	{
+		fullPath= file.toString();
 	    pathSeparator      = sep;
 	    extensionSeparator = ext;
 	}
@@ -104,23 +112,25 @@ public class ToWebPlugin extends Plugin {
 		private ToWebPluginWorker worker;
 		public	String			  story;
 		public  JRadioButton      dummyButton;
+		JList<String>	          viewList;
+		
+		DefaultListModel<String>  viewModel = new DefaultListModel<String>();
 
-		Vector<String> getTemplates()
+	    Vector<String> getTemplates()
 		{
 			Vector<String> result = new Vector<String>();
 			try {
 				char   sep         = FileSystems.getDefault().getSeparator().charAt(0);
 				char   dot         = '.';
-				// String want        = "st";
+				String want        = "st";
 				String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				String pluginDir   = URLDecoder.decode(jarPath, "UTF-8");
 					   pluginDir   = Paths.get(pluginDir).getParent().toString();
 				String templateDir = Paths.get(pluginDir).resolve("templates").toString();
 				File[] files	   = new File(templateDir).listFiles();
 				for ( File file : files) {
-					Filename filename = new Filename(file.toString(),sep,dot);
-					// if ( filename.extension() == want )
-						result.add(filename.filename());
+					Filename filename = new Filename(file,sep,dot);
+					if ( filename.extension().equals(want) )	result.add(filename.filename());
 				//  System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
 				}
 			} catch (UnsupportedEncodingException e) {
@@ -266,9 +276,23 @@ public class ToWebPlugin extends Plugin {
 			 BoxLayout viewOrderButtonsLayout = new BoxLayout(viewOrderButtons, BoxLayout.Y_AXIS);
 			 viewOrderButtons.setBorder(BorderFactory.createTitledBorder("View order:"));
 			 viewOrderButtons.setLayout(viewOrderButtonsLayout);
-			 viewOrderButtons.add(new JButton("up"	   ));
-			 viewOrderButtons.add(new JButton("ignore" ));
-			 viewOrderButtons.add(new JButton("down"   ));
+			 
+			 JButton button;
+			 
+			 button = new JButton("up");
+			 button.addActionListener(this);
+			 button.setActionCommand("up");
+			 viewOrderButtons.add(button);
+
+			 button = new JButton("ignore");
+			 button.addActionListener(this);
+			 button.setActionCommand("ignore");
+			 viewOrderButtons.add(button);
+
+			 button = new JButton("down");
+			 button.addActionListener(this);
+			 button.setActionCommand("down");
+			 viewOrderButtons.add(button);
 
 			 JPanel	   viewSortButtons = new JPanel();
 			 viewSortButtons.setOpaque(false);
@@ -279,7 +303,12 @@ public class ToWebPlugin extends Plugin {
 			 viewSortButtons.add(new JButton("none"	  ));
 			 viewSortButtons.add(new JButton("reverse"));
 			 
-			 JList<String>	viewList = new JList<String>(getViews(home));
+			 viewList = new JList<String>(viewModel);
+			 Vector<String> views = getViews(home);
+			 for (int i = 0; i < views.size() ; i++) {
+				  viewModel.addElement(views.get(i));
+		     }
+
 			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			 viewList.setSelectedIndex(0);
 			 viewList.setLayoutOrientation(JList.VERTICAL);
@@ -329,17 +358,17 @@ public class ToWebPlugin extends Plugin {
 			 optionsPanel.setOpaque(false);
 			 optionsPanel.add(new JLabel("Template:"));
 			 optionsPanel.add(templatePanel);
-			 
+
 			 optionsPanel.add(new JLabel("JSON:"));
 			 JRadioButton json = new JRadioButton();
 			 json.setSelected(false);
 			 optionsPanel.add(json);
-			 
+
 			 optionsPanel.add(new JLabel("bDummy:"));
 			 dummyButton = new JRadioButton();
 			 optionsPanel.add(dummyButton);
 			 dummyButton.setSelected(true);
-			 
+
 			 optionsPanel.add(new JLabel("Autosave:"));
 			 JRadioButton autoSave = new JRadioButton();
 			 autoSave.setSelected(true);
@@ -362,24 +391,52 @@ public class ToWebPlugin extends Plugin {
 		 */
 		public void actionPerformed(ActionEvent evt)
 		{
-			startButton.setEnabled(false);
-			progressMonitor = new ProgressMonitor
-					(ToWebPluginMonitor.this
-					,  "ToWebPlugin: Creating Images"
-					,  "", 0, 100
-					);
-			story = storyArea.getText();
-			task  = new Task();
-			task.story = story;
-			storyEditable = storyArea.isEditable();
-			storyArea.setEditable(false);
-			storyArea.setText("");
-
-			task.home			 = home ;
-			task.prefs			 = prefs;
-			task.bDummy          = dummyButton.isSelected();
-			task.addPropertyChangeListener(this);
-			task.execute();
+			String cmd = evt.getActionCommand();
+			if ( cmd.equals("start") ) {
+				startButton.setEnabled(false);
+				progressMonitor = new ProgressMonitor
+						(ToWebPluginMonitor.this
+						,  "ToWebPlugin: Creating Images"
+						,  "", 0, 100
+						);
+				story = storyArea.getText();
+				task  = new Task();
+				task.story = story;
+				storyEditable = storyArea.isEditable();
+				storyArea.setEditable(false);
+				storyArea.setText("");
+	
+				task.home			 = home ;
+				task.prefs			 = prefs;
+				task.bDummy          = dummyButton.isSelected();
+				task.addPropertyChangeListener(this);
+				task.execute();
+			}
+			if ( cmd.equals("ignore") ) {
+				String ignored = " *ignored* ";
+				String value = viewList.getSelectedValue();
+				int nIgnored = value.indexOf(ignored);
+				value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
+			    viewModel.set(viewList.getSelectedIndex(), value);
+			}
+			if ( cmd.equals("up") ) {
+				int  selected = viewList.getSelectedIndex();
+				if ( selected > 0 ) {
+					String swap = viewModel.get(selected);
+					viewModel.set(selected, viewModel.get(selected-1));
+					viewModel.set(selected-1, swap);
+					viewList.setSelectedIndex(selected-1);
+					viewList.scrollRectToVisible(viewList.getCellBounds(selected-1, selected +1));
+				}
+			}
+			if ( cmd.equals("down") ) {
+				int  selected = viewList.getSelectedIndex();
+				String swap = viewModel.get(selected);
+				viewModel.set(selected, viewModel.get(selected+1));
+				viewModel.set(selected+1 , swap);
+				viewList.setSelectedIndex(selected+1);
+				viewList.scrollRectToVisible(viewList.getCellBounds(selected-1, selected +1));
+			}
 		}
 
 		/**
