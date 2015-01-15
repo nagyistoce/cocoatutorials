@@ -1,24 +1,25 @@
 package com.clanmills.sh3d.ToWebPlugin;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-
 import java.net.URL;
 import java.net.URLDecoder;
-
 import java.security.CodeSource;
-
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.List;
-
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.FileSystems;
@@ -30,7 +31,6 @@ import javax.swing.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.Graphics2D;
@@ -270,6 +270,7 @@ public class ToWebPlugin extends Plugin {
 			 //++++++++++++++++++++++++++++++ 
 			 JPanel viewPanel = new JPanel();
 			 viewPanel.setOpaque(false);
+			 viewPanel.setLayout(new GridBagLayout() );
 
 			 JPanel	   viewOrderButtons = new JPanel();
 			 viewOrderButtons.setOpaque(false);
@@ -293,16 +294,8 @@ public class ToWebPlugin extends Plugin {
 			 button.addActionListener(this);
 			 button.setActionCommand("down");
 			 viewOrderButtons.add(button);
+			 viewPanel.add(viewOrderButtons);
 
-			 JPanel	   viewSortButtons = new JPanel();
-			 viewSortButtons.setOpaque(false);
-			 BoxLayout viewButtonsLayout = new BoxLayout(viewSortButtons, BoxLayout.Y_AXIS);
-			 viewSortButtons.setBorder(BorderFactory.createTitledBorder("Sort by:"));
-			 viewSortButtons.setLayout(viewButtonsLayout);
-			 viewSortButtons.add(new JButton("alpha"  ));
-			 viewSortButtons.add(new JButton("none"	  ));
-			 viewSortButtons.add(new JButton("reverse"));
-			 
 			 viewList = new JList<String>(viewModel);
 			 Vector<String> views = getViews(home);
 			 for (int i = 0; i < views.size() ; i++) {
@@ -316,13 +309,21 @@ public class ToWebPlugin extends Plugin {
 			 JScrollPane viewScroller = new JScrollPane(viewList);
 			 viewScroller.setPreferredSize(new Dimension(250, 150));
 			 viewPanel.add(viewScroller);
+			 
+			 JPanel	   viewSortButtons = new JPanel();
+			 viewSortButtons.setOpaque(false);
+			 BoxLayout viewButtonsLayout = new BoxLayout(viewSortButtons, BoxLayout.Y_AXIS);
+			 viewSortButtons.setBorder(BorderFactory.createTitledBorder("Sort by:"));
+			 viewSortButtons.setLayout(viewButtonsLayout);
+			 viewSortButtons.add(new JButton("alpha"  ));
+			 viewSortButtons.add(new JButton("More..."));
+			 
+			 button = new JButton("help");
+			 button.addActionListener(this);
+			 button.setActionCommand("help");
+			 viewSortButtons.add(button);
 			 viewPanel.add(viewSortButtons);
 
-			 viewPanel.setOpaque(false);
-			 viewPanel.setLayout(new GridBagLayout() );
-			 viewPanel.add(viewOrderButtons);
-			 viewPanel.add(viewSortButtons);
-			 
 			 addRow(++row,"Views:",viewPanel);
 
 			 //++++++++++++++++++++++++++++++ 
@@ -373,8 +374,11 @@ public class ToWebPlugin extends Plugin {
 			 JRadioButton autoSave = new JRadioButton();
 			 autoSave.setSelected(true);
 			 optionsPanel.add(autoSave);
-
-			 optionsPanel.add(new JButton("Save now"));
+			 
+			 JButton saveButton = new JButton("Save");
+			 saveButton.setActionCommand("save");
+			 saveButton.addActionListener(this);
+			 optionsPanel.add(saveButton);
 
 			 addRow(++row,"Options:",optionsPanel);
 
@@ -389,9 +393,34 @@ public class ToWebPlugin extends Plugin {
 		/**
 		 * Invoked when the user presses the start button.
 		 */
+		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent evt)
 		{
 			String cmd = evt.getActionCommand();
+			
+			if ( cmd.equals("save") ) {
+				JSONArray views = new JSONArray();
+				for ( int i = 0 ; i < viewModel.getSize() ; i++ ) {
+					views.add(viewModel.get(i));
+				}
+				
+				JSONObject obj=new JSONObject();
+				obj.put("story",storyArea.getText());
+				obj.put("views",views);
+				//obj.put("num",new Integer(100));
+				//obj.put("balance",new Double(1000.21));
+				//obj.put("is_vip",new Boolean(true));
+				//obj.put("nickname",null);
+				
+				StringWriter out = new StringWriter();
+				try {
+					JSONValue.writeJSONString(obj, out);
+					String jsonText = out.toString();
+					System.out.print(jsonText + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			if ( cmd.equals("start") ) {
 				startButton.setEnabled(false);
 				progressMonitor = new ProgressMonitor
@@ -419,23 +448,23 @@ public class ToWebPlugin extends Plugin {
 				value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
 			    viewModel.set(viewList.getSelectedIndex(), value);
 			}
-			if ( cmd.equals("up") ) {
-				int  selected = viewList.getSelectedIndex();
-				if ( selected > 0 ) {
+			if ( cmd.equals("up") || cmd.equals("down") ) {
+				try {
+					int  up_down  = cmd.equals("down") ? +1 : -1 ;
+					int  selected = viewList.getSelectedIndex();
 					String swap = viewModel.get(selected);
-					viewModel.set(selected, viewModel.get(selected-1));
-					viewModel.set(selected-1, swap);
-					viewList.setSelectedIndex(selected-1);
+					viewModel.set(selected, viewModel.get(selected+up_down));
+					viewModel.set(selected+up_down, swap);
+					viewList.setSelectedIndex(selected+up_down);
 					viewList.scrollRectToVisible(viewList.getCellBounds(selected-1, selected +1));
-				}
+				} catch (Exception e) {}
 			}
-			if ( cmd.equals("down") ) {
-				int  selected = viewList.getSelectedIndex();
-				String swap = viewModel.get(selected);
-				viewModel.set(selected, viewModel.get(selected+1));
-				viewModel.set(selected+1 , swap);
-				viewList.setSelectedIndex(selected+1);
-				viewList.scrollRectToVisible(viewList.getCellBounds(selected-1, selected +1));
+			if ( cmd.equals("help") ) {
+				try {
+					new ProcessBuilder("open" ,"http://clanmills.com/files/ToWebPlugin/").start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
