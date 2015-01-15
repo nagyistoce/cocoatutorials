@@ -16,6 +16,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -114,12 +116,12 @@ public class ToWebPlugin extends Plugin {
 		private Path              path;
 		private ToWebPluginWorker worker;
 		public	String			  story;
+		public  String            ignored = " *ignored* ";
 		public  JRadioButton      dummyButton;
 		JList<String>	          viewList;
-		
 		DefaultListModel<String>  viewModel = new DefaultListModel<String>();
 
-	    Vector<String> getTemplates()
+	    public Vector<String> getTemplates()
 		{
 			Vector<String> result = new Vector<String>();
 			try {
@@ -142,10 +144,10 @@ public class ToWebPlugin extends Plugin {
 			return result;
 		}
 
-		public Vector<String> getViews(Home home)
+		public Vector<String> getViewsInModel(Home home)
 		{
 		    Vector<String> views = new Vector<String>();
-		 
+
  		    for (Camera camera : home.getStoredCameras() ) {
 			    String name = camera.getName();
 			    System.out.println(name);
@@ -154,12 +156,35 @@ public class ToWebPlugin extends Plugin {
  		    return views;
 		}
 
-		void sleep(int millisecs) throws InterruptedException
+	    public void fixViewUI()
+	    {
+	    	Set<String> views = new HashSet<String>();
+	    	for ( String view : getViewsInModel(home) ) {
+	    		views.add(view);
+	    	}
+
+            // views in the model, but not in UI are marked ignored
+		    for ( int i = 0 ; i < viewModel.getSize(); i++ ) {
+	    		String  view = viewModel.get(i);
+				int  nIgnored = view.indexOf(ignored);
+				if ( nIgnored > 0 ) view = view.substring(0,nIgnored);
+
+	    		if ( !views.contains(view) && nIgnored < 0 ) {
+	    		 	viewModel.add(viewModel.getSize(), view + ignored);
+	    		}
+	    		views.remove(view);
+	    	}
+		    for ( String view : views ) {
+    		 	viewModel.add(viewModel.getSize(), view + ignored);
+		    }
+	    }
+
+	    public void sleep(int millisecs) throws InterruptedException
 		{
 			Thread.sleep(millisecs);
 		}
 
-		void sleeps(int millisecs)
+	    public void sleeps(int millisecs)
 		{
 			try {
 				sleep(millisecs);
@@ -249,7 +274,7 @@ public class ToWebPlugin extends Plugin {
 			return gbc;
 		 }
 
-		public JLabel addRow(int row,String label,JComponent component)
+		private JLabel addRow(int row,String label,JComponent component)
 		{
 			 JLabel result = new JLabel(label, JLabel.LEFT);
 			 add(result	   , createGbc(0,row));
@@ -279,7 +304,7 @@ public class ToWebPlugin extends Plugin {
 			 JButton button;
 
 			 viewList = new JList<String>(viewModel);
-			 Vector<String> views = getViews(home);
+			 Vector<String> views = getViewsInModel(home);
 			 for (int i = 0; i < views.size() ; i++) {
 				  viewModel.addElement(views.get(i));
 		     }
@@ -306,6 +331,11 @@ public class ToWebPlugin extends Plugin {
 			 button = new JButton("ignore");
 			 button.addActionListener(this);
 			 button.setActionCommand("ignore");
+			 viewOrderButtons.add(button);
+
+			 button = new JButton("remove");
+			 button.addActionListener(this);
+			 button.setActionCommand("remove");
 			 viewOrderButtons.add(button);
 
 			 button = new JButton("down");
@@ -351,8 +381,15 @@ public class ToWebPlugin extends Plugin {
 			 
 			 JSONParser parser = new JSONParser();
 	    	 try {
-	    		 JSONObject object = (JSONObject) parser.parse(story);
-	    		 story = (String) object.get("story") ;
+	    		 JSONObject object     = (JSONObject) parser.parse(story);
+	    		 story                 = (String) object.get("story") ;
+	    		 JSONArray viewsOnFile = (JSONArray) object.get("views");
+    			 viewModel.removeAllElements();
+	    		 for ( int i = 0 ; i < viewsOnFile.size(); i++ ) {
+	    			 String view = (String) viewsOnFile.get(i);
+	    			 this.viewModel.add(i,view);
+	    		 }
+	    		 fixViewUI();
 	    	 } catch (ParseException pe) {
 	    		 System.out.println("position: " + pe.getPosition());
 	    		 System.out.println(pe);
@@ -463,11 +500,16 @@ public class ToWebPlugin extends Plugin {
 			}
 
 			if ( cmd.equals("ignore") ) {
-				String ignored = " *ignored* ";
 				String value = viewList.getSelectedValue();
 				int nIgnored = value.indexOf(ignored);
 				value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
 			    viewModel.set(viewList.getSelectedIndex(), value);
+			}
+
+			if ( cmd.equals("remove") ) {
+				int index = viewList.getSelectedIndex();
+				viewModel.remove(index);
+				viewList.setSelectedIndex(index-(index>0?1:0));
 			}
 
 			if ( cmd.equals("up") || cmd.equals("down") ) {
@@ -509,45 +551,16 @@ public class ToWebPlugin extends Plugin {
 		}
 
 		@Override
-		public void windowOpened(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
 		public void windowClosing(WindowEvent e) {
 			save();
 		}
 
-		@Override
-		public void windowClosed(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowIconified(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowDeiconified(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowActivated(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowDeactivated(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void windowOpened     (WindowEvent e) {}
+		public void windowClosed     (WindowEvent e) {}
+		public void windowIconified  (WindowEvent e) {}
+		public void windowDeiconified(WindowEvent e) {}
+		public void windowActivated  (WindowEvent e) {}
+		public void windowDeactivated(WindowEvent e) {}
 	}
 
 
@@ -587,35 +600,17 @@ public class ToWebPlugin extends Plugin {
 		{
 			putPropertyValue(Property.NAME, "ToWebPlugin...");
 			putPropertyValue(Property.MENU, "Tools");
-			// Enables the action by default
 			setEnabled(true);
 		}
 
-		public String myLabel = "";
-		void setLabel(String string) {
-			myLabel = string;
-		}
+//		public String myLabel = "";
+//		void setLabel(String string) {
+//			myLabel = string;
+//		}
 
 		@Override
 		public void execute()
 		{
-			String		 name = getHome().getName();
-			Path		 path = FileSystems.getDefault().getPath(name.substring(0, name.lastIndexOf('.')) + ".ToWebPlugin");
-			String		 story=""; 
-			List<String> lines= null;
-
-			try {
-				lines = Files.readAllLines(path,Charset.forName("UTF-8"));
-				name  = path.toRealPath().toString();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			int		line  = 0 ;
-			while ( lines != null && line  < lines.size() ) {
-				story = story + lines.get(line).toString() + '\n';
-				line  += 1;
-			}
-			System.out.println("name = " + name + "\nstory = " + story);
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					createAndShowGUI(new ToWebPluginWorker(),getHome(),getUserPreferences());
