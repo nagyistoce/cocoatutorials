@@ -106,18 +106,17 @@ public class ToWebPlugin extends Plugin {
 		private static final long serialVersionUID = 276503287;
 		private ProgressMonitor	  progressMonitor;
 		private JButton			  startButton;
-		private JRadioButton      jsonButton;
 		private JTextArea		  storyArea;
 		private JLabel			  storyLabel;
 		private Boolean           storyEditable;
-		private Task			  task;
+		private ToWebPluginTask	  task;
 		private UserPreferences	  prefs;
 		private Home			  home;
 		private Path              path;
 		private ToWebPluginWorker worker;
 		public	String			  story;
 		public  String            ignored = " *ignored* ";
-		public  JRadioButton      dummyButton;
+		public  JRadioButton      keyButtons;
 		JList<String>	          viewList;
 		DefaultListModel<String>  viewModel = new DefaultListModel<String>();
 
@@ -193,7 +192,7 @@ public class ToWebPlugin extends Plugin {
 			}
 		}
 
-		class Task extends SwingWorker<Void, Void> {
+		class ToWebPluginTask extends SwingWorker<Void, Void> {
 			Home			home;
 			UserPreferences prefs;
 			String			story;
@@ -350,13 +349,12 @@ public class ToWebPlugin extends Plugin {
 			 viewSortButtons.setBorder(BorderFactory.createTitledBorder("Sort by:"));
 			 viewSortButtons.setLayout(viewButtonsLayout);
 			 viewSortButtons.add(new JButton("alpha"  ));
-			 viewSortButtons.add(new JButton("More..."));
 			 
 			 button = new JButton("help");
 			 button.addActionListener(this);
 			 button.setActionCommand("help");
-			 viewSortButtons.add(button);
-			 viewPanel.add(viewSortButtons);
+		//	 viewSortButtons.add(button);
+			 viewPanel.add(button); // viewSortButtons
 
 			 addRow(++row,"Views:",viewPanel);
 
@@ -409,24 +407,22 @@ public class ToWebPlugin extends Plugin {
 			 optionsPanel.setOpaque(false);
 			 optionsPanel.add(new JLabel("Template:"));
 			 optionsPanel.add(templatePanel);
-
-			 optionsPanel.add(new JLabel("JSON:"));
-			 jsonButton = new JRadioButton();
-			 jsonButton.setSelected(false);
-			 jsonButton.setActionCommand("json");
-			 jsonButton.addActionListener(this);
-			 optionsPanel.add(jsonButton);
-
-			 optionsPanel.add(new JLabel("bDummy:"));
-			 dummyButton = new JRadioButton();
-			 optionsPanel.add(dummyButton);
-			 dummyButton.setSelected(true);
-
-			 optionsPanel.add(new JLabel("Autosave:"));
-			 JRadioButton autoSave = new JRadioButton();
-			 autoSave.setSelected(true);
-			 // optionsPanel.add(autoSave);
 			 
+			 button = new JButton("Help...");
+			 button.addActionListener(this);
+			 button.setActionCommand("template_help");
+			 optionsPanel.add(button);
+
+			 button = new JButton("Values...");
+			 button.setActionCommand("values");
+			 button.addActionListener(this);
+			 optionsPanel.add(button);
+			 
+			 button = new JButton("More...");
+			 button.setActionCommand("more");
+			 button.addActionListener(this);
+			 optionsPanel.add(button);
+
 			 JButton saveButton = new JButton("Save");
 			 saveButton.setActionCommand("save");
 			 saveButton.addActionListener(this);
@@ -476,9 +472,7 @@ public class ToWebPlugin extends Plugin {
 			
 			if ( cmd.equals("save") ) {
 				save();
-			}
-			
-			if ( cmd.equals("start") ) {
+			} else if ( cmd.equals("start") ) {
 				startButton.setEnabled(false);
 				progressMonitor = new ProgressMonitor
 						(  ToWebPluginPanel.this
@@ -486,7 +480,7 @@ public class ToWebPlugin extends Plugin {
 						,  "", 0, 100
 						);
 				story         = storyArea.getText();
-				task          = new Task();
+				task          = new ToWebPluginTask();
 				task.story    = story;
 				storyEditable = storyArea.isEditable();
 				storyArea.setEditable(false);
@@ -494,25 +488,19 @@ public class ToWebPlugin extends Plugin {
 	
 				task.home			 = home ;
 				task.prefs			 = prefs;
-				task.bDummy          = dummyButton.isSelected();
+				task.bDummy          = keyButtons.isSelected();
 				task.addPropertyChangeListener(this);
 				task.execute();
-			}
-
-			if ( cmd.equals("ignore") ) {
+			} else if ( cmd.equals("ignore") ) {
 				String value = viewList.getSelectedValue();
 				int nIgnored = value.indexOf(ignored);
 				value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
 			    viewModel.set(viewList.getSelectedIndex(), value);
-			}
-
-			if ( cmd.equals("remove") ) {
+			} else if ( cmd.equals("remove") ) {
 				int index = viewList.getSelectedIndex();
 				viewModel.remove(index);
 				viewList.setSelectedIndex(index-(index>0?1:0));
-			}
-
-			if ( cmd.equals("up") || cmd.equals("down") ) {
+			} else if ( cmd.equals("up") || cmd.equals("down") ) {
 				try {
 					int  up_down  = cmd.equals("down") ? +1 : -1 ;
 					int  selected = viewList.getSelectedIndex();
@@ -522,14 +510,14 @@ public class ToWebPlugin extends Plugin {
 					viewList.setSelectedIndex(selected+up_down);
 					viewList.scrollRectToVisible(viewList.getCellBounds(selected-1, selected +1));
 				} catch (Exception e) {}
-			}
-
-			if ( cmd.equals("help") ) {
+			} else if ( cmd.equals("help") ) {
 				try {
 					new ProcessBuilder("open" ,"http://clanmills.com/files/ToWebPlugin/").start();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			} else {
+				JOptionPane.showMessageDialog(null, cmd + " not implemented yet");
 			}
 		}
 
