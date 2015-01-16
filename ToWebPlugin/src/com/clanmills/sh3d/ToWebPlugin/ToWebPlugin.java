@@ -64,27 +64,27 @@ class Filename
 	private char   extensionSeparator;
 
 	public Filename(String str, char sep, char ext) {
-	    fullPath           = str;
-	    pathSeparator      = sep;
-	    extensionSeparator = ext;
+		fullPath		   = str;
+		pathSeparator	   = sep;
+		extensionSeparator = ext;
 	}
-	
+
 	public Filename(File file,char sep, char ext)
 	{
 		fullPath= file.toString();
-	    pathSeparator      = sep;
-	    extensionSeparator = ext;
+		pathSeparator	   = sep;
+		extensionSeparator = ext;
 	}
 
 	public String extension() {
-	    int dot = fullPath.lastIndexOf(extensionSeparator);
-	    return fullPath.substring(dot + 1);
+		int dot = fullPath.lastIndexOf(extensionSeparator);
+		return fullPath.substring(dot + 1);
 	}
 
 	public String filename() { // gets filename without extension
-	    int dot = fullPath.lastIndexOf(extensionSeparator);
-	    int sep = fullPath.lastIndexOf(pathSeparator);
-	    return fullPath.substring(sep + 1, dot);
+		int dot = fullPath.lastIndexOf(extensionSeparator);
+		int sep = fullPath.lastIndexOf(pathSeparator);
+		return fullPath.substring(sep + 1, dot);
 	}
 
 	public String path() {
@@ -94,110 +94,39 @@ class Filename
 }
 
 public class ToWebPlugin extends Plugin {
-	
+
 	public	static class ToWebPluginPanel extends JPanel
 			implements ActionListener,
 			WindowListener,
 			PropertyChangeListener {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 276503287;
 		private ProgressMonitor	  progressMonitor;
 		private JButton			  startButton;
 		private JTextArea		  storyArea;
 		private JLabel			  storyLabel;
-		private Boolean           storyEditable;
+		private Boolean			  storyEditable;
 		private ToWebPluginTask	  task;
 		private UserPreferences	  prefs;
 		private Home			  home;
-		private Path              path;
+		private Path			  path;
 		private ToWebPluginWorker worker;
 		public	String			  story;
-		public  String            ignored = " *ignored* ";
-		public  JRadioButton      keyButtons;
-		JList<String>	          viewList;
-		DefaultListModel<String>  viewModel = new DefaultListModel<String>();
-
-	    public Vector<String> getTemplates()
-		{
-			Vector<String> result = new Vector<String>();
-			try {
-				char   sep         = FileSystems.getDefault().getSeparator().charAt(0);
-				char   dot         = '.';
-				String want        = "st";
-				String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				String pluginDir   = URLDecoder.decode(jarPath, "UTF-8");
-					   pluginDir   = Paths.get(pluginDir).getParent().toString();
-				String templateDir = Paths.get(pluginDir).resolve("templates").toString();
-				File[] files	   = new File(templateDir).listFiles();
-				for ( File file : files) {
-					Filename filename = new Filename(file,sep,dot);
-					if ( filename.extension().equals(want) )	result.add(filename.filename());
-				//  System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
-				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			return result;
-		}
-
-		public Vector<String> getViewsInModel(Home home)
-		{
-		    Vector<String> views = new Vector<String>();
-
- 		    for (Camera camera : home.getStoredCameras() ) {
-			    String name = camera.getName();
-			    System.out.println(name);
-			    views.add(name);
-		    }
- 		    return views;
-		}
-
-	    public void fixViewUI()
-	    {
-	    	Set<String> views = new HashSet<String>();
-	    	for ( String view : getViewsInModel(home) ) {
-	    		views.add(view);
-	    	}
-
-            // views in the model, but not in UI are marked ignored
-		    for ( int i = 0 ; i < viewModel.getSize(); i++ ) {
-	    		String  view = viewModel.get(i);
-				int  nIgnored = view.indexOf(ignored);
-				if ( nIgnored > 0 ) view = view.substring(0,nIgnored);
-
-	    		if ( !views.contains(view) && nIgnored < 0 ) {
-	    		 	viewModel.add(viewModel.getSize(), view + ignored);
-	    		}
-	    		views.remove(view);
-	    	}
-		    for ( String view : views ) {
-    		 	viewModel.add(viewModel.getSize(), view + ignored);
-		    }
-	    }
-
-	    public void sleep(int millisecs) throws InterruptedException
-		{
-			Thread.sleep(millisecs);
-		}
-
-	    public void sleeps(int millisecs)
-		{
-			try {
-				sleep(millisecs);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		public	String			  ignored = " *ignored* ";
+		public	JRadioButton	  keyButtons;
+		JList<String>			  viewList;
+		JComboBox<String>		  templateList;
+		DefaultListModel<String>  viewModel		= new DefaultListModel<String>();
 
 		class ToWebPluginTask extends SwingWorker<Void, Void> {
 			Home			home;
 			UserPreferences prefs;
 			String			story;
 			String			storyLabelText;
-			Boolean         bDummy;
+			Boolean			bDummy;
 
 			@Override
 			public Void doInBackground() {
@@ -209,7 +138,7 @@ public class ToWebPlugin extends Plugin {
 				int	   percent	= 0;
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
-				worker.bDummy   = bDummy;
+				worker.bDummy	= bDummy;
 				setProgress(0);
 				try {
 					sleep(500);
@@ -241,7 +170,6 @@ public class ToWebPlugin extends Plugin {
 				home.setCamera(camera1);
 				return null;
 			}
-
 			@Override
 			public void done() {
 				storyArea.setText(story);
@@ -252,24 +180,96 @@ public class ToWebPlugin extends Plugin {
 			}
 		}
 
+		public Vector<String> getTemplates()
+		{
+			Vector<String> result = new Vector<String>();
+			try {
+				char   sep		   = FileSystems.getDefault().getSeparator().charAt(0);
+				char   dot		   = '.';
+				String want		   = "st";
+				String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				String pluginDir   = URLDecoder.decode(jarPath, "UTF-8");
+					   pluginDir   = Paths.get(pluginDir).getParent().toString();
+				String templateDir = Paths.get(pluginDir).resolve("templates").toString();
+				File[] files	   = new File(templateDir).listFiles();
+				for ( File file : files) {
+					Filename filename = new Filename(file,sep,dot);
+					if ( filename.extension().equals(want) )	result.add(filename.filename());
+				//	System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
+				}
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		public Vector<String> getViewsInModel(Home home)
+		{
+			Vector<String> views = new Vector<String>();
+
+			for (Camera camera : home.getStoredCameras() ) {
+				String name = camera.getName();
+				System.out.println(name);
+				views.add(name);
+			}
+			return views;
+		}
+
+		public void fixViewUI()
+		{
+			Set<String> views = new HashSet<String>();
+			for ( String view : getViewsInModel(home) ) {
+				views.add(view);
+			}
+
+			// views in the model, but not in UI are marked ignored
+			for ( int i = 0 ; i < viewModel.getSize(); i++ ) {
+				String	view = viewModel.get(i);
+				int	 nIgnored = view.indexOf(ignored);
+				if ( nIgnored > 0 ) view = view.substring(0,nIgnored);
+
+				if ( !views.contains(view) && nIgnored < 0 ) {
+					viewModel.add(viewModel.getSize(), view + ignored);
+				}
+				views.remove(view);
+			}
+			for ( String view : views ) {
+				viewModel.add(viewModel.getSize(), view + ignored);
+			}
+		}
+
+		public void sleep(int millisecs) throws InterruptedException
+		{
+			Thread.sleep(millisecs);
+		}
+
+		public void sleeps(int millisecs)
+		{
+			try {
+				sleep(millisecs);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
 		// http://stackoverflow.com/questions/9851688/how-to-align-left-or-right-inside-gridbaglayout-cell
 		private static final Insets WEST_INSETS = new Insets(5, 0, 5, 5);
 		private static final Insets EAST_INSETS = new Insets(5, 5, 5, 0);
 		private GridBagConstraints createGbc(int x, int y) {
 			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx      = x;
-			gbc.gridy      = y;
+			gbc.gridx	   = x;
+			gbc.gridy	   = y;
 			gbc.gridwidth  = 1;
 			gbc.gridheight = 1;
 
-			gbc.anchor     = (x == 0) ? GridBagConstraints.WEST : GridBagConstraints.EAST;
-			gbc.fill       = (x == 0) ? GridBagConstraints.BOTH
-				                      : GridBagConstraints.HORIZONTAL
-				                      ;
+			gbc.anchor	   = (x == 0) ? GridBagConstraints.WEST : GridBagConstraints.EAST;
+			gbc.fill	   = (x == 0) ? GridBagConstraints.BOTH
+									  : GridBagConstraints.HORIZONTAL
+									  ;
 
-			gbc.insets 	   = (x == 0) ? WEST_INSETS : EAST_INSETS;
-			gbc.weightx    = (x == 0) ? 0.1         : 1.0;
-			gbc.weighty    = 1.0;
+			gbc.insets	   = (x == 0) ? WEST_INSETS : EAST_INSETS;
+			gbc.weightx	   = (x == 0) ? 0.1			: 1.0;
+			gbc.weighty	   = 1.0;
 			return gbc;
 		 }
 
@@ -280,7 +280,7 @@ public class ToWebPlugin extends Plugin {
 			 add(component , createGbc(1,row));
 			 return result;
 		}
-		
+
 		public ToWebPluginPanel(Home home_,Path path_)
 		{
 			 super(new GridBagLayout());
@@ -295,7 +295,7 @@ public class ToWebPlugin extends Plugin {
 			 ,	BorderFactory.createEmptyBorder(5, 5, 5, 5)
 			 ));
 
-			 //++++++++++++++++++++++++++++++ 
+			 //++++++++++++++++++++++++++++++
 			 JPanel viewPanel = new JPanel();
 			 viewPanel.setOpaque(false);
 			 viewPanel.setLayout(new GridBagLayout() );
@@ -306,7 +306,7 @@ public class ToWebPlugin extends Plugin {
 			 Vector<String> views = getViewsInModel(home);
 			 for (int i = 0; i < views.size() ; i++) {
 				  viewModel.addElement(views.get(i));
-		     }
+			 }
 
 			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			 viewList.setSelectedIndex(0);
@@ -315,13 +315,13 @@ public class ToWebPlugin extends Plugin {
 			 JScrollPane viewScroller = new JScrollPane(viewList);
 			 viewScroller.setPreferredSize(new Dimension(250, 150));
 			 viewPanel.add(viewScroller);
-			 
+
 			 JPanel	   viewOrderButtons = new JPanel();
 			 viewOrderButtons.setOpaque(false);
 			 BoxLayout viewOrderButtonsLayout = new BoxLayout(viewOrderButtons, BoxLayout.Y_AXIS);
 			 viewOrderButtons.setBorder(BorderFactory.createTitledBorder("View order:"));
 			 viewOrderButtons.setLayout(viewOrderButtonsLayout);
-			 
+
 			 button = new JButton("up");
 			 button.addActionListener(this);
 			 button.setActionCommand("up");
@@ -349,7 +349,7 @@ public class ToWebPlugin extends Plugin {
 			 viewSortButtons.setBorder(BorderFactory.createTitledBorder("Sort by:"));
 			 viewSortButtons.setLayout(viewButtonsLayout);
 			 viewSortButtons.add(new JButton("alpha"  ));
-			 
+
 			 button = new JButton("help");
 			 button.addActionListener(this);
 			 button.setActionCommand("help");
@@ -358,7 +358,7 @@ public class ToWebPlugin extends Plugin {
 
 			 addRow(++row,"Views:",viewPanel);
 
-			 //++++++++++++++++++++++++++++++ 
+			 //++++++++++++++++++++++++++++++
 			 storyArea = new JTextArea(25,50);
 			 storyArea.setEditable(true);
 			 storyArea.setMargin(new Insets(5,5,5,5));
@@ -368,46 +368,46 @@ public class ToWebPlugin extends Plugin {
 			 try {
 				 List<String> lines = Files.readAllLines(path,Charset.forName("UTF-8"));
 				 int		line  = 0 ;
-				 while ( lines != null && line  < lines.size() ) {
+				 while ( lines != null && line	< lines.size() ) {
 					 story = story + lines.get(line).toString() + '\n';
 					 line  += 1;
 				 }
 			 } catch (IOException e) {
 				 e.printStackTrace();
-				 story = "now is the time\nfor all good men\nto come to the aid\nof the party";
 			 }
-			 
+			 int viewSelected	  = 0;
+			 int templateSelected = 0 ;
+
 			 JSONParser parser = new JSONParser();
-	    	 try {
-	    		 JSONObject object     = (JSONObject) parser.parse(story);
-	    		 story                 = (String) object.get("story") ;
-	    		 JSONArray viewsOnFile = (JSONArray) object.get("views");
-    			 viewModel.removeAllElements();
-	    		 for ( int i = 0 ; i < viewsOnFile.size(); i++ ) {
-	    			 String view = (String) viewsOnFile.get(i);
-	    			 this.viewModel.add(i,view);
-	    		 }
-	    		 fixViewUI();
-	    	 } catch (ParseException pe) {
-	    		 System.out.println("position: " + pe.getPosition());
-	    		 System.out.println(pe);
-	    	 }
-    		 storyArea.setText(story);
+			 try {
+				 JSONObject object	   = (JSONObject) parser.parse(story);
+				 story				   = (String) object.get("story") ;
+				 JSONArray viewsOnFile = (JSONArray) object.get("views");
+				 viewModel.removeAllElements();
+				 for ( int i = 0 ; i < viewsOnFile.size(); i++ ) {
+					 String view = (String) viewsOnFile.get(i);
+					 this.viewModel.add(i,view);
+				 }
+				 viewSelected	  = (int) object.get("viewSelected"	   );
+				 templateSelected = (int) object.get("templateSelected");
+			 } catch (ParseException pe) {
+				 System.out.println("position: " + pe.getPosition());
+				 System.out.println(pe);
+			 } catch (Exception e) {}
+
+			 storyArea.setText(story);
 
 
-			 //++++++++++++++++++++++++++++++ 
-			 JPanel templatePanel = new JPanel();
-			 templatePanel.setOpaque(false);
-			 
-			 JComboBox<String> templateComboBox = new JComboBox<String>(getTemplates());
-			 templateComboBox.setAutoscrolls(true);
-			 templatePanel.add(templateComboBox);
-
+			 //++++++++++++++++++++++++++++++
 			 JPanel optionsPanel = new JPanel();
 			 optionsPanel.setOpaque(false);
+
+			 templateList = new JComboBox<String>(getTemplates());
+			 templateList.setAutoscrolls(true);
+
 			 optionsPanel.add(new JLabel("Template:"));
-			 optionsPanel.add(templatePanel);
-			 
+			 optionsPanel.add(templateList);
+
 			 button = new JButton("Help...");
 			 button.addActionListener(this);
 			 button.setActionCommand("template_help");
@@ -417,7 +417,7 @@ public class ToWebPlugin extends Plugin {
 			 button.setActionCommand("values");
 			 button.addActionListener(this);
 			 optionsPanel.add(button);
-			 
+
 			 button = new JButton("More...");
 			 button.setActionCommand("more");
 			 button.addActionListener(this);
@@ -430,14 +430,18 @@ public class ToWebPlugin extends Plugin {
 
 			 addRow(++row,"Options:",optionsPanel);
 
-			 //++++++++++++++++++++++++++++++ 
+			 //++++++++++++++++++++++++++++++
 			 startButton = new JButton("Start");
 			 startButton.setActionCommand("start");
 			 startButton.addActionListener(this);
-			 
+
 			 addRow(++row,"Start:",startButton);
+
+			 fixViewUI();
+			 viewList	 .setSelectedIndex(viewSelected);
+			 templateList.setSelectedIndex(templateSelected);
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		void save()
 		{
@@ -445,11 +449,13 @@ public class ToWebPlugin extends Plugin {
 			for ( int i = 0 ; i < viewModel.getSize() ; i++ ) {
 				views.add(viewModel.get(i));
 			}
-			
+
 			JSONObject object = new JSONObject();
+			object.put("viewSelected"	 ,(int)viewList.getSelectedIndex()	  );
+			object.put("templateSelected",(int)templateList.getSelectedIndex());
 			object.put("story",storyArea.getText());
 			object.put("views",views);
-			
+
 			StringWriter out = new StringWriter();
 			try {
 				JSONValue.writeJSONString(object, out);
@@ -469,7 +475,7 @@ public class ToWebPlugin extends Plugin {
 		public void actionPerformed(ActionEvent evt)
 		{
 			String cmd = evt.getActionCommand();
-			
+
 			if ( cmd.equals("save") ) {
 				save();
 			} else if ( cmd.equals("start") ) {
@@ -479,31 +485,31 @@ public class ToWebPlugin extends Plugin {
 						,  "ToWebPlugin: Creating Images"
 						,  "", 0, 100
 						);
-				story         = storyArea.getText();
-				task          = new ToWebPluginTask();
-				task.story    = story;
+				story		  = storyArea.getText();
+				task		  = new ToWebPluginTask();
+				task.story	  = story;
 				storyEditable = storyArea.isEditable();
 				storyArea.setEditable(false);
 				storyArea.setText("");
-	
+
 				task.home			 = home ;
 				task.prefs			 = prefs;
-				task.bDummy          = keyButtons.isSelected();
+				task.bDummy			 = keyButtons.isSelected();
 				task.addPropertyChangeListener(this);
 				task.execute();
 			} else if ( cmd.equals("ignore") ) {
 				String value = viewList.getSelectedValue();
 				int nIgnored = value.indexOf(ignored);
 				value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
-			    viewModel.set(viewList.getSelectedIndex(), value);
+				viewModel.set(viewList.getSelectedIndex(), value);
 			} else if ( cmd.equals("remove") ) {
 				int index = viewList.getSelectedIndex();
 				viewModel.remove(index);
 				viewList.setSelectedIndex(index-(index>0?1:0));
 			} else if ( cmd.equals("up") || cmd.equals("down") ) {
 				try {
-					int  up_down  = cmd.equals("down") ? +1 : -1 ;
-					int  selected = viewList.getSelectedIndex();
+					int	 up_down  = cmd.equals("down") ? +1 : -1 ;
+					int	 selected = viewList.getSelectedIndex();
 					String swap = viewModel.get(selected);
 					viewModel.set(selected, viewModel.get(selected+up_down));
 					viewModel.set(selected+up_down, swap);
@@ -543,11 +549,11 @@ public class ToWebPlugin extends Plugin {
 			save();
 		}
 
-		public void windowOpened     (WindowEvent e) {}
-		public void windowClosed     (WindowEvent e) {}
-		public void windowIconified  (WindowEvent e) {}
+		public void windowOpened	 (WindowEvent e) {}
+		public void windowClosed	 (WindowEvent e) {}
+		public void windowIconified	 (WindowEvent e) {}
 		public void windowDeiconified(WindowEvent e) {}
-		public void windowActivated  (WindowEvent e) {}
+		public void windowActivated	 (WindowEvent e) {}
 		public void windowDeactivated(WindowEvent e) {}
 	}
 
@@ -560,13 +566,13 @@ public class ToWebPlugin extends Plugin {
 		//Create and set up the window.
 		JFrame frame = new JFrame("ToWebPlugin"); // ToWebPlugin Control Panel");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		Path path = FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.')) + ".ToWebPlugin");
 
 		//Create and set up the content pane.
 		ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(home,path);
-		toWebPluginPanel.worker           = worker;
-		toWebPluginPanel.prefs            = prefs;
+		toWebPluginPanel.worker			  = worker;
+		toWebPluginPanel.prefs			  = prefs;
 		toWebPluginPanel.setOpaque(true);
 
 		//Display the window.
@@ -575,7 +581,7 @@ public class ToWebPlugin extends Plugin {
 		frame.setVisible(true);
 		frame.addWindowListener(toWebPluginPanel);
 	}
-	
+
 	@Override
 	public PluginAction[] getActions()
 	{
@@ -620,7 +626,7 @@ public class ToWebPlugin extends Plugin {
 
 		Home			 home;
 		UserPreferences	 prefs;
-		boolean          bDummy  = false ;
+		boolean			 bDummy	 = false ;
 		ArrayList<Photo> photos	 = new ArrayList<Photo>();
 
 		private String unCamel(String s)
@@ -728,7 +734,7 @@ public class ToWebPlugin extends Plugin {
 
 		public boolean execute(Home home, UserPreferences prefs,int index)
 		{
-			// create directory for output 
+			// create directory for output
 			String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			String pluginDir   = "";
 			String templateDir = "";
@@ -764,7 +770,7 @@ public class ToWebPlugin extends Plugin {
 			// this is temporary bodgery to speed up template debugging
 			boolean bCameras  = true  ;
 			boolean bLevels	  = false ;
-			if ( bDummy && photos.isEmpty()  && index == -1 ) {
+			if ( bDummy && photos.isEmpty()	 && index == -1 ) {
 				photos.add(new Photo("Landing.png"		  ,"Landing"		  ));
 				photos.add(new Photo("Entrance.png"		  ,"Entrance"		  ));
 				photos.add(new Photo("FootOfStairs.png"	  ,"Foot Of Stairs"	  ));
