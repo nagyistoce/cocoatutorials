@@ -105,6 +105,7 @@ public class ToWebPlugin extends Plugin {
 		 */
 		private static final long serialVersionUID = 276503287;
 		private ProgressMonitor	  progressMonitor;
+		private JFrame            frame;
 		private JButton			  startButton;
 		private JTextArea		  storyArea;
 		private JLabel			  storyLabel;
@@ -209,7 +210,7 @@ public class ToWebPlugin extends Plugin {
 
 			for (Camera camera : home.getStoredCameras() ) {
 				String name = camera.getName();
-				System.out.println(name);
+			//	System.out.println(name);
 				views.add(name);
 			}
 			return views;
@@ -375,11 +376,12 @@ public class ToWebPlugin extends Plugin {
 			 } catch (IOException e) {
 				 e.printStackTrace();
 			 }
-			 int viewSelected	  = 0;
-			 int templateSelected = 0 ;
+			 String viewSelected	 = "";
+			 String templateSelected = "" ;
 
 			 JSONParser parser = new JSONParser();
 			 try {
+				 System.out.print("read: "+ story);
 				 JSONObject object	   = (JSONObject) parser.parse(story);
 				 story				   = (String) object.get("story") ;
 				 JSONArray viewsOnFile = (JSONArray) object.get("views");
@@ -388,8 +390,9 @@ public class ToWebPlugin extends Plugin {
 					 String view = (String) viewsOnFile.get(i);
 					 this.viewModel.add(i,view);
 				 }
-				 viewSelected	  = (int) object.get("viewSelected"	   );
-				 templateSelected = (int) object.get("templateSelected");
+				 viewSelected	  = (String) object.get("viewSelected"	  );
+				 templateSelected = (String) object.get("templateSelected");
+				 System.out.println("viewSelected: " + viewSelected + " templateSelected: " + templateSelected);
 			 } catch (ParseException pe) {
 				 System.out.println("position: " + pe.getPosition());
 				 System.out.println(pe);
@@ -438,8 +441,12 @@ public class ToWebPlugin extends Plugin {
 			 addRow(++row,"Start:",startButton);
 
 			 fixViewUI();
-			 viewList	 .setSelectedIndex(viewSelected);
-			 templateList.setSelectedIndex(templateSelected);
+			 viewList    .setSelectedValue(viewSelected,true);
+			 templateList.setSelectedItem(templateSelected);
+			 
+			 String s = new String();
+			 String.format("viewSelected: %s templateSelected %s",viewSelected,templateSelected);
+			 System.out.println(s);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -451,8 +458,8 @@ public class ToWebPlugin extends Plugin {
 			}
 
 			JSONObject object = new JSONObject();
-			object.put("viewSelected"	 ,(int)viewList.getSelectedIndex()	  );
-			object.put("templateSelected",(int)templateList.getSelectedIndex());
+			object.put("viewSelected"	 ,viewModel.get(viewList.getSelectedIndex()));
+			object.put("templateSelected",templateList.getSelectedItem());
 			object.put("story",storyArea.getText());
 			object.put("views",views);
 
@@ -460,7 +467,7 @@ public class ToWebPlugin extends Plugin {
 			try {
 				JSONValue.writeJSONString(object, out);
 				String jsonText = out.toString();
-				System.out.print(jsonText + "\n");
+				System.out.print("saved: " + jsonText);
 				PrintWriter printWriter = new PrintWriter(path.toFile());
 				printWriter.println(jsonText);
 				printWriter.close();
@@ -550,7 +557,7 @@ public class ToWebPlugin extends Plugin {
 		}
 
 		public void windowOpened	 (WindowEvent e) {}
-		public void windowClosed	 (WindowEvent e) {}
+		public void windowClosed	 (WindowEvent e) { this.frame.dispose(); }
 		public void windowIconified	 (WindowEvent e) {}
 		public void windowDeiconified(WindowEvent e) {}
 		public void windowActivated	 (WindowEvent e) {}
@@ -573,6 +580,7 @@ public class ToWebPlugin extends Plugin {
 		ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(home,path);
 		toWebPluginPanel.worker			  = worker;
 		toWebPluginPanel.prefs			  = prefs;
+		toWebPluginPanel.frame            = frame;
 		toWebPluginPanel.setOpaque(true);
 
 		//Display the window.
