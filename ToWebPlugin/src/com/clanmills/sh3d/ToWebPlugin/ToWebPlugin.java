@@ -6,15 +6,13 @@ import org.json.simple.parser.*;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,6 +53,70 @@ import com.eteks.sweethome3d.swing.PlanComponent;
  * ToWebPlugin
  * @author Robin Mills
  */
+
+/**
+ * This utility extracts files and directories of a standard zip file to
+ * a destination directory.
+ * @author www.codejava.net
+ *
+ */
+// http://www.codejava.net/java-se/file-io/programmatically-extract-a-zip-file-using-java
+class UnzipUtility {
+    /**
+     * Size of the buffer to read/write data
+     */
+    private static final int BUFFER_SIZE = 4096;
+    /**
+     * Extracts a zip file specified by the zipFilePath to a directory specified by
+     * destDirectory (will be created if does not exists)
+     * @param zipFilePath
+     * @param destDirectory
+     * @throws IOException
+     */
+    public void unzip(String zipFilePath, String destDirectory) throws IOException {
+        File destDir = new File(destDirectory);
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+        ZipEntry entry = zipIn.getNextEntry();
+        // iterates over entries in the zip file
+        while (entry != null) {
+            String filePath = destDirectory + File.separator + entry.getName();
+            if (!entry.isDirectory()) {
+                // if the entry is a file, extracts it
+                extractFile(zipIn, filePath);
+            } else {
+                // if the entry is a directory, make the directory
+                File dir = new File(filePath);
+                dir.mkdir();
+            }
+            zipIn.closeEntry();
+            entry = zipIn.getNextEntry();
+        }
+        zipIn.close();
+    }
+    
+    public void unzip(Path zip,Path dest) throws IOException { 
+    	unzip(zip.toString(),dest.toString());
+    }
+
+    /**
+     * Extracts a zip entry (file entry)
+     * @param zipIn
+     * @param filePath
+     * @throws IOException
+     */
+    private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+        byte[] bytesIn = new byte[BUFFER_SIZE];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
+    }
+}
 
 // http://stackoverflow.com/questions/4545937/java-splitting-the-filename-into-a-base-and-extension
 class Filename
@@ -103,49 +165,55 @@ public class ToWebPlugin extends Plugin {
 		/**
 		 *
 		 */
-		private static final long serialVersionUID = 276503287;
-		private ProgressMonitor	  progressMonitor;
-		private JFrame            frame;
-		private JButton			  startButton;
-		private JTextArea		  storyArea;
-		private JLabel			  storyLabel;
-		private Boolean			  storyEditable;
-		private ToWebPluginTask	  task;
-		private UserPreferences	  prefs;
-		private Home			  home;
-		private Path			  path;
-		private ToWebPluginWorker worker;
-		public	String			  story;
-		public	String			  ignored = " *ignored* ";
-		public	JRadioButton	  keyButtons;
-		JList<String>			  viewList;
-		JComboBox<String>		  templateList;
-		DefaultListModel<String>  viewModel		= new DefaultListModel<String>();
+		public  static final String sToWebPlugin     = "ToWebPlugin";
+		private static final long   serialVersionUID = 276503287;
+		
+		private ProgressMonitor	    progressMonitor;
+		private JFrame              frame;
+		private JButton			    startButton;
+		private JTextArea		    storyArea;
+		private JLabel			    storyLabel;
+		private Boolean			    storyEditable;
+
+		private ToWebPluginTask	    task;
+		private UserPreferences	    prefs;
+		private Home			    home;
+		private Path			    path;
+		private ToWebPluginWorker   worker;
+		public	String			    story;
+		public	String			    ignored = " *ignored* ";
+		JList<String>			    viewList;
+		JComboBox<String>		    templateList;
+		DefaultListModel<String>    viewModel		= new DefaultListModel<String>();
 
 		class ToWebPluginTask extends SwingWorker<Void, Void> {
 			Home			home;
 			UserPreferences prefs;
 			String			story;
 			String			storyLabelText;
+			String          template;
 			Boolean			bDummy;
+			Vector<String>  views;
 
 			@Override
 			public Void doInBackground() {
+				
 				// save camera
-				Camera camera1	= home.getCamera();
-
-				int	   max		= home.getStoredCameras().size() -1;
+				Camera camera1  = home.getCamera();
+				
 				int	   progress = 0;
 				int	   percent	= 0;
+				int    max      = views.size();
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
 				worker.bDummy	= bDummy;
+				worker.views    = views;
 				setProgress(0);
 				try {
 					sleep(500);
+					worker.template = template;
 					while (progress < max  && !isCancelled()) {
-						Camera camera  = home.getStoredCameras().get(progress);
-						String name	   = camera.getName();
+						String name	   = views.get(progress);
 						percent		   = progress*100/max;
 						String message = String.format("View: %s	(%d%%)\n", name,percent);
 						progressMonitor.setNote(message);
@@ -185,20 +253,20 @@ public class ToWebPlugin extends Plugin {
 		{
 			Vector<String> result = new Vector<String>();
 			try {
-				char   sep		   = FileSystems.getDefault().getSeparator().charAt(0);
-				char   dot		   = '.';
-				String want		   = "st";
-				String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				String pluginDir   = URLDecoder.decode(jarPath, "UTF-8");
-					   pluginDir   = Paths.get(pluginDir).getParent().toString();
-				String templateDir = Paths.get(pluginDir).resolve("templates").toString();
+				char    sep		    = FileSystems.getDefault().getSeparator().charAt(0);
+				char    dot		    = '.';
+				String  want		= "zip";
+				String  docs        = javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
+				String	templateDir = Paths.get(docs).resolve("Documents").resolve("ToWebPlugin").resolve("templates").toString();
+			//	System.out.println("templateDir = " + templateDir.toString());
+				
 				File[] files	   = new File(templateDir).listFiles();
 				for ( File file : files) {
 					Filename filename = new Filename(file,sep,dot);
 					if ( filename.extension().equals(want) )	result.add(filename.filename());
 				//	System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
 				}
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return result;
@@ -381,7 +449,7 @@ public class ToWebPlugin extends Plugin {
 
 			 JSONParser parser = new JSONParser();
 			 try {
-				 System.out.print("read: "+ story);
+			 //	 System.out.print("read: "+ story);
 				 JSONObject object	   = (JSONObject) parser.parse(story);
 				 story				   = (String) object.get("story") ;
 				 JSONArray viewsOnFile = (JSONArray) object.get("views");
@@ -392,14 +460,13 @@ public class ToWebPlugin extends Plugin {
 				 }
 				 viewSelected	  = (String) object.get("viewSelected"	  );
 				 templateSelected = (String) object.get("templateSelected");
-				 System.out.println("viewSelected: " + viewSelected + " templateSelected: " + templateSelected);
+			 //  System.out.println("viewSelected: " + viewSelected + " templateSelected: " + templateSelected);
 			 } catch (ParseException pe) {
 				 System.out.println("position: " + pe.getPosition());
 				 System.out.println(pe);
 			 } catch (Exception e) {}
 
 			 storyArea.setText(story);
-
 
 			 //++++++++++++++++++++++++++++++
 			 JPanel optionsPanel = new JPanel();
@@ -467,10 +534,10 @@ public class ToWebPlugin extends Plugin {
 			try {
 				JSONValue.writeJSONString(object, out);
 				String jsonText = out.toString();
-				System.out.print("saved: " + jsonText);
 				PrintWriter printWriter = new PrintWriter(path.toFile());
 				printWriter.println(jsonText);
 				printWriter.close();
+			//	System.out.print("saved: " + jsonText);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -495,13 +562,23 @@ public class ToWebPlugin extends Plugin {
 				story		  = storyArea.getText();
 				task		  = new ToWebPluginTask();
 				task.story	  = story;
+
+				task.template = (String) templateList.getSelectedItem();
 				storyEditable = storyArea.isEditable();
 				storyArea.setEditable(false);
 				storyArea.setText("");
 
+				// find the views which are not ignored
+				task.views    = new Vector<String>(); 
+				for ( int i = 0 ; i < viewModel.getSize() ; i++ ) {
+					String value = viewModel.get(i);
+					int nIgnored = value.indexOf(ignored);
+					if ( nIgnored < 0 ) task.views.add(value);
+				}
+				
 				task.home			 = home ;
 				task.prefs			 = prefs;
-				task.bDummy			 = keyButtons.isSelected();
+				task.bDummy			 = true ;
 				task.addPropertyChangeListener(this);
 				task.execute();
 			} else if ( cmd.equals("ignore") ) {
@@ -571,10 +648,10 @@ public class ToWebPlugin extends Plugin {
 	void createAndShowGUI(ToWebPluginWorker worker,Home home,UserPreferences prefs)
 	{
 		//Create and set up the window.
-		JFrame frame = new JFrame("ToWebPlugin"); // ToWebPlugin Control Panel");
+		JFrame frame = new JFrame("ToWebPlugin Panel"); // ToWebPlugin Control Panel");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		Path path = FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.')) + ".ToWebPlugin");
+		Path path = FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.')) + ".toWebPlugin");
 
 		//Create and set up the content pane.
 		ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(home,path);
@@ -636,6 +713,8 @@ public class ToWebPlugin extends Plugin {
 		UserPreferences	 prefs;
 		boolean			 bDummy	 = false ;
 		ArrayList<Photo> photos	 = new ArrayList<Photo>();
+		String           template;
+		Vector<String>   views;
 
 		private String unCamel(String s)
 		{
@@ -679,6 +758,11 @@ public class ToWebPlugin extends Plugin {
 			}
 			return result;
 		}
+		
+		private boolean writeOut(Path path,String s,boolean bClose)
+		{
+			return writeOut(path.toString(),s,bClose);
+		}
 
 		private DataOutputStream openStream(String path)
 		{
@@ -686,17 +770,6 @@ public class ToWebPlugin extends Plugin {
 			try {
 				result = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)));
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			return result;
-		}
-
-		private ZipInputStream openJar(URL jar)
-		{
-			ZipInputStream result=null;
-			try {
-				result = new ZipInputStream(jar.openStream());
-			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return result;
@@ -740,44 +813,48 @@ public class ToWebPlugin extends Plugin {
 			return result;
 		}
 
+//		private ZipInputStream openJar(URL jar)
+//		{
+//			ZipInputStream result=null;
+//			try {
+//				result = new ZipInputStream(jar.openStream());
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			return result;
+//		}
+//
 		public boolean execute(Home home, UserPreferences prefs,int index)
 		{
+			boolean result = false ; // return value == true means HTML is ready
+
 			// create directory for output
-			String jarPath	   = ToWebPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			String pluginDir   = "";
-			String templateDir = "";
+			// http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
+			String  docs         = javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
+			Path	templatePath = Paths.get(docs).resolve("Documents").resolve("ToWebPlugin").resolve("templates").resolve(template + ".zip");
+			Path    htmlPath     = Paths.get(FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.'))).toString()).resolve(template);
+			Path	Images	     = htmlPath.resolve("Images"); (new File(Images.toString())).mkdirs();
+			Path	Thumbs	     = htmlPath.resolve("Thumbs"); (new File(Thumbs.toString())).mkdirs();
 
-			try {
-				pluginDir	  = URLDecoder.decode(jarPath, "UTF-8");
-				pluginDir	  = Paths.get(pluginDir).getParent().toString();
-				templateDir	  = Paths.get(pluginDir).resolve("templates").toString();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			String	message	     = ""		;
 
-			Path	Directory = Paths.get(System.getProperty("user.home")).resolve("Documents").resolve("ToWebPlugin");
-			Path	Images	  = Directory.resolve("Images"); (new File(Images.toString())).mkdirs();
-			Path	Thumbs	  = Directory.resolve("Thumbs"); (new File(Thumbs.toString())).mkdirs();
+			int		x		     = 1		; // multiply up the size of images
+			int		y		     = 1		; // divide the size of images
 
-			String	message	  = ""		;
+			int		twidth	     = 240*x/y  ;
+			int		theight	     = 160*x/y  ;
+			int		iwidth	     = 720*x/y  ;
+			int		iheight	     = 480*x/y  ;
 
-			int		x		  = 1		; // multiply up the size of images
-			int		y		  = 1		; // divide the size of images
+			String	type	     = "PNG"	;
+			String	ext		     = ".png"	;
 
-			int		twidth	  = 240*x/y ;
-			int		theight	  = 160*x/y ;
-			int		iwidth	  = 720*x/y ;
-			int		iheight	  = 480*x/y ;
-
-			String	type	  = "PNG"	;
-			String	ext		  = ".png"	;
-
-			boolean bWroteHTML= false	;
 			if ( index == 0 ) photos = new ArrayList<Photo>();
 
 			// this is temporary bodgery to speed up template debugging
 			boolean bCameras  = true  ;
 			boolean bLevels	  = false ;
+			bDummy = false;
 			if ( bDummy && photos.isEmpty()	 && index == -1 ) {
 				photos.add(new Photo("Landing.png"		  ,"Landing"		  ));
 				photos.add(new Photo("Entrance.png"		  ,"Entrance"		  ));
@@ -793,105 +870,73 @@ public class ToWebPlugin extends Plugin {
 
 			System.out.printf("ToWebPluginWorker.execute %d\n",index);
 
-			String	template  = "page";
+			String	htmlFileName = "index.html";
 			try {
-
 				// paint camera
+				String name = views.get(index);
 				if ( !bDummy && bCameras && index >= 0 ) {
-					// save camera
-					Camera camera = home.getStoredCameras().get(index) ;
-					if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
-					&&	 paintCamera(home,camera,twidth,theight,Thumbs,ext,type)
-					) {
-						String name = camera.getName();
-						String file = name + ext;
-						message	   += String.format("%s\n",unCamel(name));
-						photos.add(new Photo(file,unCamel(name)));
-						System.out.println("Camera " + message);
-					}
-				}
-
-				// paint every level
-				if ( !bDummy && bLevels && index >= 0 ) {
-					Level level1 = home.getSelectedLevel();
-					for ( Level level : home.getLevels() ) {
-						home.setSelectedLevel(level);
-						PlanComponent plan	= new PlanComponent(home,prefs, null);
-						String name = level.getName() ;
-						String file = name + ext;
-						if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)
-						&&	 paintPlan(plan,twidth,theight,name,Thumbs,ext,type)
-						) {
-							message += String.format("%s\n", unCamel(name));
-							photos.add(new Photo(file,unCamel(name)));
-							System.out.println("Level " + message);
-						}
-					}
-					home.setSelectedLevel(level1);
-				}
-
-				if ( !photos.isEmpty() && index == -1 ) {
-					// find templates in the jar
-					// http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file
-					String		   pageString = "";
-					CodeSource	   src = ToWebPlugin.class.getProtectionDomain().getCodeSource();
-					ZipInputStream zip = openJar(src.getLocation());
-
-					while( zip != null ) {
-						ZipEntry entry = null;
-						try {
-							entry = zip.getNextEntry();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						if (entry != null) {
-							String entryName = entry.getName();
-							int	   size		 = 80000 ; // (int) entry.getSize() is usually -1 !
-							if ( pageString.length() == 0 && entryName.endsWith(template + ".st") ) {
-								while ( size > 0 ) {
-									byte[] bytes = new byte[size];
-									size = zip.read(bytes, 0,size);
-									if ( size > 0 ) pageString += new String( bytes,0, size, "UTF-8" );
-								}
+					boolean bDone = false ;
+					for ( Camera camera : home.getStoredCameras() ) {
+						if ( !bDone && camera.getName().equals(name) ) {
+							if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)
+							&&	 paintCamera(home,camera,twidth,theight,Thumbs,ext,type)
+							) {
+								String file = name + ext;
+								message	   += String.format("%s\n",unCamel(name));
+								photos.add(new Photo(file,unCamel(name)));
+								System.out.println("Camera " + message);
 							}
-						} else {
-							zip.close();
-							zip = null;
 						}
 					}
-
-					System.out.println("generating code");
-					// use the template to generate the code
-					STRawGroupDir ts = new STRawGroupDir(templateDir,'$','$');
-					ST			  t2 = ts.getInstanceOf(template); // load page.st
-					// if template is not on the disk, write it from zip file to the output directory
-					if ( t2 == null ) {
-						String path = Directory.resolve(template).toString() + ".st";
-						writeOut(path,pageString,true);
-						ts = new STRawGroupDir(Directory.toString(),'$','$');
-						t2 = ts.getInstanceOf(template); // load page.st
+				    // paint every level
+				    if ( !bDone && bLevels ) {
+				    	for ( Level level : home.getLevels() ) {
+				    		home.setSelectedLevel(level);
+				    		PlanComponent plan	= new PlanComponent(home,prefs, null);
+				    		if ( level.getName().equals(name) ) {
+						    	Level level1 = home.getSelectedLevel();
+								String file  = name + ext;
+								if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)
+								&&	 paintPlan(plan,twidth,theight,name,Thumbs,ext,type)
+								) {
+									message += String.format("%s\n", unCamel(name));
+									photos.add(new Photo(file,unCamel(name)));
+									System.out.println("Level " + message);
+								}
+								home.setSelectedLevel(level1);
+				    		}
+						}
 					}
-					t2.add("title", "Generated by ToWebPlugin");
-					t2.add("photos",photos);
-
-					String name = "index.html";
-					String path = Directory.resolve(name).toString();
-					bWroteHTML	= writeOut(path,t2.render(),true);
-					if ( !bWroteHTML ) message = "unable to write HTML " + path;
-
-//					  for ( Photo photo : photos ) {
-//						System.out.println("name: " + photo.name + " file: + photo.file);
-//					  }
-
-					new ProcessBuilder("ditto","/Users/rmills/Documents/ToWebPlugin/","/Users/rmills/clanmills/ToWebPlugin/").start();
-					new ProcessBuilder("open" ,"http://klanmills/ToWebPlugin"						).start();
-					System.out.println("ditto and open run");
 				}
-			} catch ( IOException e) {
-				e.printStackTrace();
+			} catch (Exception e){}
+			
+			if ( !photos.isEmpty() && index == -1 ) {
+				UnzipUtility unzip = new UnzipUtility();
+		        try {
+		        	unzip.unzip(templatePath, htmlPath);
+		        	templatePath = htmlPath.resolve(template);
+		        } catch (Exception ex) {
+		        	// some errors occurred
+		        	ex.printStackTrace();
+		        }
+
+				System.out.println("generating code");
+				// use the template to generate the code
+				STRawGroupDir ts = new STRawGroupDir(templatePath.toString(),'$','$');
+				ST			  t2 = ts.getInstanceOf(htmlFileName); // load page.st
+				t2.add("title", "Generated by ToWebPlugin");
+				t2.add("photos",photos);
+				result	= writeOut(htmlPath.resolve(htmlFileName),t2.render(),true);
+				if ( !result ) message = "unable to write HTML " + htmlFileName;
+				
+				if ( result ) try {
+					new ProcessBuilder("open" ,htmlPath.resolve(htmlFileName).toString()	             ).start();
+				} catch (Exception e) {
+					System.out.println("unable to ditto and open");
+		        }
 			}
 
-			return true;
+			return result;
 		}
 	}
 }
