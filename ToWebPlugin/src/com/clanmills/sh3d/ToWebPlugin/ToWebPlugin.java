@@ -133,13 +133,13 @@ class Filename
 
 	public Filename(String str){
 		fullPath		   = str;
-		pathSeparator	   = '/';
+		pathSeparator	   = File.separator.charAt(0);
 		extensionSeparator = '.';
 	}
 
 	public Filename(Path path){
 		fullPath		   = path.toString();
-		pathSeparator	   = '/';
+		pathSeparator	   = File.separator.charAt(0);
 		extensionSeparator = '.';
 	}
 
@@ -188,7 +188,8 @@ public class ToWebPlugin extends Plugin {
 			implements	ActionListener,
 						WindowListener,
 						PropertyChangeListener,
-						MouseListener {
+						MouseListener,
+						KeyListener {
 
 		/**
 		 *
@@ -227,7 +228,7 @@ public class ToWebPlugin extends Plugin {
 			public Void doInBackground() {
 
 				// save camera
-				Camera camera1	= home.getCamera();
+				Camera camera	= home.getCamera();
 
 				int	   progress = 0;
 				int	   percent	= 0;
@@ -240,6 +241,7 @@ public class ToWebPlugin extends Plugin {
 				try {
 					sleep(500);
 					worker.template = template;
+					worker.story    = story;
 					while (progress < max  && !isCancelled()) {
 						String name	   = views.get(progress);
 						percent		   = progress*100/max;
@@ -265,7 +267,7 @@ public class ToWebPlugin extends Plugin {
 				} catch (InterruptedException ignore) { progress = max + 100 ; }
 
 				// restore camera
-				home.setCamera(camera1);
+				home.setCamera(camera);
 				return null;
 			}
 			@Override
@@ -286,8 +288,8 @@ public class ToWebPlugin extends Plugin {
 				char	dot			= '.';
 				String	want		= "zip";
 				String	docs		= javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
-				String	templateDir = Paths.get(docs).resolve("Documents").resolve("ToWebPlugin").resolve("templates").toString();
-			//	System.out.println("templateDir = " + templateDir.toString());
+				String	templateDir = Paths.get(docs).resolve("ToWebPlugin").resolve("templates").toString();
+				System.out.println("templateDir = " + templateDir.toString());
 
 				File[] files	   = new File(templateDir).listFiles();
 				for ( File file : files) {
@@ -306,9 +308,11 @@ public class ToWebPlugin extends Plugin {
 			Vector<String> views = new Vector<String>();
 
 			for (Camera camera : home.getStoredCameras() ) {
-				String name = camera.getName();
-			//	System.out.println(name);
-				views.add(name);
+				if ( camera.getClass().getName().equals("com.eteks.sweethome3d.model.ObserverCamera") ) {
+					String name = camera.getName();
+				//	System.out.println(name);
+					views.add(name);
+				}
 			}
 			return views;
 		}
@@ -338,7 +342,7 @@ public class ToWebPlugin extends Plugin {
 
 		public void sleep(int millisecs) throws InterruptedException
 		{
-			Thread.sleep(millisecs);
+			Thread.sleep(0) ; // millisecs);
 		}
 
 		public void sleeps(int millisecs)
@@ -406,6 +410,7 @@ public class ToWebPlugin extends Plugin {
 				  viewModel.addElement(views.get(i));
 			 }
 			 viewList.addMouseListener(this);
+			 viewList.addKeyListener(this);
 
 			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			 viewList.setSelectedIndex(0);
@@ -562,6 +567,21 @@ public class ToWebPlugin extends Plugin {
 				e.printStackTrace();
 			}
 		}
+		
+		public void updown(int up_down, boolean simple)
+		{
+			try {
+				if ( simple ) {
+					viewList.setSelectedIndex(viewList.getSelectedIndex());
+				} else {
+					int	   selected = viewList.getSelectedIndex();
+					String swap     = viewModel.get(selected);
+					viewModel.set(selected, viewModel.get(selected+up_down));
+					viewModel.set(selected+up_down, swap);
+					viewList.setSelectedValue(swap,true);
+				}
+			} catch (Exception e) {}
+		}
 
 		public void ignore() {
 			String value = viewList.getSelectedValue();
@@ -569,75 +589,68 @@ public class ToWebPlugin extends Plugin {
 			value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
 			viewModel.set(viewList.getSelectedIndex(), value);
 		}
+		
+		public void remove() {
+			int index = viewList.getSelectedIndex();
+			viewModel.remove(index);
+			viewList.setSelectedIndex(index-(index>0?1:0));
+		}
+		
+		public void start() {
+			startButton.setEnabled(false);
+			progressMonitor = new ProgressMonitor
+					(  ToWebPluginPanel.this
+					,  "ToWebPlugin: Creating Images"
+					,  "", 0, 100
+					);
+			story		  = storyArea.getText();
+			task		  = new ToWebPluginTask();
+			task.story	  = story;
 
-		/**
-		 * Invoked when the user presses the start button.
-		 */
+			task.template = (String) templateList.getSelectedItem();
+			storyEditable = storyArea.isEditable();
+			storyArea.setEditable(false);
+			storyArea.setText("");
+
+			// find the views which are not ignored
+			task.views	  = new Vector<String>();
+			for ( int i = 0 ; i < viewModel.getSize() ; i++ ) {
+				String value = viewModel.get(i);
+				int nIgnored = value.indexOf(ignored);
+				if ( nIgnored < 0 ) task.views.add(value);
+			}
+
+			task.home			 = home ;
+			task.prefs			 = prefs;
+			task.bDummy			 = true ;
+			task.addPropertyChangeListener(this);
+			task.execute();
+		}
+		
+		public void help(){
+			try {
+				new ProcessBuilder("open" ,"http://clanmills.com/files/ToWebPlugin/").start();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// action events
 		public void actionPerformed(ActionEvent event)
 		{
 			String cmd = event.getActionCommand();
 
-			if ( cmd.equals("save") ) {
-				save();
-			} else if ( cmd.equals("start") ) {
-				startButton.setEnabled(false);
-				progressMonitor = new ProgressMonitor
-						(  ToWebPluginPanel.this
-						,  "ToWebPlugin: Creating Images"
-						,  "", 0, 100
-						);
-				story		  = storyArea.getText();
-				task		  = new ToWebPluginTask();
-				task.story	  = story;
-
-				task.template = (String) templateList.getSelectedItem();
-				storyEditable = storyArea.isEditable();
-				storyArea.setEditable(false);
-				storyArea.setText("");
-
-				// find the views which are not ignored
-				task.views	  = new Vector<String>();
-				for ( int i = 0 ; i < viewModel.getSize() ; i++ ) {
-					String value = viewModel.get(i);
-					int nIgnored = value.indexOf(ignored);
-					if ( nIgnored < 0 ) task.views.add(value);
-				}
-
-				task.home			 = home ;
-				task.prefs			 = prefs;
-				task.bDummy			 = true ;
-				task.addPropertyChangeListener(this);
-				task.execute();
-			} else if ( cmd.equals("ignore") ) {
-				ignore();
-			} else if ( cmd.equals("remove") ) {
-				int index = viewList.getSelectedIndex();
-				viewModel.remove(index);
-				viewList.setSelectedIndex(index-(index>0?1:0));
-			} else if ( cmd.equals("up") || cmd.equals("down") ) {
-				try {
-					int	 up_down  = cmd.equals("down") ? +1 : -1 ;
-					int	 selected = viewList.getSelectedIndex();
-					String swap = viewModel.get(selected);
-					viewModel.set(selected, viewModel.get(selected+up_down));
-					viewModel.set(selected+up_down, swap);
-					viewList.setSelectedIndex(selected+up_down);
-					viewList.scrollRectToVisible(viewList.getCellBounds(selected-1, selected +1));
-				} catch (Exception e) {}
-			} else if ( cmd.equals("help") ) {
-				try {
-					new ProcessBuilder("open" ,"http://clanmills.com/files/ToWebPlugin/").start();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				JOptionPane.showMessageDialog(null, cmd + " not implemented yet");
-			}
+			if      ( cmd.equals("save"  ) ) save();
+			else if ( cmd.equals("start" ) ) start();
+			else if ( cmd.equals("ignore") ) ignore();
+			else if ( cmd.equals("remove") ) remove();
+		    else if ( cmd.equals("help"  ) ) help();
+			else if ( cmd.equals("down"  ) ) updown(+1,false);
+			else if ( cmd.equals("up"    ) ) updown(-1,false);
+			else JOptionPane.showMessageDialog(null, cmd + " not implemented yet");
 		}
 
-		/**
-		 * Invoked when task's progress property changes.
-		 */
+		// property change events
 		public void propertyChange(PropertyChangeEvent evt)
 		{
 			if ("progress" == evt.getPropertyName() ) {
@@ -651,30 +664,46 @@ public class ToWebPlugin extends Plugin {
 				}
 			}
 		}
-
+		// window events
 		@Override
 		public void windowClosing(WindowEvent e) {
 			save();
 		}
-
+		public void windowClosed	 (WindowEvent e) {
+			this.frame.dispose();
+		}
 		public void windowOpened	 (WindowEvent e) {}
-		public void windowClosed	 (WindowEvent e) { this.frame.dispose(); }
 		public void windowIconified	 (WindowEvent e) {}
 		public void windowDeiconified(WindowEvent e) {}
 		public void windowActivated	 (WindowEvent e) {}
 		public void windowDeactivated(WindowEvent e) {}
 
+		// mouse events
+		@Override
 		public void mouseClicked(MouseEvent e) {
-			// System.out.println("mouseClicked");
 			if (e.getClickCount() == 2) ignore();
 		}
+		public void mousePressed (MouseEvent e) {}
+		public void mouseReleased(MouseEvent e) {}
+		public void mouseEntered (MouseEvent e) {}
+		public void mouseExited	 (MouseEvent e) {}
 
+		// key events
+		public void key(String k,KeyEvent e) {
+		//	System.out.println(String.format("key%s = %d",k,e.getKeyCode()));			
+		}
 		@Override
-		public void mousePressed (MouseEvent e) {} // System.out.println("mousePressed");}
-		public void mouseReleased(MouseEvent e) {} //  System.out.println("mouseReleased");}
-		public void mouseEntered (MouseEvent e) {} // System.out.println("mouseEntered");}
-		public void mouseExited	 (MouseEvent e) {} //  System.out.println("mouseExited");}
-
+		public void keyPressed(KeyEvent e)  {
+			int m = e.getModifiers();
+			switch ( e.getKeyCode() ) {
+				case  8	: remove()        ; break; // Delete
+				case 10 : ignore()        ; break; // Return
+				case 38 : updown(-1,m==0) ; break; // Up
+				case 40 : updown(+1,m==0) ; break; // Down
+			}
+		}
+		public void keyReleased(KeyEvent e) { key("Released",e); }
+		public void keyTyped(KeyEvent e)    { key("Typed"   ,e); }
 	}
 
 
@@ -683,20 +712,18 @@ public class ToWebPlugin extends Plugin {
 	 */
 	void createAndShowGUI(ToWebPluginWorker worker,Home home,UserPreferences prefs)
 	{
-		//Create and set up the window.
-		JFrame frame = new JFrame("ToWebPlugin Panel"); // ToWebPlugin Control Panel");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		// Create and set up the window.
+		JFrame frame = new JFrame("ToWebPlugin Panel");
 
+		// Create and set up content
 		Path path = FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.')) + ".toWebPlugin");
-
-		//Create and set up the content pane.
 		ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(home,path);
 		toWebPluginPanel.worker			  = worker;
 		toWebPluginPanel.prefs			  = prefs;
 		toWebPluginPanel.frame			  = frame;
 		toWebPluginPanel.setOpaque(true);
 
-		//Display the window.
+		// Display window
 		frame.setContentPane(toWebPluginPanel);
 		frame.pack();
 		frame.setVisible(true);
@@ -745,6 +772,7 @@ public class ToWebPlugin extends Plugin {
 		boolean			 bDummy	 = false ;
 		ArrayList<Photo> photos	 = new ArrayList<Photo>();
 		String			 template;
+		String           story;
 		Vector<String>	 views;
 
 		private String unCamel(String s)
@@ -831,6 +859,7 @@ public class ToWebPlugin extends Plugin {
 		{
 			boolean result = false;
 			try {
+				System.out.println("camera class = " + camera.getClass().getName());
 				home.setCamera (camera);
 				HomeComponent3D comp  = new HomeComponent3D(home);
 				BufferedImage	image = comp.getOffScreenImage(width,height);
@@ -851,10 +880,13 @@ public class ToWebPlugin extends Plugin {
 			// create directory for output
 			// http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
 			String	docs		 = javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
-			Path	templatePath = Paths.get(docs).resolve("Documents").resolve("ToWebPlugin").resolve("templates").resolve(template + ".zip");
-			String	title		 = home.getName().substring(0, home.getName().lastIndexOf('.'));
+			Path	templatePath = Paths.get(docs).resolve("ToWebPlugin").resolve("templates").resolve(template + ".zip");
 			Path	htmlPath	 = Paths.get(FileSystems.getDefault().getPath(home.getName().substring(0, home.getName().lastIndexOf('.'))).toString());
 			Path	Images		 = htmlPath.resolve("Images"); (new File(Images.toString())).mkdirs();
+			String	title		 = home.getName().substring(0, home.getName().lastIndexOf('.'));
+			try {
+	                title        = title.substring(title.lastIndexOf(File.separator.charAt(0))+1);
+			} catch (Exception e){}
 
 			String	message		 = ""		;
 
@@ -869,45 +901,40 @@ public class ToWebPlugin extends Plugin {
 
 			if ( index == 0 ) photos = new ArrayList<Photo>();
 
-			boolean bCameras  = true  ;
-			boolean bLevels	  = false ;
-
 			System.out.printf("ToWebPluginWorker.execute %d\n",index);
 
 			String	htmlFileName = "index.html";
-			try {
-				String name = views.get(index);
+			if ( index >= 0 ) try {
+				String  name  = views.get(index);
 				boolean bDone = false ;
 
 				// paint camera
-				if ( !bDone && bCameras && index >= 0 ) {
-					for ( Camera camera : home.getStoredCameras() ) {
-						if ( !bDone && camera.getName().equals(name) ) {
-							if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)) {
-								String file = name + ext;
-								message	   += String.format("%s\n",unCamel(name));
-								photos.add(new Photo(file,unCamel(name)));
-								System.out.println("Camera " + message);
-							}
+				if ( !bDone ) for ( Camera camera : home.getStoredCameras() ) {
+					if ( !bDone && camera.getName().equals(name) ) {
+						if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)) {
+							String file = name + ext;
+							message	   += String.format("%s\n",unCamel(name));
+							photos.add(new Photo(file,unCamel(name)));
+							System.out.println("Camera " + message);
+							bDone = true;
 						}
 					}
 				}
 
 				// paint level
-				if ( !bDone && bLevels && index >= 0 ) {
-					for ( Level level : home.getLevels() ) {
+				if ( !bDone ) for ( Level level : home.getLevels() ) {
+					if ( level.getName().equals(name) ) {
 						home.setSelectedLevel(level);
 						PlanComponent plan	= new PlanComponent(home,prefs, null);
-						if ( level.getName().equals(name) ) {
-							Level level1 = home.getSelectedLevel();
-							String file	 = name + ext;
-							if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)) {
-								message += String.format("%s\n", unCamel(name));
-								photos.add(new Photo(file,unCamel(name)));
-								System.out.println("Level " + message);
-							}
-							home.setSelectedLevel(level1);
+						Level selectedLevel = home.getSelectedLevel();
+						String file	 = name + ext;
+						if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)) {
+							message += String.format("%s\n", unCamel(name));
+							photos.add(new Photo(file,unCamel(name)));
+							System.out.println("Level " + message);
+							bDone = true;
 						}
+						home.setSelectedLevel(selectedLevel);
 					}
 				}
 			} catch (Exception e){}
@@ -931,7 +958,8 @@ public class ToWebPlugin extends Plugin {
 					String fileStr		  = new Filename(htmlTemplatePath).readAsString();
 					fileStr = fileStr.replaceAll("__PHOTOS__", PHOTOS);
 					fileStr = fileStr.replaceAll("__TITLE__" , title);
-					Path htmlOutputPath = htmlPath.resolve(htmlFileName);
+					fileStr = fileStr.replaceAll("__STORY__" , story);
+					Path htmlOutputPath   = htmlPath.resolve(htmlFileName);
 					result				  = writeOut(htmlOutputPath,fileStr,true);
 
 					if ( result ) try {
