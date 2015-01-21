@@ -15,10 +15,12 @@ tojpg()
 	done
 }
 
-months=(January February March April May June July August September October November December)
+
+year=$(date +"%Y")
 month=$(( $(date +"%m") -1 ))
+months=(January February March April May June July August September October November December)
 month=${months[$month]}
-month=~/Pictures/$month
+month=~/Pictures/$year/$month
 if [ ! -e $month ]; then
 	mkdir -p $month
 fi
@@ -30,7 +32,7 @@ else
 	month=$PWD
 fi
 
-Gg=~/Pictures/Gg
+Gg=~/Pictures/$year/Gg
 if [ -e $Gg ]; then
     cd $Gg
     Gg=$PWD
@@ -51,4 +53,3 @@ fi
 
 # That's all Folks
 ##
-	
