@@ -1,0 +1,13 @@
+#!/bin/bash
+
+f=~rmills/temp/cron.log
+if [ -e $f ]; then
+	if [ $# == 0 ]; then
+		tail -f $f
+	else
+		tail $* $f
+	fi
+else
+	echo file: $f does not exist!
+fi
+
