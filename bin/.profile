@@ -32,7 +32,7 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 # cpu time                (seconds, -t) unlimited
 # max user processes              (-u) 709
 # virtual memory          (kbytes, -v) unlimited
-# 517 /Users/rmills/clanmills $ 
+# 517 /Users/rmills/clanmills $
 ulimit -n 1024
 
 ##
@@ -60,18 +60,18 @@ export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/opt/local/lib/pkgconfig
 
-## 
+##
 # scripting support
 # used by cpan
 export "FTP_PASSIVE=1"
-  
+
 # export PYTHONPATH=~/scripts/:${HOME}/bin/:.:/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
 # export PYTHONPATH=/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
 
 export VERSIONER_PERL_PREFER_32_BIT=no
 export VERSIONER_PYTHON_PREFER_32_BIT=no
 export PERLPATH=/Users/rmills/gnu/ImageMagick
-export PYTHONPATH="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:$PYTHONPATH"  
+export PYTHONPATH="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:$PYTHONPATH"
 export RUBYOPT=rubygems
 if [ ! -z $PERL5LIB ]; then
     export PERL5LIB="$PERL5LIB:${BIN}"
@@ -90,10 +90,10 @@ export PHOTOS="$HOME/Documents/Dropbox/Photos"
 export QHOTOS="$PHOTOS/../../NotDropbox/Photos"
 DropboxPhotos=/Volumes/Data/rmills/Dropbox/Photos
 NotDropboxPhotos=/Volumes/Data/rmills/NotDropbox/Photos
-if [ -e "$DropboxPhotos" ]; then 
+if [ -e "$DropboxPhotos" ]; then
     export PHOTOS="$DropboxPhotos"
 fi
-if [ -e "$NotDropboxPhotos" ]; then 
+if [ -e "$NotDropboxPhotos" ]; then
     export QHOTOS="$NotDropboxPhotos"
 fi
 
@@ -132,7 +132,7 @@ dir() {
 #           (pushd "$1">/dev/null;$list *)
             if [ "$1" == '.' ]; then
                 $list
-            else 
+            else
                 $list $(dirname "$1")/$(basename "$1")/*
             fi
         elif [ "$1" = /od ]; then
@@ -161,21 +161,8 @@ thepath() {
     fi
 }
 
-cronlog() {
-	f=~/temp/cron.log
-	if [ -e $f ]; then
-		if [ $# == 0 ]; then
-			tail -f $f
-		else
-			tail $* $f
-		fi
-	else 
-		echo file: $f does not exist!
-	fi
-}
-
 export HISTTIMEFORMAT="%T "
-history() { 
+history() {
     builtin history | tail -30
 }
 
@@ -190,7 +177,7 @@ dirs() {
 
 links() {
     ls -altpF $1 | grep "^l"
-    # 
+    #
     # for x in `(ls -F|grep @)`; do echo "${x::${#x}-1}" ; done
 }
 
@@ -226,7 +213,7 @@ crdir() {
         echo "*** give me an argument,buddy ***"
     else
         echo "*** too many arguments ***"
-    fi 
+    fi
 }
 alias crd=crdir
 
@@ -259,7 +246,7 @@ to() {
             args+=("$target")
         fi
     done
-    
+
     ##
     # report or bail
     if [ ${#args} == 0 ]; then help=1; fi
@@ -268,15 +255,15 @@ to() {
         error=1
     fi
     if [ $error == 1 ]; then return; fi
-    
-    unset args[${#args[@]}-1]       
+
+    unset args[${#args[@]}-1]
     argc=${#args}
     if [ $verbose == 1 ]; then
         echo args   = ${args[@]} "(argc = $argc)"
         echo target = "$target" ;
         echo cd     =  $cd
     fi
-    
+
     ##
     # pain over.  find possible targets
     tmp=/tmp/2.tmp
@@ -302,8 +289,8 @@ to() {
             if [ -d "$dir/$target" ]; then
                 dir="$dir/$target"
             fi
-            echo $ cd "$dir" 
-            cd "$dir" 
+            echo $ cd "$dir"
+            cd "$dir"
         fi
     elif [ "$count" == "0" ]; then
         echo "*** NO file found ***"
@@ -338,7 +325,7 @@ path() {
 #       if [ ! -z "$CE" ]; then
 #           export CE="kate --use"
 #           export CE2="&>/dev/null &"
-#       fi      
+#       fi
 #   fi
 #fi
 #
@@ -373,18 +360,18 @@ if [ -e /opt/local/bin/svn ]; then
 	alias svn18=/opt/local/bin/svn
 fi
 
-if [ $PLATFORM == linux ]; then 
+if [ $PLATFORM == linux ]; then
     alias open=xdg-open
     alias shellx=open
     alias start=open
-    
+
     J=/usr/local/java/jdk1.7.0_51
     if [ -d /usr/local/java/jdk.1.7.0_21    ]; then J=/usr/local/java/jdk1.7.0_21 ; fi
     if [ -d ~/Software/Java/jre1.8.0_25     ]; then J=~/Software/Java/jre1.8.0_25 ; fi
     if [ -d ~/Software/Java/jdk1.8.0_25     ]; then J=~/Software/Java/jdk1.8.0_25 ; fi
     export JAVA_HOME=$J
     export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
-    
+
     # JRE_HOME=/usr/local/java/jre1.7.0_21
     # PATH=$PATH:$HOME/bin:$JRE_HOME/bin
 fi
@@ -420,6 +407,7 @@ alias PP='cd ~/Desktop/Stuff/PP'
 #
 # Favorite servers
 alias clanmills.com='ssh clanmil1@clanmills.com'
+alias rmillsmm='ssh rmillsmm'
 
 ##
 # apache-maven (and itext support)
@@ -431,7 +419,7 @@ alias clanmills.com='ssh clanmil1@clanmills.com'
 
 
 ## Warren's remind/remember magic
-# Function "remind" 
+# Function "remind"
 remind() {
   # remindme - Searches a data file for matching lines, or shows the entire contents
   # of the data file if no argument is specified.
@@ -446,7 +434,7 @@ remind() {
     grep -i "$@" "$rememberFile" | ${PAGER:-more}
   fi
 }
-# Function "remember" 
+# Function "remember"
 remember() {
   # remember - An easy command-line-based memory pad.
   rememberFile="${HOME}/bin/.remember"
@@ -516,7 +504,7 @@ if [ "$PLATFORM" == "macosx" ]; then
   		# tmutil = Time Machine Util ; pmset = Power Management Settings ;
   		sudo tmutil disablelocal
   	popd >/dev/null
-    
+
   	alias locate_update="sudo /usr/libexec/locate.updatedb &"
 
     # http://alvinalexander.com/mac-os-x/mac-os-x-10.9-wont-shut-down-slow-shutdown-solution
@@ -525,7 +513,7 @@ if [ "$PLATFORM" == "macosx" ]; then
     sudo defaults write /System/Library/LaunchDaemons/com.apple.diskarbitrationd ExitTimeOut -int 5
     sudo defaults write /System/Library/LaunchDaemons/com.apple.coreservices.appleevents ExitTimeOut -int 5
     sudo defaults write /System/Library/LaunchAgents/com.apple.coreservices.appleid.authentication ExitTimeOut -int 5
-    
+
     if [ "$FACTORY" == "rmillsmm.local" ]; then
     	sudo chown jenkins /var/log/jenkins/jenk*
     fi
