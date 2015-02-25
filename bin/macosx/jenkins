@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Syntax() {
-	echo "$0 [ status | start | stop | restart ]"
+	echo "$0 [ status | start | stop | restart | cmd ... ]"
 	exit 1
 }
 
@@ -20,7 +20,11 @@ Running() {
 	Status
 }
 
-if [ $# -ne 1 ]; then Syntax ; fi
+TalkToJenkins() {
+    java -jar /Users/Shared/Jenkins/Home/war/WEB-INF/jenkins-cli.jar -s http://$HOST:8080/ $*
+}
+
+if [ $# -lt 1 ]; then Syntax ; fi
 
 status=$(ps ax | grep -e "jenkins" | grep -v -e grep -v -e bash)
 running=1
@@ -33,8 +37,12 @@ case "$1" in
 	-h|--help|-\?) Syntax ;;
 	status)        Status ;;
 	stop)          Launch unload ;;
-	start)         if [ $running == "0" ]; then Launch  load  ;else Running; fi ;;
+	start)         if [ $running == "0" ]; then Launch   load ;else Running; fi ;;
 	restart)       if [ $running == "1" ]; then Launch unload ;fi ; Launch load  ;;
+	do|\
+	cmd|\
+	command)       shift ; TalkToJenkins $* ;;
+	*)             TalkToJenkins $*         ;;
 esac
 
 # That's all Folks!
