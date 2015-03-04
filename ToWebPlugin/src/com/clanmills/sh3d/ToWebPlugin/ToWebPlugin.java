@@ -24,6 +24,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -43,6 +45,7 @@ import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.swing.HomeComponent3D;
 import com.eteks.sweethome3d.swing.PlanComponent;
+import com.eteks.sweethome3d.viewcontroller.HomeController3D;
 
 
 /**
@@ -195,12 +198,47 @@ class Filename
 
 public class ToWebPlugin extends Plugin {
 
-	public	static class ToWebPluginPanel extends JPanel
+    public Home              home             = getHome();
+    public String            ignored          = " *ignored*";
+    
+    // the following members are initialized args to createAndShowGUI(...)
+    public ToWebPluginWorker worker           = null;
+    public HomeController3D  homeController3D = null;
+    public UserPreferences   prefs            = null;
+    public String            path             = null;
+    
+    // frame is created in createAndShowGUI(...)
+    public JFrame            frame            = null;
+
+	public Boolean setCamera(String name)
+	{
+		if ( name != null ) {
+			int	 nIgnored            = name.indexOf(ignored);
+			if ( nIgnored > 0 ) name = name.substring(0,nIgnored);
+	
+			for ( Camera camera : this.getHome().getStoredCameras() ) {
+				if ( camera.getName().equals(name) ) try {
+					if ( camera.getClass().getName() == "com.eteks.sweethome3d.model.ObserverCamera" ) {
+						homeController3D.goToCamera(camera);
+					} else {
+						home.setCamera(camera);
+					}
+					return true ;
+				} catch (Exception e) {
+					System.out.println("setCamera " + name + " failed");
+				}
+			}
+		}
+		return false;
+	}
+
+    public	static class ToWebPluginPanel extends JPanel
 			implements	ActionListener,
 						WindowListener,
 						PropertyChangeListener,
 						MouseListener,
-						KeyListener {
+						KeyListener ,
+						ListSelectionListener {
 
 		/**
 		 *
@@ -214,14 +252,17 @@ public class ToWebPlugin extends Plugin {
 		private JTextArea			storyArea;
 		private JLabel				storyLabel;
 		private Boolean				storyEditable;
-
+		public  String              ignored;
+		public  ToWebPlugin         plugin;
+		
+		HomeController3D            homeController3D;
+		
 		private ToWebPluginTask		task;
 		private UserPreferences		prefs;
 		private Home				home;
 		private String				path;
 		private ToWebPluginWorker	worker;
 		public	String				story;
-		public	String				ignored = " *ignored* ";
 		JList<String>				viewList;
 		JComboBox<String>			templateList;
 		DefaultListModel<String>	viewModel		= new DefaultListModel<String>();
@@ -327,11 +368,9 @@ public class ToWebPlugin extends Plugin {
 			Vector<String> views = new Vector<String>();
 
 			for (Camera camera : home.getStoredCameras() ) {
-				if ( camera.getClass().getName().equals("com.eteks.sweethome3d.model.ObserverCamera") ) {
-					String name = camera.getName();
+				String name = camera.getName();
 				//	System.out.println(name);
-					views.add(name);
-				}
+				views.add(name);
 			}
 			if ( views.size() == 0 ) messageBox("Please store some camera views in the model");
 			return views;
@@ -347,7 +386,8 @@ public class ToWebPlugin extends Plugin {
 			// views in the model, but not in UI are marked ignored
 			for ( int i = 0 ; i < viewModel.getSize(); i++ ) {
 				String	view = viewModel.get(i);
-				int	 nIgnored = view.indexOf(ignored);
+				
+				int	 nIgnored = ignored == null ? -1 : view.indexOf(ignored);
 				if ( nIgnored > 0 ) view = view.substring(0,nIgnored);
 
 				if ( !views.contains(view) && nIgnored < 0 ) {
@@ -403,12 +443,19 @@ public class ToWebPlugin extends Plugin {
 			 return result;
 		}
 
-		public ToWebPluginPanel(Home home_,String path_)
+		public ToWebPluginPanel(ToWebPlugin plugin_)
 		{
 			 super(new GridBagLayout());
+			 setOpaque(true);
 
-			 home=home_;
-			 path=path_;
+			 plugin           = plugin_;
+			 home             = plugin.home;
+			 homeController3D = plugin.homeController3D;
+			 ignored          = plugin.ignored;
+			 worker			  = plugin.worker;
+			 prefs			  = plugin.prefs;
+			 frame			  = plugin.frame;
+			 path             = plugin.path;
 
 			 int row = 0 ;
 			 setLayout(new GridBagLayout());
@@ -431,6 +478,7 @@ public class ToWebPlugin extends Plugin {
 			 }
 			 viewList.addMouseListener(this);
 			 viewList.addKeyListener(this);
+			 viewList.addListSelectionListener(this);
 
 			 viewList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			 viewList.setSelectedIndex(0);
@@ -560,7 +608,7 @@ public class ToWebPlugin extends Plugin {
 			 String.format("viewSelected: %s templateSelected %s",viewSelected,templateSelected);
 			 System.out.println(s);
 		}
-
+		
 		@SuppressWarnings("unchecked")
 		void save()
 		{
@@ -724,6 +772,14 @@ public class ToWebPlugin extends Plugin {
 		}
 		public void keyReleased(KeyEvent e) { key("Released",e); }
 		public void keyTyped(KeyEvent e)    { key("Typed"   ,e); }
+
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			if ( ! e.getValueIsAdjusting() ) {
+				String name = viewList.getSelectedValue(); 
+				if ( plugin != null ) plugin.setCamera(name);
+			}
+		}
 	}
 	
 	public void messageBox(String m)
@@ -734,23 +790,25 @@ public class ToWebPlugin extends Plugin {
 	/**
 	 * Create the GUI and show it.
 	 */
-	void createAndShowGUI(ToWebPluginWorker worker,Home home,UserPreferences prefs)
+	void createAndShowGUI(ToWebPluginWorker worker_,Home home_,HomeController3D homeController3D_,UserPreferences prefs_)
 	{
 		// Create and set up the window.
-		JFrame frame = new JFrame("ToWebPlugin Panel");
+		frame            = new JFrame("ToWebPlugin Panel");
+		
+		worker           = worker_;
+		home             = home_  ;
+		homeController3D = homeController3D_;
+		prefs            = prefs_;
 
 		// Create and set up content
-		String name = home.getName();
-		if ( name == null ) {
+		if ( home.getName() == null ) {
 			messageBox("Current model has no name.  Please save it!");
 		} else {
+			String name = home.getName();
 			System.out.println("name = " + name);
-			String path = name.substring(0, name.lastIndexOf('.')) + ".toWebPlugin";
-			ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(home,path);
-			toWebPluginPanel.worker			  = worker;
-			toWebPluginPanel.prefs			  = prefs;
-			toWebPluginPanel.frame			  = frame;
-			toWebPluginPanel.setOpaque(true);
+			path = name.substring(0, name.lastIndexOf('.')) + ".toWebPlugin";
+
+			ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(this);
 	
 			// Display window
 			frame.setContentPane(toWebPluginPanel);
@@ -780,7 +838,7 @@ public class ToWebPlugin extends Plugin {
 		{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					createAndShowGUI(new ToWebPluginWorker(),getHome(),getUserPreferences());
+					createAndShowGUI(new ToWebPluginWorker(),getHome(),getHomeController().getHomeController3D(),getUserPreferences());
 				}
 			});
 		}
@@ -880,11 +938,12 @@ public class ToWebPlugin extends Plugin {
 			return saveImage(image,path,type);
 		}
 
-		private boolean paintCamera(Home home,Camera camera,int width,int height,String directory,String ext,String type)
+		private boolean paintCamera(Home home,HomeController3D homeController3D,Camera camera,int width,int height,String directory,String ext,String type)
 		{
 			boolean result = false;
 			try {
-				home.setCamera (camera);
+				// homeController3D.goToCamera(camera);
+				setCamera(camera.getName());
 				HomeComponent3D comp  = new HomeComponent3D(home);
 				BufferedImage	image = comp.getOffScreenImage(width,height);
 				String			file  = camera.getName() + ext;
@@ -940,7 +999,7 @@ public class ToWebPlugin extends Plugin {
 				// paint camera
 				if ( !bDone ) for ( Camera camera : home.getStoredCameras() ) {
 					if ( !bDone && camera.getName().equals(name) ) {
-						if ( paintCamera(home,camera,iwidth,iheight,Images,ext,type)) {
+						if ( paintCamera(home,homeController3D,camera,iwidth,iheight,Images,ext,type)) {
 							String file = name + ext;
 							message	   += String.format("%s\n",unCamel(name));
 							photos.add(new Photo(file,unCamel(name)));

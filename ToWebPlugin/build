@@ -1,0 +1,29 @@
+#!/bin/bash
+
+##
+# build ToWebPlugin.jar
+##
+
+# static data
+foo=foo
+jar=ToWebPlugin.jar
+
+if [ -e "$jar" ]; then
+	ls -alt "$jar"
+	rm -rf  "$foo"
+	mkdir   "$foo"
+	for i in *.jar ; do (
+	 	cd "$foo"
+	 	jar xf ../$i
+	) 	done
+	cd "$foo"
+	jar cf  "../$jar" *
+	cd  ..
+	rm -rf  "$foo"
+	ls -alt "$jar"
+else
+	echo "file $jar does not exist"
+fi
+
+# That's all Folks!
+##
