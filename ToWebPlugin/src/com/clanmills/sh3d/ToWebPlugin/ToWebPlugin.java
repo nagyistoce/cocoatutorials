@@ -54,13 +54,13 @@ import com.eteks.sweethome3d.viewcontroller.HomeController3D;
  */
 
 /**
- * UnzipUtility extracts files and directories of a standard zip file to
+ * FileUnzip extracts files and directories of a standard zip file to
  * a destination directory.
  * @author www.codejava.net
  *
  */
 // http://www.codejava.net/java-se/file-io/programmatically-extract-a-zip-file-using-java
-class UnzipUtility {
+class FileUnzip {
 	/**
 	 * Size of the buffer to read/write data
 	 */
@@ -1025,7 +1025,7 @@ public class ToWebPlugin extends Plugin {
 			} catch (Exception e){}
 
 			if ( index == -1 ) {
-				UnzipUtility unzip = new UnzipUtility();
+				FileUnzip unzip = new FileUnzip();
 				try {
 					unzip.unzip(templatePath, htmlPath);
 					templatePath = Filename.join(htmlPath,template);
@@ -1046,6 +1046,8 @@ public class ToWebPlugin extends Plugin {
 					fileStr = fileStr.replaceAll("__STORY__" , story);
 					String htmlOutputPath   = Filename.join(htmlPath,htmlFileName);
 					result				    = writeOut(htmlOutputPath,fileStr,true);
+
+					System.out.println("Code: "+htmlOutputPath);
 
 					if ( result ) try {
 						new ProcessBuilder("open" ,htmlOutputPath).start();
