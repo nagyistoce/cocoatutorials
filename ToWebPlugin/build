@@ -26,7 +26,7 @@ if [ -e "$jar" ]; then
 	cd "$foo"
 	jar cf  "../$jar" *
 	cd  ..
-	rm -rf  "$foo"
+	rm -rf  "$foo" build.xml build .project
 	ls -alt "$jar"
 else
 	echo "file $jar does not exist"

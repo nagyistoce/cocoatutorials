@@ -1134,7 +1134,7 @@ public class ToWebPlugin extends Plugin {
 
 					if ( result ) try {
 						// new ProcessBuilder("open" ,htmlOutputPath).start();
-						openWebpage(htmlOutputPath);
+						openWebpage("file://" + htmlOutputPath);
 					} catch (Exception e) {
 						messageBox("unable to open " + htmlOutputPath);
 					}
