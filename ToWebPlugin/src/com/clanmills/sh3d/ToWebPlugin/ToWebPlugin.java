@@ -202,7 +202,7 @@ public class ToWebPlugin extends Plugin {
     public String            ignored          = " *ignored*";
     
     // the following members are initialized args to createAndShowGUI(...)
-    public ToWebPluginWorker worker           = null;
+    public Worker            worker           = null;
     public HomeController3D  homeController3D = null;
     public UserPreferences   prefs            = null;
     public String            path             = null;
@@ -210,7 +210,7 @@ public class ToWebPlugin extends Plugin {
     // frame is created in createAndShowGUI(...)
     public JFrame            frame            = null;
 
-	public Boolean setCamera(String name)
+	public Boolean setView(String name)
 	{
 		if ( name != null ) {
 			int	 nIgnored            = name.indexOf(ignored);
@@ -232,7 +232,7 @@ public class ToWebPlugin extends Plugin {
 		return false;
 	}
 
-    public	static class ToWebPluginPanel extends JPanel
+    public	static class Panel extends JPanel
 			implements	ActionListener,
 						WindowListener,
 						PropertyChangeListener,
@@ -261,7 +261,7 @@ public class ToWebPlugin extends Plugin {
 		private UserPreferences		prefs;
 		private Home				home;
 		private String				path;
-		private ToWebPluginWorker	worker;
+		private Worker	            worker;
 		public	String				story;
 		JList<String>				viewList;
 		JComboBox<String>			templateList;
@@ -301,7 +301,7 @@ public class ToWebPlugin extends Plugin {
 						progressMonitor.setNote(message);
 						progressMonitor.setProgress(percent);
 						setProgress(percent);
-						System.out.printf("doInBackground() Camera:%s (%d of %d) ",name,progress,max);
+						System.out.printf("doInBackground() Camera:%s (%d of %d) ",name,progress+1,max);
 						worker.execute(home,prefs,progress);
 						progress++;
 						sleep(100);
@@ -443,7 +443,7 @@ public class ToWebPlugin extends Plugin {
 			 return result;
 		}
 
-		public ToWebPluginPanel(ToWebPlugin plugin_)
+		public Panel(ToWebPlugin plugin_)
 		{
 			 super(new GridBagLayout());
 			 setOpaque(true);
@@ -667,7 +667,7 @@ public class ToWebPlugin extends Plugin {
 		public void start() {
 			startButton.setEnabled(false);
 			progressMonitor = new ProgressMonitor
-					(  ToWebPluginPanel.this
+					(  Panel.this
 					,  "ToWebPlugin: Creating Images"
 					,  "", 0, 100
 					);
@@ -777,7 +777,7 @@ public class ToWebPlugin extends Plugin {
 		public void valueChanged(ListSelectionEvent e) {
 			if ( ! e.getValueIsAdjusting() ) {
 				String name = viewList.getSelectedValue(); 
-				if ( plugin != null ) plugin.setCamera(name);
+				plugin.setView(name);
 			}
 		}
 	}
@@ -790,11 +790,8 @@ public class ToWebPlugin extends Plugin {
 	/**
 	 * Create the GUI and show it.
 	 */
-	void createAndShowGUI(ToWebPluginWorker worker_,Home home_,HomeController3D homeController3D_,UserPreferences prefs_)
+	void createAndShowGUI(Worker worker_,Home home_,HomeController3D homeController3D_,UserPreferences prefs_)
 	{
-		// Create and set up the window.
-		frame            = new JFrame("ToWebPlugin Panel");
-		
 		worker           = worker_;
 		home             = home_  ;
 		homeController3D = homeController3D_;
@@ -805,28 +802,28 @@ public class ToWebPlugin extends Plugin {
 			messageBox("Current model has no name.  Please save it!");
 		} else {
 			String name = home.getName();
-			System.out.println("name = " + name);
-			path = name.substring(0, name.lastIndexOf('.')) + ".toWebPlugin";
+			path        = name.substring(0, name.lastIndexOf('.')) + ".toWebPlugin";
+			System.out.println("path = " + path);
 
-			ToWebPluginPanel toWebPluginPanel = new ToWebPluginPanel(this);
-	
-			// Display window
-			frame.setContentPane(toWebPluginPanel);
+			// Create, set up and display panel
+			frame       = new JFrame("ToWebPlugin Panel");
+			Panel panel = new Panel(this);
+			frame.setContentPane(panel);
 			frame.pack();
+			frame.addWindowListener(panel);
 			frame.setVisible(true);
-			frame.addWindowListener(toWebPluginPanel);
 		}
 	}
 
 	@Override
 	public PluginAction[] getActions()
 	{
-		return new PluginAction [] {new ToWebPluginAction()};
+		return new PluginAction [] {new Action()};
 	}
 
-	public class ToWebPluginAction extends PluginAction
+	public class Action extends PluginAction
 	{
-		public ToWebPluginAction()
+		public Action()
 		{
 			putPropertyValue(Property.NAME, "ToWebPlugin...");
 			putPropertyValue(Property.MENU, "Tools");
@@ -838,13 +835,13 @@ public class ToWebPlugin extends Plugin {
 		{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					createAndShowGUI(new ToWebPluginWorker(),getHome(),getHomeController().getHomeController3D(),getUserPreferences());
+					createAndShowGUI(new Worker(),getHome(),getHomeController().getHomeController3D(),getUserPreferences());
 				}
 			});
 		}
 	}
 
-	class ToWebPluginWorker {
+	class Worker {
 
 		public class Photo extends Object {
 			public String file;
@@ -943,7 +940,7 @@ public class ToWebPlugin extends Plugin {
 			boolean result = false;
 			try {
 				// homeController3D.goToCamera(camera);
-				setCamera(camera.getName());
+				setView(camera.getName());
 				HomeComponent3D comp  = new HomeComponent3D(home);
 				BufferedImage	image = comp.getOffScreenImage(width,height);
 				String			file  = camera.getName() + ext;
@@ -989,7 +986,7 @@ public class ToWebPlugin extends Plugin {
 
 			if ( index == 0 ) photos = new ArrayList<Photo>();
 
-			System.out.printf("ToWebPluginWorker.execute %d\n",index);
+			System.out.printf("Worker.execute %d\n",index);
 
 			String	htmlFileName = "index.html";
 			if ( index >= 0 ) try {
