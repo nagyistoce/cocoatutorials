@@ -37,6 +37,7 @@ import java.awt.image.BufferedImage;
 
 import org.stringtemplate.v4.*;
 
+import com.eteks.sweethome3d.io.FileUserPreferences;
 import com.eteks.sweethome3d.model.Camera;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.Level;
@@ -173,7 +174,7 @@ class Filename
 		}
 		return result;
 	}
-	
+
 	public static String join(String path1, String path2)
 	{
 	    File file1 = new File(path1);
@@ -185,14 +186,26 @@ class Filename
 	{
 	    return Filename.join(Filename.join(path1,path2),path3);
 	}
-	
+
 	public static String join(String path1, String path2,String path3,String path4)
 	{
 	    return Filename.join(Filename.join(path1,path2,path3),path4);
 	}
-	
-	public static void mkdirs(String path){
+
+	public static String mkdirs(String path){
 		(new File(path)).mkdirs();
+		return path;
+	}
+
+	public static String mkdirs(String path,Boolean blast)
+	{
+		if ( blast ) rmdir(path);
+		return mkdirs(path);
+	}
+
+	public static String rmdir(String path){
+		(new File(path)).delete();
+		return path;
 	}
 }
 
@@ -200,13 +213,17 @@ public class ToWebPlugin extends Plugin {
 
     public Home              home             = getHome();
     public String            ignored          = " *ignored*";
-    
+
+	public	static final String sToWebPlugin	 = "ToWebPlugin";
+	public  static final String sToWebPluginJar  = "ToWebPlugin.jar";
+   
     // the following members are initialized args to createAndShowGUI(...)
     public Worker            worker           = null;
     public HomeController3D  homeController3D = null;
     public UserPreferences   prefs            = null;
-    public String            path             = null;
-    
+    public String            jsonPath         = null;
+    public String            jarPath          = null;
+   
     // frame is created in createAndShowGUI(...)
     public JFrame            frame            = null;
 
@@ -243,7 +260,6 @@ public class ToWebPlugin extends Plugin {
 		/**
 		 *
 		 */
-		public	static final String sToWebPlugin	 = "ToWebPlugin";
 		private static final long	serialVersionUID = 276503287;
 
 		private ProgressMonitor		progressMonitor;
@@ -260,7 +276,8 @@ public class ToWebPlugin extends Plugin {
 		private ToWebPluginTask		task;
 		private UserPreferences		prefs;
 		private Home				home;
-		private String				path;
+		private String				jsonPath;
+		private String              jarPath;
 		private Worker	            worker;
 		public	String				story;
 		JList<String>				viewList;
@@ -347,7 +364,22 @@ public class ToWebPlugin extends Plugin {
 				String	homedir		= javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 				String	templateDir = Filename.join(homedir,"ToWebPlugin","templates");
 
-				File[] files	   = new File(templateDir).listFiles();
+//				File[] files	    = new File(templateDir).listFiles();
+//				if ( files != null ) for ( File file : files) {
+//					Filename filename = new Filename(file,sep,dot);
+//					if ( filename.extension().equals(want) ) {
+//						result.add(filename.filename());
+//					}
+//				//	System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
+//				}
+
+				// unzip the jar to a temporary directory
+				String tmp = Filename.join(System.getProperty("java.io.tmpdir"),ToWebPlugin.sToWebPlugin);
+				Filename.mkdirs(tmp,true);
+				new FileUnzip().unzip(jarPath,tmp);
+
+				// and enumerates the zips in the jar's templates directory
+				File[] files	    = new File(Filename.join(tmp,"templates")).listFiles();
 				if ( files != null ) for ( File file : files) {
 					Filename filename = new Filename(file,sep,dot);
 					if ( filename.extension().equals(want) ) {
@@ -355,7 +387,7 @@ public class ToWebPlugin extends Plugin {
 					}
 				//	System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
 				}
-				
+
 				if ( result.size() == 0 ) messageBox("no templates found in " + templateDir);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -455,7 +487,8 @@ public class ToWebPlugin extends Plugin {
 			 worker			  = plugin.worker;
 			 prefs			  = plugin.prefs;
 			 frame			  = plugin.frame;
-			 path             = plugin.path;
+			 jsonPath         = plugin.jsonPath;
+			 jarPath          = plugin.jarPath;
 
 			 int row = 0 ;
 			 setLayout(new GridBagLayout());
@@ -536,7 +569,7 @@ public class ToWebPlugin extends Plugin {
 			 storyArea.setMargin(new Insets(5,5,5,5));
 			 storyLabel = addRow(++row,"Story:",storyArea);
 
-			 String story			 = new Filename(path.toString()).readAsString();
+			 String story			 = new Filename(jsonPath.toString()).readAsString();
 			 String viewSelected	 = "";
 			 String templateSelected = "" ;
 
@@ -627,7 +660,7 @@ public class ToWebPlugin extends Plugin {
 			try {
 				JSONValue.writeJSONString(object, out);
 				String jsonText = out.toString();
-				PrintWriter printWriter = new PrintWriter(path.toString());
+				PrintWriter printWriter = new PrintWriter(jsonPath);
 				printWriter.println(jsonText);
 				printWriter.close();
 			//	System.out.print("saved: " + jsonText);
@@ -795,15 +828,32 @@ public class ToWebPlugin extends Plugin {
 		worker           = worker_;
 		home             = home_  ;
 		homeController3D = homeController3D_;
-		prefs            = prefs_;
+		prefs            = prefs_ ;
+		
+		String APPLICATION_PLUGINS_SUB_FOLDER = "plugins"; // private in SweetHome3D.java
+		
+		File[] applicationPluginsFolders = null;
+		try {
+			applicationPluginsFolders = ((FileUserPreferences) prefs).getApplicationSubfolders(APPLICATION_PLUGINS_SUB_FOLDER);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// where's the jarPath? (we'll need that for the templates)
+		if ( applicationPluginsFolders != null ) {
+			for ( File file : applicationPluginsFolders ) {
+				jarPath = file.getAbsolutePath() + File.separator.charAt(0) + ToWebPlugin.sToWebPluginJar;
+				System.out.println("jarPath: " + jarPath);
+			}
+		}
 
 		// Create and set up content
 		if ( home.getName() == null ) {
 			messageBox("Current model has no name.  Please save it!");
 		} else {
 			String name = home.getName();
-			path        = name.substring(0, name.lastIndexOf('.')) + ".toWebPlugin";
-			System.out.println("path = " + path);
+			jsonPath    = name.substring(0, name.lastIndexOf('.')) + ".toWebPlugin";
+			System.out.println("jsonPath = " + jsonPath);
 
 			// Create, set up and display panel
 			frame       = new JFrame("ToWebPlugin Panel");
@@ -959,7 +1009,7 @@ public class ToWebPlugin extends Plugin {
 
 			// create directory for output
 			// http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
-			String	homedir		 = javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
+			// String	homedir		 = javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 			String  filedir      = home.getName();
 			String  title        = "";
 			try {
@@ -968,7 +1018,7 @@ public class ToWebPlugin extends Plugin {
     			filedir		     = filedir.substring(0,filedir.lastIndexOf('.'));
 			} catch (Exception e){}
 
-			String	templatePath = Filename.join(homedir,"ToWebPlugin","templates",template + ".zip");
+			String	templatePath = Filename.join(System.getProperty("java.io.tmpdir"),"ToWebPlugin","templates",template + ".zip");
 			String	htmlPath	 = Filename.join(filedir, template);
 			String	Images		 = Filename.join(htmlPath,"Images");
 			Filename.mkdirs(Images);
