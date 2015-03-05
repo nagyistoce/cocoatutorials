@@ -218,10 +218,10 @@ public class ToWebPlugin extends Plugin {
 	
 			for ( Camera camera : this.getHome().getStoredCameras() ) {
 				if ( camera.getName().equals(name) ) try {
-					if ( camera.getClass().getName() == "com.eteks.sweethome3d.model.ObserverCamera" ) {
-						homeController3D.goToCamera(camera);
-					} else {
+					if ( camera.getClass().getName().equals("com.eteks.sweethome3d.model.ObserverCamera") ) {
 						home.setCamera(camera);
+					} else {
+						homeController3D.goToCamera(camera);
 					}
 					return true ;
 				} catch (Exception e) {
@@ -297,7 +297,7 @@ public class ToWebPlugin extends Plugin {
 					while (progress < max  && !isCancelled()) {
 						String name	   = views.get(progress);
 						percent		   = progress*100/max;
-						String message = String.format("View: %s	(%d%%)\n", name,percent);
+						String message = String.format("%d%% View: %s\n",percent, name);
 						progressMonitor.setNote(message);
 						progressMonitor.setProgress(percent);
 						setProgress(percent);

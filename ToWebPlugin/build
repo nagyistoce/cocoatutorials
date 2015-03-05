@@ -5,8 +5,12 @@
 ##
 
 # static data
+plugins="$HOME/Library/Application Support/eTeks/Sweet Home 3D/plugins/"
 foo=foo
 jar=ToWebPlugin.jar
+
+cp *.jar "$plugins"
+cd       "$plugins"
 
 if [ -e "$jar" ]; then
 	ls -alt "$jar"
