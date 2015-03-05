@@ -15,6 +15,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +51,6 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.swing.HomeComponent3D;
 import com.eteks.sweethome3d.swing.PlanComponent;
 import com.eteks.sweethome3d.viewcontroller.HomeController3D;
-
 
 /**
  * ToWebPlugin
@@ -197,6 +200,25 @@ class Filename
 		return path;
 	}
 
+	// http://stackoverflow.com/questions/3775694/deleting-folder-from-java
+	public static boolean deleteDirectory(File directory)
+	{
+	    if(directory.exists()){
+	        File[] files = directory.listFiles();
+	        if( files != null ){
+	            for( File file : files ) {
+	                if(file.isDirectory()) {
+	                    deleteDirectory(file);
+	                }
+	                else {
+	                    file.delete();
+	                }
+	            }
+	        }
+	    }
+	    return directory.delete() ;
+	}
+
 	public static String mkdirs(String path,Boolean blast)
 	{
 		if ( blast ) rmdir(path);
@@ -204,26 +226,26 @@ class Filename
 	}
 
 	public static String rmdir(String path){
-		(new File(path)).delete();
+		deleteDirectory (new File(path));
 		return path;
 	}
 }
 
 public class ToWebPlugin extends Plugin {
 
-    public Home              home             = getHome();
-    public String            ignored          = " *ignored*";
+    public Home              home               = getHome();
+    public String            ignored            = " *ignored*";
 
-	public	static final String sToWebPlugin	 = "ToWebPlugin";
-	public  static final String sToWebPluginJar  = "ToWebPlugin.jar";
-   
+	public	static final String sToWebPlugin	= "ToWebPlugin";
+	public  static final String sToWebPluginJar = "ToWebPlugin.jar";
+
     // the following members are initialized args to createAndShowGUI(...)
-    public Worker            worker           = null;
-    public HomeController3D  homeController3D = null;
-    public UserPreferences   prefs            = null;
-    public String            jsonPath         = null;
-    public String            jarPath          = null;
-   
+    public TheJob            theJob             = null;
+    public HomeController3D  homeController3D   = null;
+    public UserPreferences   prefs              = null;
+    public String            jsonPath           = null;
+    public String            jarPath            = null;
+
     // frame is created in createAndShowGUI(...)
     public JFrame            frame            = null;
 
@@ -232,7 +254,7 @@ public class ToWebPlugin extends Plugin {
 		if ( name != null ) {
 			int	 nIgnored            = name.indexOf(ignored);
 			if ( nIgnored > 0 ) name = name.substring(0,nIgnored);
-	
+
 			for ( Camera camera : this.getHome().getStoredCameras() ) {
 				if ( camera.getName().equals(name) ) try {
 					if ( camera.getClass().getName().equals("com.eteks.sweethome3d.model.ObserverCamera") ) {
@@ -255,11 +277,8 @@ public class ToWebPlugin extends Plugin {
 						PropertyChangeListener,
 						MouseListener,
 						KeyListener ,
-						ListSelectionListener {
-
-		/**
-		 *
-		 */
+						ListSelectionListener
+	{
 		private static final long	serialVersionUID = 276503287;
 
 		private ProgressMonitor		progressMonitor;
@@ -270,21 +289,21 @@ public class ToWebPlugin extends Plugin {
 		private Boolean				storyEditable;
 		public  String              ignored;
 		public  ToWebPlugin         plugin;
-		
+
 		HomeController3D            homeController3D;
-		
-		private ToWebPluginTask		task;
+
+		private Worker		        worker;
 		private UserPreferences		prefs;
 		private Home				home;
 		private String				jsonPath;
 		private String              jarPath;
-		private Worker	            worker;
+		private TheJob	            theJob;
 		public	String				story;
 		JList<String>				viewList;
 		JComboBox<String>			templateList;
-		DefaultListModel<String>	viewModel		= new DefaultListModel<String>();
+		DefaultListModel<String>	viewModel = new DefaultListModel<String>();
 
-		class ToWebPluginTask extends SwingWorker<Void, Void> {
+		class Worker extends SwingWorker<Void, Void> {
 			Home			home;
 			UserPreferences prefs;
 			String			story;
@@ -304,36 +323,31 @@ public class ToWebPlugin extends Plugin {
 				int	   max		= views.size();
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
-				worker.bDummy	= bDummy;
-				worker.views	= views;
+				theJob.bDummy	= bDummy;
+				theJob.views	= views;
 				setProgress(0);
 				try {
-					sleep(500);
-					worker.template = template;
-					worker.story    = story;
+					theJob.template = template;
+					theJob.story    = story;
 					while (progress < max  && !isCancelled()) {
-						String name	   = views.get(progress);
+						String view	   = views.get(progress);
 						percent		   = progress*100/max;
-						String message = String.format("%d%% View: %s\n",percent, name);
+						String message = String.format("%d%% View: %s\n",percent, view);
 						progressMonitor.setNote(message);
 						progressMonitor.setProgress(percent);
 						setProgress(percent);
-						System.out.printf("doInBackground() Camera:%s (%d of %d) ",name,progress+1,max);
-						worker.execute(home,prefs,progress);
-						progress++;
-						sleep(100);
+						System.out.printf("doInBackground() View:%s (%d of %d) ",view,progress+1,max);
+						theJob.generateCode(home,prefs,progress++);
 					}
 					if ( progress == max ) {
 						percent=99;
 						progressMonitor.setNote("Generating HTML\n");
 						progressMonitor.setProgress(percent);
 						setProgress(percent);
-						sleep(100);
-						worker.execute(home, prefs, -1);
-						sleep(500);
+						theJob.generateCode(home, prefs, -1);
 						setProgress(100);
 					}
-				} catch (InterruptedException ignore) { progress = max + 100 ; }
+				} catch (Exception e) { progress = max + 100 ; }
 
 				// restore camera
 				home.setCamera(camera);
@@ -348,12 +362,12 @@ public class ToWebPlugin extends Plugin {
 				progressMonitor.setProgress(100);
 			}
 		}
-		
+
 		public void messageBox(String m)
 		{
 			JOptionPane.showMessageDialog(null,m);
 		}
-		
+
 		public Vector<String> getTemplates()
 		{
 			Vector<String> result = new Vector<String>();
@@ -418,7 +432,7 @@ public class ToWebPlugin extends Plugin {
 			// views in the model, but not in UI are marked ignored
 			for ( int i = 0 ; i < viewModel.getSize(); i++ ) {
 				String	view = viewModel.get(i);
-				
+
 				int	 nIgnored = ignored == null ? -1 : view.indexOf(ignored);
 				if ( nIgnored > 0 ) view = view.substring(0,nIgnored);
 
@@ -429,20 +443,6 @@ public class ToWebPlugin extends Plugin {
 			}
 			for ( String view : views ) {
 				viewModel.add(viewModel.getSize(), view + ignored);
-			}
-		}
-
-		public void sleep(int millisecs) throws InterruptedException
-		{
-			Thread.sleep(0) ; // millisecs);
-		}
-
-		public void sleeps(int millisecs)
-		{
-			try {
-				sleep(millisecs);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 
@@ -484,7 +484,7 @@ public class ToWebPlugin extends Plugin {
 			 home             = plugin.home;
 			 homeController3D = plugin.homeController3D;
 			 ignored          = plugin.ignored;
-			 worker			  = plugin.worker;
+			 theJob			  = plugin.theJob;
 			 prefs			  = plugin.prefs;
 			 frame			  = plugin.frame;
 			 jsonPath         = plugin.jsonPath;
@@ -641,7 +641,7 @@ public class ToWebPlugin extends Plugin {
 			 String.format("viewSelected: %s templateSelected %s",viewSelected,templateSelected);
 			 System.out.println(s);
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		void save()
 		{
@@ -668,7 +668,7 @@ public class ToWebPlugin extends Plugin {
 				e.printStackTrace();
 			}
 		}
-		
+
 		public void updown(int up_down, boolean simple)
 		{
 			try {
@@ -690,13 +690,13 @@ public class ToWebPlugin extends Plugin {
 			value = nIgnored > 0 ? value.substring(0,nIgnored) : value + ignored ;
 			viewModel.set(viewList.getSelectedIndex(), value);
 		}
-		
+
 		public void remove() {
 			int index = viewList.getSelectedIndex();
 			viewModel.remove(index);
 			viewList.setSelectedIndex(index-(index>0?1:0));
 		}
-		
+
 		public void start() {
 			startButton.setEnabled(false);
 			progressMonitor = new ProgressMonitor
@@ -705,29 +705,29 @@ public class ToWebPlugin extends Plugin {
 					,  "", 0, 100
 					);
 			story		  = storyArea.getText();
-			task		  = new ToWebPluginTask();
-			task.story	  = story;
+			worker		  = new Worker();
+			worker.story  = story;
 
-			task.template = (String) templateList.getSelectedItem();
+			worker.template = (String) templateList.getSelectedItem();
 			storyEditable = storyArea.isEditable();
 			storyArea.setEditable(false);
 			storyArea.setText("");
 
 			// find the views which are not ignored
-			task.views	  = new Vector<String>();
+			worker.views	  = new Vector<String>();
 			for ( int i = 0 ; i < viewModel.getSize() ; i++ ) {
 				String value = viewModel.get(i);
 				int nIgnored = value.indexOf(ignored);
-				if ( nIgnored < 0 ) task.views.add(value);
+				if ( nIgnored < 0 ) worker.views.add(value);
 			}
 
-			task.home			 = home ;
-			task.prefs			 = prefs;
-			task.bDummy			 = true ;
-			task.addPropertyChangeListener(this);
-			task.execute();
+			worker.home	  = home ;
+			worker.prefs	  = prefs;
+			worker.bDummy	  = true ;
+			worker.addPropertyChangeListener(this);
+			worker.execute();
 		}
-		
+
 		public void help(){
 			try {
 				new ProcessBuilder("open" ,"http://clanmills.com/files/ToWebPlugin/").start();
@@ -735,7 +735,7 @@ public class ToWebPlugin extends Plugin {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// action events
 		public void actionPerformed(ActionEvent event)
 		{
@@ -756,10 +756,10 @@ public class ToWebPlugin extends Plugin {
 		{
 			if ("progress" == evt.getPropertyName() ) {
 				storyArea.append(progressMonitor.getNote());
-				if (progressMonitor.isCanceled() || task.isDone()) {
+				if (progressMonitor.isCanceled() || worker.isDone()) {
 					Toolkit.getDefaultToolkit().beep();
 					if (progressMonitor.isCanceled()) {
-						task.cancel(true);
+						worker.cancel(true);
 					}
 					startButton.setEnabled(true);
 				}
@@ -791,7 +791,7 @@ public class ToWebPlugin extends Plugin {
 
 		// key events
 		public void key(String k,KeyEvent e) {
-		//	System.out.println(String.format("key%s = %d",k,e.getKeyCode()));			
+		//	System.out.println(String.format("key%s = %d",k,e.getKeyCode()));
 		}
 		@Override
 		public void keyPressed(KeyEvent e)  {
@@ -809,12 +809,12 @@ public class ToWebPlugin extends Plugin {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			if ( ! e.getValueIsAdjusting() ) {
-				String name = viewList.getSelectedValue(); 
+				String name = viewList.getSelectedValue();
 				plugin.setView(name);
 			}
 		}
 	}
-	
+
 	public void messageBox(String m)
 	{
 		JOptionPane.showMessageDialog(null,m);
@@ -823,22 +823,22 @@ public class ToWebPlugin extends Plugin {
 	/**
 	 * Create the GUI and show it.
 	 */
-	void createAndShowGUI(Worker worker_,Home home_,HomeController3D homeController3D_,UserPreferences prefs_)
+	void createAndShowGUI(Home home_,HomeController3D homeController3D_,UserPreferences prefs_)
 	{
-		worker           = worker_;
+		theJob           = new TheJob();
 		home             = home_  ;
 		homeController3D = homeController3D_;
 		prefs            = prefs_ ;
-		
+
 		String APPLICATION_PLUGINS_SUB_FOLDER = "plugins"; // private in SweetHome3D.java
-		
+
 		File[] applicationPluginsFolders = null;
 		try {
 			applicationPluginsFolders = ((FileUserPreferences) prefs).getApplicationSubfolders(APPLICATION_PLUGINS_SUB_FOLDER);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		// where's the jarPath? (we'll need that for the templates)
 		if ( applicationPluginsFolders != null ) {
 			for ( File file : applicationPluginsFolders ) {
@@ -885,13 +885,43 @@ public class ToWebPlugin extends Plugin {
 		{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					createAndShowGUI(new Worker(),getHome(),getHomeController().getHomeController3D(),getUserPreferences());
+					createAndShowGUI(getHome(),getHomeController().getHomeController3D(),getUserPreferences());
 				}
 			});
 		}
 	}
+	
+	// http://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
+	public void openWebpage(URI uri)
+	{
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 
-	class Worker {
+	public void openWebpage(URL url) {
+	    try {
+	        openWebpage(url.toURI());
+	    } catch (URISyntaxException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public void openWebpage(String url)
+	{
+		try {
+			openWebpage(new URL(url));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	class TheJob {
 
 		public class Photo extends Object {
 			public String file;
@@ -1003,8 +1033,11 @@ public class ToWebPlugin extends Plugin {
 			return result;
 		}
 
-		public boolean execute(Home home, UserPreferences prefs,int index)
+		public boolean generateCode(Home home, UserPreferences prefs,int index)
 		{
+			// index =  0 .. n : generate a page in the gallery
+			// index = -1      : generate the index page
+			// you must call index == -1 last as there are arrays in TheJob class remembering generated pages
 			boolean result = false ; // return value == true means HTML is ready
 
 			// create directory for output
@@ -1036,7 +1069,7 @@ public class ToWebPlugin extends Plugin {
 
 			if ( index == 0 ) photos = new ArrayList<Photo>();
 
-			System.out.printf("Worker.execute %d\n",index);
+			System.out.printf("TheJob.execute %d\n",index);
 
 			String	htmlFileName = "index.html";
 			if ( index >= 0 ) try {
@@ -1100,9 +1133,10 @@ public class ToWebPlugin extends Plugin {
 					System.out.println("Code: "+htmlOutputPath);
 
 					if ( result ) try {
-						new ProcessBuilder("open" ,htmlOutputPath).start();
+						// new ProcessBuilder("open" ,htmlOutputPath).start();
+						openWebpage(htmlOutputPath);
 					} catch (Exception e) {
-						System.out.println("unable to open " + htmlOutputPath);
+						messageBox("unable to open " + htmlOutputPath);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
