@@ -314,13 +314,18 @@ public class ToWebPlugin extends Plugin {
 
 			@Override
 			public Void doInBackground() {
+				
+				int	   max		= views.size();
+				if (   max < 1 ) {
+					messageBox("There are no views");
+					return null;
+				}
 
 				// save camera
 				Camera camera	= home.getCamera();
 
 				int	   progress = 0;
 				int	   percent	= 0;
-				int	   max		= views.size();
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
 				theJob.bDummy	= bDummy;
