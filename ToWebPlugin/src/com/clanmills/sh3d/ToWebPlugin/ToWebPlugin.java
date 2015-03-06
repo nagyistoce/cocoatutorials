@@ -1035,8 +1035,8 @@ public class ToWebPlugin extends Plugin {
 
 		public boolean generateCode(Home home, UserPreferences prefs,int index)
 		{
-			// index =  0 .. n : generate a page in the gallery
-			// index = -1      : generate the index page
+			// index =  0..max-1   : generate a page in the gallery
+			// index = -1          : generate the index page
 			// you must call index == -1 last as there are arrays in TheJob class remembering generated pages
 			boolean result = false ; // return value == true means HTML is ready
 
@@ -1069,7 +1069,7 @@ public class ToWebPlugin extends Plugin {
 
 			if ( index == 0 ) photos = new ArrayList<Photo>();
 
-			System.out.printf("TheJob.execute %d\n",index);
+			System.out.printf("TheJob.generateCode %d\n",index);
 
 			String	htmlFileName = "index.html";
 			if ( index >= 0 ) try {
@@ -1111,7 +1111,7 @@ public class ToWebPlugin extends Plugin {
 				FileUnzip unzip = new FileUnzip();
 				try {
 					unzip.unzip(templatePath, htmlPath);
-					templatePath = Filename.join(htmlPath,template);
+					templatePath = htmlPath;
 					System.out.println("generating code");
 					// use the template to generate the code
 					STRawGroupDir ts = new STRawGroupDir(templatePath.toString(),'$','$');
@@ -1142,7 +1142,7 @@ public class ToWebPlugin extends Plugin {
 					ex.printStackTrace();
 				}
 
-				if ( !result ) message = "unable to write HTML " + htmlFileName;
+				if ( !result ) messageBox("unable to write HTML " + htmlFileName);
 			}
 
 			return result;

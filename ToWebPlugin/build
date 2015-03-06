@@ -9,7 +9,7 @@ plugins="$HOME/Library/Application Support/eTeks/Sweet Home 3D/plugins/"
 foo=foo
 jar=ToWebPlugin.jar
 
-del      "$plugins/templates"
+rm -rf   "$plugins/templates"
 mkdir -p "$plugins/templates"
 
 cp *.jar "$plugins"
