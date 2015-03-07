@@ -310,6 +310,7 @@ public class ToWebPlugin extends Plugin {
 		private String              jarPath;
 		private TheJob	            theJob;
 		public	String				story;
+		public  Boolean             shadows;
 		JList<String>				viewList;
 		JComboBox<String>			templateList;
 		DefaultListModel<String>	viewModel = new DefaultListModel<String>();
@@ -341,6 +342,7 @@ public class ToWebPlugin extends Plugin {
 				storyLabel.setText("Output:");
 				theJob.bDummy	= bDummy;
 				theJob.views	= views;
+				theJob.shadows  = shadows;
 				setProgress(0);
 				try {
 					theJob.template = template;
@@ -518,7 +520,8 @@ public class ToWebPlugin extends Plugin {
 			 viewPanel.setOpaque(false);
 			 viewPanel.setLayout(new GridBagLayout() );
 
-			 JButton button;
+			 JButton   button;
+			 JCheckBox checkBox;
 
 			 viewList = new JList<String>(viewModel);
 			 Vector<String> views = getViewsInModel(home);
@@ -588,6 +591,7 @@ public class ToWebPlugin extends Plugin {
 			 String story			 = new Filename(jsonPath.toString()).readAsString();
 			 String viewSelected	 = "";
 			 String templateSelected = "" ;
+			 shadows                 = false;
 
 			 JSONParser parser = new JSONParser();
 			 try {
@@ -602,6 +606,7 @@ public class ToWebPlugin extends Plugin {
 				 }
 				 viewSelected	  = (String) object.get("viewSelected"	  );
 				 templateSelected = (String) object.get("templateSelected");
+				 shadows          = ((String)object.get("shadows")).equals("true");
 			 //	 System.out.println("viewSelected: " + viewSelected + " templateSelected: " + templateSelected);
 			 } catch (ParseException pe) {
 				 System.out.println("position: " + pe.getPosition());
@@ -640,6 +645,12 @@ public class ToWebPlugin extends Plugin {
 			 saveButton.addActionListener(this);
 			 optionsPanel.add(saveButton);
 
+			 checkBox = new JCheckBox("Shadows");
+			 checkBox.addActionListener(this);
+			 checkBox.setActionCommand("shadow");
+			 checkBox.setSelected(shadows);
+			 optionsPanel.add(checkBox);
+
 			 addRow(++row,"Options:",optionsPanel);
 
 			 //++++++++++++++++++++++++++++++
@@ -669,6 +680,7 @@ public class ToWebPlugin extends Plugin {
 			JSONObject object = new JSONObject();
 			object.put("viewSelected"	 ,viewModel.get(viewList.getSelectedIndex()));
 			object.put("templateSelected",templateList.getSelectedItem());
+			object.put("shadows",shadows?"true":"false");
 			object.put("story",storyArea.getText());
 			object.put("views",views);
 
@@ -751,6 +763,12 @@ public class ToWebPlugin extends Plugin {
 				e.printStackTrace();
 			}
 		}
+		
+		public void shadow(ActionEvent event)
+		{
+			JCheckBox checkBox = (JCheckBox) event.getSource();
+			shadows            = checkBox.isSelected();
+		}
 
 		// action events
 		public void actionPerformed(ActionEvent event)
@@ -764,6 +782,7 @@ public class ToWebPlugin extends Plugin {
 		    else if ( cmd.equals("help"  ) ) help();
 			else if ( cmd.equals("down"  ) ) updown(+1,false);
 			else if ( cmd.equals("up"    ) ) updown(-1,false);
+			else if ( cmd.equals("shadow") ) shadow(event);
 			else messageBox(cmd + " not implemented yet");
 		}
 
@@ -955,6 +974,7 @@ public class ToWebPlugin extends Plugin {
 		String			 template;
 		String           story;
 		Vector<String>	 views;
+		Boolean          shadows = false;
 
 		private String unCamel(String s)
 		{
@@ -1031,13 +1051,13 @@ public class ToWebPlugin extends Plugin {
 			return saveImage(image,path,type);
 		}
 
-		private boolean paintCamera(Home home,HomeController3D homeController3D,Camera camera,int width,int height,String directory,String ext,String type)
+		private boolean paintCamera(Home home,Camera camera,int width,int height,Boolean shadows
+				,UserPreferences prefs,String directory,String ext,String type)
 		{
 			boolean result = false;
 			try {
-				// homeController3D.goToCamera(camera);
 				setView(camera.getName());
-				HomeComponent3D comp  = new HomeComponent3D(home);
+				HomeComponent3D comp  = new HomeComponent3D(home,prefs,shadows);
 				BufferedImage	image = comp.getOffScreenImage(width,height);
 				String			file  = camera.getName() + ext;
 				String			path  = Filename.join(directory,file);
@@ -1050,7 +1070,7 @@ public class ToWebPlugin extends Plugin {
 		}
 		
 		public String getCurrentTimeStamp() {
-		    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+		    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");//dd/MM/yyyy
 		    return           sdfDate.format(new Date());
 		}
 
@@ -1097,7 +1117,7 @@ public class ToWebPlugin extends Plugin {
 				// paint camera
 				if ( !bDone ) for ( Camera camera : home.getStoredCameras() ) {
 					if ( !bDone && camera.getName().equals(name) ) {
-						if ( paintCamera(home,homeController3D,camera,iwidth,iheight,Images,ext,type)) {
+						if ( paintCamera(home,camera,iwidth,iheight,shadows,this.prefs,Images,ext,type)) {
 							String file = name + ext;
 							message	   += String.format("%s\n",unCamel(name));
 							photos.add(new Photo(file,unCamel(name)));
