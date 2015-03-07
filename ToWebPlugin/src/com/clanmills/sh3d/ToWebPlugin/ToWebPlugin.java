@@ -19,7 +19,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -76,28 +78,37 @@ class FileUnzip {
 	 * @param destDirectory
 	 * @throws IOException
 	 */
-	public void unzip(String zipFilePath, String destDirectory) throws IOException {
-		File destDir = new File(destDirectory);
-		if (!destDir.exists()) {
-			destDir.mkdir();
-		}
-		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			String filePath = destDirectory + File.separator + entry.getName();
-			if (!entry.isDirectory()) {
-				// if the entry is a file, extracts it
-				extractFile(zipIn, filePath);
-			} else {
-				// if the entry is a directory, make the directory
-				File dir = new File(filePath);
-				dir.mkdir();
+	public Boolean extract(String zipFilePath, String destDirectory) {
+		
+		Boolean result = false;
+		try {
+			File destDir = new File(destDirectory);
+			if (!destDir.exists()) {
+				destDir.mkdir();
 			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
+			ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+			ZipEntry entry = zipIn.getNextEntry();
+			result         = entry != null;
+			// iterates over entries in the zip file
+			while (entry != null) {
+				String filePath = destDirectory + File.separator + entry.getName();
+				if (!entry.isDirectory()) {
+					// if the entry is a file, extracts it
+					extractFile(zipIn, filePath);
+				} else {
+					// if the entry is a directory, make the directory
+					File dir = new File(filePath);
+					dir.mkdir();
+				}
+				zipIn.closeEntry();
+				entry = zipIn.getNextEntry();
+			}
+			zipIn.close();
+		} catch ( IOException e) {
+			result = false;
 		}
-		zipIn.close();
+		
+		return result;
 	}
 
 	/**
@@ -395,7 +406,7 @@ public class ToWebPlugin extends Plugin {
 				// unzip the jar to a temporary directory
 				String tmp = Filename.join(System.getProperty("java.io.tmpdir"),ToWebPlugin.sToWebPlugin);
 				Filename.mkdirs(tmp,true);
-				new FileUnzip().unzip(jarPath,tmp);
+				new FileUnzip().extract(jarPath,tmp);
 
 				// and enumerates the zips in the jar's templates directory
 				File[] files	    = new File(Filename.join(tmp,"templates")).listFiles();
@@ -978,15 +989,15 @@ public class ToWebPlugin extends Plugin {
 			return result;
 		}
 
-		private boolean writeOut(String path,String data,boolean bClose)
-		{
-			boolean			 result = false;
-			DataOutputStream out	= openStream(path);
-			if ( out != null ) {
-				result = writeOut(out,data,bClose);
-			}
-			return result;
-		}
+//		private boolean writeOut(String path,String data,boolean bClose)
+//		{
+//			boolean			 result = false;
+//			DataOutputStream out	= openStream(path);
+//			if ( out != null ) {
+//				result = writeOut(out,data,bClose);
+//			}
+//			return result;
+//		}
 
 		private DataOutputStream openStream(String path)
 		{
@@ -1037,6 +1048,11 @@ public class ToWebPlugin extends Plugin {
 			}
 			return result;
 		}
+		
+		public String getCurrentTimeStamp() {
+		    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+		    return           sdfDate.format(new Date());
+		}
 
 		public boolean generateCode(Home home, UserPreferences prefs,int index)
 		{
@@ -1061,8 +1077,6 @@ public class ToWebPlugin extends Plugin {
 			String	Images		 = Filename.join(htmlPath,"Images");
 			Filename.mkdirs(Images);
 
-			String	message		 = ""		;
-
 			int		x			 = 1		; // multiply up the size of images
 			int		y			 = 1		; // divide the size of images
 
@@ -1071,12 +1085,11 @@ public class ToWebPlugin extends Plugin {
 
 			String	type		 = "PNG"	;
 			String	ext			 = ".png"	;
+			String  message      = ""       ;
 
 			if ( index == 0 ) photos = new ArrayList<Photo>();
-
 			System.out.printf("TheJob.generateCode %d\n",index);
 
-			String	htmlFileName = "index.html";
 			if ( index >= 0 ) try {
 				String  name  = views.get(index);
 				boolean bDone = false ;
@@ -1113,43 +1126,42 @@ public class ToWebPlugin extends Plugin {
 			} catch (Exception e){}
 
 			if ( index == -1 ) {
-				FileUnzip unzip = new FileUnzip();
-				try {
-					unzip.unzip(templatePath, htmlPath);
-					templatePath = htmlPath;
+
+				String indexStub = "index"     ;
+				String indexFile = "index.html";
+				String indexPath = Filename.join(htmlPath,indexFile);
+				result           = new FileUnzip().extract(templatePath,htmlPath);
+				message          = result ? "" : ("unable unzip to "  + htmlPath);
+
+				if ( result ) {
 					System.out.println("generating code");
-					// use the template to generate the code
-					STRawGroupDir ts = new STRawGroupDir(templatePath.toString(),'$','$');
-					ST			  t2 = ts.getInstanceOf(htmlFileName); // load page.st
-					t2.add("photos",photos);
-					String PHOTOS = t2.render();
 
-					// Read html from template as string
-					// edit it
-					// write to to the output directory
-					String htmlTemplatePath = Filename.join(templatePath,htmlFileName);
-					String fileStr		    = new Filename(htmlTemplatePath).readAsString();
-					fileStr = fileStr.replaceAll("__PHOTOS__", PHOTOS);
-					fileStr = fileStr.replaceAll("__TITLE__" , title);
-					fileStr = fileStr.replaceAll("__STORY__" , story);
-					String htmlOutputPath   = Filename.join(htmlPath,htmlFileName);
-					result				    = writeOut(htmlOutputPath,fileStr,true);
-
-					System.out.println("Code: "+htmlOutputPath);
-
-					if ( result ) try {
-						// new ProcessBuilder("open" ,htmlOutputPath).start();
-						openWebpage("file://" + htmlOutputPath);
-					} catch (Exception e) {
-						messageBox("unable to open " + htmlOutputPath);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
+					// use template to generate code
+					STRawGroupDir ts = new STRawGroupDir(htmlPath,'$','$'); // $..$ = key
+					ST			  tx = ts.getInstanceOf(indexStub); // load index.st
+					tx.add("photos",photos);
+					tx.add("story" ,story);
+					tx.add("title" ,title);
+					tx.add("now"   ,getCurrentTimeStamp());
+					tx.add("background","skyblue");
+					
+	                DataOutputStream out = openStream(indexPath) ;
+	                if ( out != null ) {
+	                	result = writeOut(out,tx.render(),true);
+	                }
+					if ( ! result ) message = "unable to open " + indexPath;
+					System.out.println("Code: "+indexPath);
+				}
+				
+				if ( result ) try {
+					openWebpage("file://" + indexPath);
+				} catch (Exception e) {
+					result = false ;
+					message = "unable to open browser on " + indexPath;
 				}
 
-				if ( !result ) messageBox("unable to write HTML " + htmlFileName);
+				if ( !result ) messageBox(message);
 			}
-
 			return result;
 		}
 	}
