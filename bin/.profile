@@ -387,6 +387,8 @@ fi
 alias ..='cd ..'
 alias ...=sudo
 alias ~='cd ~'
+alias plugins='cd ~/Library/Application\ Support/eTeks/Sweet\ Home\ 3D/plugins'
+alias toweb='cd ~/gnu/SH3D/ToWebPlugin'
 
 # one-liners
 alias ridLeadingSpace="pbpaste | perl -e 'while(<>){\$_=~s/^\s*//g;print(\$_);}' | pbcopy "
@@ -554,3 +556,12 @@ cd ~/
 # MacPorts Installer addition on 2011-12-06_at_12:29:07: adding an appropriate PATH variable for use with MacPorts.
 export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 # Finished adapting your PATH environment variable for use with MacPorts.
+
+##
+# Your previous /Users/rmills/.profile file was backed up as /Users/rmills/.profile.macports-saved_2015-03-03_at_15:44:56
+##
+
+# MacPorts Installer addition on 2015-03-03_at_15:44:56: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# Finished adapting your PATH environment variable for use with MacPorts.
+

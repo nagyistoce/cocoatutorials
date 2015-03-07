@@ -32,7 +32,7 @@ else
 	month=$PWD
 fi
 
-Gg=~/Pictures/$year/Gg
+Gg=~/Pictures/Gg
 if [ -e $Gg ]; then
     cd $Gg
     Gg=$PWD
