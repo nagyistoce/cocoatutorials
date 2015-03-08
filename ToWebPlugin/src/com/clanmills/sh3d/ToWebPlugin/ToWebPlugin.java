@@ -1030,7 +1030,41 @@ public class ToWebPlugin extends Plugin {
 			return result;
 		}
 
-		private boolean paintPlan(PlanComponent plan,int width,int height,String name,String directory,String ext,String type)
+		// http://stackoverflow.com/questions/3967731/java-scale-image-best-practice
+		private BufferedImage scaleImage(BufferedImage src, int w, int h){
+		    int original_width = src.getWidth();
+		    int original_height = src.getHeight();
+		    int bound_width = w;
+		    int bound_height = h;
+		    int new_width = original_width;
+		    int new_height = original_height;
+
+		    // first check if we need to scale width
+		    if (original_width > bound_width) {
+		        //scale width to fit
+		        new_width = bound_width;
+		        //scale height to maintain aspect ratio
+		        new_height = (new_width * original_height) / original_width;
+		    }
+
+		    // then check if we need to scale even with the new height
+		    if (new_height > bound_height) {
+		        //scale height to fit instead
+		        new_height = bound_height;
+		        //scale width to maintain aspect ratio
+		        new_width = (new_height * original_width) / original_height;
+		    }
+
+		    BufferedImage resizedImg = new BufferedImage(new_width, new_height, BufferedImage.TYPE_INT_RGB);
+		    Graphics2D g2 = resizedImg.createGraphics();
+		    g2.setBackground(Color.WHITE);
+		    g2.clearRect(0,0,new_width, new_height);
+		    g2.drawImage(src, 0, 0, new_width, new_height, null);
+		    g2.dispose();
+		    return resizedImg;
+		}
+
+		private boolean paintPlan(PlanComponent plan,int width,int height,String name,String directory,String thumbs,String ext,String type)
 		{
 			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D	  g		= image.createGraphics();
@@ -1048,11 +1082,18 @@ public class ToWebPlugin extends Plugin {
 			plan.setSize(width, height);
 			plan.paint(g);
 			plan.setScale(scale1);
-			return saveImage(image,path,type);
+			Boolean result = saveImage(image,path,type);
+
+			if ( result && thumbs != null) {
+				BufferedImage   thumb = this.scaleImage(image, 4*width/10, 4*height/10);
+				saveImage(thumb,Filename.join(thumbs,file),type);
+			}
+			
+			return result;
 		}
 
 		private boolean paintCamera(Home home,Camera camera,int width,int height,Boolean shadows
-				,UserPreferences prefs,String directory,String ext,String type)
+				,UserPreferences prefs,String directory,String thumbs,String ext,String type)
 		{
 			boolean result = false;
 			try {
@@ -1063,6 +1104,12 @@ public class ToWebPlugin extends Plugin {
 				String			path  = Filename.join(directory,file);
 				System.out.println("camera image saved to " + path);
 				result				  = saveImage(image,path,type);
+				
+				if ( result && thumbs != null) {
+					BufferedImage   thumb = this.scaleImage(image, 4*width/10, 4*height/10);
+					saveImage(thumb,Filename.join(thumbs,file),type);
+				}
+				
 			} catch ( Exception e) {
 				System.err.println("Exception in paintCamera " + camera.getName() + " " + e.toString());
 			}
@@ -1076,10 +1123,10 @@ public class ToWebPlugin extends Plugin {
 
 		public boolean generateCode(Home home, UserPreferences prefs,int index)
 		{
+			boolean result = false ;
 			// index =  0..max-1   : generate a page in the gallery
 			// index = -1          : generate the index page
 			// you must call index == -1 last as there are arrays in TheJob class remembering generated pages
-			boolean result = false ; // return value == true means HTML is ready
 
 			// create directory for output
 			// http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
@@ -1095,93 +1142,103 @@ public class ToWebPlugin extends Plugin {
 			String	templatePath = Filename.join(System.getProperty("java.io.tmpdir"),"ToWebPlugin","templates",template + ".zip");
 			String	htmlPath	 = Filename.join(filedir, template);
 			String	Images		 = Filename.join(htmlPath,"Images");
-			Filename.mkdirs(Images);
+			String  Thumbs       = Filename.join(htmlPath,"Thumbs");
 
 			int		x			 = 1		; // multiply up the size of images
 			int		y			 = 1		; // divide the size of images
 
 			int		iwidth		 = 720*x/y	;
 			int		iheight		 = 480*x/y	;
-
+			
 			String	type		 = "PNG"	;
 			String	ext			 = ".png"	;
 			String  message      = ""       ;
 
-			if ( index == 0 ) photos = new ArrayList<Photo>();
+			// initialize start of job
+			if ( index == 0 ) {
+				photos = new ArrayList<Photo>();
+				Filename.rmdir(htmlPath);
+				if ( new FileUnzip().extract(templatePath,htmlPath) ) {
+				    Filename.mkdirs(Images);
+				} else {
+				    message = "unable unzip to "  + htmlPath;
+				    result  = true ; // we're done!
+				}
+			}
+			
+			// thumbs not required?
+			File    thumbs = new File(Thumbs);
+			if (! ( thumbs.exists() && thumbs.isDirectory()) ) {
+				Thumbs = null;
+			}
+			
 			System.out.printf("TheJob.generateCode %d\n",index);
 
-			if ( index >= 0 ) try {
+			if ( !result && index >= 0 ) try {
 				String  name  = views.get(index);
-				boolean bDone = false ;
-
 				// paint camera
-				if ( !bDone ) for ( Camera camera : home.getStoredCameras() ) {
-					if ( !bDone && camera.getName().equals(name) ) {
-						if ( paintCamera(home,camera,iwidth,iheight,shadows,this.prefs,Images,ext,type)) {
+				for ( Camera camera : home.getStoredCameras() ) {
+					if ( !result && camera.getName().equals(name) ) {
+						if ( paintCamera(home,camera,iwidth,iheight,shadows,this.prefs,Images,Thumbs,ext,type) ) {
 							String file = name + ext;
-							message	   += String.format("%s\n",unCamel(name));
+							String m	= String.format("%s\n",unCamel(name));
+							System.out.println("Camera " + m);
 							photos.add(new Photo(file,unCamel(name)));
-							System.out.println("Camera " + message);
-							bDone = true;
+							result = true;
 						}
 					}
 				}
 
 				// paint level
-				if ( !bDone ) for ( Level level : home.getLevels() ) {
+				if ( !result ) for ( Level level : home.getLevels() ) {
 					if ( level.getName().equals(name) ) {
 						home.setSelectedLevel(level);
 						PlanComponent plan	= new PlanComponent(home,prefs, null);
 						Level selectedLevel = home.getSelectedLevel();
 						String file	 = name + ext;
-						if ( paintPlan(plan,iwidth,iheight,name,Images,ext,type)) {
-							message += String.format("%s\n", unCamel(name));
+						if ( paintPlan(plan,iwidth,iheight,name,Images,Thumbs,ext,type)) {
+							String m	= String.format("%s\n",unCamel(name));
+							System.out.println("Camera " + m);
 							photos.add(new Photo(file,unCamel(name)));
-							System.out.println("Level " + message);
-							bDone = true;
+							result = true;
 						}
 						home.setSelectedLevel(selectedLevel);
 					}
 				}
 			} catch (Exception e){}
 
-			if ( index == -1 ) {
+			if ( !result && index == -1 ) {
+				System.out.println("generating code");
 
 				String indexStub = "index"     ;
 				String indexFile = "index.html";
 				String indexPath = Filename.join(htmlPath,indexFile);
-				result           = new FileUnzip().extract(templatePath,htmlPath);
-				message          = result ? "" : ("unable unzip to "  + htmlPath);
 
-				if ( result ) {
-					System.out.println("generating code");
-
-					// use template to generate code
-					STRawGroupDir ts = new STRawGroupDir(htmlPath,'$','$'); // $..$ = key
-					ST			  tx = ts.getInstanceOf(indexStub); // load index.st
-					tx.add("photos",photos);
-					tx.add("story" ,story);
-					tx.add("title" ,title);
-					tx.add("now"   ,getCurrentTimeStamp());
-					tx.add("background","skyblue");
-					
-	                DataOutputStream out = openStream(indexPath) ;
-	                if ( out != null ) {
-	                	result = writeOut(out,tx.render(),true);
-	                }
-					if ( ! result ) message = "unable to open " + indexPath;
-					System.out.println("Code: "+indexPath);
-				}
+				// use template to generate code
+				STRawGroupDir ts = new STRawGroupDir(htmlPath,'$','$'); // $..$ = key
+				ST			  tx = ts.getInstanceOf(indexStub); // load index.st
+				tx.add("photos",photos);
+				tx.add("story" ,story);
+				tx.add("title" ,title);
+				tx.add("now"   ,getCurrentTimeStamp());
+				tx.add("background","skyblue");
 				
+                DataOutputStream out = openStream(indexPath) ;
+                if ( out != null ) {
+                	result = writeOut(out,tx.render(),true);
+                }
+				if ( ! result ) message = "unable to open " + indexPath;
+				System.out.println("Code: "+indexPath);
+
 				if ( result ) try {
 					openWebpage("file://" + indexPath);
 				} catch (Exception e) {
 					result = false ;
 					message = "unable to open browser on " + indexPath;
 				}
-
-				if ( !result ) messageBox(message);
 			}
+
+			if ( !result && message.length() != 0 ) messageBox(message);
 			return result;
 		}
 	}
