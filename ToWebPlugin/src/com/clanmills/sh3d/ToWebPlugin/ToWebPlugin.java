@@ -795,6 +795,7 @@ public class ToWebPlugin extends Plugin {
 					Toolkit.getDefaultToolkit().beep();
 					if (progressMonitor.isCanceled()) {
 						worker.cancel(true);
+						theJob.generateCode(home, prefs,-2);
 					}
 					startButton.setEnabled(true);
 				}
@@ -971,6 +972,7 @@ public class ToWebPlugin extends Plugin {
 		UserPreferences	 prefs;
 		boolean			 bDummy	 = false ;
 		ArrayList<Photo> photos	 = new ArrayList<Photo>();
+		HomeComponent3D  comp    = null;
 		String			 template;
 		String           story;
 		Vector<String>	 views;
@@ -1092,18 +1094,17 @@ public class ToWebPlugin extends Plugin {
 			return result;
 		}
 
-		private boolean paintCamera(Home home,Camera camera,int width,int height,Boolean shadows
+		private boolean paintCamera(Home home,HomeComponent3D comp,Camera camera,int width,int height,Boolean shadows
 				,UserPreferences prefs,String directory,String thumbs,String ext,String type)
 		{
 			boolean result = false;
 			try {
 				setView(camera.getName());
-				HomeComponent3D comp  = new HomeComponent3D(home,prefs,shadows);
 				BufferedImage	image = comp.getOffScreenImage(width,height);
 				String			file  = camera.getName() + ext;
 				String			path  = Filename.join(directory,file);
-				System.out.println("camera image saved to " + path);
 				result				  = saveImage(image,path,type);
+				System.out.println("camera image saved to " + path);
 				
 				if ( result && thumbs != null) {
 					BufferedImage   thumb = this.scaleImage(image, 4*width/10, 4*height/10);
@@ -1113,6 +1114,7 @@ public class ToWebPlugin extends Plugin {
 			} catch ( Exception e) {
 				System.err.println("Exception in paintCamera " + camera.getName() + " " + e.toString());
 			}
+			
 			return result;
 		}
 		
@@ -1124,9 +1126,10 @@ public class ToWebPlugin extends Plugin {
 		public boolean generateCode(Home home, UserPreferences prefs,int index)
 		{
 			boolean result = false ;
-			// index =  0..max-1   : generate a page in the gallery
-			// index = -1          : generate the index page
-			// you must call index == -1 last as there are arrays in TheJob class remembering generated pages
+			// index =  0..(max-1) : generate a page in the gallery
+			// index = -1          : generate the index page and cleanup
+			// index = -2          : cleanup (used by progress cancel)
+			// you must call index == -1 last as there are arrays in TheJob class remembering generated images
 
 			// create directory for output
 			// http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
@@ -1157,6 +1160,9 @@ public class ToWebPlugin extends Plugin {
 			// initialize start of job
 			if ( index == 0 ) {
 				photos = new ArrayList<Photo>();
+				comp   = new HomeComponent3D(home,prefs,shadows);
+				comp.startOffscreenImagesCreation();
+
 				Filename.rmdir(htmlPath);
 				if ( new FileUnzip().extract(templatePath,htmlPath) ) {
 				    Filename.mkdirs(Images);
@@ -1179,7 +1185,7 @@ public class ToWebPlugin extends Plugin {
 				// paint camera
 				for ( Camera camera : home.getStoredCameras() ) {
 					if ( !result && camera.getName().equals(name) ) {
-						if ( paintCamera(home,camera,iwidth,iheight,shadows,this.prefs,Images,Thumbs,ext,type) ) {
+						if ( paintCamera(home,comp,camera,iwidth,iheight,shadows,this.prefs,Images,Thumbs,ext,type) ) {
 							String file = name + ext;
 							String m	= String.format("%s\n",unCamel(name));
 							System.out.println("Camera " + m);
@@ -1238,7 +1244,12 @@ public class ToWebPlugin extends Plugin {
 				}
 			}
 
-			if ( !result && message.length() != 0 ) messageBox(message);
+			if ( message.length() != 0 ) messageBox(message);
+			
+			if ( index < 0 && comp != null ) {
+				comp.endOffscreenImagesCreation();
+				comp = null;
+			}
 			return result;
 		}
 	}

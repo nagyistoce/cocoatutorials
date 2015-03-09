@@ -15,13 +15,6 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>SweetHome3D-4.5.jar</name>
-			<type>1</type>
-			<locationURI>copy_PARENT/trunk/SweetHome3D-4.5.jar</locationURI>
-		</link>
-	</linkedResources>
 	<variableList>
 		<variable>
 			<name>copy_PARENT</name>
