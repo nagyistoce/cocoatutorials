@@ -8,6 +8,8 @@
 plugins="$HOME/Library/Application Support/eTeks/Sweet Home 3D/plugins/"
 foo=foo
 jar=ToWebPlugin.jar
+export REVISION=$(svn info . | grep ^Revision | cut -d: -f 2)
+export VERSION=$(grep ^version ApplicationPlugin.properties | cut -d= -f 2)
 
 rm -rf   "$plugins/templates"
 mkdir -p "$plugins/templates"
@@ -24,6 +26,13 @@ if [ -e "$jar" ]; then
 	 	jar xf ../$i
 	) 	done
 	cd "$foo"
+	(
+	   echo "Version:"   $VERSION
+	   echo "Built: "    $(date)
+	   echo "Revision: " $REVISION
+	   echo "Host: "     $HOST
+	   echo "Username: " $USER
+	) > about.txt
 	jar cf  "../$jar" *
 	cd  ..
 	rm -rf  "$foo" build.xml build .project

@@ -256,6 +256,7 @@ public class ToWebPlugin extends Plugin {
     public UserPreferences   prefs              = null;
     public String            jsonPath           = null;
     public String            jarPath            = null;
+    public String            aboutString        = "About " + sToWebPlugin;
 
     // frame is created in createAndShowGUI(...)
     public JFrame            frame            = null;
@@ -300,8 +301,8 @@ public class ToWebPlugin extends Plugin {
 		private Boolean				storyEditable;
 		public  String              ignored;
 		public  ToWebPlugin         plugin;
-
-		HomeController3D            homeController3D;
+		public  HomeController3D    homeController3D;
+		public  JCheckBox           shadowCheckBox;
 
 		private Worker		        worker;
 		private UserPreferences		prefs;
@@ -321,7 +322,6 @@ public class ToWebPlugin extends Plugin {
 			String			story;
 			String			storyLabelText;
 			String			template;
-			Boolean			bDummy;
 			Vector<String>	views;
 
 			@Override
@@ -340,9 +340,13 @@ public class ToWebPlugin extends Plugin {
 				int	   percent	= 0;
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
-				theJob.bDummy	= bDummy;
 				theJob.views	= views;
 				theJob.shadows  = shadows;
+				if ( theJob.comp == null ) {
+					theJob.comp = new HomeComponent3D(home,prefs,shadows);
+					Panel panel = (Panel) frame.getContentPane();
+					panel.shadowCheckBox.setEnabled(false);
+				}
 				setProgress(0);
 				try {
 					theJob.template = template;
@@ -419,6 +423,9 @@ public class ToWebPlugin extends Plugin {
 					}
 				//	System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
 				}
+				
+			    Filename aboutFile = new Filename(Filename.join(tmp,"about.txt"));
+			    plugin.aboutString = aboutFile.readAsString();
 
 				if ( result.size() == 0 ) messageBox("no templates found in " + templateDir);
 			} catch (Exception e) {
@@ -521,7 +528,6 @@ public class ToWebPlugin extends Plugin {
 			 viewPanel.setLayout(new GridBagLayout() );
 
 			 JButton   button;
-			 JCheckBox checkBox;
 
 			 viewList = new JList<String>(viewModel);
 			 Vector<String> views = getViewsInModel(home);
@@ -567,18 +573,23 @@ public class ToWebPlugin extends Plugin {
 			 viewOrderButtons.add(button);
 			 viewPanel.add(viewOrderButtons);
 
-			 JPanel	   viewSortButtons = new JPanel();
-			 viewSortButtons.setOpaque(false);
-			 BoxLayout viewButtonsLayout = new BoxLayout(viewSortButtons, BoxLayout.Y_AXIS);
-			 viewSortButtons.setBorder(BorderFactory.createTitledBorder("Sort by:"));
-			 viewSortButtons.setLayout(viewButtonsLayout);
-			 viewSortButtons.add(new JButton("alpha"  ));
+			 JPanel	   pluginButtons = new JPanel();
+			 pluginButtons.setOpaque(false);
+			 BoxLayout pluginButtonsLayout = new BoxLayout(pluginButtons, BoxLayout.Y_AXIS);
+			 pluginButtons.setBorder(BorderFactory.createTitledBorder("Plugin:"));
+			 pluginButtons.setLayout(pluginButtonsLayout);
 
-			 button = new JButton("help");
+			 button = new JButton("Help...");
 			 button.addActionListener(this);
 			 button.setActionCommand("help");
-		//	 viewSortButtons.add(button);
-			 viewPanel.add(button); // viewSortButtons
+		     pluginButtons.add(button);
+			 
+			 button = new JButton("About...");
+			 button.addActionListener(this);
+			 button.setActionCommand("about");
+			 pluginButtons.add(button);
+			 
+			 viewPanel.add(pluginButtons);
 
 			 addRow(++row,"Views:",viewPanel);
 
@@ -645,11 +656,11 @@ public class ToWebPlugin extends Plugin {
 			 saveButton.addActionListener(this);
 			 optionsPanel.add(saveButton);
 
-			 checkBox = new JCheckBox("Shadows");
-			 checkBox.addActionListener(this);
-			 checkBox.setActionCommand("shadow");
-			 checkBox.setSelected(shadows);
-			 optionsPanel.add(checkBox);
+			 shadowCheckBox = new JCheckBox("Shadows");
+			 shadowCheckBox.addActionListener(this);
+			 shadowCheckBox.setActionCommand("shadow");
+			 shadowCheckBox.setSelected(shadows);
+			 optionsPanel.add(shadowCheckBox);
 
 			 addRow(++row,"Options:",optionsPanel);
 
@@ -751,23 +762,56 @@ public class ToWebPlugin extends Plugin {
 
 			worker.home	  = home ;
 			worker.prefs	  = prefs;
-			worker.bDummy	  = true ;
 			worker.addPropertyChangeListener(this);
 			worker.execute();
 		}
+		
+		// http://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
+		public void openWebpage(URI uri)
+		{
+		    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+		        try {
+		            desktop.browse(uri);
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+		}
 
-		public void help(){
+		public void openWebpage(URL url) {
+		    try {
+		        openWebpage(url.toURI());
+		    } catch (URISyntaxException e) {
+		        e.printStackTrace();
+		    }
+		}
+		
+		public void openWebpage(String url)
+		{
 			try {
-				new ProcessBuilder("open" ,"http://clanmills.com/files/ToWebPlugin/").start();
-			} catch (IOException e) {
+				openWebpage(new URL(url));
+			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
+		}
+
+		public void help(){
+			openWebpage("http://clanmills.com/ToWebPlugin/help/");
 		}
 		
 		public void shadow(ActionEvent event)
 		{
 			JCheckBox checkBox = (JCheckBox) event.getSource();
 			shadows            = checkBox.isSelected();
+		}
+		
+		public void about()
+		{
+			String msg = "About: " + ToWebPlugin.sToWebPlugin + "\n\n"
+					   + plugin.aboutString
+					   ;
+			messageBox(msg);
 		}
 
 		// action events
@@ -783,6 +827,7 @@ public class ToWebPlugin extends Plugin {
 			else if ( cmd.equals("down"  ) ) updown(+1,false);
 			else if ( cmd.equals("up"    ) ) updown(-1,false);
 			else if ( cmd.equals("shadow") ) shadow(event);
+			else if ( cmd.equals("about" ) ) about();
 			else messageBox(cmd + " not implemented yet");
 		}
 
@@ -865,6 +910,7 @@ public class ToWebPlugin extends Plugin {
 		home             = home_  ;
 		homeController3D = homeController3D_;
 		prefs            = prefs_ ;
+		theJob.comp      = null   ;
 
 		String APPLICATION_PLUGINS_SUB_FOLDER = "plugins"; // private in SweetHome3D.java
 
@@ -921,39 +967,12 @@ public class ToWebPlugin extends Plugin {
 		{
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					createAndShowGUI(getHome(),getHomeController().getHomeController3D(),getUserPreferences());
+					Home             home    = getHome();
+					HomeController3D homeC3D = getHomeController().getHomeController3D();
+					UserPreferences  prefs   = getUserPreferences();
+					createAndShowGUI(home,homeC3D,prefs);
 				}
 			});
-		}
-	}
-	
-	// http://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
-	public void openWebpage(URI uri)
-	{
-	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-	        try {
-	            desktop.browse(uri);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-	}
-
-	public void openWebpage(URL url) {
-	    try {
-	        openWebpage(url.toURI());
-	    } catch (URISyntaxException e) {
-	        e.printStackTrace();
-	    }
-	}
-	
-	public void openWebpage(String url)
-	{
-		try {
-			openWebpage(new URL(url));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -970,7 +989,6 @@ public class ToWebPlugin extends Plugin {
 
 		Home			 home;
 		UserPreferences	 prefs;
-		boolean			 bDummy	 = false ;
 		ArrayList<Photo> photos	 = new ArrayList<Photo>();
 		HomeComponent3D  comp    = null;
 		String			 template;
@@ -1034,19 +1052,19 @@ public class ToWebPlugin extends Plugin {
 
 		// http://stackoverflow.com/questions/3967731/java-scale-image-best-practice
 		private BufferedImage scaleImage(BufferedImage src, int w, int h){
-		    int original_width = src.getWidth();
+		    int original_width  = src.getWidth();
 		    int original_height = src.getHeight();
-		    int bound_width = w;
-		    int bound_height = h;
-		    int new_width = original_width;
-		    int new_height = original_height;
+		    int bound_width     = w;
+		    int bound_height    = h;
+		    int new_width       = original_width;
+		    int new_height      = original_height;
 
 		    // first check if we need to scale width
-		    if (original_width > bound_width) {
+		    if (original_width  > bound_width) {
 		        //scale width to fit
-		        new_width = bound_width;
+		        new_width       = bound_width;
 		        //scale height to maintain aspect ratio
-		        new_height = (new_width * original_height) / original_width;
+		        new_height      = (new_width * original_height) / original_width;
 		    }
 
 		    // then check if we need to scale even with the new height
@@ -1054,11 +1072,11 @@ public class ToWebPlugin extends Plugin {
 		        //scale height to fit instead
 		        new_height = bound_height;
 		        //scale width to maintain aspect ratio
-		        new_width = (new_height * original_width) / original_height;
+		        new_width  = (new_height * original_width) / original_height;
 		    }
 
 		    BufferedImage resizedImg = new BufferedImage(new_width, new_height, BufferedImage.TYPE_INT_RGB);
-		    Graphics2D g2 = resizedImg.createGraphics();
+		    Graphics2D    g2         = resizedImg.createGraphics();
 		    g2.setBackground(Color.WHITE);
 		    g2.clearRect(0,0,new_width, new_height);
 		    g2.drawImage(src, 0, 0, new_width, new_height, null);
@@ -1160,7 +1178,6 @@ public class ToWebPlugin extends Plugin {
 			// initialize start of job
 			if ( index == 0 ) {
 				photos = new ArrayList<Photo>();
-				comp   = new HomeComponent3D(home,prefs,shadows);
 				comp.startOffscreenImagesCreation();
 
 				Filename.rmdir(htmlPath);
@@ -1237,7 +1254,8 @@ public class ToWebPlugin extends Plugin {
 				System.out.println("Code: "+indexPath);
 
 				if ( result ) try {
-					openWebpage("file://" + indexPath);
+					Panel panel = (Panel) frame.getContentPane();
+					panel.openWebpage("file://" + indexPath);
 				} catch (Exception e) {
 					result = false ;
 					message = "unable to open browser on " + indexPath;
@@ -1247,8 +1265,8 @@ public class ToWebPlugin extends Plugin {
 			if ( message.length() != 0 ) messageBox(message);
 			
 			if ( index < 0 && comp != null ) {
+				comp.getOffScreenImage(0,0);
 				comp.endOffscreenImagesCreation();
-				comp = null;
 			}
 			return result;
 		}
