@@ -5,7 +5,7 @@
 syntax()
 {
 	echo 'usage:' $0 '--{nocache|uncache|print|html|editor|viewer}+ [man-options] man-page'
-	echo 'eg:   ' $0 printf        
+	echo 'eg:   ' $0 printf
 	echo '      ' $0 3 printf
 	echo '      ' $0 --html gcc
 }
@@ -82,7 +82,7 @@ if [ $mode == $print ]; then
 			status=$?
 		fi
 	fi
-	
+
 	# if OK, got postscript, no pdf and not empty
 	if [ $status -eq 0 ]; then
 		if [ -e $ps ]; then
@@ -113,7 +113,7 @@ elif [ $mode == $html ]; then
 	page=${!#}
 	cached=''
 	for i in $@ ; do cached=${cached}$i ; done
-	
+
 	f=$temp/$cached.txt
 	h=$temp/$cached.html
     if [ ! -z $nocache ]; then
@@ -122,29 +122,31 @@ elif [ $mode == $html ]; then
 
 	##
 	# is there a file called ~/bin/man<page>.html
-	m=~/bin/man$page.html 
-	
+	m=~/bin/man$page.html
+
 	if [ ! -e $m ]; then
 		# get the man page
 		man $* >> $f
 		s=$?
-	
+
 		# if it failed, ask perldoc if he knows about it!
 		if [ $s != 0 ]; then
 			perldoc $* >> $f
 			s=$?
 		fi
-		
+
 		# if it failed, ask pydoc if he knows about it!
-		if [ $s -ne 0 ]; then 
+		if [ $s -ne 0 ]; then
 			pydoc $* >> $f
 			s=$?
 		fi
-		
+
 		#
 		# if we've found it, format and display
 		if [ $s -eq 0 ]; then
-			man2html -compress < $f | sed -e 's/\<BODY\>/\<body style="background:lightskyblue;"\>/' > $h && open $h
+#			man2html -compress < $f | sed -e 's/\<BODY\>/\<body style="background:lightskyblue;"\>/'     > $h
+            (echo '<html><body style="background-color:linen;"><pre style="color:blue;">' ; col -b < $f ; echo '</pre></body></html>') > $h
+            open $h
 		fi
 	else
 		cp   $m $h
