@@ -55,7 +55,7 @@ export FACTORY=$(hostname)
 # export EBSREVISION=Dev
 export CBL_STONEHENGE=1
 export PATH=".:${BIN}:$BIN/$PLATFORM:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/X11R6/bin:/System/Library/Frameworks/Python.framework/Versions/2.7/bin/"
-export MANPATH="/usr/local/share/man:/opt/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/subversion/man"
+export MANPATH="/usr/local/share/man:/usr/share/man:/usr/share/man/man1:/usr/share/man/man2:/usr/share/man/man3:/usr/local/man:/usr/local/share/man/:/usr/X11R6/man:/opt/local/share/man:/opt/subversion/man"
 export DISPLAY=:0.0
 export CLASSPATH=".:${HOME}/classpath:${HOME}/classpath/Multivalent20060102.jar:${HOME}/classpath/DVI20060102.jar"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/opt/local/lib/pkgconfig
@@ -562,6 +562,6 @@ export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/opt/pkgconfig/bin
 ##
 
 # MacPorts Installer addition on 2015-03-03_at_15:44:56: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
 # Finished adapting your PATH environment variable for use with MacPorts.
 
