@@ -243,6 +243,68 @@ class Filename
 	}
 }
 
+class Options {
+	public Boolean shadows    = true;
+	public Boolean overwrite  = true ;
+	public Color   background = new Color(138,206,233); // skyblue
+	public Color   foreground = new Color(0,0,0);
+	public Boolean rotate     = false;
+	
+	Boolean jsonObject2Boolean(JSONObject o,String title,Boolean d)
+	{
+		Boolean result = d ;
+		try {
+			String value = (String)o.get(title);
+			result = value.equals("true");
+		} catch (Exception e) {} ;
+		return result; 
+	}
+	
+	String jsonBoolean2json(Boolean b)
+	{
+		return b ? "true" : "false";
+	}
+	
+	@SuppressWarnings("unchecked")
+	JSONArray jsonColor2json(Color c)
+	{
+		JSONArray  result = new JSONArray();
+		result.add(c.getRed());
+		result.add(c.getGreen());
+		result.add(c.getBlue());
+		return result;
+	}
+	
+	Color jsonObject2Color(JSONObject o,String title,int R,int G, int B)
+	{
+		try {
+			JSONArray  jColor = (JSONArray) o.get(title);
+			R = Integer.parseInt(jColor.get(0).toString());
+			G = Integer.parseInt(jColor.get(1).toString());
+			B = Integer.parseInt(jColor.get(2).toString());
+		} catch ( Exception e) {};
+		return new Color(R,G,B);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void save(JSONObject o){
+		o.put("shadows"  , jsonBoolean2json(shadows));
+		o.put("overwrite", jsonBoolean2json(overwrite));
+		o.put("rotate"   , jsonBoolean2json(rotate));
+		o.put("background",jsonColor2json  (background));
+		o.put("foreground",jsonColor2json  (foreground));
+	}
+	
+	public void read(JSONObject object)
+	{
+		 shadows    = jsonObject2Boolean(object ,"shadows"  ,true);
+		 overwrite  = jsonObject2Boolean(object ,"overwrite",true);
+		 rotate     = jsonObject2Boolean(object ,"rotate"   ,false);
+		 background = jsonObject2Color  (object ,"background",138,206,233);// skyblue 
+		 foreground = jsonObject2Color  (object ,"foreground",  0,  0,  0);// black 
+	}
+}
+
 public class ToWebPlugin extends Plugin {
 
     public Home              home               = getHome();
@@ -258,6 +320,7 @@ public class ToWebPlugin extends Plugin {
     public String            jsonPath           = null;
     public String            jarPath            = null;
     public String            aboutString        = "About " + sToWebPlugin;
+    public Options           options            = new Options();
 
     // frame is created in createAndShowGUI(...)
     public JFrame            frame            = null;
@@ -283,7 +346,7 @@ public class ToWebPlugin extends Plugin {
 		}
 		return false;
 	}
-
+	
     public	static class Panel extends JPanel
 			implements	ActionListener,
 						WindowListener,
@@ -297,15 +360,12 @@ public class ToWebPlugin extends Plugin {
 		private ProgressMonitor		progressMonitor;
 		private JFrame				frame;
 		private JButton				startButton;
-		private JCheckBox           rotateButton;
 		private JTextArea			storyArea;
 		private JLabel				storyLabel;
 		private Boolean				storyEditable;
 		public  String              ignored;
 		public  ToWebPlugin         plugin;
 		public  HomeController3D    homeController3D;
-		public  JCheckBox           shadowCheckBox;
-		public  JCheckBox           overwriteCheckBox;
 
 		private Worker		        worker;
 		private UserPreferences		prefs;
@@ -314,10 +374,7 @@ public class ToWebPlugin extends Plugin {
 		private String              jarPath;
 		private TheJob	            theJob;
 		public	String				story;
-		public  Boolean             shadows;
-		public  Boolean             overwrite;
-		public  Color               background = new Color(138,206,233); // skyblue
-		public  Color               foreground = new Color(0,0,0);
+		public  Options             options;
 
 		JList<String>				viewList;
 		JComboBox<String>			templateList;
@@ -358,24 +415,21 @@ public class ToWebPlugin extends Plugin {
 				return name;
 			}
 			
-//			if ( bRotate ) {
-//				setView(camera1.getName());
-//				for ( Camera camera : home.getStoredCameras() ) {
-//					if ( camera.getName() == name ) {
-//						List<Camera> cameras = new ArrayList<Camera>();
-//						cameras.add(camera);
-//					    homeController3D.deleteCameras(cameras);
-//				    }
-//				}
-//			}
-			
-			
+			public void removeRotateViews()
+			{
+				ArrayList<Camera> cameras = new ArrayList<Camera>();
+				for ( Camera camera : home.getStoredCameras() ) {
+					if ( camera.getName().startsWith("Rotate") ) {
+						cameras.add(camera);
+					}
+				}
+				homeController3D.deleteCameras(cameras);
+			}
 
 			@Override
 			public Void doInBackground() {
 				
-				Boolean bRotate = true ;
-				int	   max		= bRotate ? 24 : views.size() ;
+				int	   max		= options.rotate ? 24 : views.size() ;
 				if (   max < 1 ) {
 					messageBox("There are no views");
 					return null;
@@ -389,22 +443,18 @@ public class ToWebPlugin extends Plugin {
 				storyLabelText	= storyLabel.getText();
 				storyLabel.setText("Output:");
 				theJob.views	= views;
-				theJob.shadows  = shadows;
-				theJob.overwrite= overwrite;
-				theJob.background = background;
+				theJob.options  = options;
 				if ( theJob.comp == null ) {
 					theJob.compShadow = new HomeComponent3D(home,prefs,true);
 					theJob.compNoShad = new HomeComponent3D(home,prefs,false);
-					Panel       panel = (Panel) frame.getContentPane();
-					theJob.background = panel.background;
 				}
-				theJob.comp = shadows ? theJob.compShadow : theJob.compNoShad;
+				theJob.comp = options.shadows ? theJob.compShadow : theJob.compNoShad;
 				setProgress(0);
 				try {
 					theJob.template = template;
 					theJob.story    = story;
 					while (progress < max  && !isCancelled()) {
-						String view	   = bRotate ? rotate(progress,max) : views.get(progress);
+						String view	   = options.rotate ? rotate(progress,max) : views.get(progress);
 						percent		   = progress*100/max;
 						String message = String.format("%d%% View: %s\n",percent, view);
 						progressMonitor.setNote(message);
@@ -433,6 +483,7 @@ public class ToWebPlugin extends Plugin {
 				storyArea.setEditable(storyEditable);
 				storyLabel.setText(storyLabelText);
 				startButton.setEnabled(true);
+				removeRotateViews();
 				progressMonitor.setProgress(100);
 			}
 		}
@@ -451,15 +502,6 @@ public class ToWebPlugin extends Plugin {
 				String	want		= "zip";
 				String	homedir		= javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 				String	templateDir = Filename.join(homedir,"ToWebPlugin","templates");
-
-//				File[] files	    = new File(templateDir).listFiles();
-//				if ( files != null ) for ( File file : files) {
-//					Filename filename = new Filename(file,sep,dot);
-//					if ( filename.extension().equals(want) ) {
-//						result.add(filename.filename());
-//					}
-//				//	System.out.println("templates:" + filename.filename().toString() + " extension:" + filename.extension());
-//				}
 
 				// unzip the jar to a temporary directory
 				String tmp = Filename.join(System.getProperty("java.io.tmpdir"),ToWebPlugin.sToWebPlugin);
@@ -492,8 +534,10 @@ public class ToWebPlugin extends Plugin {
 
 			for (Camera camera : home.getStoredCameras() ) {
 				String name = camera.getName();
+				if ( !name.startsWith("Rotate") ) {
+					views.add(name);
+				}
 				//	System.out.println(name);
-				views.add(name);
 			}
 			if ( views.size() == 0 ) messageBox("Please store some camera views in the model");
 			return views;
@@ -502,9 +546,9 @@ public class ToWebPlugin extends Plugin {
 		public void fixViewUI()
 		{
 			Set<String> views = new HashSet<String>();
-			for ( String view : getViewsInModel(home) ) {
-				views.add(view);
-			}
+			for ( String view : getViewsInModel(home) )
+				if ( ! view.startsWith("Rotate") )
+				    views.add(view);
 
 			// views in the model, but not in UI are marked ignored
 			for ( int i = 0 ; i < viewModel.getSize(); i++ ) {
@@ -514,6 +558,7 @@ public class ToWebPlugin extends Plugin {
 				if ( nIgnored > 0 ) view = view.substring(0,nIgnored);
 
 				if ( !views.contains(view) && nIgnored < 0 ) {
+					
 					viewModel.add(viewModel.getSize(), view + ignored);
 				}
 				views.remove(view);
@@ -558,6 +603,7 @@ public class ToWebPlugin extends Plugin {
 			 setOpaque(true);
 
 			 plugin           = plugin_;
+			 options          = plugin.options;
 			 home             = plugin.home;
 			 homeController3D = plugin.homeController3D;
 			 ignored          = plugin.ignored;
@@ -566,7 +612,6 @@ public class ToWebPlugin extends Plugin {
 			 frame			  = plugin.frame;
 			 jsonPath         = plugin.jsonPath;
 			 jarPath          = plugin.jarPath;
-			 overwrite        = true;
 
 			 int row = 0 ;
 			 setLayout(new GridBagLayout());
@@ -581,6 +626,7 @@ public class ToWebPlugin extends Plugin {
 			 viewPanel.setLayout(new GridBagLayout() );
 
 			 JButton   button;
+			 JCheckBox checkBox;
 
 			 viewList = new JList<String>(viewModel);
 			 Vector<String> views = getViewsInModel(home);
@@ -660,8 +706,6 @@ public class ToWebPlugin extends Plugin {
 			 String story			 = new Filename(jsonPath.toString()).readAsString();
 			 String viewSelected	 = "";
 			 String templateSelected = "" ;
-			 shadows                 = false;
-			 overwrite               = false;
 
 			 JSONParser parser = new JSONParser();
 			 try {
@@ -674,15 +718,9 @@ public class ToWebPlugin extends Plugin {
 					 String view = (String) viewsOnFile.get(i);
 					 this.viewModel.add(i,view);
 				 }
-				 viewSelected	  = (String) object.get("viewSelected"	  );
-				 templateSelected = (String) object.get("templateSelected");
-				 shadows          = ((String)object.get("shadows")).equals("true");
-				 overwrite        = ((String)object.get("overwrite")).equals("true");
-				 JSONArray jColor = (JSONArray) object.get("background");
-				 int red          = Integer.parseInt(jColor.get(0).toString());
-				 int green        = Integer.parseInt(jColor.get(1).toString());
-				 int blue         = Integer.parseInt(jColor.get(2).toString());
-				 background       = new Color(red,green,blue);
+				 viewSelected	    = (String) object.get("viewSelected"	);
+				 templateSelected   = (String) object.get("templateSelected");
+				 options.read(object);
 			 //	 System.out.println("viewSelected: " + viewSelected + " templateSelected: " + templateSelected);
 			 } catch (ParseException pe) {
 				 System.out.println("position: " + pe.getPosition());
@@ -718,29 +756,32 @@ public class ToWebPlugin extends Plugin {
 			 button.addActionListener(this);
 			 optionsPanel1.add(button);
 
-			 overwriteCheckBox = new JCheckBox("Overwrite");
-			 overwriteCheckBox.addActionListener(this);
-			 overwriteCheckBox.setActionCommand("overwrite");
-			 overwriteCheckBox.setSelected(overwrite);
-			 optionsPanel2.add(overwriteCheckBox);
+			 checkBox = new JCheckBox("Overwrite");
+			 checkBox.addActionListener(this);
+			 checkBox.setActionCommand("overwrite");
+			 checkBox.setSelected(options.overwrite);
+			 optionsPanel2.add(checkBox);
 
-			 shadowCheckBox = new JCheckBox("Shadows");
-			 shadowCheckBox.addActionListener(this);
-			 shadowCheckBox.setActionCommand("shadow");
-			 shadowCheckBox.setSelected(shadows);
-			 optionsPanel2.add(shadowCheckBox);
+			 checkBox = new JCheckBox("Shadows");
+			 checkBox.addActionListener(this);
+			 checkBox.setActionCommand("shadows");
+			 checkBox.setSelected(options.shadows);
+			 optionsPanel2.add(checkBox);
 
-			 rotateButton = new JCheckBox("Rotate");
-			 optionsPanel2.add(rotateButton);
+			 checkBox = new JCheckBox("Rotate");
+			 checkBox.addActionListener(this);
+			 checkBox.setActionCommand("rotate");
+			 checkBox.setSelected(options.rotate);
+			 optionsPanel2.add(checkBox);
 			 
 			 button = new JButton("Foreground...");
 			 button.addActionListener(this);
-			 // button.setActionCommand("backgr");
+			 button.setActionCommand("foreground");
 			 optionsPanel2.add(button);
 
 			 button = new JButton("Background...");
 			 button.addActionListener(this);
-			 button.setActionCommand("backgr");
+			 button.setActionCommand("background");
 			 optionsPanel2.add(button);
 
 			 JPanel optionsPanel = new JPanel();
@@ -769,7 +810,7 @@ public class ToWebPlugin extends Plugin {
 			 String.format("viewSelected: %s templateSelected %s",viewSelected,templateSelected);
 			 System.out.println(s);
 		}
-
+		
 		@SuppressWarnings("unchecked")
 		void save()
 		{
@@ -781,15 +822,9 @@ public class ToWebPlugin extends Plugin {
 			JSONObject object = new JSONObject();
 			object.put("viewSelected"	 ,viewModel.get(viewList.getSelectedIndex()));
 			object.put("templateSelected",templateList.getSelectedItem());
-			object.put("shadows"  ,shadows   ?"true":"false");
-			object.put("overwrite",overwrite ?"true":"false");
+			options.save(object);
 			object.put("story",storyArea.getText());
 			object.put("views",views);
-			JSONArray  jColor = new JSONArray();
-			jColor.add(background.getRed());
-			jColor.add(background.getGreen());
-			jColor.add(background.getBlue());
-			object.put("background",jColor);
 
 			StringWriter out = new StringWriter();
 			try {
@@ -896,19 +931,29 @@ public class ToWebPlugin extends Plugin {
 			openWebpage("http://clanmills.com/ToWebPlugin/help/");
 		}
 		
-		public void shadow(ActionEvent event)
+		public void shadows(ActionEvent event)
 		{
-			shadows = ((JCheckBox) event.getSource()).isSelected();
+			options.shadows = ((JCheckBox) event.getSource()).isSelected();
 		}
 		
-		public void overWrite(ActionEvent event)
+		public void overwrite(ActionEvent event)
 		{
-			overwrite = ((JCheckBox) event.getSource()).isSelected();
+			options.overwrite = ((JCheckBox) event.getSource()).isSelected();
 		}
 
-		public void backgr()
+		public void rotate(ActionEvent event)
 		{
-			background = JColorChooser.showDialog(this, "Choose Background Color",background);
+			options.rotate = ((JCheckBox) event.getSource()).isSelected();
+		}
+
+		public void background(ActionEvent event)
+		{
+			options.background = JColorChooser.showDialog(this, "Choose Background Color",options.background);
+		}
+
+		public void foreground(ActionEvent event)
+		{
+			options.foreground = JColorChooser.showDialog(this, "Choose Background Color",options.background);
 		}
 
 		public void about()
@@ -924,17 +969,19 @@ public class ToWebPlugin extends Plugin {
 		{
 			String cmd = event.getActionCommand();
 
-			if      ( cmd.equals("save"     ) ) save();
-			else if ( cmd.equals("start"    ) ) start();
-			else if ( cmd.equals("ignore"   ) ) ignore();
-			else if ( cmd.equals("remove"   ) ) remove();
-		    else if ( cmd.equals("help"     ) ) help();
-			else if ( cmd.equals("down"     ) ) updown(+1,false);
-			else if ( cmd.equals("up"       ) ) updown(-1,false);
-			else if ( cmd.equals("shadow"   ) ) shadow(event);
-			else if ( cmd.equals("overwrite") ) overWrite(event);
-			else if ( cmd.equals("about"    ) ) about();
-			else if ( cmd.equals("backgr"   ) ) backgr();
+			if      ( cmd.equals("save"      ) ) save();
+			else if ( cmd.equals("start"     ) ) start();
+			else if ( cmd.equals("ignore"    ) ) ignore();
+			else if ( cmd.equals("remove"    ) ) remove();
+		    else if ( cmd.equals("help"      ) ) help();
+			else if ( cmd.equals("down"      ) ) updown(+1,false);
+			else if ( cmd.equals("up"        ) ) updown(-1,false);
+			else if ( cmd.equals("shadows"   ) ) shadows(event);
+			else if ( cmd.equals("background") ) background(event);
+			else if ( cmd.equals("foreground") ) foreground(event);
+			else if ( cmd.equals("rotate"    ) ) rotate(event);
+			else if ( cmd.equals("overwrite" ) ) overwrite(event);
+			else if ( cmd.equals("about"     ) ) about();
 			else messageBox(cmd + " not implemented yet");
 		}
 
@@ -1105,9 +1152,7 @@ public class ToWebPlugin extends Plugin {
 		String			 template;
 		String           story;
 		Vector<String>	 views;
-		Boolean          shadows    = false;
-		Boolean          overwrite  = true;
-		Color            background = null;
+		Options          options;
 
 		private String unCamel(String s)
 		{
@@ -1226,7 +1271,7 @@ public class ToWebPlugin extends Plugin {
 		}
 
 		private boolean paintCamera(Home home,HomeComponent3D comp,Camera camera,int width,int height
-				,Boolean shadows,Boolean overwrite
+				,Options options
 				,UserPreferences prefs,String directory,String thumbs,String ext,String type)
 		{
 			boolean result = false;
@@ -1234,7 +1279,7 @@ public class ToWebPlugin extends Plugin {
 				String			file   = camera.getName() + ext;
 				String			path   = Filename.join(directory,file);
 				String          tpath  = thumbs == null ? path : Filename.join(thumbs,file);
-				result = overwrite && new File(path).exists() && new File(tpath).exists();
+				result = options.overwrite && new File(path).exists() && new File(tpath).exists();
 				if ( ! result ) {
 					setView(camera.getName());
 				    BufferedImage	image = comp.getOffScreenImage(width,height);
@@ -1257,7 +1302,18 @@ public class ToWebPlugin extends Plugin {
 		    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");//dd/MM/yyyy
 		    return           sdfDate.format(new Date());
 		}
+		
+		String color2String(Color c,int delta) {
+			int r = c.getRed()   + delta;
+			int g = c.getGreen() + delta;
+			int b = c.getBlue()  + delta;
+			return String.format("#%02x%02x%02x",r,g,b);
+		}
 
+		String color2String(Color c) {
+			return color2String(c,0);
+		}
+		
 		public boolean generateCode(Home home, UserPreferences prefs,int index,String name)
 		{
 			boolean result = false ;
@@ -1297,7 +1353,7 @@ public class ToWebPlugin extends Plugin {
 				photos = new ArrayList<Photo>();
 				comp.startOffscreenImagesCreation();
 
-				Filename.mkdirs(htmlPath,overwrite);
+				Filename.mkdirs(htmlPath,options.overwrite);
 				if ( new FileUnzip().extract(templatePath,htmlPath) ) {
 				    Filename.mkdirs(Images);
 				} else {
@@ -1318,7 +1374,7 @@ public class ToWebPlugin extends Plugin {
 				// paint camera
 				for ( Camera camera : home.getStoredCameras() ) {
 					if ( !result && camera.getName().equals(name) ) {
-						if ( paintCamera(home,comp,camera,iwidth,iheight,shadows,overwrite,this.prefs,Images,Thumbs,ext,type) ) {
+						if ( paintCamera(home,comp,camera,iwidth,iheight,options,this.prefs,Images,Thumbs,ext,type) ) {
 							String file = name + ext;
 							String m	= String.format("%s\n",unCamel(name));
 							System.out.println("Camera " + m);
@@ -1352,12 +1408,8 @@ public class ToWebPlugin extends Plugin {
 				String indexStub = "index"     ;
 				String indexFile = "index.html";
 				String indexPath = Filename.join(htmlPath,indexFile);
-				int    r         = background.getRed();
-				int    g         = background.getGreen();
-				int    b         = background.getBlue();
-				String sBack     = String.format("#%02x%02x%02x",r,g,b);
-				int    s         = 32;
-				String sBackShad = String.format("#%02x%02x%02x",r-s,g-s,b-s);
+				String sBack     = color2String(options.background);
+				String sBackShad = color2String(options.background,-32);
 
 				// use template to generate code
 				STRawGroupDir ts = new STRawGroupDir(htmlPath,'$','$'); // $..$ = key
