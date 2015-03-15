@@ -47,6 +47,7 @@ import com.eteks.sweethome3d.io.FileUserPreferences;
 import com.eteks.sweethome3d.model.Camera;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.Level;
+import com.eteks.sweethome3d.model.ObserverCamera;
 import com.eteks.sweethome3d.model.UserPreferences;
 import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
@@ -296,6 +297,7 @@ public class ToWebPlugin extends Plugin {
 		private ProgressMonitor		progressMonitor;
 		private JFrame				frame;
 		private JButton				startButton;
+		private JCheckBox           rotateButton;
 		private JTextArea			storyArea;
 		private JLabel				storyLabel;
 		private Boolean				storyEditable;
@@ -315,6 +317,7 @@ public class ToWebPlugin extends Plugin {
 		public  Boolean             shadows;
 		public  Boolean             overwrite;
 		public  Color               background = new Color(138,206,233); // skyblue
+		public  Color               foreground = new Color(0,0,0);
 
 		JList<String>				viewList;
 		JComboBox<String>			templateList;
@@ -327,11 +330,52 @@ public class ToWebPlugin extends Plugin {
 			String			storyLabelText;
 			String			template;
 			Vector<String>	views;
+			
+			public String rotate(int index,int max)
+			{
+				double R      =  2000;
+				double X      =  1000;
+				double Y      =   700;
+				double Z      =   800;
+				double radian = 45.0  / Math.atan(1.0) ;
+				double pi     = 180.0 / radian         ;
+				int    a      = 360   * index / max    ;
+				double r      = a;
+				double theta  = r / radian;
+				float  x      = (float) (X + R * Math.cos(theta));
+				float  y      = (float) (Y + R * Math.sin(theta));
+				float  z      = (float) Z;
+				float  yaw    = (float) (pi/2.0 + theta);
+				float  pitch  = 0.1f ;
+				float  view   = (float) (80.0/radian);
+				ObserverCamera camera  = new ObserverCamera(x,y,z,yaw,pitch,view);
+				camera.setLens(Camera.Lens.PINHOLE);
+				String   name = String.format("Rotate %d",a);
+				camera.setName(name);
+				homeController3D.goToCamera(camera);
+				home.setCamera(camera);
+				
+				return name;
+			}
+			
+//			if ( bRotate ) {
+//				setView(camera1.getName());
+//				for ( Camera camera : home.getStoredCameras() ) {
+//					if ( camera.getName() == name ) {
+//						List<Camera> cameras = new ArrayList<Camera>();
+//						cameras.add(camera);
+//					    homeController3D.deleteCameras(cameras);
+//				    }
+//				}
+//			}
+			
+			
 
 			@Override
 			public Void doInBackground() {
 				
-				int	   max		= views.size();
+				Boolean bRotate = true ;
+				int	   max		= bRotate ? 24 : views.size() ;
 				if (   max < 1 ) {
 					messageBox("There are no views");
 					return null;
@@ -360,21 +404,21 @@ public class ToWebPlugin extends Plugin {
 					theJob.template = template;
 					theJob.story    = story;
 					while (progress < max  && !isCancelled()) {
-						String view	   = views.get(progress);
+						String view	   = bRotate ? rotate(progress,max) : views.get(progress);
 						percent		   = progress*100/max;
 						String message = String.format("%d%% View: %s\n",percent, view);
 						progressMonitor.setNote(message);
 						progressMonitor.setProgress(percent);
 						setProgress(percent);
 						System.out.printf("doInBackground() View:%s (%d of %d) ",view,progress+1,max);
-						theJob.generateCode(home,prefs,progress++);
+						theJob.generateCode(home,prefs,progress++,view);
 					}
 					if ( progress == max ) {
 						percent=99;
 						progressMonitor.setNote("Generating HTML\n");
 						progressMonitor.setProgress(percent);
 						setProgress(percent);
-						theJob.generateCode(home, prefs, -1);
+						theJob.generateCode(home, prefs, -1,"");
 						setProgress(100);
 					}
 				} catch (Exception e) { progress = max + 100 ; }
@@ -597,12 +641,12 @@ public class ToWebPlugin extends Plugin {
 			 button.addActionListener(this);
 			 button.setActionCommand("about");
 			 pluginButtons.add(button);
-
-			 button = new JButton("Background...");
-			 button.addActionListener(this);
-			 button.setActionCommand("backgr");
-			 pluginButtons.add(button);
 			 
+			 JButton saveButton = new JButton("Save");
+			 saveButton.setActionCommand("save");
+			 saveButton.addActionListener(this);
+			 pluginButtons.add(saveButton);
+
 			 viewPanel.add(pluginButtons);
 
 			 addRow(++row,"Views:",viewPanel);
@@ -648,55 +692,74 @@ public class ToWebPlugin extends Plugin {
 			 storyArea.setText(story);
 
 			 //++++++++++++++++++++++++++++++
-			 JPanel optionsPanel = new JPanel();
-			 optionsPanel.setOpaque(false);
+			 JPanel optionsPanel1 = new JPanel();
+			 JPanel optionsPanel2 = new JPanel();
+			 optionsPanel1.setOpaque(false);
+			 optionsPanel2.setOpaque(false);
 
 			 templateList = new JComboBox<String>(getTemplates());
 			 templateList.setAutoscrolls(true);
 
-			 optionsPanel.add(new JLabel("Template:"));
-			 optionsPanel.add(templateList);
+			 optionsPanel1.add(new JLabel("Template:"));
+			 optionsPanel1.add(templateList);
 
 			 button = new JButton("Help...");
 			 button.addActionListener(this);
 			 button.setActionCommand("template_help");
-			 optionsPanel.add(button);
+			 optionsPanel1.add(button);
 
 			 button = new JButton("Values...");
 			 button.setActionCommand("values");
 			 button.addActionListener(this);
-			 optionsPanel.add(button);
+			 optionsPanel1.add(button);
 
 			 button = new JButton("More...");
 			 button.setActionCommand("more");
 			 button.addActionListener(this);
-			 optionsPanel.add(button);
-
-			 JButton saveButton = new JButton("Save");
-			 saveButton.setActionCommand("save");
-			 saveButton.addActionListener(this);
-			 optionsPanel.add(saveButton);
+			 optionsPanel1.add(button);
 
 			 overwriteCheckBox = new JCheckBox("Overwrite");
 			 overwriteCheckBox.addActionListener(this);
 			 overwriteCheckBox.setActionCommand("overwrite");
 			 overwriteCheckBox.setSelected(overwrite);
-			 pluginButtons.add(overwriteCheckBox);
+			 optionsPanel2.add(overwriteCheckBox);
 
 			 shadowCheckBox = new JCheckBox("Shadows");
 			 shadowCheckBox.addActionListener(this);
 			 shadowCheckBox.setActionCommand("shadow");
 			 shadowCheckBox.setSelected(shadows);
-			 optionsPanel.add(shadowCheckBox);
+			 optionsPanel2.add(shadowCheckBox);
+
+			 rotateButton = new JCheckBox("Rotate");
+			 optionsPanel2.add(rotateButton);
+			 
+			 button = new JButton("Foreground...");
+			 button.addActionListener(this);
+			 // button.setActionCommand("backgr");
+			 optionsPanel2.add(button);
+
+			 button = new JButton("Background...");
+			 button.addActionListener(this);
+			 button.setActionCommand("backgr");
+			 optionsPanel2.add(button);
+
+			 JPanel optionsPanel = new JPanel();
+			 optionsPanel.setOpaque(false);
+			 optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
+			 optionsPanel.add(optionsPanel1);
+			 optionsPanel.add(optionsPanel2);
 
 			 addRow(++row,"Options:",optionsPanel);
 
 			 //++++++++++++++++++++++++++++++
+			 JPanel actionPanel = new JPanel();
+			 actionPanel.setOpaque(false);
+
 			 startButton = new JButton("Start");
 			 startButton.setActionCommand("start");
 			 startButton.addActionListener(this);
-
-			 addRow(++row,"Start:",startButton);
+		     actionPanel.add(startButton);
+			 addRow(++row,"Action:",startButton);
 
 			 fixViewUI();
 			 templateList.setSelectedItem(templateSelected);
@@ -884,7 +947,7 @@ public class ToWebPlugin extends Plugin {
 					Toolkit.getDefaultToolkit().beep();
 					if (progressMonitor.isCanceled()) {
 						worker.cancel(true);
-						theJob.generateCode(home, prefs,-2);
+						theJob.generateCode(home, prefs,-2,"");
 					}
 					startButton.setEnabled(true);
 				}
@@ -955,6 +1018,7 @@ public class ToWebPlugin extends Plugin {
 		homeController3D = homeController3D_;
 		prefs            = prefs_ ;
 		theJob.comp      = null   ;
+		theJob.homeController3D = homeController3D ;
 
 		String APPLICATION_PLUGINS_SUB_FOLDER = "plugins"; // private in SweetHome3D.java
 
@@ -1037,6 +1101,7 @@ public class ToWebPlugin extends Plugin {
 		HomeComponent3D  comp       = null;
 		HomeComponent3D  compNoShad = null;
 		HomeComponent3D  compShadow = null;
+		HomeController3D homeController3D = null;
 		String			 template;
 		String           story;
 		Vector<String>	 views;
@@ -1166,12 +1231,11 @@ public class ToWebPlugin extends Plugin {
 		{
 			boolean result = false;
 			try {
-				result                = true;
-				String			file  = camera.getName() + ext;
-				String			path  = Filename.join(directory,file);
-				String          tpath = thumbs == null ? path : Filename.join(thumbs,file);
-				Boolean         render= overwrite || !new File(path).exists() || !new File(tpath).exists();
-				if ( render ) {
+				String			file   = camera.getName() + ext;
+				String			path   = Filename.join(directory,file);
+				String          tpath  = thumbs == null ? path : Filename.join(thumbs,file);
+				result = overwrite && new File(path).exists() && new File(tpath).exists();
+				if ( ! result ) {
 					setView(camera.getName());
 				    BufferedImage	image = comp.getOffScreenImage(width,height);
 				    result				  = saveImage(image,path,type);
@@ -1194,7 +1258,7 @@ public class ToWebPlugin extends Plugin {
 		    return           sdfDate.format(new Date());
 		}
 
-		public boolean generateCode(Home home, UserPreferences prefs,int index)
+		public boolean generateCode(Home home, UserPreferences prefs,int index,String name)
 		{
 			boolean result = false ;
 			// index =  0..(max-1) : generate a page in the gallery
@@ -1251,7 +1315,6 @@ public class ToWebPlugin extends Plugin {
 			System.out.printf("TheJob.generateCode %d\n",index);
 
 			if ( !result && index >= 0 ) try {
-				String  name  = views.get(index);
 				// paint camera
 				for ( Camera camera : home.getStoredCameras() ) {
 					if ( !result && camera.getName().equals(name) ) {
